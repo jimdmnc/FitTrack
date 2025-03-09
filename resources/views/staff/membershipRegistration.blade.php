@@ -4,13 +4,17 @@
 @section('content')
         
         <!-- Main Content Area -->
-        <div class="w-150 relative overflow-hidden">
-        <div class="absolute mt-40 w-screen h-32 bg-gradient-to-r from-gray-800 to-gray-500 rounded-3xl flex items-center"></div>
-    
+        <!-- <div class="w-150 relative overflow-hidden"> -->
+        <section class="grid grid-cols-1 gap-4 pt-10">
+            <div class="md:col-span-2 bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200 transform hover:scale-105 transition duration-300">
+                <h2 class="font-bold text-lg sm:text-3xl text-gray-800">
+                    <span class="text-indigo-700 drop-shadow-lg">Add New Member</span>
+                </h2>
+            </div>
+        </section>
             
             <!-- Form Container -->
-            <div class="relative z-10 pt-8 px-12 pb-8 mt-40  ">
-            <h2 class="text-4xl font-bold text-gray-300 mb-20">Membership Registration</h2>
+            <div class="relative z-10  px-12 pb-8 mt-10  ">
 
             <form action="{{ route('staff.membershipRegistration') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg">
     @csrf
@@ -82,7 +86,7 @@
         <div class="">
             <button type="submit" class="w-full bg-gray-800 text-white py-3 rounded-md font-semibold hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Register</button>
         </div>
-    </div>
+    <!-- </div> -->
 </form>
             </div>
     <!-- JavaScript for Expiry Date -->
