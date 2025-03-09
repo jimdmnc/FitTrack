@@ -1,6 +1,6 @@
 <!-- resources/views/components/sidebar.blade.php -->
 
-<div x-data="{ open: true, isMobile: window.innerWidth < 768 }" x-show="open" @resize.window="isMobile = window.innerWidth < 768" :class="{'w-64': open, 'w-16': !open && !isMobile}" class="h-screen md:flex md:flex-shrink-0 bg-gray-900 fixed transition-all duration-200 ease-in-out">
+<aside id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-gray-800 text-white transition-transform duration-500 ease-in-out -translate-x-full lg:translate-x-0">
 <div class="flex flex-col w-full">
 <div class="flex items-center p-6">
             <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="Rockies Logo" class="h-19 w-19 p-3 rounded-full">
@@ -95,4 +95,4 @@
             </nav>
         </div>
     </div>
-</div>
+        </aside>
