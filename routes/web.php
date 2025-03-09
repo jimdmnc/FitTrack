@@ -1,0 +1,39 @@
+<?php
+use Illuminate\Support\Facades\Route;
+
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Staff\DashboardController;
+use App\Http\Controllers\Staff\MembershipRegistrationController;
+use App\Http\Controllers\Staff\AttendanceController;
+use App\Http\Controllers\Staff\ViewmembersController;
+use App\Http\Controllers\Staff\PaymentTrackingController;
+use App\Http\Controllers\Staff\ConnectHardwareController;
+use App\Http\Controllers\Staff\ReportController;
+
+// Public routes
+Route::get('/', function () {
+    return view('welcome');
+});
+
+// Authenticated routes
+Route::middleware('auth')->group(function () {
+    // Staff routes
+    Route::prefix('staff')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+        Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])->name('staff.membershipRegistration');
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
+        Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
+        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
+        Route::get('/connectHardware', [ConnectHardwareController::class, 'index'])->name('staff.connectHardware');
+        Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
+            // Profile routes
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+
+});
+
+// Authentication routes (login, register, etc.)
+require __DIR__.'/auth.php';
