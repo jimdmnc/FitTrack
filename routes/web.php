@@ -20,7 +20,10 @@ Route::middleware('auth')->group(function () {
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+        // Membership Registration
         Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])->name('staff.membershipRegistration');
+        Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('staff.membershipRegistration');        
+        
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
