@@ -10,6 +10,9 @@ use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ConnectHardwareController;
 use App\Http\Controllers\Staff\ReportController;
 
+use App\Http\Controllers\Member\MemberDashboardController;
+
+
 // Public routes
 Route::get('/', function () {
     return view('welcome');
@@ -35,7 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     });
 
+    Route::prefix('member')->group(function () {
+        Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
 
+    });
 });
 
 // Authentication routes (login, register, etc.)
