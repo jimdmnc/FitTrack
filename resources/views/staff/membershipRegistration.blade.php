@@ -73,7 +73,7 @@
 
                                     <!-- RFID UID -->
                                     <div>
-                <input type="text" id="rfidUID" name="rfid_uid" placeholder="RFID UID" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('rfid_uid') }}" required>
+                <input type="text" id="rfid_uid" name="rfid_uid" placeholder="RFID UID" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('rfid_uid') }}" readonly required>
                 @error('rfid_uid')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
@@ -182,19 +182,45 @@
 
 <!-- JavaScript for RFID UID Input -->
 <script>
-    // Simulate RFID reader input (replace this with actual RFID reader integration)
-    document.addEventListener('DOMContentLoaded', function () {
-        const rfidInput = document.getElementById('rfidUID');
+    // Function to fetch the latest RFID UID from the backend
+    function fetchLatestRFID() {
+        fetch('/api/latest-rfid') // Make a GET request to the /api/latest-rfid endpoint
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json(); // Parse the JSON response
+            })
+            .then(data => {
+                if (data.rfid_uid) {
+                    // If the RFID UID is available, update the input field
+                    document.getElementById('rfidUID').value = data.rfid_uid;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching RFID UID:', error);
+            });
+    }
 
-        // Simulate RFID card tap
-        function simulateRFIDTap(uid) {
-            rfidInput.value = uid;
-        }
+    // Fetch the latest RFID UID every 2 seconds
+    setInterval(fetchLatestRFID, 2000);
 
-        // Example: Simulate a card tap after 3 seconds
-        setTimeout(() => {
-            simulateRFIDTap('1234567890'); // Replace with actual UID
-        }, 3000);
-    });
+    // Fetch the RFID UID immediately when the page loads
+    document.addEventListener('DOMContentLoaded', fetchLatestRFID);
+</script>
+
+<script>
+    function fetchLatestRFID() {
+        fetch("{{ url('/api/latest-rfid') }}")
+            .then(response => response.json())
+            .then(data => {
+                if (data.rfid_uid) {
+                    document.getElementById("rfid_uid").value = data.rfid_uid;
+                }
+            })
+            .catch(error => console.error("Error fetching RFID:", error));
+    }
+
+    setInterval(fetchLatestRFID, 2000); // Poll every 2 seconds
 </script>
 @endsection

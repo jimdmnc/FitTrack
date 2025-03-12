@@ -1,6 +1,9 @@
 <?php
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\RFIDController;
+
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\DashboardController;
 use App\Http\Controllers\Staff\MembershipRegistrationController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\Member\MemberDashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::post('/save-rfid', [RFIDController::class, 'saveUID'])->name('rfid.store');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
