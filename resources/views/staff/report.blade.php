@@ -1,12 +1,6 @@
 @extends('layouts.app') <!-- Assuming you have a main layout file -->
 
 @section('content')
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Member Activity Dashboard</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
@@ -34,8 +28,7 @@
             width: 100%;
         }
     </style>
-</head>
-<body class="min-h-screen">
+
     <div class="container mx-auto py-8 px-4">
         <!-- Header Section with Modern Design -->
         <div class="mb-8">
