@@ -38,93 +38,53 @@
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
-                    <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Member
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Membership
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Check-in Time
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Check-out Time
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Status
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Days Left
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                            Actions
-                        </th>
-                    </tr>
+                <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in Time</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-out Time</th>
+                        <!-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> -->
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Left</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <!-- Static Data Example -->
+                    @foreach($attendances as $attendance)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
+                    <td>{{ $attendance->user ? $attendance->user->first_name . ' ' . $attendance->user->last_name : 'Unknown' }}</td>
 
-                                <div class="ml-1">
-                                    <div class="text-sm font-medium text-gray-900">
-                                        John Doe
-                                    </div>
-                                    <div class="text-sm text-gray-500">
-                                        john.doe@example.com
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                Premium
+                                {{ $attendance->member->membership ?? 'N/A' }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            Oct 10, 2023 09:00 AM
+                            {{ $attendance->time_in->format('M d, Y h:i A') }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            Oct 10, 2023 11:00 AM
+                            {{ $attendance->time_out ? $attendance->time_out->format('M d, Y h:i A') : 'Still in' }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                                Left
+                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $attendance->status == 'Present' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                {{ $attendance->status }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                30 days
+                                {{ $attendance->member->days_left ?? 'N/A' }} days
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900">
-                                Details
-                            </a>
+                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Details</a>
                         </td>
                     </tr>
-                    <!-- End of Static Data Example -->
+                    @endforeach
                 </tbody>
             </table>
         </div>
 
         <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-            <!-- Pagination Placeholder -->
-            <div class="flex justify-between items-center">
-                <div class="text-sm text-gray-700">
-                    Showing <span class="font-medium">1</span> to <span class="font-medium">1</span> of <span class="font-medium">1</span> results
-                </div>
-                <div class="flex space-x-2">
-                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                        Previous
-                    </button>
-                    <button class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
-                        Next
-                    </button>
-                </div>
-            </div>
+            {{ $attendances->links() }} <!-- Laravel pagination -->
         </div>
     </div>
 </div>

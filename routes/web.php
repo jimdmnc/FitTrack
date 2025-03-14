@@ -28,6 +28,8 @@ Route::get('/get-latest-rfid', function () {
         'uid' => $latestRfid ? $latestRfid->uid : null
     ]);
 });
+Route::post('/rfid/store', [RfidController::class, 'store'])->name('rfid.store');
+
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     // Staff routes

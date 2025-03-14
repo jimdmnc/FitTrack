@@ -8,18 +8,6 @@ use Illuminate\Support\Facades\Session;
 
 class RFIDController extends Controller
 {
-    // // Store the latest UID temporarily (before saving)
-    // public function storeUID(Request $request)
-    // {
-    //     $request->validate([
-    //         'rfid_uid' => 'required|string',
-    //     ]);
-
-    //     // Store the latest UID in the session
-    //     Session::put('latest_rfid', $request->rfid_uid);
-
-    //     return response()->json(['message' => 'RFID received', 'rfid_uid' => $request->rfid_uid]);
-    // }
 
     // Get the latest UID (for AJAX polling)
     public function getLatestUid()
@@ -32,15 +20,72 @@ class RFIDController extends Controller
         ]);
     }
 
-    // Save UID to database
     public function saveUID(Request $request)
     {
-        $request->validate([
-            'rfid_uid' => 'required|string|unique:rfids',
-        ]);
+        try {
+            $validated = $request->validate([
+                'uid' => 'required|string|max:30',
+                'mode' => 'sometimes|string|in:registration,attendance'
+            ]);
 
-        RFID::create(['rfid_uid' => $request->rfid_uid]);
-
-        return redirect()->back()->with('success', 'RFID saved successfully!');
+            $mode = $request->input('mode', 'registration');
+            
+            // Save the RFID tag
+            $tag = RfidTag::create([
+                'uid' => $validated['uid'],
+            ]);
+            
+            // If in attendance mode, record the attendance
+            if ($mode === 'attendance') {
+                // Check if there's an existing "in" record without an "out" for this UID today
+                $existingRecord = Attendance::where('rfid_uid', $validated['uid'])
+                    ->whereDate('time_in', today())
+                    ->whereNull('time_out')
+                    ->first();
+                
+                if ($existingRecord) {
+                    // User is checking out
+                    $existingRecord->time_out = now();
+                    $existingRecord->save();
+                    
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Checkout recorded successfully',
+                        'attendance' => $existingRecord
+                    ]);
+                } else {
+                    // User is checking in
+                    $attendance = Attendance::create([
+                        'rfid_uid' => $validated['uid'],
+                        'time_in' => now(),
+                    ]);
+                    
+                    return response()->json([
+                        'status' => 'success',
+                        'message' => 'Checkin recorded successfully',
+                        'attendance' => $attendance
+                    ]);
+                }
+            }
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'UID saved successfully',
+                'data' => $tag
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in saveUID: ' . $e->getMessage());
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
+    /**
+     * Get the latest RFID tag UID.
+     *
+     * @return \Illuminate\Http\Response
+     */
 }
