@@ -20,8 +20,14 @@ use App\Http\Controllers\Member\MemberDashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/latest-uid', [RfidController::class, 'getLatestUid'])->name('latest.rfid');
-
+Route::get('/latest-uid', [RFIDController::class, 'getLatestUid'])->name('latest.rfid');
+Route::get('/get-latest-rfid', function () {
+    $latestRfid = DB::table('rfid_tags')->orderBy('created_at', 'desc')->first();
+    
+    return response()->json([
+        'uid' => $latestRfid ? $latestRfid->uid : null
+    ]);
+});
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     // Staff routes
