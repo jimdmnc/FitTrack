@@ -22,9 +22,12 @@ class RFIDController extends Controller
     }
 
     // Get the latest UID (for AJAX polling)
-    public function getLatestUID()
+    public function getLatestUid()
     {
-        return response()->json(['rfid_uid' => Session::get('latest_rfid')]);
+        $latestUid = RfidTag::latest()->first();
+        return response()->json([
+            'uid' => $latestUid ? $latestUid->uid : null
+        ]);
     }
 
     // Save UID to database

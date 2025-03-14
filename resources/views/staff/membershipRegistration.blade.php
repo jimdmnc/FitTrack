@@ -64,20 +64,31 @@
 
 
                         <!-- Password -->
-                        <div>
+            <div>
                 <input type="password" id="password" placeholder="Password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" required>
                 @error('password')
                     <span class="text-red-500 text-sm">{{ $message }}</span>
                 @enderror
             </div>
 
-                                    <!-- RFID UID -->
-                                    <div>
-                <input type="text" id="rfid_uid" name="rfid_uid" placeholder="RFID UID" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('rfid_uid') }}" readonly required>
-                @error('rfid_uid')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+        <!-- RFID UID -->
+        <div>
+            <label for="rfid_uid" class="block text-gray-700 font-medium mb-2">RFID Card</label>
+            <div class="flex items-center">
+                <x-text-input id="rfid_uid" 
+                    class="block w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" 
+                    type="text" 
+                    name="rfid_uid" 
+                    :value="old('rfid_uid')" 
+                    placeholder="Tap your RFID card on the reader"
+                    readonly />
+                <div id="rfid_status" class="ml-3 text-sm text-gray-500">Waiting for card...</div>
             </div>
+            @error('rfid_uid')
+                <span class="text-red-500 text-sm">{{ $message }}</span>
+            @enderror
+        </div>
+
         </div>
 
         <!-- Right Column -->
@@ -178,49 +189,50 @@
             expiryDateInput.value = '';
         }
     }
-</script>
+    // <!-- Add this script section at the bottom of your form -->
 
-<!-- JavaScript for RFID UID Input -->
-<script>
-    // Function to fetch the latest RFID UID from the backend
-    function fetchLatestRFID() {
-        fetch('/api/latest-rfid') // Make a GET request to the /api/latest-rfid endpoint
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json(); // Parse the JSON response
-            })
+    document.addEventListener('DOMContentLoaded', function() {
+    let lastUid = '';
+    const rfidInput = document.getElementById('rfid_uid');
+    const rfidStatus = document.getElementById('rfid_status');
+    const fetchUrl = @json(route('latest.rfid')); // Fix route fetching issue
+
+    // Function to check for new RFID UID
+    function checkForNewRfid() {
+        fetch(fetchUrl)
+            .then(response => response.json())
             .then(data => {
-                if (data.rfid_uid) {
-                    // If the RFID UID is available, update the input field
-                    document.getElementById('rfidUID').value = data.rfid_uid;
+                if (data.uid && data.uid !== lastUid) {
+                    // Update the input field with the new UID
+                    rfidInput.value = data.uid;
+                    lastUid = data.uid;
+                    
+                    // Update status and show animation
+                    rfidStatus.textContent = 'Card detected!';
+                    rfidStatus.classList.remove('text-gray-500');
+                    rfidStatus.classList.add('text-green-500', 'font-bold');
+                    
+                    // Reset status after 3 seconds
+                    setTimeout(() => {
+                        rfidStatus.textContent = 'Waiting for card...';
+                        rfidStatus.classList.remove('text-green-500', 'font-bold');
+                        rfidStatus.classList.add('text-gray-500');
+                    }, 3000);
                 }
             })
             .catch(error => {
-                console.error('Error fetching RFID UID:', error);
+                console.error('Error fetching RFID data:', error);
             });
     }
 
-    // Fetch the latest RFID UID every 2 seconds
-    setInterval(fetchLatestRFID, 2000);
+    // Check for new RFID every second
+    setInterval(checkForNewRfid, 1000);
 
-    // Fetch the RFID UID immediately when the page loads
-    document.addEventListener('DOMContentLoaded', fetchLatestRFID);
+    // Check once on page load
+    checkForNewRfid();
+});
+
 </script>
 
-<script>
-    function fetchLatestRFID() {
-        fetch("{{ url('/api/latest-rfid') }}")
-            .then(response => response.json())
-            .then(data => {
-                if (data.rfid_uid) {
-                    document.getElementById("rfid_uid").value = data.rfid_uid;
-                }
-            })
-            .catch(error => console.error("Error fetching RFID:", error));
-    }
 
-    setInterval(fetchLatestRFID, 2000); // Poll every 2 seconds
-</script>
 @endsection

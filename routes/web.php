@@ -20,7 +20,7 @@ use App\Http\Controllers\Member\MemberDashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::post('/save-rfid', [RFIDController::class, 'saveUID'])->name('rfid.store');
+Route::get('/latest-uid', [RfidController::class, 'getLatestUid'])->name('latest.rfid');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
         // Membership Registration
         Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])->name('staff.membershipRegistration');
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('staff.membershipRegistration');        
-        
+
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
