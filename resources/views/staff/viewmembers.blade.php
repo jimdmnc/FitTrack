@@ -21,8 +21,8 @@
                 <option>Inactive Members</option>
             </select>
         </div>
-        <div class="flex space-x-4">
-            <div class="relative max-w-xs">
+            <div class="flex space-x-4">
+              <div class="relative max-w-xs">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                         <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
@@ -30,53 +30,103 @@
                     </div>
                     <input type="text" name="search" id="search" placeholder="Search members..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 </div>
-        </div>
+            </div>
                 </div>
                 
                 <!-- Members Table -->
-                <div class="mt-4 overflow-x-auto">
-                    <table class="w-full border-collapse bg-white text-gray-600">
-                        <thead>
-                            <tr class="bg-white">
-                                <th class="p-2 border border-gray-500">Name</th>
-                                <th class="p-2 border border-gray-500">Member ID</th>
-                                <th class="p-2 border border-gray-500">Date Enrolled</th>
-                                <th class="p-2 border border-gray-500">Date Expiration</th>
-                                <th class="p-2 border border-gray-500">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-center">
-                <tr class="bg-gray-800 text-white">
-                    <td class="p-2 border border-gray-500">Leniño Nequinto</td>
-                    <td class="p-2 border border-gray-500">SFM2301N1</td>
-                    <td class="p-2 border border-gray-500">Jan 11</td>
-                    <td class="p-2 border border-gray-500">Feb 11</td>
-                    <td class="p-2 border border-gray-500"><button class="p-2 px-4 border-rounded border-bg-white rounded-md border ">Edit</button></td>
-                </tr>
-                <tr>
-                    <td class="p-2 border border-gray-500">Carlos Roi Barretto</td>
-                    <td class="p-2 border border-gray-500">SFM2301N2</td>
-                    <td class="p-2 border border-gray-500">Jan 11</td>
-                    <td class="p-2 border border-gray-500">Feb 11</td>
-                    <td class="p-2 border border-gray-500"><button class="p-2 px-4 border-rounded border-bg-gray-900 rounded-md border-2">Edit</button></td>
-                </tr>
-                <tr class="bg-gray-800 text-white">
-                    <td class="p-2 border border-gray-500">Nomer Aguado</td>
-                    <td class="p-2 border border-gray-500">SFM2301N3</td>
-                    <td class="p-2 border border-gray-500">Jan 11</td>
-                    <td class="p-2 border border-gray-500">Feb 11</td>
-                    <td class="p-2 border border-gray-500"><button class="p-2 px-4 border-rounded border-bg-white rounded-md border">Edit</button></td>
-                </tr>
-                <tr>
-                    <td class="p-2 border border-gray-500">Mc Joshua Delima</td>
-                    <td class="p-2 border border-gray-500">SFM2301N4</td>
-                    <td class="p-2 border border-gray-500">Jan 11</td>
-                    <td class="p-2 border border-gray-500">Feb 11</td>
-                    <td class="p-2 border border-gray-500"><button class="p-2 px-4 border-rounded border-bg-slate-900 rounded-md border-2">Edit</button></td>
-                </tr>
-            </tbody>
-                    </table>
-                </div>
+                        <!-- Members Table with Modern Design -->
+        <div class="glass-card mt-5 ">
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Enrolled</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Expiration</th>
+                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <span class="text-blue-600 font-semibold">JD</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                        <div class="text-sm text-gray-500">john.doe@example.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">RFGMEMID125</td>
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Annual</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Mar 7, 2025</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Mar 7, 2026</td>
+                            <td class="px-4 py-4 text-right text-sm">
+                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                            <span class="text-green-600 font-semibold">AS</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Alice Smith</div>
+                                        <div class="text-sm text-gray-500">alice.smith@example.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">RFGMEMID129</td>
+
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Weekly</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Mar 9, 2025</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Mar 16, 2025</td>
+                            <td class="px-4 py-4 text-right text-sm">
+                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                            </td>
+                        </tr>
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                        <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                            <span class="text-red-600 font-semibold">RJ</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
+                                        <div class="text-sm text-gray-500">robert.j@example.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">RFGMEMID145</td>
+
+                            <td class="px-4 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Monthly</span>
+                            </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025</td>
+                            <td class="px-4 py-4 text-sm text-gray-500">Apr 11, 2025</td>
+                                <td class="px-4 py-4 text-right text-sm">
+                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
                 
                 <!-- Pagination -->
             <div class="flex justify-between items-center mt-4">

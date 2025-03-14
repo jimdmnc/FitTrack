@@ -36,7 +36,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div>
                         <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-                            Gym Activity Dashboard
+                            Dashboard
                         </h1>
                     </div>
                     <!-- <div class="mt-4 md:mt-0">
@@ -119,7 +119,7 @@
                         </div>
                     </div>
                     <div class="p-3 rounded-lg bg-amber-100 text-amber-600">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-walking"></i>
                     </div>
                 </div>
             </div>
@@ -205,7 +205,7 @@
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
-                        <tr>
+                        <tr class="bg-gray-100">
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>

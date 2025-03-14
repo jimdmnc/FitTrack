@@ -51,8 +51,8 @@
                 </div>
 
                 <table class="w-full bg-white border rounded-lg overflow-hidden mt-14">
-                    <thead>
-                        <tr class="bg-gray-100">
+                    <thead class="bg-gray-100">
+                        <tr class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                             <th class="p-3 text-left">Code</th>
                             <th class="p-3 text-left">Status</th>
                             <th class="p-3 text-left">Description</th>
@@ -63,8 +63,8 @@
                             <th class="p-3 text-left">Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr class="border-b">
+                    <tbody class="px-4 py-4 text-sm text-gray-500">
+                        <tr class="border-b hover:bg-gray-50">
                             <td class="p-3">#2935$</td>
                             <td class="p-3"><span class="px-2 py-1 bg-gray-300 rounded text-gray-700">Incomplete</span></td>
                             <td class="p-3">Payment for invoice</td>
@@ -74,7 +74,7 @@
                             <td class="p-3">$89</td>
                             <td class="p-3"><button class=" text-blue-800 px-3 py-1 rounded-lg hover:text-gray-700">Details</button></td>
                         </tr>
-                        <tr class="border-b">
+                        <tr class="border-b hover:bg-gray-50">
                             <td class="p-3">#2935$</td>
                             <td class="p-3"><span class="px-2 py-1 bg-green-200 text-green-700 rounded">Succeeded</span></td>
                             <td class="p-3">Payment for invoice</td>
@@ -84,7 +84,7 @@
                             <td class="p-3">$73</td>
                             <td class="p-3"><button class=" text-blue-800 px-3 py-1 rounded-lg hover:text-gray-700">Details</button></td>
                         </tr>
-                        <tr class="border-b">
+                        <tr class="border-b hover:bg-gray-50">
                             <td class="p-3">#2935$</td>
                             <td class="p-3"><span class="px-2 py-1 bg-red-200 text-red-700 rounded">Failed</span></td>
                             <td class="p-3">Interest</td>
