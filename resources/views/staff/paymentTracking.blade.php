@@ -2,7 +2,7 @@
 
 @section('content')
  <!-- Dito tayo mag  front end langs -->
- <script src="https://cdn.tailwindcss.com"></script>
+
 
 
 <p class="text-xl text-black">Payment  Tarcking</p>

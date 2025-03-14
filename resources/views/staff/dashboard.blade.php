@@ -39,59 +39,86 @@
                             Gym Activity Dashboard
                         </h1>
                     </div>
-                    <div class="mt-4 md:mt-0">
+                    <!-- <div class="mt-4 md:mt-0">
                         <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
                             <i class="fas fa-circle text-green-500 text-xs mr-1"></i> LIVE
                         </span>
                         <span class="ml-2 text-sm text-gray-500">Last updated: March 11, 2025 11:32 AM</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Search & Filter Section with Modern UI -->
-        <div class="glass-card mb-8 p-4">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="relative w-full md:w-72">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </div>
-                    <input type="text" placeholder="Search members..." class="pl-10 pr-4 py-2 w-full border-0 focus:ring-2 focus:ring-blue-500 rounded-lg shadow-sm" />
-                </div>
-                
-                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                    <div class="relative">
-                        <select id="date-filter" class="appearance-none pl-4 pr-10 py-2 border-0 bg-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
-                            <option value="today">Today</option>
-                            <option value="thisWeek" selected>This Week</option>
-                            <option value="thisMonth">This Month</option>
-                            <option value="thisYear">This Year</option>
-                            <option value="custom">Custom Range</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                            
-                        </div>
-                    </div>
-                    
-                    <!-- <button id="export-report" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow hover:from-blue-700 hover:to-indigo-800 transition-all">
-                        <i class="fas fa-download mr-2"></i> Export
-                    </button> -->
+                    </div> -->
                 </div>
             </div>
         </div>
 
         <!-- Stats Cards with Improved Design -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
+        <div style="background-image: url('{{ asset('images/wallpaperr.jpg') }}');" class=" md:col-span-2 p-10 rounded-lg shadow bg-cover bg-center bg-no-repeat relative">
+        
+        <!-- Overlay for better text visibility -->
+        <div class="absolute inset-0 bg-black bg-opacity-70 rounded-lg"></div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 relative z-10">
+            <div class="flex text-center justify-center items-center">
+                <h2 class="font-bold text-white text-2xl">
+                    Welcome, <span class="text-yellow-400">Jim</span>  
+                    <span class="text-sm text-gray-300 font-normal block mt-2">
+                        Your dedication drives our success! Let's create an amazing fitness experience together.
+                    </span>
+                </h2>
+
+            </div>
+            <!-- <div class="text-3xl text-yellow-100">
+                <div class="flex text-center justify-center items-center">
+                    <i class="fas fa-dumbbell bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-full p-8"></i>
+                </div>
+            </div> -->
+        </div>
+        </div>
+        </section>
+
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+                    <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Active Members</h3>
-                        <div class="text-3xl font-bold text-gray-900">267</div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Current Members</h3>
+                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">326 </div>
+                        <span class="text-lg font-semibold ">people</span>     
                         <div class="text-green-600 text-sm font-medium mt-1">
                             <i class="fas fa-arrow-up mr-1"></i> 12% vs last week
                         </div>
                     </div>
                     <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
+                        <i class="fas fa-users"></i>
+                    </div>
+                  </div>
+              </div>
+            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">New Members</h3>
+                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">15</div>
+                        <span class="text-lg font-semibold ">people</span>
+                        <div class="text-green-600 text-sm font-medium mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i> 4% vs last week
+                        </div>
+                    </div>
+                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Walk-ins</h3>
+                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">20</div>
+                        <span class="text-lg font-semibold">people</span>
+                        <div class="text-red-600 text-sm font-medium mt-1">
+                            <i class="fas fa-arrow-down mr-1"></i> 2% vs yesterday
+                        </div>
+                    </div>
+                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600">
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
@@ -100,40 +127,12 @@
             <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Avg Session</h3>
-                        <div class="text-3xl font-bold text-gray-900">86 min</div>
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 4% vs last week
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Peak Hour</h3>
-                        <div class="text-3xl font-bold text-gray-900">6-7 PM</div>
-                        <div class="text-gray-500 text-sm font-medium mt-1">
-                            <i class="fas fa-users mr-1"></i> 42 members
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
                         <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Check-ins</h3>
-                        <div class="text-3xl font-bold text-gray-900">128</div>
-                        <div class="text-red-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-down mr-1"></i> 3% vs yesterday
+                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">128</div>
+                        <span class="text-lg font-semibold">people</span>
+
+                        <div class="text-green-600 text-sm font-medium mt-1">
+                            <i class="fas fa-arrow-up mr-1"></i> 3% vs yesterday
                         </div>
                     </div>
                     <div class="p-3 rounded-lg bg-green-100 text-green-600">
@@ -144,7 +143,7 @@
         </div>
 
         <!-- Charts Section with Modern Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <div class="glass-card p-6 transition-all hover:shadow-lg">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold text-gray-800">Daily Check-ins by Hour</h3>
@@ -192,12 +191,12 @@
                     <canvas id="membership-chart"></canvas>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Members Table with Modern Design -->
         <div class="glass-card p-6 transition-all hover:shadow-lg">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-gray-800">Recent Active Members</h3>
+                <h3 class="text-lg font-semibold text-gray-800">Gym Members</h3>
                 <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                     View All <i class="fas fa-arrow-right ml-1"></i>
                 </button>
@@ -232,7 +231,7 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Premium</span>
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Annual</span>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:00 AM</td>
                             <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 11:05 AM</td>
@@ -259,7 +258,7 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Premium+</span>
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Weekly</span>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 10:15 AM</td>
                             <td class="px-4 py-4 text-sm text-gray-500">-</td>
@@ -286,7 +285,7 @@
                                 </div>
                             </td>
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Standard</span>
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Monthly</span>
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 08:30 AM</td>
                             <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:45 AM</td>
