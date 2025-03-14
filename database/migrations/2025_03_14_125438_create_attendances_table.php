@@ -6,25 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('attendances', function (Blueprint $table) {
+        Schema::create('attendances', function (Blueprint $table) {
+            $table->id(); // Auto-increment Primary Key
+            $table->string('rfid_uid'); // Matches `users.rfid_uid`
+            $table->date('attendance_date'); // Date column
+            $table->timestamps();
+
+            // Foreign Key Constraint
             $table->foreign('rfid_uid')->references('rfid_uid')->on('users')->onDelete('cascade');
         });
     }
-    
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('attendances', function (Blueprint $table) {
-            $table->dropForeign(['rfid_uid']); // Remove foreign key
-        });
+        Schema::dropIfExists('attendances');
     }
-    
 };

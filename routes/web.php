@@ -20,7 +20,9 @@ use App\Http\Controllers\Member\MemberDashboardController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/latest-uid', [RFIDController::class, 'getLatestUid'])->name('latest.rfid');
+Route::post('/rfid-attendance', [RFIDController::class, 'storeAttendance'])->name('rfid.store');
+
+Route::get('/latest-rfid', [RFIDController::class, 'getLatestUid'])->name('latest.rfid');
 Route::get('/get-latest-rfid', function () {
     $latestRfid = DB::table('rfid_tags')->orderBy('created_at', 'desc')->first();
     
@@ -28,7 +30,7 @@ Route::get('/get-latest-rfid', function () {
         'uid' => $latestRfid ? $latestRfid->uid : null
     ]);
 });
-Route::post('/rfid/store', [RfidController::class, 'store'])->name('rfid.store');
+Route::post('/rfid/store', [RFIDController::class, 'storeAttendance']);
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -40,6 +42,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('staff.membershipRegistration');        
 
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
+        Route::post('/attendance/record', [AttendanceController::class, 'recordAttendance'])->name('staff.attendance.record'); // 🔹 New route for RFID tap
+
+
+
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
         Route::get('/connectHardware', [ConnectHardwareController::class, 'index'])->name('staff.connectHardware');

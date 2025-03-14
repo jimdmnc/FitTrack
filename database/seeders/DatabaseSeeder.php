@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
             'membership_type' => '', // Add this field
             'start_date' => now()->toDateString(), // Add this field
             'rfid_uid' => '', // Add this field
-
-            'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
