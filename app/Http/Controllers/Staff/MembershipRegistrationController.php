@@ -47,7 +47,7 @@ class MembershipRegistrationController extends Controller
         User::create($validatedData);
 
         // Delete the UID from the rfid_tags table
-        RfidTag::where('uid', $request->input('uid'))->delete();
+        RfidTag::where('uid', $request->input('uid'))->update(['registered' => true]);
 
         // Redirect with a success message
         return redirect()->route('staff.membershipRegistration')->with('success', 'Member registered successfully!');

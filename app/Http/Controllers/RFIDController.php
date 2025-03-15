@@ -12,7 +12,8 @@ class RFIDController extends Controller
     // Fetch the latest RFID UID from the rfid_tags table
     public function getLatestRfidUid()
     {
-        $rfidTag = RfidTag::latest()->first();
+        $rfidTag = RfidTag::where('registered', false)->latest()->first();
+        
         if ($rfidTag) {
             return response()->json(['uid' => $rfidTag->uid]);
         } else {

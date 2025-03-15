@@ -218,24 +218,45 @@
    
 </script>
 <script>
-    // Fetch the latest RFID UID from the server
+    // Function to fetch the latest RFID UID
+    function fetchLatestUid() {
     fetch('/rfid/latest')
         .then(response => response.json())
         .then(data => {
             console.log('Data received:', data); // Debugging
             if (data.uid) {
                 document.getElementById('uid').value = data.uid;
+                document.getElementById('rfid_status').textContent = 'RFID card detected. Tap to register.';
+                document.getElementById('rfid_status').style.color = 'green';
             } else {
                 console.log('No UID found'); // Debugging
+                document.getElementById('rfid_status').textContent = 'No unregistered RFID card detected.';
+                document.getElementById('rfid_status').style.color = 'red';
             }
         })
         .catch(error => {
             console.error('Error fetching UID:', error); // Debugging
+            document.getElementById('rfid_status').textContent = 'Error fetching UID.';
+            document.getElementById('rfid_status').style.color = 'red';
         });
+}
+
+    // Fetch the latest UID every 2 seconds (adjust interval as needed)
+    setInterval(fetchLatestUid, 2000);
+
+    // Fetch the latest UID immediately when the page loads
+    fetchLatestUid();
 
     // Clear the UID input field after successful form submission
     @if (session('success'))
         document.getElementById('uid').value = ''; // Clear the UID input field
+        document.getElementById('rfid_status').textContent = 'UID submitted successfully!';
+        document.getElementById('rfid_status').style.color = 'green';
+    @endif
+
+    @if (session('error'))
+        document.getElementById('rfid_status').textContent = 'Error submitting UID.';
+        document.getElementById('rfid_status').style.color = 'red';
     @endif
 </script>
 @endsection
