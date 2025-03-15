@@ -57,5 +57,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');
     }
+        // Define relationship with RfidTag
+        public function rfidTag()
+        {
+            return $this->belongsTo(RfidTag::class, 'rfid_uid', 'uid');
+        }
 
 }

@@ -36,48 +36,54 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
+        <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
-                <tr>
+                    <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Member</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in Time</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-out Time</th>
-                        <!-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th> -->
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Left</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
-                </tr>
+                    </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @foreach($attendances as $attendance)
-                    <tr>
-                    <td>{{ $attendance->user ? $attendance->user->first_name . ' ' . $attendance->user->last_name : 'Unknown' }}</td>
+                        <tr>
+                            <!-- Member Name -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {{ $attendance->user ? $attendance->user->first_name . ' ' . $attendance->user->last_name : 'Unknown' }}
+                            </td>
 
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                {{ $attendance->member->membership ?? 'N/A' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $attendance->time_in->format('M d, Y h:i A') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $attendance->time_out ? $attendance->time_out->format('M d, Y h:i A') : 'Still in' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full {{ $attendance->status == 'Present' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
-                                {{ $attendance->status }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                {{ $attendance->member->days_left ?? 'N/A' }} days
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="#" class="text-indigo-600 hover:text-indigo-900">Details</a>
-                        </td>
-                    </tr>
+                            <!-- Membership Type -->
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    {{ $attendance->user->membership_type ?? 'N/A' }}
+                                </span>
+                            </td>
+
+                            <!-- Check-in Time -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $attendance->time_in->format('M d, Y h:i A') }}
+                            </td>
+
+                            <!-- Check-out Time -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ $attendance->time_out ? $attendance->time_out->format('M d, Y h:i A') : 'Still in' }}
+                            </td>
+
+                            <!-- Days Left -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    {{ $attendance->user->days_left ?? 'N/A' }} days
+                                </span>
+                            </td>
+
+                            <!-- Actions -->
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a href="#" class="text-indigo-600 hover:text-indigo-900">Details</a>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>

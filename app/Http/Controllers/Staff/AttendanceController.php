@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
@@ -13,44 +12,78 @@ class AttendanceController extends Controller
     // Show attendance records
     public function index()
     {
-        $attendances = Attendance::with('user')->latest()->paginate(10);
+        // Fetch attendance records with user details, ordered by latest time_in
+        $attendances = Attendance::with('user')
+            ->orderBy('time_in', 'desc')
+            ->paginate(10); // Paginate results (10 per page)
+
         return view('staff.attendance', compact('attendances'));
     }
 
     // Record attendance when RFID is tapped
     public function recordAttendance(Request $request)
     {
+        // Validate the request
+        $request->validate([
+            'rfid_uid' => 'required|string',
+        ]);
+
+        // Get the UID from the request
         $rfid_uid = $request->input('rfid_uid');
+
+        // Get the current date and time
         $currentDate = Carbon::now()->toDateString();
         $currentTime = Carbon::now();
 
-        // Check if RFID exists in users table
+        // Check if the user is registered
         $user = User::where('rfid_uid', $rfid_uid)->first();
+
         if (!$user) {
-            return response()->json(['message' => 'RFID not registered'], 404);
+            return response()->json([
+                'message' => 'RFID not registered.',
+            ], 404);
         }
 
-        // Check if user has already timed in today
+        // Check if there's an existing attendance record for today
         $attendance = Attendance::where('rfid_uid', $rfid_uid)
-                                ->where('date', $currentDate)
-                                ->first();
+            ->whereDate('time_in', $currentDate)
+            ->latest() // Get the latest record for the day
+            ->first();
 
         if ($attendance) {
-            // If already timed in, mark time_out
+            // If there's a time-in record but no time-out, update time-out
             if (!$attendance->time_out) {
                 $attendance->update(['time_out' => $currentTime]);
-                return response()->json(['message' => 'Time-out recorded'], 200);
+
+                return response()->json([
+                    'message' => 'Time-out recorded successfully.',
+                    'attendance' => $attendance,
+                ]);
             } else {
-                return response()->json(['message' => 'Already timed in and out today'], 400);
+                // If both time-in and time-out are recorded, create a new time-in record
+                $newAttendance = Attendance::create([
+                    'rfid_uid' => $rfid_uid,
+                    'time_in' => $currentTime,
+                    'time_out' => null,
+                ]);
+
+                return response()->json([
+                    'message' => 'Time-in recorded successfully.',
+                    'attendance' => $newAttendance,
+                ]);
             }
         } else {
-            // If first tap, mark time_in
-            Attendance::create([
+            // If no attendance record exists for today, create a new time-in record
+            $attendance = Attendance::create([
                 'rfid_uid' => $rfid_uid,
-                'date' => $currentDate,
                 'time_in' => $currentTime,
+                'time_out' => null,
             ]);
-            return response()->json(['message' => 'Time-in recorded'], 200);
+
+            return response()->json([
+                'message' => 'Time-in recorded successfully.',
+                'attendance' => $attendance,
+            ]);
         }
     }
 }

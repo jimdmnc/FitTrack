@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use App\Models\RfidTag;
 
 class MembershipRegistrationController extends Controller
 {
@@ -28,7 +29,7 @@ class MembershipRegistrationController extends Controller
             'phone_number' => 'required|string|max:15',
             'membership_type' => 'required|string',
             'start_date' => 'required|date',
-            'rfid_uid' => 'required|string|max:255|unique:users',
+            'uid' => 'required|string|max:255|unique:users,rfid_uid', // Validate 'uid' but map to 'rfid_uid'
             'password' => 'required|string|min:8|confirmed',
         ]);
 
@@ -38,12 +39,23 @@ class MembershipRegistrationController extends Controller
         // Set default role to 'user'
         $validatedData['role'] = 'user';
 
+        // Rename 'uid' to 'rfid_uid' before saving to the database
+        $validatedData['rfid_uid'] = $validatedData['uid'];
+        unset($validatedData['uid']); // Remove the 'uid' key from the array
+
         // Create the user
         User::create($validatedData);
+
+        // Delete the UID from the rfid_tags table
+        RfidTag::where('uid', $request->input('uid'))->delete();
 
         // Redirect with a success message
         return redirect()->route('staff.membershipRegistration')->with('success', 'Member registered successfully!');
     }
+
+
+
+    
 
     // 📌 NEW: Register User via RFID API
     public function registerFromRFID(Request $request)

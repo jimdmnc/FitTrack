@@ -48,7 +48,7 @@
         </span>
     </div>
 @endif
-    <form action="{{ route('staff.membershipRegistration') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg">
+    <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg">
         @csrf
         <!-- Left Column -->
         <div class="space-y-6">
@@ -99,11 +99,9 @@
 <div>
     <!-- <label for="rfid_uid" class="block text-gray-700 font-medium mb-2">RFID Card</label> -->
     <div class="flex flex-col">
-        <x-text-input id="rfid_uid" 
+        <input id="uid" name="uid"
             class="block w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" 
-            type="text" 
-            name="rfid_uid" 
-            :value="old('rfid_uid')" 
+          
             placeholder="Tap your RFID card on the reader"
             readonly />
         <div id="rfid_status" class="mt-2 text-sm text-gray-500"></div>
@@ -217,126 +215,27 @@
 
 
 
-    // <!-- Add this script section at the bottom of your form -->
-    document.addEventListener('DOMContentLoaded', function() {
-        let lastUid = '';
-        let isRegistrationMode = false;
-        const rfidInput = document.getElementById('rfid_uid');
-        const rfidStatus = document.getElementById('rfid_status');
-        const modeToggle = document.getElementById('rfidModeToggle');
-        const modeLabel = document.getElementById('modeLabel');
-        const rfidFieldLabel = document.getElementById('rfidFieldLabel');
-        const rfidModeMessage = document.getElementById('rfidModeMessage');
-        const modeUrl = '{{ route("latest.rfid") }}';
-        
-        // Function to update UI based on mode
-        function updateModeUI(isRegMode) {
-            if (isRegMode) {
-                modeLabel.textContent = 'Registration Mode';
-                rfidFieldLabel.textContent = 'RFID Card for Registration';
-                rfidModeMessage.textContent = 'Card will be assigned to this member';
-                document.querySelector('.dot').classList.add('translate-x-6');
-            } else {
-                modeLabel.textContent = 'Attendance Mode';
-                rfidFieldLabel.textContent = 'RFID Card';
-                rfidModeMessage.textContent = 'Card will be used for attendance tracking';
-                document.querySelector('.dot').classList.remove('translate-x-6');
-            }
-        }
-        
-        // Toggle mode when button is clicked
-        modeToggle.addEventListener('change', function() {
-            isRegistrationMode = this.checked;
-            updateModeUI(isRegistrationMode);
-            
-            // Clear the input field when switching modes
-            rfidInput.value = '';
-            lastUid = '';
-            rfidStatus.textContent = 'Waiting for card...';
-            rfidStatus.className = 'ml-3 text-sm text-gray-500';
-        });
-        
-        // Function to check for new RFID UID
-        function checkForNewRfid() {
-            console.log('Fetching latest RFID, mode:', isRegistrationMode ? 'Registration' : 'Attendance');
-            
-            fetch(modeUrl)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok: ' + response.status);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Received data:', data);
-                    
-                    if (data.uid && data.uid !== lastUid) {
-                        // Update the input field with the new UID
-                        rfidInput.value = data.uid;
-                        lastUid = data.uid;
-                        
-                        // Update status and show animation
-                        if (isRegistrationMode) {
-                            rfidStatus.textContent = 'Card registered!';
-                        } else {
-                            rfidStatus.textContent = 'Attendance recorded!';
-                            
-                            // For attendance mode, we could send an attendance record
-                            // This is just a placeholder - you'd need to implement the actual endpoint
-                            if (!isRegistrationMode) {
-                                try {
-                                    fetch('{{ route("rfid.store") }}', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json',
-                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                        },
-                                        body: JSON.stringify({
-                                            uid: data.uid,
-                                            mode: 'attendance'
-                                        })
-                                    }).then(response => response.json())
-                                      .then(result => console.log('Attendance result:', result));
-                                } catch (e) {
-                                    console.error('Error recording attendance:', e);
-                                }
-                            }
-                        }
-                        
-                        rfidStatus.classList.remove('text-gray-500');
-                        rfidStatus.classList.add('text-green-500', 'font-bold');
-                        
-                        // Reset status after 3 seconds
-                        setTimeout(() => {
-                            rfidStatus.textContent = 'Waiting for card...';
-                            rfidStatus.classList.remove('text-green-500', 'font-bold');
-                            rfidStatus.classList.add('text-gray-500');
-                        }, 3000);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching RFID data:', error);
-                    rfidStatus.textContent = 'Connection error: ' + error.message;
-                    rfidStatus.classList.remove('text-gray-500', 'text-green-500');
-                    rfidStatus.classList.add('text-red-500');
-                });
-        }
-        
-        // Check for new RFID every 2 seconds
-        const intervalId = setInterval(checkForNewRfid, 2000);
-        
-        // Check once on page load
-        checkForNewRfid();
-        
-        // Initialize UI based on default mode
-        updateModeUI(isRegistrationMode);
-        
-        // Clean up interval when page is unloaded
-        window.addEventListener('beforeunload', function() {
-            clearInterval(intervalId);
-        });
-    });
+   
 </script>
+<script>
+    // Fetch the latest RFID UID from the server
+    fetch('/rfid/latest')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Data received:', data); // Debugging
+            if (data.uid) {
+                document.getElementById('uid').value = data.uid;
+            } else {
+                console.log('No UID found'); // Debugging
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching UID:', error); // Debugging
+        });
 
-
+    // Clear the UID input field after successful form submission
+    @if (session('success'))
+        document.getElementById('uid').value = ''; // Clear the UID input field
+    @endif
+</script>
 @endsection
