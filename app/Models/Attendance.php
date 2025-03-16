@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
+
 
 class Attendance extends Model
 {
@@ -30,4 +32,21 @@ class Attendance extends Model
     {
         return $this->belongsTo(User::class, 'rfid_uid', 'rfid_uid');
     }
+
+  
+      // Optional: Accessor to format duration as "X hours Y minutes"
+      public function getFormattedDurationAttribute()
+      {
+          // Ensure both time_in and time_out are not null
+          if ($this->time_in && $this->time_out) {
+              $timeIn = Carbon::parse($this->time_in);
+              $timeOut = Carbon::parse($this->time_out);
+              $diff = $timeOut->diff($timeIn);
+  
+              // Format duration as "X hours Y minutes"
+              return sprintf('%d hrs %d min', $diff->h, $diff->i);
+          }
+  
+          return 'N/A'; // Return 'N/A' if either time_in or time_out is missing
+      }
 }

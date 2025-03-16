@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log; // For logging
 
 class AttendanceController extends Controller
 {
@@ -44,15 +45,21 @@ class AttendanceController extends Controller
             ], 404);
         }
 
-        // Check if there's an existing attendance record for today
+        // Fetch the latest attendance record for today
         $attendance = Attendance::where('rfid_uid', $rfid_uid)
             ->whereDate('time_in', $currentDate)
-            ->latest() // Get the latest record for the day
+            ->latest('time_in') // Get the latest record for the day
             ->first();
+
+        // Debugging: Log the fetched record
+        Log::info('Fetched Attendance Record:', ['attendance' => $attendance]);
 
         if ($attendance) {
             // If there's a time-in record but no time-out, update time-out
-            if (!$attendance->time_out) {
+            if ($attendance->time_out === null) {
+                // Debugging: Log that time-out is being updated
+                Log::info('Updating time-out for record ID: ' . $attendance->id);
+
                 $attendance->update(['time_out' => $currentTime]);
 
                 return response()->json([
@@ -60,6 +67,9 @@ class AttendanceController extends Controller
                     'attendance' => $attendance,
                 ]);
             } else {
+                // Debugging: Log that a new time-in is being created
+                Log::info('Creating new time-in record.');
+
                 // If both time-in and time-out are recorded, create a new time-in record
                 $newAttendance = Attendance::create([
                     'rfid_uid' => $rfid_uid,
@@ -73,6 +83,9 @@ class AttendanceController extends Controller
                 ]);
             }
         } else {
+            // Debugging: Log that no record exists for today
+            Log::info('No attendance record found for today. Creating new time-in record.');
+
             // If no attendance record exists for today, create a new time-in record
             $attendance = Attendance::create([
                 'rfid_uid' => $rfid_uid,

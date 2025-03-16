@@ -1,41 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- Main Content Area -->
-<style>
-    /* Toggle button styles */
-    input:checked ~ .dot {
-        transform: translateX(100%);
-        background-color: #4F46E5;
-    }
-    
-    input:checked ~ div {
-        background-color: #C7D2FE;
-    }
-</style>
-<section class=" grid grid-cols-1 gap-4 pt-10">
+
+<!-- <section class=" grid grid-cols-1 gap-4 pt-10">
     <div class="flex justify-between md:col-span-2 bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200 transform hover:scale-105 transition duration-300">
         <h2 class="font-bold text-lg sm:text-3xl text-gray-800">
             <span class="text-indigo-700 drop-shadow-lg">Add New Member</span>
         </h2>
-        <!-- RFID Mode Toggle Button -->
-    <label class="flex items-center cursor-pointer">
-        <div class="relative">
-            <input type="checkbox" id="rfidModeToggle" class="sr-only">
-            <div class="w-12 h-6 bg-gray-300 rounded-full shadow-inner"></div>
-            <div class="dot absolute w-6 h-6 bg-white rounded-full shadow -left-1 -top-1 transition"></div>
-        </div>
-        <div class="ml-3 text-gray-700 font-medium">
-            <span id="modeLabel">Attendance Mode<br></span>
-            <span class="ml-1 text-sm text-gray-500">(Toggle for Registration Mode)</span>
-        </div>
-    </label>
+
     </div>
     
-</section>
+</section> -->
 
 <!-- Form Container -->
-<div class="relative z-10 px-12 pb-8 mt-10">
+<div class="relative z-10 px-12 pb-8 align-center flex justify-center ">
     <!-- Success Message -->
 @if(session('success'))
     <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
@@ -48,10 +26,12 @@
         </span>
     </div>
 @endif
-    <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg">
+    <div class="">     </div>
+    <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg w-full">
         @csrf
+        
         <!-- Left Column -->
-        <div class="space-y-6">
+        <div class="space-y-4">
             <!-- First Name -->
             <div>
                 <input type="text" id="first_name" placeholder="First Name" name="first_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('first_name') }}" required>
@@ -104,7 +84,7 @@
           
             placeholder="Tap your RFID card on the reader"
             readonly />
-        <div id="rfid_status" class="mt-2 text-sm text-gray-500"></div>
+        <div id="rfid_status" class="mt-2 text-sm text-blue-400"></div>
     </div>
     @error('rfid_uid')
         <span class="text-red-500 text-sm">{{ $message }}</span>
@@ -115,7 +95,7 @@
         </div>
 
         <!-- Right Column -->
-        <div class="space-y-6">
+        <div class="space-y-4">
             <!-- Last Name -->
             <div>
                 <input type="text" id="last_name" placeholder="Last Name" name="last_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('last_name') }}" required>
@@ -219,19 +199,19 @@
 </script>
 <script>
     // Function to fetch the latest RFID UID
-    function fetchLatestUid() {
+function fetchLatestUid() {
     fetch('/rfid/latest')
         .then(response => response.json())
         .then(data => {
             console.log('Data received:', data); // Debugging
             if (data.uid) {
                 document.getElementById('uid').value = data.uid;
-                document.getElementById('rfid_status').textContent = 'RFID card detected. Tap to register.';
+                document.getElementById('rfid_status').textContent = 'Card detected.';
                 document.getElementById('rfid_status').style.color = 'green';
             } else {
                 console.log('No UID found'); // Debugging
-                document.getElementById('rfid_status').textContent = 'No unregistered RFID card detected.';
-                document.getElementById('rfid_status').style.color = 'red';
+                document.getElementById('rfid_status').textContent = 'Please Tap Your Card...';
+                // document.getElementById('rfid_status').style.color = 'blue';
             }
         })
         .catch(error => {

@@ -1,4 +1,7 @@
 <?php
+// Set the default timezone
+date_default_timezone_set('Asia/Manila'); // Replace with your timezone
+
 // Database connection
 $host = 'localhost';
 $dbname = 'fittrack_db';
@@ -16,50 +19,96 @@ if ($conn->connect_error) {
 // Get the UID from the request
 $uid = $_POST['uid'];
 
-// Check if the user is registered
-$user_sql = "SELECT * FROM users WHERE rfid_uid = '$uid'";
-$user_result = $conn->query($user_sql);
+// Start a transaction
+$conn->begin_transaction();
 
-if ($user_result->num_rows == 0) {
-    echo json_encode(['message' => 'User not registered.']);
-    exit;
-}
+try {
+    // Check if the user is registered
+    $stmt = $conn->prepare("SELECT * FROM users WHERE rfid_uid = ?");
+    $stmt->bind_param("s", $uid);
+    $stmt->execute();
+    $user_result = $stmt->get_result();
 
-// Get the current time
-$current_time = date('Y-m-d H:i:s');
+    if ($user_result->num_rows == 0) {
+        echo json_encode(['message' => 'User not registered.']);
+        exit;
+    }
 
-// Check if there's an existing attendance record for today
-$attendance_sql = "SELECT * FROM attendances WHERE rfid_uid = '$uid' AND DATE(time_in) = CURDATE() ORDER BY time_in DESC LIMIT 1";
-$attendance_result = $conn->query($attendance_sql);
+    // Get the current time
+    $current_time = date('Y-m-d H:i:s');
 
-if ($attendance_result->num_rows > 0) {
-    $attendance = $attendance_result->fetch_assoc();
-    // If there's a time-in record but no time-out, update time-out
-    if (!$attendance['time_out']) {
-        $update_sql = "UPDATE attendances SET time_out = '$current_time' WHERE id = " . $attendance['id'];
-        if ($conn->query($update_sql)) {
-            echo json_encode(['message' => 'Time-out recorded successfully.']);
+    // Fetch the latest attendance record for today
+    $stmt = $conn->prepare("SELECT * FROM attendances WHERE rfid_uid = ? AND DATE(time_in) = CURDATE() ORDER BY time_in DESC LIMIT 1");
+    $stmt->bind_param("s", $uid);
+    $stmt->execute();
+    $attendance_result = $stmt->get_result();
+
+    if ($attendance_result->num_rows > 0) {
+        $attendance = $attendance_result->fetch_assoc();
+
+        // Debugging: Log the fetched record
+        error_log("Fetched Record: " . print_r($attendance, true));
+
+        // Check if time_out is NULL or empty
+        if ($attendance['time_out'] === null || $attendance['time_out'] === '') {
+            // Debugging: Log that time-out is being updated
+            error_log("Updating time-out for record ID: " . $attendance['id']);
+
+            // Make sure we're not recording time_out too soon after time_in (preventing accidental double-taps)
+            $time_in = strtotime($attendance['time_in']);
+            $now = strtotime($current_time);
+            $diff_seconds = $now - $time_in;
+
+            // Minimum time between check-in and check-out (in seconds), adjust as needed
+            $min_time_difference = 30; // 30 seconds
+
+            if ($diff_seconds < $min_time_difference) {
+                echo json_encode(['message' => 'Please wait at least ' . $min_time_difference . ' seconds before checking out.']);
+            } else {
+                // Update time-out
+                $stmt = $conn->prepare("UPDATE attendances SET time_out = ? WHERE id = ?");
+                $stmt->bind_param("si", $current_time, $attendance['id']);
+                if ($stmt->execute()) {
+                    echo json_encode(['message' => 'Time-out recorded successfully.']);
+                } else {
+                    throw new Exception('Error updating time-out: ' . $stmt->error);
+                }
+            }
         } else {
-            echo json_encode(['error' => 'Error updating time-out: ' . $conn->error]);
+            // Debugging: Log that a new time-in is being created
+            error_log("Creating new time-in record.");
+
+            // If both time-in and time-out are recorded, create a new time-in record
+            $stmt = $conn->prepare("INSERT INTO attendances (rfid_uid, time_in) VALUES (?, ?)");
+            $stmt->bind_param("ss", $uid, $current_time);
+            if ($stmt->execute()) {
+                echo json_encode(['message' => 'Time-in recorded successfully.']);
+            } else {
+                throw new Exception('Error recording time-in: ' . $stmt->error);
+            }
         }
     } else {
-        // If both time-in and time-out are recorded, create a new time-in record
-        $insert_sql = "INSERT INTO attendances (rfid_uid, time_in) VALUES ('$uid', '$current_time')";
-        if ($conn->query($insert_sql)) {
+        // Debugging: Log that no record exists for today
+        error_log("No attendance record found for today. Creating new time-in record.");
+
+        // If no attendance record exists for today, create a new time-in record
+        $stmt = $conn->prepare("INSERT INTO attendances (rfid_uid, time_in) VALUES (?, ?)");
+        $stmt->bind_param("ss", $uid, $current_time);
+        if ($stmt->execute()) {
             echo json_encode(['message' => 'Time-in recorded successfully.']);
         } else {
-            echo json_encode(['error' => 'Error recording time-in: ' . $conn->error]);
+            throw new Exception('Error recording time-in: ' . $stmt->error);
         }
     }
-} else {
-    // If no attendance record exists for today, create a new time-in record
-    $insert_sql = "INSERT INTO attendances (rfid_uid, time_in) VALUES ('$uid', '$current_time')";
-    if ($conn->query($insert_sql)) {
-        echo json_encode(['message' => 'Time-in recorded successfully.']);
-    } else {
-        echo json_encode(['error' => 'Error recording time-in: ' . $conn->error]);
-    }
+
+    // Commit the transaction
+    $conn->commit();
+} catch (Exception $e) {
+    // Rollback the transaction on error
+    $conn->rollback();
+    echo json_encode(['error' => $e->getMessage()]);
 }
 
+// Close the connection
 $conn->close();
 ?>

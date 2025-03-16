@@ -12,11 +12,13 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    // Define the membership types
+    const MEMBERSHIP_TYPES = [
+        7 => 'Week',
+        30 => 'Monthly',
+        375 => 'Annual',
+    ];
+
     protected $fillable = [
         'first_name', // Add this
         'last_name',  // Add this
@@ -62,5 +64,10 @@ class User extends Authenticatable
         {
             return $this->belongsTo(RfidTag::class, 'rfid_uid', 'uid');
         }
-
+        
+    // Method to get the membership type as a word
+    public function getMembershipType()
+    {
+        return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'N/A';
+    }
 }

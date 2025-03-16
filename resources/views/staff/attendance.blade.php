@@ -43,7 +43,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-in Time</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Check-out Time</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Days Left</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Duration</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -58,24 +58,24 @@
                             <!-- Membership Type -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
-                                    {{ $attendance->user->membership_type ?? 'N/A' }}
+                                    {{ $attendance->user->getMembershipType() }}
                                 </span>
                             </td>
 
                             <!-- Check-in Time -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $attendance->time_in->format('M d, Y h:i A') }}
+                                {{ $attendance->time_in->format('h:i A') }}
                             </td>
 
                             <!-- Check-out Time -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $attendance->time_out ? $attendance->time_out->format('M d, Y h:i A') : 'Still in' }}
+                                {{ $attendance->time_out ? $attendance->time_out->format('h:i A') : 'Still in' }}
                             </td>
 
-                            <!-- Days Left -->
+                            <!-- Formatted Duration (Optional) -->
                             <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    {{ $attendance->user->days_left ?? 'N/A' }} days
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    {{ $attendance->formatted_duration }} <!-- Display formatted duration -->
                                 </span>
                             </td>
 

@@ -6,7 +6,7 @@
     <title>FitTrack - Gym Dashboard</title>
     <meta name="description" content="Gym management dashboard for tracking analytics and attendance">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Tailwind CSS -->
