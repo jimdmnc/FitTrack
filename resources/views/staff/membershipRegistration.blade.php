@@ -1,156 +1,184 @@
 @extends('layouts.app')
 
 @section('content')
-
-<!-- <section class=" grid grid-cols-1 gap-4 pt-10">
-    <div class="flex justify-between md:col-span-2 bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200 transform hover:scale-105 transition duration-300">
-        <h2 class="font-bold text-lg sm:text-3xl text-gray-800">
-            <span class="text-indigo-700 drop-shadow-lg">Add New Member</span>
-        </h2>
-
+<div class="py-10 px-4 md:px-12">
+    <!-- Page Title -->
+    <div class="mb-8 text-center">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <span class="text-indigo-700">Membership Registration</span>
+        </h1>
+        <p class="text-gray-600 mt-2">Fill out the form below to register a new member</p>
     </div>
-    
-</section> -->
 
-<!-- Form Container -->
-<div class="relative z-10 px-12 pb-8 align-center flex justify-center ">
     <!-- Success Message -->
-@if(session('success'))
-    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
+    @if(session('success'))
+    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-6" role="alert">
         <span class="block sm:inline">{{ session('success') }}</span>
-        <span class="absolute top-0 bottom-0 right-0 px-4 py-3">
+        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.style.display='none';">
             <svg class="fill-current h-6 w-6 text-green-500" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                 <title>Close</title>
                 <path d="M14.348 14.849a1 1 0 0 1-1.414 0L10 11.414l-2.93 2.93a1 1 0 1 1-1.414-1.414l2.93-2.93-2.93-2.93a1 1 0 1 1 1.414-1.414l2.93 2.93 2.93-2.93a1 1 0 1 1 1.414 1.414l-2.93 2.93 2.93 2.93a1 1 0 0 1 0 1.414z"/>
             </svg>
-        </span>
+        </button>
     </div>
-@endif
-    <div class="">     </div>
-    <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-6 bg-white p-8 rounded-xl shadow-lg w-full">
-        @csrf
-        
-        <!-- Left Column -->
-        <div class="space-y-4">
-            <!-- First Name -->
-            <div>
-                <input type="text" id="first_name" placeholder="First Name" name="first_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('first_name') }}" required>
-                @error('first_name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+    @endif
+
+    <!-- Form Container -->
+    <div class="max-w-4xl mx-auto">
+        <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-white rounded-xl shadow-lg overflow-hidden">
+            @csrf
+            
+            <!-- Form Sections -->
+            <div class="p-6 border-b border-gray-200 bg-gray-50">
+                <h2 class="text-xl font-semibold text-gray-800">Personal Information</h2>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Personal Info Section -->
+                <div>
+                    <label for="first_name" class="block text-gray-700 font-medium mb-2">First Name *</label>
+                    <input type="text" id="first_name" name="first_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('first_name') }}" required>
+                    @error('first_name')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="last_name" class="block text-gray-700 font-medium mb-2">Last Name *</label>
+                    <input type="text" id="last_name" name="last_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('last_name') }}" required>
+                    @error('last_name')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+
+
+                <div>
+                    <label for="phoneNumber" class="block text-gray-700 font-medium mb-2">Phone Number *</label>
+                    <input type="tel" id="phoneNumber" name="phone_number" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" pattern="\d{11}" maxlength="11" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '')">
+                    @error('phone_number')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="gender" class="block text-gray-700 font-medium mb-2">Gender *</label>
+                    <select id="gender" name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
+                        <option value="" selected disabled>Select Gender</option>
+                        <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                        <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                    </select>
+                    @error('gender')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
 
-            <!-- Email -->
-            <div>
-                <input type="email" id="email" placeholder="Email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('email') }}" required>
-                @error('email')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+            <!-- Membership Section -->
+            <div class="p-6 border-t border-b border-gray-200 bg-gray-50">
+                <h2 class="text-xl font-semibold text-gray-800">Membership Details</h2>
+            </div>
+            
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="membershipType" class="block text-gray-700 font-medium mb-2">Membership Type *</label>
+                    <select id="membershipType" name="membership_type" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
+                        <option value="" selected disabled>Select Membership Type</option>
+                        <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
+                        <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
+                        <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
+                        <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
+                    </select>
+                    @error('membership_type')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date *</label>
+                    <input type="date" id="startDate" name="start_date" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('start_date') }}" required>
+                    @error('start_date')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div>
+                    <label for="expiryDate" class="block text-gray-700 font-medium mb-2">Expiration Date</label>
+                    <div class="relative">
+                        <input type="text" id="expiryDate" name="expiry_date" placeholder="dd/mm/yyyy" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100" readonly>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="uid" class="block text-gray-700 font-medium mb-2">RFID Card *</label>
+                    <div class="relative">
+                        <input id="uid" name="uid" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100" placeholder="Tap your RFID card on the reader" readonly />
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div id="rfid_status" class="mt-2 text-sm text-blue-500 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Please Tap Your Card...
+                    </div>
+                    @error('rfid_uid')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
             </div>
 
-            <!-- Phone Number -->
-            <div>
-                <input type="tel" id="phoneNumber" placeholder="Phone Number" name="phone_number" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" pattern="\d{11}" maxlength="11" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '')">
-                @error('phone_number')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+            <!-- Account Section -->
+            <div class="p-6 border-t border-gray-200 bg-gray-50">
+                <h2 class="text-xl font-semibold text-gray-800">Account Setup</h2>
             </div>
+                <div class="p-6">
+                    <label for="email" class="block text-gray-700 font-medium mb-2">Email Address *</label>
+                    <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('email') }}" required>
+                    @error('email')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="password" class="block text-gray-700 font-medium mb-2">Password *</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
+                    </div>
+                    @error('password')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
 
-            <!-- Start Date -->
-            <div>
-                <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date *</label>
-                <input type="date" id="startDate" name="start_date" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('start_date') }}" required>
-                @error('start_date')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
+                <div>
+                    <label for="password_confirmation" class="block text-gray-700 font-medium mb-2">Confirm Password *</label>
+                    <div class="relative">
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
+                      
+                    </div>
+                </div>
             </div>
-
-
-
-                        <!-- Password -->
-            <div>
-                <input type="password" id="password" placeholder="Password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" required>
-                @error('password')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-<!-- RFID UID -->
-<div>
-    <!-- <label for="rfid_uid" class="block text-gray-700 font-medium mb-2">RFID Card</label> -->
-    <div class="flex flex-col">
-        <input id="uid" name="uid"
-            class="block w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" 
-          
-            placeholder="Tap your RFID card on the reader"
-            readonly />
-        <div id="rfid_status" class="mt-2 text-sm text-blue-400"></div>
-    </div>
-    @error('rfid_uid')
-        <span class="text-red-500 text-sm">{{ $message }}</span>
-    @enderror
-</div>
-
-
-        </div>
-
-        <!-- Right Column -->
-        <div class="space-y-4">
-            <!-- Last Name -->
-            <div>
-                <input type="text" id="last_name" placeholder="Last Name" name="last_name" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" value="{{ old('last_name') }}" required>
-                @error('last_name')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Gender Dropdown -->
-            <div>
-                <select id="gender" name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-700" required>
-                    <option selected disabled>Select Gender</option>
-                    <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
-                    <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
-                </select>
-                @error('gender')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Membership Type -->
-            <div>
-                <select id="membershipType" name="membership_type" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-700" required>
-                    <option selected disabled>Select Membership Type</option>
-                    <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session</option>
-                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly</option>
-                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly</option>
-                    <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual</option>
-                </select>
-                @error('membership_type')
-                    <span class="text-red-500 text-sm">{{ $message }}</span>
-                @enderror
-            </div>
-
-            <!-- Expiry Date -->
-            <div>
-                <label for="expiryDate" class="block text-gray-700 font-medium mb-2">Expiration Date</label>
-                <input type="text" id="expiryDate" name="expiry_date" placeholder="dd/mm/yyyy" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 cursor-not-allowed" readonly>
-            </div>
-
-
-
-            <!-- Confirm Password -->
-            <div>
-                <input type="password" id="password_confirmation" placeholder="Confirm Password" name="password_confirmation" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent" required>
-            </div>
-
 
             <!-- Submit Button -->
-            <div class="">
-                <button type="submit" class="w-full bg-gray-800 text-white py-3 rounded-md font-semibold hover:bg-gray-600 transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Register</button>
+            <div class="p-6 border-t border-gray-200">
+                <button type="submit" class="w-full bg-indigo-600 text-white py-3 px-6 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                    Register Member
+                </button>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
 </div>
+
+
 
 <!-- JavaScript for Expiry Date -->
 <script>

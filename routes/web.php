@@ -2,8 +2,6 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\RFIDController;
-
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\DashboardController;
 use App\Http\Controllers\Staff\MembershipRegistrationController;
@@ -47,7 +45,15 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
+        
+        
+        
+        
         Route::get('/connectHardware', [ConnectHardwareController::class, 'index'])->name('staff.connectHardware');
+        Route::post('/wifi-settings', [ConnectHardwareController::class, 'update'])->name('wifi.update');
+        
+        
+        
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
             // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
