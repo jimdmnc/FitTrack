@@ -15,8 +15,9 @@ class User extends Authenticatable
     // Define the membership types
     const MEMBERSHIP_TYPES = [
         7 => 'Week',
-        30 => 'Monthly',
-        375 => 'Annual',
+        30 => 'Month',
+        365 => 'Annual',
+        1 => 'Session',
     ];
 
     protected $fillable = [

@@ -57,31 +57,4 @@ class MembershipRegistrationController extends Controller
 
     
 
-    // 📌 NEW: Register User via RFID API
-    public function registerFromRFID(Request $request)
-    {
-        // Validate only RFID UID
-        $validatedData = $request->validate([
-            'rfid_uid' => 'required|string|max:255|unique:users',
-        ]);
-
-        // Generate default values (Modify if needed)
-        $user = User::create([
-            'first_name' => 'Auto',
-            'last_name' => 'User',
-            'email' => 'auto_user_' . time() . '@example.com',
-            'gender' => 'Unspecified',
-            'phone_number' => '0000000000',
-            'membership_type' => 'Basic',
-            'start_date' => now(),
-            'rfid_uid' => $validatedData['rfid_uid'],
-            'password' => Hash::make('defaultPassword123'),
-            'role' => 'user'
-        ]);
-
-        return response()->json([
-            'message' => 'Member registered via RFID!',
-            'user' => $user
-        ], 201);
-    }
 }

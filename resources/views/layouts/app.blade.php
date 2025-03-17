@@ -29,7 +29,7 @@
         <div class="">
             @include('layouts.navigation')
         </div>
-        <div class="px-4 md:px-20 bg-gray-100 h-full">
+        <div class="px-2 md:px-10 bg-gray-100 h-full">
             @yield('content')
         </div>
     </div>

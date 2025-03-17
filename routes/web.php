@@ -8,7 +8,6 @@ use App\Http\Controllers\Staff\MembershipRegistrationController;
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
-use App\Http\Controllers\Staff\ConnectHardwareController;
 use App\Http\Controllers\Staff\ReportController;
 
 use App\Http\Controllers\Member\MemberDashboardController;
@@ -47,12 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
         
         
-        
-        
-        Route::get('/connectHardware', [ConnectHardwareController::class, 'index'])->name('staff.connectHardware');
-        Route::post('/wifi-settings', [ConnectHardwareController::class, 'update'])->name('wifi.update');
-        
-        
+
         
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
             // Profile routes
