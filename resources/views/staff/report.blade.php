@@ -29,25 +29,23 @@
         }
     </style>
 
-    <div class="container mx-auto py-8 px-4">
-        <!-- Header Section with Modern Design -->
-        <div class="mb-8">
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-                            Gym Activity Dashboard
-                        </h1>
-                    </div>
-                    <div class="mt-4 md:mt-0">
-                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
-                            <i class="fas fa-circle text-green-500 text-xs mr-1"></i> LIVE
-                        </span>
-                        <span class="ml-2 text-sm text-gray-500">Last updated: March 11, 2025 11:32 AM</span>
-                    </div>
+    <section class="pt-10 mb-8">
+        <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
+                <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Gym Activity Dashboard</span>
+                </h2>
+            <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4"> 
+                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap"> 
+                        <i class="fas fa-circle text-green-500 text-xs mr-1"></i> LIVE
+                    </span>
+                    <span class="text-xs md:text-sm text-gray-500 whitespace-nowrap"> 
+                        Last updated: March 11, 2025 11:32 AM
+                    </span>
                 </div>
             </div>
         </div>
+    </section>
 
         <!-- Search & Filter Section with Modern UI -->
         <div class="glass-card mb-8 p-4">

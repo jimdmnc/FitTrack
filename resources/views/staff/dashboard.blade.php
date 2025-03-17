@@ -8,14 +8,16 @@
         .glass-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            border-radius: 10px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
+            transform: translateY(-5px);
         }
         .gradient-bg {
             background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
-        }
-        .transition-all {
-            transition: all 0.3s ease;
         }
         body {
             background-color: #f9fafb;
@@ -24,61 +26,207 @@
         }
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 320px;
             width: 100%;
+        }
+        /* Modern dashboard grid layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        .grid-col-span-8 {
+            grid-column: span 8;
+        }
+        .grid-col-span-4 {
+            grid-column: span 4;
+        }
+        .grid-col-span-12 {
+            grid-column: span 12;
+        }
+        .grid-col-span-6 {
+            grid-column: span 6;
+        }
+        
+        /* Chart interaction styles */
+        .chart-action-buttons {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .chart-card:hover .chart-action-buttons {
+            opacity: 1;
+        }
+        .chart-action-button {
+            padding: 6px;
+            border-radius: 8px;
+            background: rgba(240, 240, 250, 0.9);
+            color: #4f46e5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .chart-action-button:hover {
+            background: rgba(228, 228, 250, 1);
+            transform: scale(1.05);
+        }
+        
+        /* Chart tooltip customization */
+        .period-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .period-button {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: rgba(240, 240, 250, 0.9);
+            color: #6b7280;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .period-button.active {
+            background: #4f46e5;
+            color: white;
+        }
+        .period-button:hover:not(.active) {
+            background: rgba(228, 228, 250, 1);
+        }
+        
+        /* Chart legend customization */
+        .custom-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        .legend-item:hover {
+            background: rgba(240, 240, 250, 0.9);
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .legend-text {
+            font-size: 12px;
+            color: #4b5563;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .grid-col-span-8, .grid-col-span-4, .grid-col-span-6 {
+                grid-column: span 1;
+            }
+        }
+        
+        /* Additional visual enhancements */
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        /* Enhanced stats card */
+        .stat-card-icon {
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover .stat-card-icon {
+            transform: scale(1.15);
+        }
+        
+        /* Enhanced table */
+        .member-table-row {
+            transition: all 0.2s ease;
+        }
+        .member-table-row:hover {
+            background-color: rgba(248, 250, 252, 0.9);
+            transform: translateX(4px);
+        }
+        
+        /* Enhanced button effects */
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+            border: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+        }
+        
+        /* Scrollbar styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.8);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.5);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(148, 163, 184, 0.8);
         }
     </style>
 
     <div class="container mx-auto py-8 px-4">
         <!-- Header Section with Modern Design -->
         <div class="mb-8">
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
+            <div class="glass-card p-6">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div>
                         <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-                            Dashboard
+                            Fitness Center Dashboard
                         </h1>
+                        <p class="text-gray-500 mt-2">Track and analyze your gym's performance</p>
                     </div>
-                    <!-- <div class="mt-4 md:mt-0">
-                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-3 py-1 rounded-full">
-                            <i class="fas fa-circle text-green-500 text-xs mr-1"></i> LIVE
-                        </span>
-                        <span class="ml-2 text-sm text-gray-500">Last updated: March 11, 2025 11:32 AM</span>
-                    </div> -->
+                    <div class="mt-4 md:mt-0 flex items-center gap-3">
+                        <button class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow-md flex items-center gap-2 text-sm font-medium transition-all btn-primary">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <div class="relative">
+                            <button class="p-2 bg-white border border-gray-200 hover:border-gray-300 rounded-full shadow-sm text-gray-500 hover:text-indigo-600 transition-all">
+                                <i class="fas fa-bell"></i>
+                            </button>
+                            <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Stats Cards with Improved Design -->
-        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
-        <div style="background-image: url('{{ asset('images/wallpaperr.jpg') }}');" class=" md:col-span-2 p-10 rounded-lg shadow bg-cover bg-center bg-no-repeat relative">
         
-        <!-- Overlay for better text visibility -->
-        <div class="absolute inset-0 bg-black bg-opacity-70 rounded-lg"></div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 relative z-10">
-            <div class="flex text-center justify-center items-center">
-                <h2 class="font-bold text-white text-2xl">
-                    Welcome, <span class="text-yellow-400">Jim</span>  
-                    <span class="text-sm text-gray-300 font-normal block mt-2">
-                        Your dedication drives our success! Let's create an amazing fitness experience together.
-                    </span>
-                </h2>
-
-            </div>
-            <!-- <div class="text-3xl text-yellow-100">
-                <div class="flex text-center justify-center items-center">
-                    <i class="fas fa-dumbbell bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 rounded-full p-8"></i>
-                </div>
-            </div> -->
-        </div>
-        </div>
-        </section>
-
-
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
-        <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                    <div class="flex justify-between items-start">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card p-5">
+                <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-gray-500 text-sm font-medium mb-1">Current Members</h3>
                         <div class="text-3xl font-bold text-gray-900 inline-block mr-1">326 </div>
@@ -87,12 +235,13 @@
                             <i class="fas fa-arrow-up mr-1"></i> 12% vs last week
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
+                    <div class="p-3 rounded-lg bg-blue-100 text-blue-600 stat-card-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                  </div>
-              </div>
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+                </div>
+            </div>
+            
+            <div class="glass-card p-5">
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-gray-500 text-sm font-medium mb-1">New Members</h3>
@@ -102,13 +251,13 @@
                             <i class="fas fa-arrow-up mr-1"></i> 4% vs last week
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
+                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600 stat-card-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
                 </div>
             </div>
             
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+            <div class="glass-card p-5">
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Walk-ins</h3>
@@ -118,735 +267,763 @@
                             <i class="fas fa-arrow-down mr-1"></i> 2% vs yesterday
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600">
+                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600 stat-card-icon">
                         <i class="fas fa-walking"></i>
                     </div>
                 </div>
             </div>
             
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
+            <div class="glass-card p-5">
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Check-ins</h3>
                         <div class="text-3xl font-bold text-gray-900 inline-block mr-1">128</div>
                         <span class="text-lg font-semibold">people</span>
-
                         <div class="text-green-600 text-sm font-medium mt-1">
                             <i class="fas fa-arrow-up mr-1"></i> 3% vs yesterday
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-green-100 text-green-600">
+                    <div class="p-3 rounded-lg bg-green-100 text-green-600 stat-card-icon">
                         <i class="fas fa-check-circle"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Charts Section with Modern Cards -->
-        <!-- <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Daily Check-ins by Hour</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
+        <!-- Rearranged and Resized Dashboard Grid Charts Section -->
+<div class="dashboard-grid gap-4">
+    <!-- Large left panel - made narrower -->
+    <div class="glass-card p-3 grid-col-span-8 chart-card space-y-9">
+        <div class="flex justify-between items-center mb-4">
+            <div>
+                <h3 class="text-base font-semibold text-gray-800">Session Duration</h3>
+                <p class="text-xs text-gray-500">Avg time spent by members</p>
+                
+            </div>
+            <div class="chart-action-buttons space-x-1">
+                <div class="chart-action-button" title="Download CSV">
+                    <i class="fas fa-download text-sm"></i>
                 </div>
-                <div class="chart-container">
-                    <canvas id="hourly-checkins-chart"></canvas>
+                <div class="chart-action-button" title="Expand">
+                    <i class="fas fa-expand-alt text-sm"></i>
+                </div>
+                <div class="chart-action-button" title="Settings">
+                    <i class="fas fa-cog text-sm"></i>
                 </div>
             </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Avg Time by Day of Week</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="time-spent-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Session Duration Distribution</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="duration-distribution-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Membership Plan</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="membership-chart"></canvas>
-                </div>
-            </div>
-        </div> -->
+        </div>
+        
+        <div class="period-selector space-x-4 mb-3">
+            <div class="period-button active text-xs px-2 py-1">Week</div>
+            <div class="period-button text-xs px-2 py-1">Month</div>
+            <div class="period-button text-xs px-2 py-1">Quarter</div>
+            <div class="period-button text-xs px-2 py-1">Year</div>
+        </div>
+        
+        <div class="chart-container" style="height: 220px;">
+            <canvas id="duration-distribution-chart"></canvas>
+        </div>
+        
+        <div class="custom-legend mt-3 p-2 grid grid-cols-3 space-x-3 text-xs"> <!-- gap-x-4 for columns, gap-y-2 for rows -->
+    <div class="legend-item flex items-center space-x-2">
+        <div class="legend-color" style="background-color: rgba(191, 219, 254, 0.9);"></div><span>0-30 min</span>
+    </div>
+    <div class="legend-item flex items-center space-x-2">
+        <div class="legend-color" style="background-color: rgba(147, 197, 253, 0.9);"></div><span>31-60 min</span>
+    </div>
+    <div class="legend-item flex items-center space-x-2">
+        <div class="legend-color" style="background-color: rgba(96, 165, 250, 0.9);"></div><span>61-90 min</span>
+    </div>
+    <div class="legend-item flex items-center space-x-2">
+        <div class="legend-color" style="background-color: rgba(59, 130, 246, 0.9);"></div><span>91-120 min</span>
+    </div>
+    <div class="legend-item flex items-center space-x-2">
+        <div class="legend-color" style="background-color: rgba(37, 99, 235, 0.9);"></div><span>120+ min</span>
+    </div>
+</div>
 
-        <!-- Members Table with Modern Design -->
-        <div class="glass-card p-6 transition-all hover:shadow-lg">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-lg font-semibold text-gray-800">Gym Members</h3>
-                <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                    View All <i class="fas fa-arrow-right ml-1"></i>
-                </button>
+    </div>
+    
+    <!-- Right panels - resized and vertical -->
+    <div class="grid-col-span-4 flex flex-col gap-4">
+        <!-- Top right panel -->
+        <div class="glass-card p-2 chart-card">
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <h3 class="text-base font-semibold text-gray-800">Avg Time by Hour</h3>
+                    <p class="text-xs text-gray-500">Peak hours</p>
+                </div>
+                <div class="chart-action-buttons space-x-1">
+                    <div class="chart-action-button" title="Download CSV"><i class="fas fa-download text-sm"></i></div>
+                    <div class="chart-action-button" title="Expand"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div class="chart-action-button" title="Settings"><i class="fas fa-cog text-sm"></i></div>
+                </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead>
-                        <tr class="bg-gray-100">
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
-                                        <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span class="text-blue-600 font-semibold">JD</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">John Doe</div>
-                                        <div class="text-sm text-gray-500">john.doe@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Annual</span>
-                            </td>
-                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:00 AM</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 11:05 AM</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">2h 5m</td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Checked Out</span>
-                            </td>
-                            <td class="px-4 py-4 text-right text-sm">
-                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
-                                        <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                                            <span class="text-green-600 font-semibold">AS</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">Alice Smith</div>
-                                        <div class="text-sm text-gray-500">alice.smith@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Weekly</span>
-                            </td>
-                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 10:15 AM</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">-</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">1h 17m (ongoing)</td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                            </td>
-                            <td class="px-4 py-4 text-right text-sm">
-                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 mr-3">
-                                        <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                                            <span class="text-red-600 font-semibold">RJ</span>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
-                                        <div class="text-sm text-gray-500">robert.j@example.com</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Monthly</span>
-                            </td>
-                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 08:30 AM</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:45 AM</td>
-                            <td class="px-4 py-4 text-sm text-gray-500">1h 15m</td>
-                            <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Checked Out</span>
-                            </td>
-                            <td class="px-4 py-4 text-right text-sm">
-                                <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="period-selector space-x-1 mb-2">
+                <div class="period-button active text-xs px-2 py-1">Today</div>
+                <div class="period-button text-xs px-2 py-1">Week</div>
+                <div class="period-button text-xs px-2 py-1">Month</div>
+            </div>
+            
+            <div class="chart-container" style="height: 180px;">
+                <canvas id="time-of-day-chart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Bottom right panel -->
+        <div class="glass-card p-2 chart-card">
+            <div class="flex justify-between items-center mb-3">
+                <div>
+                    <h3 class="text-s font-semibold text-gray-800">Membership Distribution</h3>
+                    <p class="text-xs text-gray-500">Active types</p>
+                </div>
+                <div class="chart-action-buttons space-x-1">
+                    <div class="chart-action-button" title="Download CSV"><i class="fas fa-download text-sm"></i></div>
+                    <div class="chart-action-button" title="Expand"><i class="fas fa-expand-alt text-sm"></i></div>
+                    <div class="chart-action-button" title="Settings"><i class="fas fa-cog text-sm"></i></div>
+                </div>
+            </div>
+            
+            <div class="chart-container" style="height: 190px;">
+                <canvas id="membership-chart"></canvas>
             </div>
         </div>
     </div>
+</div>
 
+
+<!-- Members Table with Modern Design - now placed below session distribution and wider -->
+<div class="glass-card p-6 grid-col-span-8 mt-6">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h3 class="text-lg font-semibold text-gray-800">Gym Members</h3>
+            <p class="text-sm text-gray-500 mt-1">Recent activity and status</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="relative">
+                <input type="text" placeholder="Search members..." class="px-4 py-2 pl-10 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64">
+                <div class="absolute left-3 top-2.5 text-gray-400">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+            <button class="text-sm text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
+                View All <i class="fas fa-arrow-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+                <tr class="bg-gray-50 rounded-lg">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50 transition-colors member-table-row">
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <span class="text-blue-600 font-semibold">JD</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">John Doe</div>
+                                <div class="text-sm text-gray-500">john.doe@example.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Annual</span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:00 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 11:05 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">2h 5m</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Checked Out</span>
+                    </td>
+                    <td class="px-4 py-4 text-right text-sm">
+                        <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                    </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors member-table-row">
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <span class="text-green-600 font-semibold">AS</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Alice Smith</div>
+                                <div class="text-sm text-gray-500">alice.smith@example.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-amber-100 text-amber-800">Weekly</span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 10:15 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">-</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">1h 17m <span class="animate-pulse text-green-600">(ongoing)</span></td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    </td>
+                    <td class="px-4 py-4 text-right text-sm">
+                        <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                    </td>
+                </tr>
+                <tr class="hover:bg-gray-50 transition-colors member-table-row">
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
+                                    <span class="text-red-600 font-semibold">RJ</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Robert Johnson</div>
+                                <div class="text-sm text-gray-500">robert.j@example.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Monthly</span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 08:30 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:45 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">1h 15m</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Checked Out</span>
+                    </td>
+                    <td class="px-4 py-4 text-right text-sm">
+                        <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                    </td>
+                </tr>
+                <!-- Additional row -->
+                <tr class="hover:bg-gray-50 transition-colors member-table-row">
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 flex-shrink-0 mr-3">
+                                <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                    <span class="text-indigo-600 font-semibold">MP</span>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">Maria Parker</div>
+                                <div class="text-sm text-gray-500">m.parker@example.com</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Annual</span>
+                    </td>
+                    <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 07:45 AM</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">-</td>
+                    <td class="px-4 py-4 text-sm text-gray-500">3h 47m <span class="animate-pulse text-green-600">(ongoing)</span></td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                    </td>
+                    <td class="px-4 py-4 text-right text-sm">
+                        <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- Pagination -->
+    <div class="mt-6 flex items-center justify-between">
+        <div class="text-sm text-gray-500">
+            Showing <span class="font-medium">1</span> to <span class="font-medium">4</span> of <span class="font-medium">326</span> members
+        </div>
+        <div class="flex items-center space-x-2">
+            <button class="px-3 py-1 rounded border border-gray-200 text-gray-400">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="px-3 py-1 rounded bg-indigo-600 text-white">1</button>
+            <button class="px-3 py-1 rounded border border-gray-200 hover:bg-gray-50">2</button>
+            <button class="px-3 py-1 rounded border border-gray-200 hover:bg-gray-50">3</button>
+            <button class="px-3 py-1 rounded border border-gray-200 hover:bg-gray-50">...</button>
+            <button class="px-3 py-1 rounded border border-gray-200 hover:bg-gray-50">82</button>
+            <button class="px-3 py-1 rounded border border-gray-200 hover:bg-gray-50 text-gray-700">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Chart.js global settings
-    Chart.defaults.font.family = "'Inter', 'Helvetica', 'Arial', sans-serif";
-    Chart.defaults.font.size = 12;
-    Chart.defaults.color = '#64748b';
-    Chart.defaults.plugins.tooltip.padding = 10;
-    Chart.defaults.plugins.tooltip.cornerRadius = 6;
-    Chart.defaults.plugins.tooltip.titleFont.size = 13;
-    Chart.defaults.plugins.tooltip.titleColor = '#fff';
-    Chart.defaults.plugins.tooltip.bodyColor = '#fff';
-    Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 25, 40, 0.8)';
-    Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
-    Chart.defaults.plugins.tooltip.borderWidth = 1;
-    Chart.defaults.plugins.tooltip.displayColors = false;
-    Chart.defaults.plugins.legend.display = false;
+            // Chart.js global settings
+            Chart.defaults.font.family = "'Inter', 'Helvetica', 'Arial', sans-serif";
+            Chart.defaults.font.size = 12;
+            Chart.defaults.color = '#64748b';
+            Chart.defaults.plugins.tooltip.padding = 12;
+            Chart.defaults.plugins.tooltip.cornerRadius = 8;
+            Chart.defaults.plugins.tooltip.titleFont.size = 14;
+            Chart.defaults.plugins.tooltip.titleFont.weight = 'bold';
+            Chart.defaults.plugins.tooltip.titleColor = '#fff';
+            Chart.defaults.plugins.tooltip.bodyColor = '#fff';
+            Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(17, 25, 40, 0.85)';
+            Chart.defaults.plugins.tooltip.borderColor = 'rgba(255, 255, 255, 0.1)';
+            Chart.defaults.plugins.tooltip.borderWidth = 1;
+            Chart.defaults.plugins.tooltip.displayColors = false;
+            Chart.defaults.plugins.legend.display = false;
+            Chart.defaults.elements.line.tension = 0.4;
+            Chart.defaults.elements.point.radius = 4;
+            Chart.defaults.elements.point.hoverRadius = 6;
 
-    // Chart instances
-    let hourlyCheckinsChart;
-    let timeSpentChart;
-    let durationDistributionChart;
-    let membershipChart;
+            // Enhanced animation options
+            const animationOptions = {
+                duration: 1000,
+                easing: 'easeOutQuart',
+                delay: (context) => context.dataIndex * 50
+            };
 
-    // Data sets for different time periods
-    const chartData = {
-        today: {
-            hourlyCheckins: [5, 12, 19, 17, 14, 10, 16, 14, 11, 15, 24, 30, 38, 28, 17, 8],
-            timeSpent: [65, 70, 60, 75, 85, 105, 90],
-            durationDistribution: [28, 62, 85, 35, 15],
-            membership: [125, 78, 29, 50]
-        },
-        thisWeek: {
-            hourlyCheckins: [8, 17, 25, 22, 16, 14, 21, 18, 13, 19, 27, 38, 42, 31, 22, 10],
-            timeSpent: [72, 78, 68, 82, 94, 115, 102],
-            durationDistribution: [32, 78, 96, 42, 19],
-            membership: [145, 87, 35, 50]
-        },
-        thisMonth: {
-            hourlyCheckins: [10, 20, 29, 25, 19, 17, 24, 21, 16, 22, 31, 42, 47, 35, 25, 14],
-            timeSpent: [75, 82, 70, 85, 98, 120, 110],
-            durationDistribution: [40, 95, 120, 60, 25],
-            membership: [175, 105, 45, 50]
-        },
-        thisYear: {
-            hourlyCheckins: [12, 25, 35, 30, 22, 20, 28, 25, 20, 26, 37, 48, 55, 42, 30, 18],
-            timeSpent: [80, 87, 75, 90, 105, 130, 118],
-            durationDistribution: [52, 110, 145, 75, 38],
-            membership: [210, 130, 55, 50]
-        },
-        custom: {
-            hourlyCheckins: [7, 15, 23, 20, 15, 12, 18, 16, 12, 17, 25, 35, 40, 29, 20, 9],
-            timeSpent: [70, 76, 65, 80, 92, 112, 100],
-            durationDistribution: [30, 75, 90, 40, 18],
-            membership: [140, 85, 32, 50]
-        }
-    };
+            // Data for the charts
+            const data = {
+                // Session Duration Distribution
+                durationDistribution: {
+                    labels: ['0-30 min', '31-60 min', '61-90 min', '91-120 min', '120+ min'],
+                    data: [32, 78, 96, 42, 19]
+                },
+                
+                // Average Time by Hour of Day
+                timeOfDay: {
+                    labels: ['6am', '8am', '10am', '12pm', '2pm', '4pm', '6pm', '8pm', '10pm'],
+                    data: [38, 55, 65, 70, 68, 75, 89, 62, 40]
+                },
+                
+                // Membership Distribution
+                membership: {
+                    labels: ['Session', 'Weekly', 'Monthly', 'Annual'],
+                    data: [145, 87, 35, 59]
+                },
+                
+                // Weekly trends
+                weeklyTrends: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    current: [45, 59, 80, 81, 56, 55, 40],
+                    previous: [35, 48, 65, 75, 50, 48, 30]
+                }
+            };
 
-    // Stats data for different time periods
-    const statsData = {
-        today: {
-            activeMembers: 198,
-            activeChange: 8,
-            avgSession: 78,
-            avgSessionChange: 2,
-            peakHour: "5-6 PM",
-            peakMembers: 38,
-            checkIns: 98,
-            checkInsChange: -5
-        },
-        thisWeek: {
-            activeMembers: 267,
-            activeChange: 12,
-            avgSession: 86,
-            avgSessionChange: 4,
-            peakHour: "6-7 PM",
-            peakMembers: 42,
-            checkIns: 128,
-            checkInsChange: -3
-        },
-        thisMonth: {
-            activeMembers: 320,
-            activeChange: 15,
-            avgSession: 92,
-            avgSessionChange: 6,
-            peakHour: "6-7 PM",
-            peakMembers: 47,
-            checkIns: 156,
-            checkInsChange: 5
-        },
-        thisYear: {
-            activeMembers: 395,
-            activeChange: 22,
-            avgSession: 98,
-            avgSessionChange: 10,
-            peakHour: "6-7 PM",
-            peakMembers: 55,
-            checkIns: 182,
-            checkInsChange: 12
-        },
-        custom: {
-            activeMembers: 258,
-            activeChange: 10,
-            avgSession: 84,
-            avgSessionChange: 3,
-            peakHour: "6-7 PM",
-            peakMembers: 40,
-            checkIns: 125,
-            checkInsChange: -2
-        }
-    };
+            // Initialize Session Duration Distribution chart with animations and gradient
+            const durationDistributionCtx = document.getElementById('duration-distribution-chart').getContext('2d');
+            
+            // Create gradient for bars
+            const barGradient1 = durationDistributionCtx.createLinearGradient(0, 0, 0, 400);
+            barGradient1.addColorStop(0, 'rgba(96, 165, 250, 0.9)');
+            barGradient1.addColorStop(1, 'rgba(59, 130, 246, 0.7)');
+            
+            const durationDistributionChart = new Chart(durationDistributionCtx, {
+                type: 'bar',
+                data: {
+                    labels: data.durationDistribution.labels,
+                    datasets: [{
+                        label: 'Members',
+                        data: data.durationDistribution.data,
+                        backgroundColor: barGradient1,
+                        borderColor: 'rgba(255, 255, 255, 0.6)',
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        maxBarThickness: 45,
+                        hoverBackgroundColor: 'rgba(37, 99, 235, 0.9)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: animationOptions,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    return `${context.parsed.y} members (${Math.round(context.parsed.y / total * 100)}%)`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(226, 232, 240, 0.5)'
+                            },
+                            ticks: {
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            beginAtZero: true,
+                            title: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
 
-    // Initialize all charts with "This Week" data
-    initializeCharts('thisWeek');
+            // Initialize Time of Day chart with enhanced animations
+            const timeOfDayCtx = document.getElementById('time-of-day-chart').getContext('2d');
+            
+            // Create gradient for line area
+            const lineGradient = timeOfDayCtx.createLinearGradient(0, 0, 0, 400);
+            lineGradient.addColorStop(0, 'rgba(79, 70, 229, 0.2)');
+            lineGradient.addColorStop(1, 'rgba(79, 70, 229, 0.0)');
+            
+            const timeOfDayChart = new Chart(timeOfDayCtx, {
+                type: 'line',
+                data: {
+                    labels: data.timeOfDay.labels,
+                    datasets: [{
+                        label: 'Average Minutes',
+                        data: data.timeOfDay.data,
+                        fill: true,
+                        backgroundColor: lineGradient,
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: 'rgba(79, 70, 229, 1)',
+                        pointBorderWidth: 2,
+                        pointHoverRadius: 6,
+                        pointHoverBackgroundColor: '#ffffff',
+                        pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+                        pointHoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        y: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    return `${context.parsed.y} minutes average workout time`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(226, 232, 240, 0.5)'
+                            },
+                            ticks: {
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            beginAtZero: true,
+                            title: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+
+            // Initialize Membership chart with enhanced interactions
+            const membershipCtx = document.getElementById('membership-chart').getContext('2d');
+            const membershipChart = new Chart(membershipCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: data.membership.labels,
+                    datasets: [{
+                        data: data.membership.data,
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(16, 185, 129, 0.8)'
+                        ],
+                        borderColor: 'white',
+                        borderWidth: 3,
+                        hoverOffset: 15,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    animation: {
+                        animateRotate: true,
+                        animateScale: true,
+                        duration: 1200
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const value = context.parsed;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${value} members (${percentage}%)`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Initialize Weekly Trends Chart (new)
+            const weeklyTrendsCtx = document.getElementById('weekly-trends-chart').getContext('2d');
+            
+            // Create gradients for weekly trends
+            const trendGradient1 = weeklyTrendsCtx.createLinearGradient(0, 0, 0, 400);
+            trendGradient1.addColorStop(0, 'rgba(16, 185, 129, 0.2)');
+            trendGradient1.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+            
+            const trendGradient2 = weeklyTrendsCtx.createLinearGradient(0, 0, 0, 400);
+            trendGradient2.addColorStop(0, 'rgba(59, 130, 246, 0.1)');
+            trendGradient2.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+            
+            const weeklyTrendsChart = new Chart(weeklyTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: data.weeklyTrends.labels,
+                    datasets: [
+                        {
+                            label: 'This Week',
+                            data: data.weeklyTrends.current,
+                            fill: true,
+                            backgroundColor: trendGradient1,
+                            borderColor: 'rgba(16, 185, 129, 1)',
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: 'rgba(16, 185, 129, 1)',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: 'rgba(16, 185, 129, 1)',
+                            pointHoverBorderWidth: 3
+                        },
+                        {
+                            label: 'Last Week',
+                            data: data.weeklyTrends.previous,
+                            fill: true,
+                            backgroundColor: trendGradient2,
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#ffffff',
+                            pointBorderColor: 'rgba(59, 130, 246, 1)',
+                            pointBorderWidth: 2,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#ffffff',
+                            pointHoverBorderColor: 'rgba(59, 130, 246, 1)',
+                            pointHoverBorderWidth: 3,
+                            borderDash: [5, 5]
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: {
+                        y: {
+                            duration: 1000,
+                            easing: 'easeOutQuart',
+                            delay: (context) => context.dataIndex * 50
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    return tooltipItems[0].label;
+                                },
+                                label: function(context) {
+                                    const datasetLabel = context.dataset.label || '';
+                                    return `${datasetLabel}: ${context.parsed.y} check-ins`;
+                                }
+                            }
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                pointStyle: 'circle',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                drawBorder: false,
+                                color: 'rgba(226, 232, 240, 0.5)'
+                            },
+                            ticks: {
+                                padding: 10,
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            beginAtZero: true,
+                            title: {
+                                display: false
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 11
+                                }
+                            },
+                            title: {
+                                display: false
+                            }
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    }
+                }
+            });
+            
+            // Add interactivity to period selectors
+            document.querySelectorAll('.period-selector').forEach(selector => {
+                const buttons = selector.querySelectorAll('.period-button');
+                buttons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        // Remove active class from all buttons in this selector
+                        buttons.forEach(btn => btn.classList.remove('active'));
+                        // Add active class to clicked button
+                        button.classList.add('active');
+                        
+                        // Here you would typically update the chart data based on the selected period
+                        // For demo purposes, we'll just add a subtle animation
+                        const chartContainer = selector.closest('.chart-card').querySelector('.chart-container canvas');
+                        const chart = Chart.getChart(chartContainer);
+                        if (chart) {
+                            // Animate the chart with random data fluctuations to simulate period change
+                            const newData = chart.data.datasets[0].data.map(value => 
+                                value * (0.9 + Math.random() * 0.2) // Fluctuate by ±10%
+                            );
+                            chart.data.datasets[0].data = newData;
+                            chart.update();
+                        }
+                    });
+                });
+            });
+            
+            // Add interactivity to custom legend items
+            document.querySelectorAll('.legend-item').forEach((item, index) => {
+                item.addEventListener('click', () => {
+                    const chart = Chart.getChart('duration-distribution-chart');
+                    if (chart) {
+                        // Toggle visibility of the dataset
+                        const meta = chart.getDatasetMeta(0);
+                        meta.data[index].hidden = !meta.data[index].hidden;
+                        chart.update();
+                        
+                        // Visual feedback for toggle state
+                        if (meta.data[index].hidden) {
+                            item.style.opacity = '0.5';
+                        } else {
+                            item.style.opacity = '1';
+                        }
+                    }
+                });
+            });
+            
+            // Add interactivity to chart action buttons
+            document.querySelectorAll('.chart-action-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    // This would typically trigger specific actions
+                    // For demo purposes, we'll just show a notification
+                    alert(`Action: ${button.getAttribute('title')}`);
+                });
+            });
+        });
+    </script>
     
-    // Date filter change event
-    document.getElementById('date-filter').addEventListener('change', function() {
-        // Update dashboard with selected period data
-        updateDashboard(this.value);
-    });
-
-    // Function to initialize charts
-    function initializeCharts(period) {
-        // Get data for selected period
-        const data = chartData[period];
-        
-        // Initialize hourly check-ins chart
-        const hourlyCheckinsCtx = document.getElementById('hourly-checkins-chart').getContext('2d');
-        hourlyCheckinsChart = new Chart(hourlyCheckinsCtx, {
-            type: 'bar',
-            data: {
-                labels: ['6 AM', '7 AM', '8 AM', '9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM', '8 PM', '9 PM'],
-                datasets: [{
-                    label: 'Check-ins',
-                    data: data.hourlyCheckins,
-                    backgroundColor: function(context) {
-                        const index = context.dataIndex;
-                        const value = context.dataset.data[index];
-                        const maxValue = Math.max(...context.dataset.data);
-                        const alpha = 0.5 + (value / maxValue) * 0.5;
-                        return index >= 11 ? `rgba(79, 70, 229, ${alpha})` : `rgba(59, 130, 246, ${alpha})`;
-                    },
-                    borderColor: function(context) {
-                        return context.dataIndex >= 11 ? 'rgba(79, 70, 229, 1)' : 'rgba(59, 130, 246, 1)';
-                    },
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    maxBarThickness: 16
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                return tooltipItems[0].label;
-                            },
-                            label: function(context) {
-                                return `${context.parsed.y} members checked in`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            color: 'rgba(226, 232, 240, 0.7)'
-                        },
-                        ticks: {
-                            padding: 10
-                        },
-                        beginAtZero: true,
-                        title: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-
-        // Initialize time spent chart
-        const timeSpentCtx = document.getElementById('time-spent-chart').getContext('2d');
-        timeSpentChart = new Chart(timeSpentCtx, {
-            type: 'line',
-            data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-                datasets: [{
-                    label: 'Average Minutes',
-                    data: data.timeSpent,
-                    fill: {
-                        target: 'origin',
-                        above: 'rgba(147, 51, 234, 0.1)'
-                    },
-                    backgroundColor: 'rgba(147, 51, 234, 0.7)',
-                    borderColor: 'rgba(147, 51, 234, 1)',
-                    tension: 0.4,
-                    pointRadius: 6,
-                    pointBackgroundColor: 'white',
-                    pointBorderColor: 'rgba(147, 51, 234, 1)',
-                    pointBorderWidth: 2,
-                    pointHoverRadius: 8,
-                    pointHoverBackgroundColor: 'white',
-                    pointHoverBorderColor: 'rgba(147, 51, 234, 1)',
-                    pointHoverBorderWidth: 3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                return tooltipItems[0].label;
-                            },
-                            label: function(context) {
-                                return `${context.parsed.y} minutes average workout`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            color: 'rgba(226, 232, 240, 0.7)'
-                        },
-                        ticks: {
-                            padding: 10
-                        },
-                        beginAtZero: true,
-                        title: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-
-        // Initialize duration distribution chart
-        const durationDistributionCtx = document.getElementById('duration-distribution-chart').getContext('2d');
-        durationDistributionChart = new Chart(durationDistributionCtx, {
-            type: 'bar',
-            data: {
-                labels: ['0-30 min', '31-60 min', '61-90 min', '91-120 min', '120+ min'],
-                datasets: [{
-                    label: 'Members',
-                    data: data.durationDistribution,
-                    backgroundColor: [
-                        'rgba(191, 219, 254, 0.9)',
-                        'rgba(147, 197, 253, 0.9)',
-                        'rgba(96, 165, 250, 0.9)',
-                        'rgba(59, 130, 246, 0.9)',
-                        'rgba(37, 99, 235, 0.9)'
-                    ],
-                    borderColor: 'rgba(255, 255, 255, 0.5)',
-                    borderWidth: 2,
-                    borderRadius: 8,
-                    maxBarThickness: 40
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                return tooltipItems[0].label;
-                            },
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                return `${context.parsed.y} members (${Math.round(context.parsed.y / total * 100)}%)`;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        grid: {
-                            drawBorder: false,
-                            color: 'rgba(226, 232, 240, 0.7)'
-                        },
-                        ticks: {
-                            padding: 10
-                        },
-                        beginAtZero: true,
-                        title: {
-                            display: false
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false,
-                            drawBorder: false
-                        },
-                        title: {
-                            display: false
-                        }
-                    }
-                }
-            }
-        });
-
-        // Initialize membership chart
-        const membershipCtx = document.getElementById('membership-chart').getContext('2d');
-        membershipChart = new Chart(membershipCtx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Session', 'Weekly', 'Monthly', 'Annual'],
-                datasets: [{
-                    data: data.membership,
-                    backgroundColor: [
-                        'rgba(59, 130, 246, 0.8)',
-                        'rgba(139, 92, 246, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(11, 156, 49, 0.8)'
-                    ],
-                    borderColor: 'white',
-                    borderWidth: 3,
-                    hoverOffset: 15,
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '70%',
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            title: function(tooltipItems) {
-                                return tooltipItems[0].label;
-                            },
-                            label: function(context) {
-                                const value = context.parsed;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = Math.round((value / total) * 100);
-                                return `${value} members (${percentage}%)`;
-                            }
-                        }
-                    },
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true,
-                            pointStyle: 'circle'
-                        }
-                    }
-                },
-                animation: {
-                    animateScale: true,
-                    animateRotate: true
-                }
-            }
-        });
-    }
-
-    // Function to update dashboard with new data
-    function updateDashboard(period) {
-        // Get data for selected period
-        const data = chartData[period];
-        const stats = statsData[period];
-        
-        // Update charts
-        updateCharts(data);
-        
-        // Update stat cards
-        updateStatCards(stats);
-        
-        // Show notification
-        showNotification(period);
-    }
-
-    // Function to update charts with new data
-    function updateCharts(data) {
-        // Update hourly check-ins chart
-        hourlyCheckinsChart.data.datasets[0].data = data.hourlyCheckins;
-        hourlyCheckinsChart.update();
-        
-        // Update time spent chart
-        timeSpentChart.data.datasets[0].data = data.timeSpent;
-        timeSpentChart.update();
-        
-        // Update duration distribution chart
-        durationDistributionChart.data.datasets[0].data = data.durationDistribution;
-        durationDistributionChart.update();
-        
-        // Update membership chart
-        membershipChart.data.datasets[0].data = data.membership;
-        membershipChart.update();
-    }
-
-    // Function to update stat cards
-    function updateStatCards(stats) {
-        // Update active members
-        document.querySelector('.glass-card:nth-child(1) .text-3xl').textContent = stats.activeMembers;
-        const activeTrend = document.querySelector('.glass-card:nth-child(1) .text-green-600');
-        activeTrend.innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${stats.activeChange}% vs last week`;
-        
-        // Update avg session
-        document.querySelector('.glass-card:nth-child(2) .text-3xl').textContent = `${stats.avgSession} min`;
-        const avgSessionTrend = document.querySelector('.glass-card:nth-child(2) .text-green-600');
-        avgSessionTrend.innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${stats.avgSessionChange}% vs last week`;
-        
-        // Update peak hour
-        document.querySelector('.glass-card:nth-child(3) .text-3xl').textContent = stats.peakHour;
-        document.querySelector('.glass-card:nth-child(3) .text-gray-500').innerHTML = `<i class="fas fa-users mr-1"></i> ${stats.peakMembers} members`;
-        
-        // Update today's check-ins
-        document.querySelector('.glass-card:nth-child(4) .text-3xl').textContent = stats.checkIns;
-        const checkInsTrend = document.querySelector('.glass-card:nth-child(4) .text-red-600');
-        
-        if (stats.checkInsChange >= 0) {
-            checkInsTrend.classList.remove('text-red-600');
-            checkInsTrend.classList.add('text-green-600');
-            checkInsTrend.innerHTML = `<i class="fas fa-arrow-up mr-1"></i> ${stats.checkInsChange}% vs yesterday`;
-        } else {
-            checkInsTrend.classList.remove('text-green-600');
-            checkInsTrend.classList.add('text-red-600');
-            checkInsTrend.innerHTML = `<i class="fas fa-arrow-down mr-1"></i> ${Math.abs(stats.checkInsChange)}% vs yesterday`;
-        }
-    }
-
-    // Function to show notification
-    function showNotification(period) {
-        // Format period text for display
-        let periodText;
-        switch(period) {
-            case 'today':
-                periodText = 'Today';
-                break;
-            case 'thisWeek':
-                periodText = 'This Week';
-                break;
-            case 'thisMonth':
-                periodText = 'This Month';
-                break;
-            case 'thisYear':
-                periodText = 'This Year';
-                break;
-            case 'custom':
-                periodText = 'Custom Range';
-                break;
-            default:
-                periodText = period;
-        }
-        
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-blue-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50';
-        notification.innerHTML = `
-            <i class="fas fa-info-circle mr-2"></i>
-            <span>Dashboard updated to show data for: ${periodText}</span>
-        `;
-        
-        // Add animation styles
-        notification.style.animation = 'fadeInDown 0.5s forwards';
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-20px)';
-        
-        // Add animation keyframes
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes fadeInDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-            @keyframes fadeOutUp {
-                from {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateY(-20px);
-                }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // Add notification to body
-        document.body.appendChild(notification);
-        
-        // Remove notification after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'fadeOutUp 0.5s forwards';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 500);
-        }, 3000);
-    }
-
-    // Export report button
-    document.getElementById('export-report').addEventListener('click', function() {
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-3 rounded-lg shadow-lg flex items-center z-50';
-        notification.style.animation = 'fadeInDown 0.5s forwards';
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateY(-20px)';
-        
-        notification.innerHTML = `
-            <i class="fas fa-check-circle mr-2"></i>
-            <span>Report successfully exported! Check your downloads folder.</span>
-        `;
-        
-        document.body.appendChild(notification);
-        
-        setTimeout(() => {
-            notification.style.animation = 'fadeOutUp 0.5s forwards';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 500);
-        }, 3000);
-    });
-});
-</script>
-
 @endsection

@@ -1,16 +1,13 @@
 @extends('layouts.app') 
 
 @section('content')
- <!-- Dito tayo mag  front end langs -->
-
-
-
-<p class="text-xl text-black">Payment  Tarcking</p>
-    <section class="pt-10">
-        <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200 transform hover:scale-105 transition duration-300">
-            <h2 class="font-bold text-lg sm:text-3xl text-gray-800">
-                <span class="text-indigo-700 drop-shadow-lg">Payment Tracking</span>
-            </h2>
+<section class="pt-10 mb-8">
+        <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
+                <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Payment Tracking</span>
+                </h2>
+            </div>
         </div>
     </section>
 

@@ -4,13 +4,15 @@
 
 @section('content')
 
-            <section class="grid grid-cols-1 gap-4 pt-10">
-                <div class="md:col-span-2 bg-white p-6  rounded-lg shadow-lg shadow-gray-400 border border-gray-200 transform hover:scale-105 transition duration-300">
-                    <h2 class="font-bold text-lg sm:text-3xl text-gray-800">
-                        <span class="text-indigo-700 drop-shadow-lg">Gym Members</span>
-                    </h2>
-                </div>
-            </section>
+    <section class="pt-10 mb-8">
+        <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
+                <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Gym Members</span>
+                </h2>
+            </div>
+        </div>
+    </section>
 
             <section class="mt-6 border border-white rounded-lg p-4 bg-white text-gray-700">
                 <div class="flex justify-between items-center">
