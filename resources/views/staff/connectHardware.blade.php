@@ -3,65 +3,39 @@
 @section('content')
 
 
-
-<div class=" p-6 max-w-md mx-auto">
-    
-   
-    
-    <div id="errorAlert" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-        <span class="block sm:inline" id="errorMessage">An error occurred. Please try again.</span>
-    </div>
-    
-    <!-- WiFi Connection Form -->
-    <form id="wifiForm" class="space-y-4 mt-20 bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-2xl pb-6 font-bold text-gray-800 mb-4 text-center ">Connect Hardware</h2>
- <!-- Alert messages -->
- <div id="successAlert" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-        <span class="block sm:inline">Connection successful! Your RFID system is now connected.</span>
-    </div>
-        <div>
-            <label for="ssid" class="block text-sm font-medium text-gray-700 mb-1">WiFi Network Name (SSID)</label>
-            <input type="text" id="ssid" name="ssid" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-            <p id="ssidError" class="hidden text-red-500 text-xs mt-1">Please enter a valid WiFi network name</p>
-        </div>
+<div class="container mx-auto py-8">
+    <div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+        <h1 class="text-2xl font-bold mb-6">WiFi Settings</h1>
         
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">WiFi Password</label>
-            <div class="relative">
-                <input type="password" id="password" name="password" required
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+        @if(session('success'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                {{ session('success') }}
+            </div>
+        @endif
+        
+        <form method="POST" action="{{ route('wifi.update') }}">
+            @csrf
+            
+            <div class="mb-4">
+                <label for="ssid" class="block text-gray-700 text-sm font-bold mb-2">WiFi SSID</label>
+                <input type="text" name="ssid" id="ssid" 
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="{{ $wifiSettings->ssid ?? '' }}" required>
+            </div>
+            
+            <div class="mb-6">
+                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">WiFi Password</label>
+                <input type="password" name="password" id="password" 
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    value="{{ $wifiSettings->password ?? '' }}" required>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Save Settings
                 </button>
             </div>
-            <p id="passwordError" class="hidden text-red-500 text-xs mt-1">Password must be at least 8 characters</p>
-        </div>
-        
-        <div class="flex items-center">
-            <input id="remember" name="remember" type="checkbox" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-            <label for="remember" class="ml-2 block text-sm text-gray-700">
-                Remember this network
-            </label>
-        </div>
-        
-        <div class="flex items-center space-x-4">
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
-                Connect
-            </button>
-
-        </div>
-    </form>
-    
-    <!-- Network scanning results (hidden by default) -->
-    <div id="networkList" class="hidden mt-4">
-        <h3 class="text-sm font-medium text-gray-700 mb-2">Available Networks</h3>
-        <ul class="bg-gray-50 rounded-md border border-gray-200 divide-y divide-gray-200" id="networkListItems">
-            <!-- Networks will be populated by JavaScript -->
-        </ul>
+        </form>
     </div>
 </div>
 
