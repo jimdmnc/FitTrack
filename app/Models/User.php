@@ -24,13 +24,16 @@ class User extends Authenticatable
         'first_name', // Add this
         'last_name',  // Add this
         'email',
-        'password',
         'gender',
         'phone_number',
         'membership_type',
         'start_date',
+        'end_date', // Ensure this is included
         'rfid_uid',
         'role',
+        'birthdate', // ✅ Added birthdate here
+        'password', // ✅ This must be here!
+
     ];
 
     /**
@@ -53,6 +56,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+
         ];
     }
     

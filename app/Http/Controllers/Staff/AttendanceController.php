@@ -11,15 +11,26 @@ use Illuminate\Support\Facades\Log; // For logging
 class AttendanceController extends Controller
 {
     // Show attendance records
-    public function index()
+    public function index(Request $request)
     {
+        $query = $request->input('search');
+    
         // Fetch attendance records with user details, ordered by latest time_in
         $attendances = Attendance::with('user')
+        ->when($query, function ($queryBuilder) use ($query) {
+            $queryBuilder->whereHas('user', function ($userQuery) use ($query) {
+                $userQuery->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
+                          ->orWhere('first_name', 'like', "%{$query}%")
+                          ->orWhere('last_name', 'like', "%{$query}%");
+            });
+        })
+        
             ->orderBy('time_in', 'desc')
             ->paginate(10); // Paginate results (10 per page)
-
-        return view('staff.attendance', compact('attendances'));
+    
+        return view('staff.attendance', compact('attendances', 'query'));
     }
+    
 
     // Record attendance when RFID is tapped
     public function recordAttendance(Request $request)
@@ -44,7 +55,12 @@ class AttendanceController extends Controller
                 'message' => 'RFID not registered.',
             ], 404);
         }
-
+        // Check the member status
+        if ($user->member_status === 'expired') {
+            return response()->json([
+                'message' => 'Membership expired! Please renew.',
+            ], 403);
+        }
         // Fetch the latest attendance record for today
         $attendance = Attendance::where('rfid_uid', $rfid_uid)
             ->whereDate('time_in', $currentDate)

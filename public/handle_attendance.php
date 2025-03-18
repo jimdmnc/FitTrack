@@ -34,6 +34,13 @@ try {
         exit;
     }
 
+    // Fetch the user's membership status
+    $user = $user_result->fetch_assoc();
+    if ($user['member_status'] === 'expired') {
+        echo json_encode(['message' => 'Membership expired! Attendance not recorded.']);
+        exit;
+    }
+
     // Get the current time
     $current_time = date('Y-m-d H:i:s');
 

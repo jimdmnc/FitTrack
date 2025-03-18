@@ -33,7 +33,7 @@
         <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
             <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
                 <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Gym Activity Dashboard</span>
+                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Reports</span>
                 </h2>
             <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4"> 
                     <span class="bg-green-100 text-green-800 text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap"> 
@@ -78,119 +78,8 @@
             </div>
         </div>
 
-        <!-- Stats Cards with Improved Design -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mb-8">
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Active Members</h3>
-                        <div class="text-3xl font-bold text-gray-900">267</div>
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 12% vs last week
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-blue-100 text-blue-600">
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Avg Session</h3>
-                        <div class="text-3xl font-bold text-gray-900">86 min</div>
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 4% vs last week
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600">
-                        <i class="fas fa-stopwatch"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Peak Hour</h3>
-                        <div class="text-3xl font-bold text-gray-900">6-7 PM</div>
-                        <div class="text-gray-500 text-sm font-medium mt-1">
-                            <i class="fas fa-users mr-1"></i> 42 members
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="glass-card p-5 transition-all hover:shadow-lg hover:translate-y-[-5px]">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Check-ins</h3>
-                        <div class="text-3xl font-bold text-gray-900">128</div>
-                        <div class="text-red-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-down mr-1"></i> 3% vs yesterday
-                        </div>
-                    </div>
-                    <div class="p-3 rounded-lg bg-green-100 text-green-600">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Charts Section with Modern Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Daily Check-ins by Hour</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="hourly-checkins-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Avg Time by Day of Week</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="time-spent-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Session Duration Distribution</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="duration-distribution-chart"></canvas>
-                </div>
-            </div>
-            
-            <div class="glass-card p-6 transition-all hover:shadow-lg">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold text-gray-800">Membership Distribution</h3>
-                    <button class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-ellipsis-h"></i>
-                    </button>
-                </div>
-                <div class="chart-container">
-                    <canvas id="membership-chart"></canvas>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Members Table with Modern Design -->
         <div class="glass-card p-6 transition-all hover:shadow-lg">

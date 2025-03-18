@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance');
+        Route::get('/staff/attendance', [AttendanceController::class, 'index'])
+            ->name('staff.attendance.index');
+
         // Route to record attendance
         Route::post('/staff/record-attendance', [AttendanceController::class, 'recordAttendance'])
             ->name('staff.record-attendance');

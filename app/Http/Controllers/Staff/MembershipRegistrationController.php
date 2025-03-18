@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\RfidTag;
+use Carbon\Carbon;
+
 
 class MembershipRegistrationController extends Controller
 {
@@ -20,7 +22,6 @@ class MembershipRegistrationController extends Controller
     // Handle the form submission (Manual Registration)
     public function store(Request $request)
     {
-        // Validate the form data
         $validatedData = $request->validate([
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -29,30 +30,38 @@ class MembershipRegistrationController extends Controller
             'phone_number' => 'required|string|max:15',
             'membership_type' => 'required|string',
             'start_date' => 'required|date',
-            'uid' => 'required|string|max:255|unique:users,rfid_uid', // Validate 'uid' but map to 'rfid_uid'
-            'password' => 'required|string|min:8|confirmed',
+            'birthdate' => 'required|date', // ✅ Added birthdate validation
+            'uid' => 'required|string|max:255|unique:users,rfid_uid',
         ]);
-
-        // Hash the password
-        $validatedData['password'] = Hash::make($validatedData['password']);
-
-        // Set default role to 'user'
+    
+        // ✅ Generate password using last name and birthdate
+        $lastName = strtolower($validatedData['last_name']);
+        $birthdate = Carbon::parse($validatedData['birthdate'])->format('m-d-Y'); // Format: MM-DD-YYYY
+        $generatedPassword = $lastName . '-' . $birthdate;
+    
+        // ✅ Hash the generated password before saving
+        $validatedData['password'] = Hash::make($generatedPassword); // 🔥 Important: Hash the password!
+    
+        // Set default role
         $validatedData['role'] = 'user';
-
-        // Rename 'uid' to 'rfid_uid' before saving to the database
+    
+        // Rename 'uid' to 'rfid_uid'
         $validatedData['rfid_uid'] = $validatedData['uid'];
-        unset($validatedData['uid']); // Remove the 'uid' key from the array
-
-        // Create the user
+        unset($validatedData['uid']);
+    
+        // Calculate end_date
+        $duration = (int) $request->input('membership_type');
+        $validatedData['end_date'] = Carbon::parse($validatedData['start_date'])->addDays($duration)->format('Y-m-d');
+    
+        // ✅ Create the user with all required fields
         User::create($validatedData);
-
-        // Delete the UID from the rfid_tags table
+    
+        // ✅ Update RFID Tag
         RfidTag::where('uid', $request->input('uid'))->update(['registered' => true]);
-
-        // Redirect with a success message
-        return redirect()->route('staff.membershipRegistration')->with('success', 'Member registered successfully!');
+    
+        return redirect()->route('staff.membershipRegistration')
+            ->with('success', 'Member registered successfully! Password: ' . $generatedPassword);
     }
-
 
 
     

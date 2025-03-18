@@ -51,6 +51,14 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label for="birthdate" class="block text-gray-700 font-medium mb-2">Birthdate *</label>
+                    <input type="date" id="birthdate" name="birthdate" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" 
+                        value="{{ old('birth_date') }}" required max="{{ date('Y-m-d') }}">
+                    @error('birthdate')
+                        <span class="text-red-500 text-sm">{{ $message }}</span>
+                    @enderror
+                </div>
 
 
                 <div>
@@ -103,9 +111,9 @@
                 </div>
 
                 <div>
-                    <label for="expiryDate" class="block text-gray-700 font-medium mb-2">Expiration Date</label>
+                    <label for="endDate" class="block text-gray-700 font-medium mb-2">Expiration Date</label>
                     <div class="relative">
-                        <input type="text" id="expiryDate" name="expiry_date" placeholder="dd/mm/yyyy" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100" readonly>
+                        <input type="text" id="endDate" name="expiry_date" placeholder="dd/mm/yyyy" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100" readonly>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -140,32 +148,20 @@
             <!-- Account Section -->
             <div class="p-6 border-t border-gray-200 bg-gray-50">
                 <h2 class="text-xl font-semibold text-gray-800">Account Setup</h2>
-            </div>
-                <div class="p-6">
-                    <label for="email" class="block text-gray-700 font-medium mb-2">Email Address *</label>
-                    <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('email') }}" required>
-                    @error('email')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
                 </div>
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="password" class="block text-gray-700 font-medium mb-2">Password *</label>
-                    <div class="relative">
-                        <input type="password" id="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
+                    <div class="p-6">
+                        <label for="email" class="block text-gray-700 font-medium mb-2">Email Address *</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" value="{{ old('email') }}" required>
+                        @error('email')
+                            <span class="text-red-500 text-sm">{{ $message }}</span>
+                        @enderror
                     </div>
-                    @error('password')
-                        <span class="text-red-500 text-sm">{{ $message }}</span>
-                    @enderror
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-6">
+                    <label for="password" class="block text-gray-700 font-medium mb-2">Generated Password *</label>
+                    <input type="text" id="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-md bg-gray-100 focus:outline-none" readonly required>
                 </div>
 
-                <div>
-                    <label for="password_confirmation" class="block text-gray-700 font-medium mb-2">Confirm Password *</label>
-                    <div class="relative">
-                        <input type="password" id="password_confirmation" name="password_confirmation" class="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" required>
-                      
-                    </div>
-                </div>
             </div>
 
             <!-- Submit Button -->
@@ -182,13 +178,13 @@
 
 <!-- JavaScript for Expiry Date -->
 <script>
-    document.getElementById('membershipType').addEventListener('change', updateExpiryDate);
-    document.getElementById('startDate').addEventListener('change', updateExpiryDate);
+    document.getElementById('membershipType').addEventListener('change', updateEndDate);
+    document.getElementById('startDate').addEventListener('change', updateEndDate);
 
-    function updateExpiryDate() {
+    function updateEndDate() {
         let membershipType = document.getElementById('membershipType').value;
         let startDateInput = document.getElementById('startDate').value;
-        let expiryDateInput = document.getElementById('expiryDate');
+        let endDateInput = document.getElementById('endDate');
 
         if (startDateInput && membershipType) {
             let startDate = new Date(startDateInput);
@@ -215,9 +211,9 @@
             let year = startDate.getFullYear();
 
             let formattedDate = `${day}/${month}/${year}`;
-            expiryDateInput.value = formattedDate;
+            endDateInput.value = formattedDate;
         } else {
-            expiryDateInput.value = '';
+            endDateInput.value = '';
         }
     }
 
@@ -266,5 +262,25 @@ function fetchLatestUid() {
         document.getElementById('rfid_status').textContent = 'Error submitting UID.';
         document.getElementById('rfid_status').style.color = 'red';
     @endif
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Automatically fill password when birthdate or last name is entered
+        function updatePassword() {
+            let lastName = document.querySelector("input[name='last_name']").value.trim();
+            let birthdate = document.querySelector("input[name='birthdate']").value;
+            
+            if (lastName && birthdate) {
+                let dateParts = birthdate.split("-");
+                let formattedPassword = `${lastName}-${dateParts[1]}-${dateParts[2]}-${dateParts[0]}`;
+                document.getElementById("password").value = formattedPassword;
+            }
+        }
+
+        // Attach event listeners
+        document.querySelector("input[name='last_name']").addEventListener("input", updatePassword);
+        document.querySelector("input[name='birthdate']").addEventListener("input", updatePassword);
+    });
 </script>
 @endsection
