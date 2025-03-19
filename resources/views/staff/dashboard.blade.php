@@ -477,99 +477,118 @@
     
 
 </div>
-            <!-- View Member Modal -->
-            <div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
-                <!-- Modal Header -->
-                <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+<!-- View Member Modal -->
+<div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-6 border-b pb-3">
+            <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Member Profile
+            </h2>
+            <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Horizontal ID Card Layout -->
+        <div class="bg-white border-2 border-blue-500 rounded-lg overflow-hidden shadow-md">
+            <!-- Card Header -->
+            <div class="bg-blue-500 p-3 text-white">
+                <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
+            </div>
+            
+            <!-- Horizontal Layout Container -->
+            <div class="flex">
+                <!-- Left Column - Photo Area -->
+                <div class="w-1/4 p-4 flex flex-col items-center justify-center border-r">
+                    <div class="w-32 h-32 bg-gray-100 border rounded-full flex items-center justify-center mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                        Member Profile
-                    </h2>
-                    <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    </div>
+                    <!-- Status Badge -->
+                    <span id="viewStatus" class="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">Active</span>
                 </div>
-
-                <!-- Member Details (Read-Only) -->
-                <div class="bg-gray-50 rounded-lg p-4 mb-4">
-                    <div class="flex items-center mb-3">
-                        <div class="bg-blue-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Member ID</p>
-                            <p class="font-medium text-gray-800" id="viewMemberID"></p>
-                        </div>
+                
+                <!-- Middle Column - Primary Info -->
+                <div class="w-2/5 p-4 bg-white">
+                    <!-- Name -->
+                    <div class="mb-4">
+                        <p class="text-xs text-gray-500 uppercase">Name</p>
+                        <p class="font-bold text-gray-800 text-lg" id="viewMemberName">John Doe</p>
                     </div>
                     
-                    <div class="flex items-center mb-3">
-                        <div class="bg-green-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Name</p>
-                            <p class="font-medium text-gray-800" id="viewMemberName"></p>
-                        </div>
+                    <!-- Member ID -->
+                    <div class="mb-4">
+                        <p class="text-xs text-gray-500 uppercase">Member ID</p>
+                        <p class="font-medium text-gray-800" id="viewMemberID">M12345678</p>
                     </div>
                     
-                    <div class="flex items-center mb-3">
-                        <div class="bg-purple-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Membership Type</p>
-                            <p class="font-medium text-gray-800" id="viewMembershipType"></p>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center mb-3">
+                    <!-- Registration Date -->
+                    <div class="flex items-center mb-4">
                         <div class="bg-yellow-100 p-2 rounded-full mr-3">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Registration Date</p>
-                            <p class="font-medium text-gray-800" id="viewStartDate"></p>
+                            <p class="text-xs text-gray-500 uppercase">Registration Date</p>
+                            <p class="font-medium text-gray-800" id="viewStartDate">Jan 15, 2025</p>
                         </div>
                     </div>
-                    
-                    <div class="flex items-center">
-                        <div id="statusIconContainer" class="p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" id="statusIcon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </div>
+                
+                <!-- Right Column - Membership Type & Barcode -->
+                <div class="w-1/3 p-4 bg-gray-50">
+                    <!-- Membership Type -->
+                    <div class="flex items-center mb-6">
+                        <div class="bg-purple-100 p-2 rounded-full mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Status</p>
-                            <p class="font-medium" id="viewStatus"></p>
+                            <p class="text-xs text-gray-500 uppercase">Membership Type</p>
+                            <p class="font-medium text-gray-800" id="viewMembershipType">Premium</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Barcode Area -->
+                    <div class="mb-2">
+                        <p class="text-xs text-gray-500 uppercase mb-1">Card ID</p>
+                        <div class="bg-gray-100 h-12 flex items-center justify-center rounded">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                            </svg>
+                            <span class="text-sm font-medium text-gray-600">ID: 123456789</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- Modal Footer with Edit and Close Buttons -->
-                <div class="flex justify-end mt-6">
-                    <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        Edit
-                    </button>
-                    <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
-                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-blue-500 text-white text-center py-2 text-xs">
+                <p>Valid only with photo identification</p>
             </div>
         </div>
+
+        <!-- Modal Footer with Edit and Close Buttons -->
+        <div class="flex justify-end mt-6">
+            <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Edit
+            </button>
+            <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
+        </div>
+    </div>
+</div>
 
         <!-- Edit Member Modal -->
         <div id="editMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
@@ -629,11 +648,6 @@
                                 <option value="Week">Weekly</option>
                                 <option value="Session">Per Session</option>
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
-                                </svg>
-                            </div>
                         </div>
                     </div>
 
@@ -648,10 +662,10 @@
                                 </div>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="status" value="inactive" class="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                <input type="radio" name="status" value="expired" class="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer">
                                 <div class="ml-2 flex items-center">
                                     <span class="inline-flex h-3 w-3 bg-red-500 rounded-full mr-1.5"></span>
-                                    <span>Inactive</span>
+                                    <span>Expired</span>
                                 </div>
                             </label>
                         </div>
@@ -671,69 +685,49 @@
             </div>
         </div>
 <script>
-    // Toggle background opacity for the whole page
-    function togglePageBackground(show) {
-        // Get the main container (you might need to adjust this selector to match your actual main content container)
-        const mainContent = document.getElementById('wholePage'); // Using #wholePage instead of document.body
-        
-        if (show) {
-            // Add blur and opacity to main content when modal opens
-            document.getElementById('wholePage').classList.add('modal-open');
-            // Add a style tag if it doesn't exist
-            if (!document.getElementById('modalBackgroundStyle')) {
-                const style = document.createElement('style');
-                style.id = 'modalBackgroundStyle';
-                style.textContent = `
-                 #wholePage.modal-open > *:not(#viewMemberModal):not(#editMemberModal) {
-                filter: blur(3px);
-                opacity: 0.7;
-                transition: all 0.3s ease;
-                pointer-events: none;
-                }
 
-                `;
-                document.head.appendChild(style);
-            }
-        } else {
-            // Remove blur and opacity when modal closes
-            document.getElementById('wholePage').classList.remove('modal-open');
-        }
-    }
 
     // Open View Modal
-    function openViewModal(memberID, name, membershipType, startDate, status) {
-        // Apply background effects
-        togglePageBackground(true);
-        
-        // Update modal content
-        document.getElementById("viewMemberID").innerText = memberID;
-        document.getElementById("viewMemberName").innerText = name;
-        document.getElementById("viewMembershipType").innerText = membershipType;
-        document.getElementById("viewStartDate").innerText = startDate;
-        document.getElementById("viewStatus").innerText = status;
-        
-        // Update status styling
-        const statusElement = document.getElementById('viewStatus');
-        const statusIconContainer = document.getElementById('statusIconContainer');
-        const statusIcon = document.getElementById('statusIcon');
-        
-        if (status.toLowerCase() === 'active') {
-            statusElement.className = 'font-medium text-green-600';
-            statusIconContainer.className = 'bg-green-100 p-2 rounded-full mr-3';
-            statusIcon.className = 'h-5 w-5 text-green-600';
-        } else {
-            statusElement.className = 'font-medium text-red-600';
-            statusIconContainer.className = 'bg-red-100 p-2 rounded-full mr-3';
-            statusIcon.className = 'h-5 w-5 text-red-600';
-        }
-        
-        // Show modal with animation
-        document.getElementById("viewMemberModal").classList.remove("hidden");
-        setTimeout(() => {
-            document.getElementById('viewModalContent').classList.remove('scale-95', 'opacity-0');
-            document.getElementById('viewModalContent').classList.add('scale-100', 'opacity-100');
-        }, 10);
+    function openViewModal(name, memberID, status, membershipType, startDate) {
+    // Set modal data
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewMemberID').textContent = memberID;
+    document.getElementById('viewStatus').textContent = status;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = startDate;
+
+    // Change status color based on status
+    let statusBadge = document.getElementById('viewStatus');
+    if (status.toLowerCase() === 'active') {
+        statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
+    } else {
+        statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
     }
+
+    // Show modal
+    const modal = document.getElementById('viewMemberModal');
+    const modalContent = document.getElementById('viewModalContent');
+    
+    modal.classList.remove('hidden'); // Make it visible
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0'); // Animate opening
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+// Function to close the modal
+function closeViewModal() {
+    const modal = document.getElementById('viewMemberModal');
+    const modalContent = document.getElementById('viewModalContent');
+
+    // Animate closing
+    modalContent.classList.remove('scale-100', 'opacity-100');
+    modalContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        modal.classList.add('hidden'); // Hide after animation
+    }, 300);
+}
 
     // Close View Modal
     function closeViewModal() {
@@ -743,44 +737,37 @@
         
         setTimeout(() => {
             document.getElementById("viewMemberModal").classList.add("hidden");
-            // Remove background effects
-            togglePageBackground(false);
+
         }, 300);
     }
 
-    // Open Edit Modal
-    function openEditModal(memberID, name, membershipType, status) {
-        // If called directly from table, apply background effects
-        if (document.getElementById("viewMemberModal").classList.contains("hidden")) {
-            togglePageBackground(true);
-        } else {
-            // If coming from view modal, close it first
-            closeViewModal();
-            // Keep background effects applied
-            togglePageBackground(true);
+ // Open Edit Modal
+function openEditModal(memberID, name, membershipType, memberStatus) {
+
+    // Set form values
+    document.getElementById("editMemberID").value = memberID;
+    document.getElementById("editMemberName").value = name;
+    document.getElementById("editMembershipType").value = membershipType;
+
+    // Ensure status value is lowercase for comparison
+    let formattedStatus = memberStatus.trim().toLowerCase();
+
+    // Set radio button based on status
+    const radioButtons = document.getElementsByName('status');
+    for (const radioButton of radioButtons) {
+        if (radioButton.value.toLowerCase() === formattedStatus) {
+            radioButton.checked = true;
+            break;
         }
-        
-        // Set form values
-        document.getElementById("editMemberID").value = memberID;
-        document.getElementById("editMemberName").value = name;
-        document.getElementById("editMembershipType").value = membershipType;
-        
-        // Set radio button based on status
-        const radioButtons = document.getElementsByName('status');
-        for (const radioButton of radioButtons) {
-            if (radioButton.value === status.toLowerCase()) {
-                radioButton.checked = true;
-                break;
-            }
-        }
-        
-        // Show modal with animation
-        document.getElementById("editMemberModal").classList.remove("hidden");
-        setTimeout(() => {
-            document.getElementById('editModalContent').classList.remove('scale-95', 'opacity-0');
-            document.getElementById('editModalContent').classList.add('scale-100', 'opacity-100');
-        }, 10);
     }
+
+    // Show modal with animation
+    document.getElementById("editMemberModal").classList.remove("hidden");
+    setTimeout(() => {
+        document.getElementById('editModalContent').classList.remove('scale-95', 'opacity-0');
+        document.getElementById('editModalContent').classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
 
     // Close Edit Modal
     function closeEditModal() {
@@ -790,8 +777,7 @@
         
         setTimeout(() => {
             document.getElementById("editMemberModal").classList.add("hidden");
-            // Remove background effects
-            togglePageBackground(false);
+
         }, 300);
     }
 

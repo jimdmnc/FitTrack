@@ -24,7 +24,15 @@
         
 
         <!-- Center: User-Friendly Time Display -->
-        <div class="hidden md:flex items-center space-x-1 text-lg font-semibold text-gray-800" id="current-time"></div>
+        <div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-800 rounded-full bg-gray-100 px-4 py-2 shadow-sm" id="current-time">
+            <span class="inline-flex">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-500">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </span>
+            <span id="time-text">12:00 PM</span>
+        </div>
 
         <!-- Right Section: Search, Feedback and Notifications -->
         <div class="flex items-center space-x-2">
@@ -89,11 +97,17 @@
     </div>
 </nav>
 <script>
-    function updateTime() {
-        const now = new Date();
-        const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
-        document.getElementById('current-time').textContent = new Intl.DateTimeFormat('en-US', options).format(now);
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
+function updateTime() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = (hours % 12) || 12; // Convert to 12-hour format
+  
+  document.getElementById('time-text').textContent = `${formattedHours}:${minutes} ${ampm}`;
+}
+
+// Update time immediately and then every second
+updateTime();
+setInterval(updateTime, 1000);
 </script>

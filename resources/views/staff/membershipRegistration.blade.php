@@ -1,19 +1,62 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+ .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
+            transform: translateY(-5px);
+        }
+        .gradient-bg {
+            background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+        }
+
+</style>
 <div class="py-10 px-4 md:px-12">
     <!-- Page Title -->
-    <div class="mb-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-800">
-            <span class="text-indigo-700">Membership Registration</span>
-        </h1>
-        <p class="text-gray-600 mt-2">Complete the form below to register a new gym member</p>
-    </div>
+            <div class="glass-card p-6">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div>
+                        <h1 class="text-2xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
+                        Membership Registration
+
+                        </h1>
+                        <p class="text-gray-500 mt-2">Complete the form below to register a new gym member</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex items-center gap-3">
+      
+                      
+                    </div>
+                </div>
+            </div>
 
 
 
     <!-- Form Container -->
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-8xl mx-auto mt-10">
+        
+        <!-- Success Message -->
+    @if(session('success'))
+        <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+            <div class="flex items-center">
+                <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span>{{ session('success') }}</span>
+            </div>
+            <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
+                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                </svg>
+            </button>
+        </div>
+    @endif
         <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-white rounded-xl shadow-lg overflow-hidden">
             @csrf
             
@@ -234,22 +277,6 @@
             </div>
         </form>
 
-        <!-- Success Message -->
-@if(session('success'))
-    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
-        <div class="flex items-center">
-            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ session('success') }}</span>
-        </div>
-        <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
-            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-@endif
     </div>
 </div>
 
