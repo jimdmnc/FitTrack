@@ -35,10 +35,11 @@ class MembershipRegistrationController extends Controller
         ]);
     
         // ✅ Generate password using last name and birthdate
-        $lastName = strtolower($validatedData['last_name']);
-        $birthdate = Carbon::parse($validatedData['birthdate'])->format('m-d-Y'); // Format: MM-DD-YYYY
-        $generatedPassword = $lastName . '-' . $birthdate;
-    
+        $lastName = strtolower($validatedData['last_name']); // Convert last name to lowercase
+        $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY'); // Format: MMDDYYYY
+        $generatedPassword = $lastName . $birthdate; // Combine last name with birthdate
+
+            
         // ✅ Hash the generated password before saving
         $validatedData['password'] = Hash::make($generatedPassword); // 🔥 Important: Hash the password!
     
@@ -60,7 +61,7 @@ class MembershipRegistrationController extends Controller
         RfidTag::where('uid', $request->input('uid'))->update(['registered' => true]);
     
         return redirect()->route('staff.membershipRegistration')
-            ->with('success', 'Member registered successfully! Password: ' . $generatedPassword);
+            ->with('success', 'Member registered successfully! Password: ');
     }
 
 

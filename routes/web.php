@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+
+        
         // Membership Registration
         Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])
             ->name('staff.membershipRegistration');

@@ -29,7 +29,7 @@
         <div class="">
             @include('layouts.navigation')
         </div>
-        <div class="px-2 md:px-10 bg-gray-100 h-full">
+        <div class="px-2 md:px-10 bg-gray-100 h-auto">
             @yield('content')
         </div>
     </div>
@@ -38,106 +38,113 @@
     
     <!-- JavaScript to initialize charts -->
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const sidebar = document.getElementById("sidebar");
-        const hamburger = document.getElementById("hamburger");
-        const mainContent = document.getElementById("main-content");
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("sidebar");
+    const hamburger = document.getElementById("hamburger");
+    const mainContent = document.getElementById("main-content");
 
-        let isSidebarOpen = true; // Default: Sidebar is visible on large screens
+    let isSidebarOpen = true; // Default: Sidebar is visible on large screens
 
-        if (sidebar && hamburger && mainContent) {
-            hamburger.addEventListener("click", function () {
-                sidebar.classList.toggle("-translate-x-full");
-                isSidebarOpen = !isSidebarOpen;
+    if (sidebar && hamburger && mainContent) {
+        hamburger.addEventListener("click", function () {
+            // Toggle sidebar visibility
+            sidebar.classList.toggle("-translate-x-full");
+            isSidebarOpen = !isSidebarOpen;
 
-                if (isSidebarOpen) {
-    sidebar.style.transform = "translateX(0)"; // Slide in smoothly
-    mainContent.classList.add("lg:ml-64"); // Shift content
-} else {
-    sidebar.style.transform = "translateX(-100%)"; // Slide out smoothly
-    mainContent.classList.remove("lg:ml-64"); // Expand content
-}
+            // Smoothly slide the sidebar in/out
+            if (isSidebarOpen) {
+                sidebar.style.transform = "translateX(0)"; // Slide in
+                mainContent.classList.add("lg:ml-64"); // Shift content
+            } else {
+                sidebar.style.transform = "translateX(-100%)"; // Slide out
+                mainContent.classList.remove("lg:ml-64"); // Expand content
+            }
 
+            // Change the hamburger icon to a right arrow or back to hamburger
+            if (isSidebarOpen) {
+                hamburger.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                `; // Hamburger icon
+            } else {
+                hamburger.innerHTML = `
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                `; // Right arrow icon
+            }
+        });
+    } else {
+        console.error("Sidebar, Hamburger button, or Main Content not found!");
+    }
+});
 
-            });
-        } else {
-            console.error("Sidebar, Hamburger button, or Main Content not found!");
-        }
-    });
-
-
-
-
-
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     const hamburger = document.getElementById('hamburger');
     const line1 = document.getElementById('line1');
     const line2 = document.getElementById('line2');
     const line3 = document.getElementById('line3');
     let isOpen = false;
-    
+
     // Position the lines initially
     line1.style.transform = 'translateY(-8px)';
     line3.style.transform = 'translateY(8px)';
-    
+
     // Add ripple effect on click
-    hamburger.addEventListener('click', function(e) {
+    hamburger.addEventListener('click', function (e) {
         // Toggle menu state
         isOpen = !isOpen;
-        
+
         if (isOpen) {
-            // Transform to X shape
+            // Transform to right arrow shape
             line1.style.transform = 'translateY(0) rotate(45deg)';
             line2.style.opacity = '0';
             line3.style.transform = 'translateY(0) rotate(-45deg)';
-            hamburger.classList.remove('bg-blue-50');
-            hamburger.classList.add('bg-blue-200');
         } else {
             // Return to hamburger shape
             line1.style.transform = 'translateY(-8px) rotate(0)';
             line2.style.opacity = '1';
             line3.style.transform = 'translateY(8px) rotate(0)';
-            hamburger.classList.add('bg-blue-50');
-            hamburger.classList.remove('bg-blue-200');
         }
-        
+
         // Create ripple effect
         const circle = document.createElement('span');
         const diameter = Math.max(hamburger.clientWidth, hamburger.clientHeight);
         const radius = diameter / 2;
-        
+
         circle.style.width = circle.style.height = `${diameter}px`;
         circle.style.left = `${e.clientX - hamburger.getBoundingClientRect().left - radius}px`;
         circle.style.top = `${e.clientY - hamburger.getBoundingClientRect().top - radius}px`;
         circle.classList.add('ripple');
-        
+
         // Remove existing ripple
         const ripple = hamburger.getElementsByClassName('ripple')[0];
         if (ripple) {
             ripple.remove();
         }
-        
+
         hamburger.appendChild(circle);
-        
+
         // Toggle any menu or functionality here
         // For example: document.getElementById('menu').classList.toggle('hidden');
     });
-    
+
     // Add hover effects
-    hamburger.addEventListener('mouseenter', function() {
+    hamburger.addEventListener('mouseenter', function () {
         if (!isOpen) {
             line1.style.transform = 'translateY(-6px)';
             line3.style.transform = 'translateY(6px)';
         }
     });
-    
-    hamburger.addEventListener('mouseleave', function() {
+
+    hamburger.addEventListener('mouseleave', function () {
         if (!isOpen) {
             line1.style.transform = 'translateY(-8px)';
             line3.style.transform = 'translateY(8px)';
         }
     });
-    
+
     // Add styles for ripple effect
     const style = document.createElement('style');
     style.textContent = `
@@ -149,7 +156,7 @@
             animation: ripple 0.6s linear;
             pointer-events: none;
         }
-        
+
         @keyframes ripple {
             to {
                 transform: scale(2);
