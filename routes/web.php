@@ -37,6 +37,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
             ->name('staff.membershipRegistration.store');        
 
+
+
+
+        Route::post('/staff/renew-membership', [ViewmembersController::class, 'renewMembership'])
+            ->name('staff.renewMembership');
+        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
+            ->name('renew.membership');
+
+
+
+
         Route::get('/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance');
         Route::get('/staff/attendance', [AttendanceController::class, 'index'])

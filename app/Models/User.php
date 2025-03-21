@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Renewal;
 
 class User extends Authenticatable
 {
@@ -74,5 +75,14 @@ class User extends Authenticatable
     public function getMembershipType()
     {
         return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'N/A';
+    }
+        // Relationship to gym entries
+        public function gymEntries()
+        {
+            return $this->hasMany(GymEntry::class, 'rfid_uid', 'rfid_uid');
+        }
+    public function renewals()
+    {
+        return $this->hasMany(Renewal::class, 'rfid_uid', 'rfid_uid');
     }
 }

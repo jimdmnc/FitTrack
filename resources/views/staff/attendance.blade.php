@@ -9,7 +9,7 @@
 
     <div class="bg-white shadow overflow-hidden rounded-lg">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-200 gap-4">
-        <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-auto">
+<form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-auto">
     <div class="flex items-center space-x-2">
         <!-- Search Input with Icon -->
         <div class="relative w-full">
@@ -144,10 +144,10 @@
                 </tbody>
             </table>
         </div>
-
-        <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
-            {{ $attendances->links() }} <!-- Laravel pagination -->
-        </div>
+    <div class="mt-4">
+        <!-- Custom Pagination Links -->
+        {{ $attendances->links('vendor.pagination.default') }}
+    </div>
     </div>
 </div>
 @endsection

@@ -1,5 +1,5 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-200 sticky top-0 z-50">
-    <header class="flex justify-between items-center w-full px-4 py-3 shadow-md bg-white transition-all duration-300">
+    <header class="flex justify-between items-center w-full px-10 py-3 shadow-md bg-white transition-all duration-300">
         <!-- Left Section: Brand and Hamburger Menu -->
         <div class="flex items-center space-x-4">
             <!-- Hamburger Menu Button with Animation -->
@@ -64,14 +64,7 @@
             </div>
             
             <!-- User Profile -->
-            <div class="relative ml-2">
-                <button class="flex items-center focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-full" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
-                    <span class="sr-only">Open user menu</span>
-                    <div class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                        <span class="text-sm font-medium">JD</span>
-                    </div>
-                </button>
-            </div>
+
         </div>
     </header>
     
@@ -81,19 +74,7 @@
         <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Members</a>
         <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Reports</a>
         <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Settings</a>
-        <div class="pt-4 pb-3 border-t border-gray-200">
-            <div class="flex items-center px-3">
-                <div class="flex-shrink-0">
-                    <div class="h-10 w-10 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                        <span class="text-sm font-medium">JD</span>
-                    </div>
-                </div>
-                <div class="ml-3">
-                    <div class="text-base font-medium text-gray-800">John Doe</div>
-                    <div class="text-sm font-medium text-gray-500">john@example.com</div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </nav>
 <script>

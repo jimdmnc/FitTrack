@@ -223,66 +223,88 @@
         
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="glass-card p-5">
+            <!-- Current Members Card -->
+            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Current Members</h3>
-                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">326 </div>
-                        <span class="text-lg font-semibold ">people</span>     
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 12% vs last week
+                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Current <br> Members</h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-900 mr-2">
+                                {{ $activeMembersData['currentWeekActiveMembers'] }}
+                            </div>
+                            <span class="text-lg text-gray-700">members</span>
+                        </div>
+                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full {{ $activeMembersData['formattedPercentageChange'][-1] === '▲' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            <i class="fas {{ $activeMembersData['formattedPercentageChange'][-1] === '▲' ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1 text-xs"></i>
+                            <span class="text-sm font-medium">{{ str_replace(['▲', '▼'], '', $activeMembersData['formattedPercentageChange']) }}</span>
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-blue-100 text-blue-600 stat-card-icon">
-                        <i class="fas fa-users"></i>
+                    <div class="p-3 rounded-full bg-blue-100 text-blue-600">
+                        <i class="fas fa-users text-xl"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="glass-card p-5">
+
+            <!-- New Members Card -->
+            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">New Members</h3>
-                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">15</div>
-                        <span class="text-lg font-semibold ">people</span>
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 4% vs last week
+                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">New <br>Members</h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-900 mr-2">
+                                {{ $newMembersData['currentWeekNewMembers'] }}
+                            </div>
+                            <span class="text-lg text-gray-700">this week</span>
+                        </div>
+                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full {{ $newMembersData['formattedPercentageChange'][-1] === '▲' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            <i class="fas {{ $newMembersData['formattedPercentageChange'][-1] === '▲' ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1 text-xs"></i>
+                            <span class="text-sm font-medium">{{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}</span>
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-purple-100 text-purple-600 stat-card-icon">
-                        <i class="fas fa-user-plus"></i>
+                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                        <i class="fas fa-user-plus text-xl"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="glass-card p-5">
+
+            <!-- Today's Check-ins Card -->
+            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Walk-ins</h3>
-                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">20</div>
-                        <span class="text-lg font-semibold">people</span>
-                        <div class="text-red-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-down mr-1"></i> 2% vs yesterday
+                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Today's <br>Check-ins</h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-900 mr-2">
+                                {{ $todaysCheckInsData['todaysCheckIns'] }}
+                            </div>
+                            <span class="text-lg text-gray-700">members</span>
+                        </div>
+                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full {{ $todaysCheckInsData['formattedPercentageChange'][-1] === '▲' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                            <i class="fas {{ $todaysCheckInsData['formattedPercentageChange'][-1] === '▲' ? 'fa-arrow-up' : 'fa-arrow-down' }} mr-1 text-xs"></i>
+                            <span class="text-sm font-medium">{{ str_replace(['▲', '▼'], '', $todaysCheckInsData['formattedPercentageChange']) }}</span>
                         </div>
                     </div>
-                    <div class="p-3 rounded-lg bg-amber-100 text-amber-600 stat-card-icon">
-                        <i class="fas fa-walking"></i>
+                    <div class="p-3 rounded-full bg-amber-100 text-amber-600">
+                        <i class="fas fa-check-circle text-xl"></i>
                     </div>
                 </div>
             </div>
-            
-            <div class="glass-card p-5">
+
+            <!-- Soon to Expire Card -->
+            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-gray-500 text-sm font-medium mb-1">Today's Check-ins</h3>
-                        <div class="text-3xl font-bold text-gray-900 inline-block mr-1">128</div>
-                        <span class="text-lg font-semibold">people</span>
-                        <div class="text-green-600 text-sm font-medium mt-1">
-                            <i class="fas fa-arrow-up mr-1"></i> 3% vs yesterday
+                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-900 mr-2">{{ $expiringMemberships }}</div>
+                            <span class="text-lg text-gray-700">members</span>
                         </div>
+                        <a href="#" class="mt-3 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md inline-flex items-center group transition-colors duration-200">
+                            <span class="text-sm font-medium">Manage Renewals</span>
+                            <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
+                        </a>
                     </div>
-                    <div class="p-3 rounded-lg bg-green-100 text-green-600 stat-card-icon">
-                        <i class="fas fa-check-circle"></i>
+                    <div class="p-3 rounded-full bg-red-100 text-red-600">
+                        <i class="fas fa-calendar-times text-xl"></i>
                     </div>
                 </div>
             </div>
@@ -392,203 +414,242 @@
 
 
 <!-- Members Table with Modern Design - now placed below session distribution and wider -->
-<div id="wholePage" class="glass-card p-6 grid-col-span-8 mt-6">
+<div class="glass-card p-6 grid-col-span-8 mt-6">
     <div class="flex justify-between items-center mb-6">
         <div>
             <h3 class="text-xl font-bold text-blue-900">Recent Member Registrations</h3>
             <p class="text-sm text-gray-500 mt-1">Newly joined members and their status</p>
         </div>
         <div class="flex items-center gap-3">
-            <div class="relative">
-                <input type="text" placeholder="Search registrations..." class="px-4 py-2 pl-10 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-64">
-                <div class="absolute left-3 top-2.5 text-gray-400">
-                    <i class="fas fa-search"></i>
-                </div>
+<!-- Search Form -->
+<form method="GET" action="{{ route('staff.dashboard') }}" class="w-full sm:w-auto">
+    <div class="flex items-center space-x-2">
+        <!-- Search Input with Icon -->
+        <div class="relative w-full">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
             </div>
+            <input 
+                type="text" 
+                name="search" 
+                value="{{ $query }}" 
+                placeholder="Search members..." 
+                class="block w-full pl-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                aria-label="Search members"
+            >
+        </div>
+
+        <!-- Search Button (Outside Input Field) -->
+        <button 
+            type="submit" 
+            class="px-3 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none transition duration-150 ease-in-out flex items-center"
+            aria-label="Search"
+        >
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+        </button>
+
+        <!-- Clear Button (Appears Only If Search is Active) -->
+        @if($query)
+        <a 
+            href="{{ route('staff.dashboard') }}" 
+            class="px-3 py-2 text-gray-600 hover:text-gray-800 bg-gray-200 rounded-md focus:outline-none transition duration-150 ease-in-out flex items-center"
+        >
+            <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Clear
+        </a>
+        @endif
+    </div>
+</form>
 
 
         </div>
     </div>
     <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead>
-                <tr class="bg-gray-50 rounded-lg">
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Type</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-                @foreach ($members as $member)
-                <tr class="hover:bg-gray-50 transition-colors member-table-row">
-                    <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="h-10 w-10 flex-shrink-0 mr-3">
-                                <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                    <span class="text-blue-600 font-semibold">
-                                        {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
-                                    </span>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-sm font-medium text-gray-900">{{ $member->first_name }} {{ $member->last_name }}</div>
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+            <tr class="bg-gray-50 rounded-lg">
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> <!-- Added this column -->
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Type</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            @foreach ($members as $member)
+            <tr class="hover:bg-gray-50 transition-colors member-table-row">
+                <td class="px-4 py-4 text-sm text-gray-500">{{ $loop->iteration }}</td> <!-- Added this cell -->
+                <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
+                <td class="px-4 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div class="h-10 w-10 flex-shrink-0 mr-3">
+                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                <span class="text-blue-600 font-semibold">
+                                    {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
+                                </span>
                             </div>
                         </div>
-                    </td>
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
-                            @elseif($member->getMembershipType() == 'Week') bg-green-100 text-green-800
-                            @elseif($member->getMembershipType() == 'Month') bg-blue-100 text-blue-800
-                            @elseif($member->getMembershipType() == 'Session') bg-yellow-100 text-yellow-800
-                            @endif">
-                            {{ $member->getMembershipType() }}
-                        </span>
-
-                    </td>
-
-                    <td class="px-4 py-4 text-sm text-gray-500">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
-                    <td class="px-4 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                            {{ $member->member_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                            {{ $member->member_status }}
-                        </span>
-
-                    </td>
-                    <td class="px-4 py-4 text-right text-sm">
-                        <button onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                            class="text-indigo-600 hover:text-indigo-900 font-medium mr-2">View</button>
-
-                        <!-- Edit Button -->
-                        <button onclick="openEditModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ $member->member_status }}')"
-                            class="text-amber-600 hover:text-amber-900 font-medium mr-2">Edit</button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">{{ $member->first_name }} {{ $member->last_name }}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-4 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
+                        @elseif($member->getMembershipType() == 'Week') bg-green-100 text-green-800
+                        @elseif($member->getMembershipType() == 'Month') bg-blue-100 text-blue-800
+                        @elseif($member->getMembershipType() == 'Session') bg-yellow-100 text-yellow-800
+                        @endif">
+                        {{ $member->getMembershipType() }}
+                    </span>
+                </td>
+                <td class="px-4 py-4 text-sm text-gray-500">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
+                <td class="px-4 py-4 whitespace-nowrap">
+                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {{ $member->member_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                        {{ $member->member_status }}
+                    </span>
+                </td>
+                <td class="px-4 py-4 text-right text-sm">
+                    <button onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                        class="text-indigo-600 hover:text-indigo-900 font-medium mr-2">View</button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <!-- Pagination Links -->
+    <div class="mt-4">
+        <!-- Custom Pagination Links -->
+        {{ $members->links('vendor.pagination.default') }}
+    </div>
 
     </div>
 
     
 
 </div>
-<!-- View Member Modal -->
-<div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center mb-6 border-b pb-3">
-            <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                Member Profile
-            </h2>
-            <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- Horizontal ID Card Layout -->
-        <div class="bg-white border-2 border-blue-500 rounded-lg overflow-hidden shadow-md">
-            <!-- Card Header -->
-            <div class="bg-blue-500 p-3 text-white">
-                <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
-            </div>
-            
-            <!-- Horizontal Layout Container -->
-            <div class="flex">
-                <!-- Left Column - Photo Area -->
-                <div class="w-1/4 p-4 flex flex-col items-center justify-center border-r">
-                    <div class="w-32 h-32 bg-gray-100 border rounded-full flex items-center justify-center mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <!-- View Member Modal -->
+        <div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+            <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+                <!-- Modal Header -->
+                <div class="flex justify-between items-center mb-6 border-b pb-3">
+                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
-                    </div>
-                    <!-- Status Badge -->
-                    <span id="viewStatus" class="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                        Member Profile
+                    </h2>
+                    <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
-                
-                <!-- Middle Column - Primary Info -->
-                <div class="w-2/5 p-4 bg-white">
-                    <!-- Name -->
-                    <div class="mb-4">
-                        <p class="text-xs text-gray-500 uppercase">Name</p>
-                        <p class="font-bold text-gray-800 text-lg" id="viewMemberName">John Doe</p>
-                    </div>
-                    
-                    <!-- Member ID -->
-                    <div class="mb-4">
-                        <p class="text-xs text-gray-500 uppercase">Member ID</p>
-                        <p class="font-medium text-gray-800" id="viewMemberID">M12345678</p>
-                    </div>
-                    
-                    <!-- Registration Date -->
-                    <div class="flex items-center mb-4">
-                        <div class="bg-yellow-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase">Registration Date</p>
-                            <p class="font-medium text-gray-800" id="viewStartDate">Jan 15, 2025</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Right Column - Membership Type & Barcode -->
-                <div class="w-1/3 p-4 bg-gray-50">
-                    <!-- Membership Type -->
-                    <div class="flex items-center mb-6">
-                        <div class="bg-purple-100 p-2 rounded-full mr-3">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs text-gray-500 uppercase">Membership Type</p>
-                            <p class="font-medium text-gray-800" id="viewMembershipType">Premium</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Barcode Area -->
-                    <div class="mb-2">
-                        <p class="text-xs text-gray-500 uppercase mb-1">Card ID</p>
-                        <div class="bg-gray-100 h-12 flex items-center justify-center rounded">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-                            </svg>
-                            <span class="text-sm font-medium text-gray-600">ID: 123456789</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="bg-blue-500 text-white text-center py-2 text-xs">
-                <p>Valid only with photo identification</p>
-            </div>
-        </div>
 
-        <!-- Modal Footer with Edit and Close Buttons -->
-        <div class="flex justify-end mt-6">
-            <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                Edit
-            </button>
-            <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
+                <!-- Horizontal ID Card Layout -->
+                <div class="bg-white border-2 border-blue-500 rounded-lg overflow-hidden shadow-md">
+                    <!-- Card Header -->
+                    <div class="bg-blue-500 p-3 text-white">
+                        <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
+                    </div>
+                    
+                    <!-- Horizontal Layout Container -->
+                    <div class="flex">
+                        <!-- Left Column - Photo Area -->
+                        <div class="w-1/4 p-4 flex flex-col items-center justify-center border-r">
+                            <div class="w-32 h-32 bg-gray-100 border rounded-full flex items-center justify-center mb-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <!-- Status Badge -->
+                            <span id="viewStatus" class="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+                        </div>
+                        
+                        <!-- Middle Column - Primary Info -->
+                        <div class="w-2/5 p-4 bg-white">
+                            <!-- Name -->
+                            <div class="mb-4">
+                                <p class="text-xs text-gray-500 uppercase">Name</p>
+                                <p class="font-bold text-gray-800 text-lg" id="viewMemberName">John Doe</p>
+                            </div>
+                            
+                            <!-- Member ID -->
+                            <div class="mb-4">
+                                <p class="text-xs text-gray-500 uppercase">Member ID</p>
+                                <p class="font-medium text-gray-800" id="viewMemberID">M12345678</p>
+                            </div>
+                            
+                            <!-- Registration Date -->
+                            <div class="flex items-center mb-4">
+                                <div class="bg-yellow-100 p-2 rounded-full mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase">Registration Date</p>
+                                    <p class="font-medium text-gray-800" id="viewStartDate">Jan 15, 2025</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Right Column - Membership Type & Barcode -->
+                        <div class="w-1/3 p-4 bg-gray-50">
+                            <!-- Membership Type -->
+                            <div class="flex items-center mb-6">
+                                <div class="bg-purple-100 p-2 rounded-full mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 uppercase">Membership Type</p>
+                                    <p class="font-medium text-gray-800" id="viewMembershipType">Premium</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Barcode Area -->
+                            <div class="mb-2">
+                                <p class="text-xs text-gray-500 uppercase mb-1">Card ID</p>
+                                <div class="bg-gray-100 h-12 flex items-center justify-center rounded">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-600">ID: 123456789</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="bg-blue-500 text-white text-center py-2 text-xs">
+                        <p>Valid only with photo identification</p>
+                    </div>
+                </div>
+
+                <!-- Modal Footer with Edit and Close Buttons -->
+                <!-- <div class="flex justify-end mt-6">
+                    <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                        Edit
+                    </button>
+                    <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
+                </div> -->
+            </div>
         </div>
-    </div>
-</div>
 
         <!-- Edit Member Modal -->
         <div id="editMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
@@ -689,31 +750,31 @@
 
     // Open View Modal
     function openViewModal(name, memberID, status, membershipType, startDate) {
-    // Set modal data
-    document.getElementById('viewMemberName').textContent = name;
-    document.getElementById('viewMemberID').textContent = memberID;
-    document.getElementById('viewStatus').textContent = status;
-    document.getElementById('viewMembershipType').textContent = membershipType;
-    document.getElementById('viewStartDate').textContent = startDate;
+        // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewMemberID').textContent = memberID;
+        document.getElementById('viewStatus').textContent = status;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = startDate;
 
-    // Change status color based on status
-    let statusBadge = document.getElementById('viewStatus');
-    if (status.toLowerCase() === 'active') {
-        statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
-    } else {
-        statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
+        // Change status color based on status
+        let statusBadge = document.getElementById('viewStatus');
+        if (status.toLowerCase() === 'active') {
+            statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
+        } else {
+            statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
+        }
+
+        // Show modal
+        const modal = document.getElementById('viewMemberModal');
+        const modalContent = document.getElementById('viewModalContent');
+        
+        modal.classList.remove('hidden'); // Make it visible
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0'); // Animate opening
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
     }
-
-    // Show modal
-    const modal = document.getElementById('viewMemberModal');
-    const modalContent = document.getElementById('viewModalContent');
-    
-    modal.classList.remove('hidden'); // Make it visible
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0'); // Animate opening
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
 
 // Function to close the modal
 function closeViewModal() {
