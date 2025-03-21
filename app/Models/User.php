@@ -34,6 +34,8 @@ class User extends Authenticatable
         'role',
         'birthdate', // ✅ Added birthdate here
         'password', // ✅ This must be here!
+        'member_status',
+
 
     ];
 

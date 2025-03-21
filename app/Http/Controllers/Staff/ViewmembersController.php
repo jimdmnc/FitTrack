@@ -49,14 +49,22 @@ class ViewmembersController extends Controller
     
         // Find user by RFID
         $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
-    
+        if (!$user) {
+            return response()->json(['message' => 'User not found!'], 404);
+        }
         // Update user table
-        $user->update([
+        
+        $updated = $user->update([
             'membership_type' => $request->membership_type,
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
-            'member_status' => 'active', // Set as active when renewed
+            'member_status' => 'active', 
         ]);
+        
+        if (!$updated) {
+            return response()->json(['message' => 'User update failed!'], 500);
+        }
+        
     
         // Save renewal history
         Renewal::create([
@@ -66,7 +74,7 @@ class ViewmembersController extends Controller
             'end_date' => $request->end_date
         ]);
     
-        return response()->json(['message' => 'Membership renewed successfully']);
+        // return response()->json(['message' => 'Membership renewed successfully']);
 
     }
     
