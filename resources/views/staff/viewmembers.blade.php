@@ -218,7 +218,7 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="editMemberID">Member ID</label>
-                    <input type="text" id="editMemberID" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
+                    <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="editMemberName">Name</label>
@@ -226,7 +226,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="membershipType">Membership Type</label>
-                    <select id="membershipType" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white text-sm">
+                    <select id="membershipType" name="membership_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white text-sm">
                     <option value="" selected disabled>Select Membership Type</option>
                         <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
                         <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
@@ -236,11 +236,11 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="startDate">Renewal Date</label>
-                    <input type="date" id="startDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                    <input type="date" id="startDate" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="endDate">Expiration Date</label>
-                    <input type="text" id="endDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" readonly>
+                    <input type="text" id="endDate" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" readonly>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1" for="membershipFee">Base Fee ($)</label>
