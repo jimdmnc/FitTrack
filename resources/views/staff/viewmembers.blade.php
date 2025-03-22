@@ -74,8 +74,8 @@
                             <thead>
                                 <tr class="bg-gray-50 rounded-lg">
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> <!-- Added this column -->
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Type</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -89,7 +89,6 @@
                         <tr class="hover:bg-gray-50 transition-colors member-table-row" data-status="{{ $member->member_status }}">
                             
                             <td class="px-4 py-4 text-sm text-gray-500">{{ $loop->iteration }}</td> 
-                            <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0 mr-3">
@@ -104,6 +103,8 @@
                                     </div>
                                 </div>
                             </td>
+                            <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
+
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
