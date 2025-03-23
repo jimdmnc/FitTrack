@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+        Route::get('/peak-hours', [DashboardController::class, 'getPeakHours']);
 
         
         // Membership Registration
@@ -40,8 +41,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-        Route::post('/staff/renew-membership', [ViewmembersController::class, 'renewMembership'])
-            ->name('staff.renewMembership');
+
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('renew.membership');
 

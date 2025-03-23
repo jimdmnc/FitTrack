@@ -29,9 +29,10 @@ class UpdateMemberStatus extends Command
     public function handle()
     {
         // Update members whose membership has expired
-        User::where('end_date', '<', Carbon::now()) // Check expired members
-            ->where('member_status', 'Active') // Only update active members
-            ->update(['member_status' => 'Expired']);
+        User::where('end_date', '<', Carbon::today())
+        ->where('member_status', 'Active')
+        ->update(['member_status' => 'Expired']);
+    
 
         $this->info('Expired members have been updated successfully.');
     }
