@@ -200,12 +200,13 @@ class DashboardController extends Controller
         $arrowIndicator = ($percentageChange >= 0) ? '▲' : '▼';
     
         // Format the percentage change
-        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% ' . ($percentageChange > 0 ? 'vs Yesterday' : 'vs Yesterday') . ' ' . $arrowIndicator;
-    
-        return [
-            'todaysCheckIns' => $todaysCheckIns,
-            'formattedPercentageChange' => $formattedPercentageChange,
-        ];
+        // Format the percentage change without the arrow
+        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% ' . ($percentageChange > 0 ? 'Increase' : 'Decrease');
+        
+            return [
+                'todaysCheckIns' => $todaysCheckIns,
+                'formattedPercentageChange' => $formattedPercentageChange,
+            ];
     }
 
     public function getExpiringMemberships()

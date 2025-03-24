@@ -259,117 +259,100 @@
         </div>
         
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-8">
 
-            <!-- New Members Card -->
-            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">
-                            New <br>Members
-                        </h3>
-                        <div class="flex items-baseline">
-                            <div class="text-3xl font-bold text-gray-900 mr-2">
-                                {{ $newMembersData['currentWeekNewMembers'] }}
-                            </div>
-                            <span class="text-lg text-gray-700">members</span>
-                        </div>
-
-                        <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                        @php
-                            $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
-                        @endphp
-                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                            {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            
-                            <!-- SVG Arrow Up (Increase) -->
-                            @if($isIncrease)
-                            <i class="fas fa-arrow-up w-4 h-4 mr-1 text-green-700"></i>
-
-                            @else
-                            <i class="fas fa-arrow-down w-4 h-4 mr-1 text-rerd-700"></i>
-
-                            @endif
-                            
-                            <span class="text-sm font-medium">
-                                {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
-                            </span>
-                        </div>
+    <!-- New Members Card -->
+    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+            <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
+                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">
+                    New <br>Members
+                </h3>
+                <div class="flex items-baseline">
+                    <div class="text-3xl font-bold text-gray-900 mr-2">
+                        {{ $newMembersData['currentWeekNewMembers'] }}
                     </div>
+                    <span class="text-lg text-gray-700">members</span>
+                </div>
 
-                    <!-- Icon on the Right Side -->
-                    <div class="p-3 rounded-full bg-purple-100 text-purple-600">
-                        <i class="fas fa-user-plus text-xl"></i>
-                    </div>
+                <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                @php
+                    $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
+                @endphp
+                <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                    {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                    <i class="fas fa-arrow-up w-4 h-4 mr-1 text-green-700"></i>
+                    <span class="text-sm font-medium">
+                        {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
+                    </span>
                 </div>
             </div>
 
-
-            <!-- Today's Check-ins Card -->
-            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">
-                            Today's <br>Check-ins
-                        </h3>
-                        <div class="flex items-baseline">
-                            <div class="text-3xl font-bold text-gray-900 mr-2">
-                                {{ $todaysCheckInsData['todaysCheckIns'] }}
-                            </div>
-                            <span class="text-lg text-gray-700">members</span>
-                        </div>
-
-                        <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                        @php
-                            $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
-                        @endphp
-                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                            {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                            
-                            <!-- SVG Arrow Up (Increase) -->
-                            @if($isIncrease)
-
-                                <i class="fas fa-arrow-up w-4 h-4 mr-1 text-green-700"></i>
-
-                            @else
-                                <!-- SVG Arrow Down (Decrease) -->
-                                <i class="fas fa-arrow-down w-4 h-4 mr-1 text-red-700"></i>
-
-                            @endif
-                            
-                            <span class="text-sm font-medium">
-                                {{ str_replace(['▲', '▼'], '', $todaysCheckInsData['formattedPercentageChange']) }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Icon on the Right Side -->
-                    <div class="p-3 rounded-full bg-amber-100 text-amber-600">
-                        <i class="fas fa-check-circle text-xl"></i>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Soon to Expire Card -->
-            <div class="glass-card p-5 hover:shadow-lg transition-shadow duration-300">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
-                        <div class="flex items-baseline">
-                            <div class="text-3xl font-bold text-gray-900 mr-2">{{ $expiringMemberships }}</div>
-                            <span class="text-lg text-gray-700">members</span>
-                        </div>
-                        <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md inline-flex items-center group transition-colors duration-200">
-                            <span class="text-sm font-medium">Manage Renewals</span>
-                            <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
-                        </a>
-                    </div>
-                    <div class="p-3 rounded-full bg-red-100 text-red-600">
-                        <i class="fas fa-calendar-times text-xl"></i>
-                    </div>
-                </div>
+            <!-- Icon on the Right Side (Takes up 30% width) -->
+            <div class="w-1/3 flex items-center text-yellow-700">
+                <i class="fas fa-user-plus text-7xl"></i> <!-- Adjust icon size if necessary -->
             </div>
         </div>
+    </div>
+
+    <!-- Today's Check-ins Card -->
+    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+            <div class="w-2/3">
+                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">
+                    Today's <br>Check-ins
+                </h3>
+                <div class="flex items-baseline">
+                    <div class="text-3xl font-bold text-gray-900 mr-2">
+                        {{ $todaysCheckInsData['todaysCheckIns'] }}
+                    </div>
+                    <span class="text-lg text-gray-700">members</span>
+                </div>
+
+                <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                @php
+                    $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
+                @endphp
+                <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                    {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                    <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1"></i>
+                    <span class="text-sm font-medium">
+                        {{ str_replace(['Increase', 'Decrease'], '', $todaysCheckInsData['formattedPercentageChange']) }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Icon on the Right Side (Takes up 30% width) -->
+            <div class="w-1/3 flex items-center text-green-900">
+                <i class="fas fa-check-circle text-7xl"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Soon to Expire Card -->
+    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+        <div class="flex justify-between items-start">
+            <div class="w-2/3">
+                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
+                <div class="flex items-baseline">
+                    <div class="text-3xl font-bold text-gray-900 mr-2">{{ $expiringMemberships }}</div>
+                    <span class="text-lg text-gray-700">members</span>
+                </div>
+                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md inline-flex items-center group transition-colors duration-200">
+                    <span class="text-sm font-medium">Manage Renewals</span>
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
+                </a>
+            </div>
+
+            <!-- Icon on the Right Side (Takes up 30% width) -->
+            <div class="w-1/3 flex items-center text-red-900">
+                <i class="fas fa-calendar-times text-7xl"></i>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 
     <!-- Rearranged and Resized Dashboard Grid Charts Section -->
     <div class="dashboard-grid gap-4">
