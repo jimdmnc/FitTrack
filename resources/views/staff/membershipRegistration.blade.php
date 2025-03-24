@@ -173,6 +173,11 @@
                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
                     @enderror
                 </div>
+                
+                <div>
+                    <label for="payment_amount" class="block text-gray-700 font-medium mb-2">Payment Amount</label>
+                    <input type="text" id="payment_amount" name="payment_amount" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none" readonly>
+                </div>
 
                 <div>
                     <label for="startDate" class="block text-gray-700 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
@@ -197,6 +202,8 @@
                     </div>
                     <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
                 </div>
+
+
 
                 <div>
                     <label for="uid" class="block text-gray-700 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
@@ -282,6 +289,35 @@
 
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const membershipType = document.getElementById("membershipType");
+        const paymentAmount = document.getElementById("payment_amount");
+
+        // Define payment amounts for each membership type
+        const paymentRates = {
+            "1": "100",   // 1-day session
+            "7": "500",   // 7-day weekly
+            "30": "1800", // 30-day monthly
+            "365": "20000" // 1-year membership
+        };
+
+        // Function to update payment amount based on selection
+        function updatePaymentAmount() {
+            const selectedType = membershipType.value;
+            paymentAmount.value = paymentRates[selectedType] || "0"; // Default ₱0 if nothing selected
+        }
+
+        // Listen for changes in membership type
+        membershipType.addEventListener("change", updatePaymentAmount);
+    });
+</script>
+
+
+
+
+
+
 <!-- JavaScript for Expiry Date -->
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -341,27 +377,27 @@
 </script>
 <script>
     // Function to fetch the latest RFID UID
-function fetchLatestUid() {
-    fetch('/rfid/latest')
-        .then(response => response.json())
-        .then(data => {
-            console.log('Data received:', data); // Debugging
-            if (data.uid) {
-                document.getElementById('uid').value = data.uid;
-                document.getElementById('rfid_status').textContent = 'Card detected.';
-                document.getElementById('rfid_status').style.color = 'green';
-            } else {
-                console.log('No UID found'); // Debugging
-                document.getElementById('rfid_status').textContent = 'Please Tap Your Card...';
-                // document.getElementById('rfid_status').style.color = 'blue';
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching UID:', error); // Debugging
-            document.getElementById('rfid_status').textContent = 'Error fetching UID.';
-            document.getElementById('rfid_status').style.color = 'red';
-        });
-}
+    function fetchLatestUid() {
+        fetch('/rfid/latest')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Data received:', data); // Debugging
+                if (data.uid) {
+                    document.getElementById('uid').value = data.uid;
+                    document.getElementById('rfid_status').textContent = 'Card detected.';
+                    document.getElementById('rfid_status').style.color = 'green';
+                } else {
+                    console.log('No UID found'); // Debugging
+                    document.getElementById('rfid_status').textContent = 'Please Tap Your Card...';
+                    // document.getElementById('rfid_status').style.color = 'blue';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching UID:', error); // Debugging
+                document.getElementById('rfid_status').textContent = 'Error fetching UID.';
+                document.getElementById('rfid_status').style.color = 'red';
+            });
+    }
 
     // Fetch the latest UID every 2 seconds (adjust interval as needed)
     setInterval(fetchLatestUid, 2000);

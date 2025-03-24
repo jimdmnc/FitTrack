@@ -89,10 +89,13 @@ class User extends Authenticatable
     }
 
     public function checkIns()
-{
-    return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');
-}
-
+    {
+        return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');
+    }
+    public function payments() {
+        return $this->hasMany(MembersPayment::class, 'rfid_uid', 'rfid_uid');
+    }
+    
     // In User.php model
 
 // Accessor for membership status

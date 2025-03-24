@@ -50,7 +50,24 @@ Route::middleware('auth')->group(function () {
             ->name('staff.record-attendance');
 
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
+       
+       
+       
+       
+       
+        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])
+            ->name('staff.paymentTracking');
+        Route::post('/staff/paymentTracking/store', [PaymentTrackingController::class, 'store'])
+            ->name('payments.store');
+        Route::put('/staff/paymentTracking/update/{id}', [PaymentTrackingController::class, 'update'])
+            ->name('payments.update');
+        Route::delete('/staff/paymentTracking/destroy/{id}', [PaymentTrackingController::class, 'destroy'])
+            ->name('payments.destroy');
+
+
+
+
+
 
         // Report routes
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
