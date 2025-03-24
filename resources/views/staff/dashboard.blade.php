@@ -234,29 +234,28 @@
     <div class="container mx-auto py-8 px-4">
         <!-- Header Section with Modern Design -->
         <div class="mb-8">
-            <div class="glass-card p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center">
-                    <div>
-                        <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700">
-                            Rockies  Fitness Dashboard
-                        </h1>
-                        <p class="text-gray-500 mt-2">Track and analyze your gym's performance</p>
-                    </div>
-                    <div class="mt-4 md:mt-0 flex items-center gap-3">
-      
-                        <button class="px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
-                            <i class="fas fa-filter"></i> Filter
+        <div class="glass-card p-6 bg-gray-300">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600">
+                        Rockies Fitness Dashboard
+                    </h1>
+                    <p class="text-gray-700 mt-2">Track and analyze your gym's performance</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex items-center gap-3">
+                    <button class="px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
+                        <i class="fas fa-filter"></i> Filter
+                    </button>
+                    <div class="relative">
+                        <button class="p-2 bg-white border border-gray-200 hover:border-gray-300 rounded-full shadow-sm text-gray-500 hover:text-indigo-600 transition-all">
+                            <i class="fas fa-bell"></i>
                         </button>
-                        <div class="relative">
-                            <button class="p-2 bg-white border border-gray-200 hover:border-gray-300 rounded-full shadow-sm text-gray-500 hover:text-indigo-600 transition-all">
-                                <i class="fas fa-bell"></i>
-                            </button>
-                            <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
-                        </div>
+                        <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
         
         <!-- Stats Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-8">
