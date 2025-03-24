@@ -87,4 +87,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(Renewal::class, 'rfid_uid', 'rfid_uid');
     }
+
+    public function checkIns()
+{
+    return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');
+}
+
+    // In User.php model
+
+// Accessor for membership status
+public function getMembershipStatusTextAttribute()
+{
+    return self::MEMBERSHIP_TYPES[$this->membership_status] ?? 'Unknown';
+}
+
+
+
 }

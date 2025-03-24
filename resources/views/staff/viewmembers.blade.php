@@ -70,6 +70,39 @@
 
         <div class="glass-card mt-5 ">
             <div class="overflow-x-auto">
+                <!-- Success Message -->
+@if(session('success'))
+    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+        <div class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+        <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+@endif
+
+<!-- Error Message -->
+@if(session('error'))
+    <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+        <div class="flex items-center">
+            <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ session('error') }}</span>
+        </div>
+        <button type="button" class="text-red-500 hover:text-red-700" onclick="this.parentElement.style.display='none';">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+@endif
                 <table class="min-w-full divide-y divide-gray-200">
                             <thead>
                                 <tr class="bg-gray-50 rounded-lg">
@@ -211,6 +244,9 @@
                 </svg>
             </button>
         </div>
+
+
+
 
         <!-- Renew Form -->
         <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-6">
@@ -549,5 +585,6 @@ function updateExpirationDate() {
        
 
 </script>
+
 
 @endsection

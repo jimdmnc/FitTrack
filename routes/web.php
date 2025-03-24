@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+        Route::get('/peak-hours', [DashboardController::class, 'getPeakHours']);
 
         // Membership Registration
         Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])
@@ -35,8 +36,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
             ->name('staff.membershipRegistration.store');
 
-        Route::post('/staff/renew-membership', [ViewmembersController::class, 'renewMembership'])
-            ->name('staff.renewMembership');
+
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('renew.membership');
 

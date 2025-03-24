@@ -17,7 +17,7 @@
     
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
+    </head>
 <body class="font-sans">
     
 <div class="flex h-screen min-w-[1024px]">
