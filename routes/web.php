@@ -24,29 +24,21 @@ Route::get('/rfid/latest', [RFIDController::class, 'getLatestRfidUid']);
 // Route to handle attendance
 Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);
 
-// Authenticated routes
 Route::middleware('auth')->group(function () {
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
 
-        
         // Membership Registration
         Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])
             ->name('staff.membershipRegistration');
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
-            ->name('staff.membershipRegistration.store');        
-
-
-
+            ->name('staff.membershipRegistration.store');
 
         Route::post('/staff/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('staff.renewMembership');
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('renew.membership');
-
-
-
 
         Route::get('/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance');
@@ -57,23 +49,23 @@ Route::middleware('auth')->group(function () {
         Route::post('/staff/record-attendance', [AttendanceController::class, 'recordAttendance'])
             ->name('staff.record-attendance');
 
-
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
-        
-        
 
-        
+        // Report routes
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
-            // Profile routes
+        Route::post('/reports/generate', [ReportController::class, 'generateReport'])->name('staff.reports.generate');
+        Route::get('/reports/export', [ReportController::class, 'exportReport'])->name('staff.reports.export');
+    });
+
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    });
 
+    // Member routes
     Route::prefix('member')->group(function () {
         Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
-
     });
 });
 
