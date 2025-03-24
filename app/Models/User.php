@@ -67,6 +67,17 @@ class User extends Authenticatable
     {
         return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');
     }
+
+
+    public function getTotalVisitsAttribute()
+    {
+        return $this->attendances()
+            ->whereYear('time_in', now()->year)
+            ->whereMonth('time_in', now()->month)
+            ->count();
+    }
+
+
         // Define relationship with RfidTag
         public function rfidTag()
         {
@@ -95,6 +106,20 @@ class User extends Authenticatable
     public function payments() {
         return $this->hasMany(MembersPayment::class, 'rfid_uid', 'rfid_uid');
     }
+
+
+// In User model
+public function attendance()
+{
+    return $this->hasOne(Attendance::class, 'rfid_uid', 'rfid_uid'); // 'rfid_uid' in both tables
+}
+
+    
+    public function getMembershipTypeNameAttribute()
+{
+    return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'N/A';
+}
+
     
     // In User.php model
 

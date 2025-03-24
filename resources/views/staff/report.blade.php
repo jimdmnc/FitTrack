@@ -32,129 +32,350 @@
         }
     </style>
 
-    <section class="pt-10 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
-                <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Reports</span>
-                </h2>
-                <div class="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-                    <span class="bg-green-100 text-green-800 text-xs font-semibold px-4 py-1 rounded-full whitespace-nowrap">
-                        <i class="fas fa-circle text-green-500 text-xs mr-1"></i> LIVE
-                    </span>
-                    <span class="text-xs md:text-sm text-gray-500 whitespace-nowrap">
-                        Last updated: {{ now()->format('F j, Y h:i A') }}
-                    </span>
-                </div>
+   
+
+    <div x-data="reportFilter()" class="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-lg space-y-6">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800" x-text="reportType === 'members' ? 'Members Report' : 'Payments Report'"></h2>
+                <p class="text-gray-500">View and analyze your data with ease</p>
             </div>
-        </div>
-    </section>
-
-    <!-- Search & Filter Section with Modern UI -->
-    <div class="glass-card mb-8 p-4">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="relative w-full md:w-72">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-400"></i>
-                </div>
-                <input type="text" placeholder="Search members..." class="pl-10 pr-4 py-2 w-full border-0 focus:ring-2 focus:ring-blue-500 rounded-lg shadow-sm" />
-            </div>
-
-            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-                <div class="relative">
-                    <select id="report-type" class="appearance-none pl-4 pr-10 py-2 border-0 bg-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
-                        <option value="finance">Payment Report</option>
-                        <option value="members">Member Report</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-
-                <div class="relative">
-                    <select id="date-filter" class="appearance-none pl-4 pr-10 py-2 border-0 bg-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500">
-                        <option value="today">Today</option>
-                        <option value="thisWeek" selected>This Week</option>
-                        <option value="thisMonth">This Month</option>
-                        <option value="thisYear">This Year</option>
-                        <option value="custom">Custom Range</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-
-                <!-- Custom Date Range Inputs (Hidden by Default) -->
-                <div id="custom-date-range" class="hidden flex flex-wrap gap-3">
-                    <input type="date" id="start-date" class="pl-4 pr-10 py-2 border-0 bg-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500" />
-                    <input type="date" id="end-date" class="pl-4 pr-10 py-2 border-0 bg-white rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500" />
-                </div>
-
-                <button id="export-report" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-lg shadow hover:from-blue-700 hover:to-indigo-800 transition-all">
-                    <i class="fas fa-download mr-2"></i> Export
-                </button>
-            </div>
-        </div>
+                    
+                    <!-- Enhanced Filter Section -->
+                    <div>
+                        
+                    <div class="flex flex-col sm:flex-row gap-4 items-end">
+                    <!-- Report Type Selector -->
+    <!-- Export Button -->
+    <div class="text-right">
+        <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
     </div>
-
-    <!-- Members Table with Modern Design -->
-    <div class="glass-card p-6 transition-all hover:shadow-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-semibold text-gray-800">Recent Active Members</h3>
-            <button class="text-sm text-blue-600 hover:text-blue-800 font-medium">
-                View All <i class="fas fa-arrow-right ml-1"></i>
-            </button>
-        </div>
-
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead>
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-in</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Check-out</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Duration</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    <!-- Sample Data -->
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="h-10 w-10 flex-shrink-0 mr-3">
-                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                        <span class="text-blue-600 font-semibold">JD</span>
+                            
+                        <!-- Date Filter -->
+                        <div class="w-full sm:w-auto">
+                                <label class="block mb-1.5 text-sm font-medium text-gray-700">Time Period</label>
+                                <div class="relative">
+                                    <select 
+                                        x-model="dateFilter" 
+                                        class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2.5 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                    >
+                                        <option value="">All Time</option>
+                                        <option value="today">Today</option>
+                                        <option value="yesterday">Yesterday</option>
+                                        <option value="last7">Last 7 Days</option>
+                                        <option value="last30">Last 30 Days</option>
+                                        <option value="custom">Custom Range</option>
+                                    </select>
+                                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                                        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                        </svg>
                                     </div>
                                 </div>
+                            </div>
+                            
+                <!-- Custom Date Range Picker -->
+                <template x-if="dateFilter === 'custom'">
+                                <div class="flex gap-3 w-full sm:w-auto">
+                                    <div class="flex-1">
+                                        <label class="block mb-1.5 text-sm font-medium text-gray-700">From</label>
+                                        <input 
+                                            type="date" 
+                                            x-model="customDateFrom" 
+                                            class="w-full border border-gray-300 rounded-md px-3 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        >
+                                    </div>
+                                    <div class="flex-1">
+                                        <label class="block mb-1.5 text-sm font-medium text-gray-700">To</label>
+                                        <input 
+                                            type="date" 
+                                            x-model="customDateTo" 
+                                            class="w-full border border-gray-300 rounded-md px-3 py-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        >
+                                    </div>
+                                </div>
+                </template>
+
+                <div class="w-full sm:w-auto">
+                    <label class="block mb-1.5 text-sm font-medium text-gray-700">Report Type</label>
+                    <div class="relative">
+                        <select 
+                            x-model="reportType" 
+                            class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2.5 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        >
+                            <option value="members">Members Report</option>
+                            <option value="payments">Payments Report</option>
+                        </select>
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                
+    
+
+            </div>
+        </div>
+    </div>    
+
+    <!-- Members Report Table -->
+    <div x-show="reportType === 'members'" class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <template x-for="(member, index) in filteredMembers" :key="index">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="index + 1"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0 mr-3 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <span class="text-blue-800 font-medium" x-text="member.first_name.charAt(0) + member.last_name.charAt(0)"></span>
+                                </div>
                                 <div>
-                                    <div class="text-sm font-medium text-gray-900">John Doe</div>
-                                    <div class="text-sm text-gray-500">john.doe@example.com</div>
+                                    <div class="text-sm font-medium text-gray-900" x-text="member.first_name + ' ' + member.last_name"></div>
+                                    <div class="text-sm text-gray-500" x-text="member.email || 'No email provided'"></div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">Premium</span>
+                        <td class="px-6 py-4 whitespace-nowrap" 
+                            x-data="{ 
+                                membershipTypes: { '30': 'Monthly', '365': 'Annual', '7': 'Weekly', '1': 'Session' },
+                                colors: {
+                                    'Annual': 'bg-purple-100 text-purple-800',
+                                    'Weekly': 'bg-green-100 text-green-800',
+                                    'Monthly': 'bg-blue-100 text-blue-800',
+                                    'Session': 'bg-yellow-100 text-yellow-800'
+                                }
+                            }">
+                            <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="colors[membershipTypes[member.membership_type]] || 'bg-gray-100 text-gray-800'"
+                                x-text="membershipTypes[member.membership_type] || 'No Type'">
+                            </span>
                         </td>
-                        <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 09:00 AM</td>
-                        <td class="px-4 py-4 text-sm text-gray-500">Mar 11, 2025 11:05 AM</td>
-                        <td class="px-4 py-4 text-sm text-gray-500">2h 5m</td>
-                        <td class="px-4 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Checked Out</span>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span 
+                                class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="member.member_status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                                x-text="member.member_status">
+                            </span>
                         </td>
-                        <td class="px-4 py-4 text-right text-sm">
-                            <button class="text-indigo-600 hover:text-indigo-900 font-medium">View Details</button>
-                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="member.attendance?.time_in ? formatTime(member.attendance.time_in) : 'N/A'"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="member.attendance?.time_out ? formatTime(member.attendance.time_out) : 'N/A'"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="member.phone_number || 'No contact'"></td>
                     </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
-            </table>
-        </div>
+                </template>
+                <!-- Empty State -->
+                <tr x-show="filteredMembers.length === 0">
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <p class="text-gray-500 text-lg">No members found with the current filters</p>
+                        <button @click="resetFilters" class="mt-2 text-blue-600 hover:text-blue-800">Reset filters</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 
+    <!-- Payments Report Table -->
+    <div x-show="reportType === 'payments'" class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activation Date</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <template x-for="(payment, index) in filteredPayments" :key="index">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="index + 1"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="h-10 w-10 flex-shrink-0 mr-3 bg-green-100 rounded-full flex items-center justify-center">
+                                    <span class="text-green-800 font-medium" x-text="payment.user?.first_name.charAt(0) + payment.user?.last_name.charAt(0)"></span>
+                                </div>
+                                <div class="text-sm font-medium text-gray-900" x-text="payment.user?.first_name + ' ' + payment.user?.last_name"></div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatDate(payment.payment_date)"></td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-900" x-text="'₱' + parseFloat(payment.amount).toFixed(2)"></div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full"
+                                :class="{
+                                    'bg-green-100 text-green-800': payment.payment_method === 'cash',
+                                    'bg-blue-100 text-blue-800': payment.payment_method === 'card',
+                                    'bg-purple-100 text-purple-800': payment.payment_method === 'bank',
+                                    'bg-gray-100 text-gray-800': !['cash', 'card', 'bank'].includes(payment.payment_method)
+                                }"
+                                x-text="payment.payment_method">
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatDate(payment.user?.start_date)"></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="formatDate(payment.user?.end_date)"></td>
+                    </tr>
+                </template>
+                <!-- Empty State -->
+                <tr x-show="filteredPayments.length === 0">
+                    <td colspan="7" class="px-6 py-12 text-center">
+                        <p class="text-gray-500 text-lg">No payments found with the current filters</p>
+                        <button @click="resetFilters" class="mt-2 text-blue-600 hover:text-blue-800">Reset filters</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+            <!-- Export Button -->
+    <div class="text-right">
+        <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
+    </div>
+    </div>
+
+
+
+
+
     <script>
+function reportFilter() {
+    return {
+        reportType: 'members',
+        dateFilter: '',
+        customDateFrom: '',
+        customDateTo: '',
+        statusFilter: '',
+        paymentMethodFilter: '',
+        members: @json($members),
+        payments: @json($payments),
+
+        get filteredMembers() {
+            return this.members.filter(member => {
+                // Status filter
+                if (this.statusFilter && member.member_status !== this.statusFilter) {
+                    return false;
+                }
+
+                // Date filter
+                if (!this.passesDateFilter(member.created_at)) {
+                    return false;
+                }
+
+                return true;
+            });
+        },
+
+        get filteredPayments() {
+            return this.payments.filter(payment => {
+                // Payment method filter
+                if (this.paymentMethodFilter && payment.payment_method !== this.paymentMethodFilter) {
+                    return false;
+                }
+
+                // Date filter
+                if (!this.passesDateFilter(payment.payment_date)) {
+                    return false;
+                }
+
+                return true;
+            });
+        },
+
+        passesDateFilter(itemDate) {
+            if (!this.dateFilter && !this.customDateFrom && !this.customDateTo) return true; // No filter applied
+
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const itemDateObj = new Date(itemDate);
+
+            switch (this.dateFilter) {
+                case 'today':
+                    return itemDateObj >= today && itemDateObj < new Date(today.getTime() + 86400000);
+                
+                case 'yesterday':
+                    const yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    return itemDateObj >= yesterday && itemDateObj < today;
+                
+                case 'last7':
+                    const last7 = new Date(today);
+                    last7.setDate(last7.getDate() - 7);
+                    return itemDateObj >= last7 && itemDateObj < new Date(today.getTime() + 86400000);
+                
+                case 'last30':
+                    const last30 = new Date(today);
+                    last30.setDate(last30.getDate() - 30);
+                    return itemDateObj >= last30 && itemDateObj < new Date(today.getTime() + 86400000);
+                
+                case 'custom':
+                    if (!this.customDateFrom || !this.customDateTo) return true;
+                    const fromDate = new Date(this.customDateFrom);
+                    const toDate = new Date(this.customDateTo);
+                    toDate.setDate(toDate.getDate() + 1); // Include the end date
+                    return itemDateObj >= fromDate && itemDateObj < toDate;
+                
+                default:
+                    return true;
+            }
+        },
+
+        formatTime(timeStr) {
+            return new Date(timeStr).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        },
+
+        formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            return new Date(dateStr).toLocaleDateString();
+        },
+
+        applyFilters() {
+            console.log('Applying filters:', {
+                reportType: this.reportType,
+                dateFilter: this.dateFilter,
+                customDateFrom: this.customDateFrom,
+                customDateTo: this.customDateTo,
+                statusFilter: this.statusFilter,
+                paymentMethodFilter: this.paymentMethodFilter
+            });
+        },
+
+        resetFilters() {
+            this.dateFilter = '';
+            this.customDateFrom = '';
+            this.customDateTo = '';
+            this.statusFilter = '';
+            this.paymentMethodFilter = '';
+            this.applyFilters();
+        }
+    }
+}
+</script>
+
+
+
+
+
+
+
+
+    <!-- <script>
         document.addEventListener('DOMContentLoaded', function () {
             const dateFilter = document.getElementById('date-filter');
             const reportType = document.getElementById('report-type');
@@ -189,5 +410,5 @@
                 window.location.href = exportUrl;
             });
         });
-    </script>
+    </script> -->
 @endsection

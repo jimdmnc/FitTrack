@@ -33,7 +33,11 @@ class Attendance extends Model
         return $this->belongsTo(User::class, 'rfid_uid', 'rfid_uid');
     }
 
-  
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
+    
       // Optional: Accessor to format duration as "X hours Y minutes"
       public function getFormattedDurationAttribute()
       {

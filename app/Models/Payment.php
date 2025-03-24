@@ -9,17 +9,13 @@ class Payment extends Model
 {
     use HasFactory;
 
-    // Define the fillable attributes
-    protected $fillable = [
-        'member_id',
-        'amount',
-        'payment_date',
-        'status', // Add status if needed (e.g., 'paid', 'pending')
-    ];
+    protected $table = 'members_payment'; // Ensure this matches the correct table name
 
-    // Define the relationship with the member
-    public function member()
+    protected $fillable = ['rfid_uid', 'amount', 'payment_method', 'payment_date'];
+
+    public function user()
     {
-        return $this->belongsTo(Member::class);
+        return $this->belongsTo(User::class, 'rfid_uid', 'rfid_uid');
     }
+    
 }

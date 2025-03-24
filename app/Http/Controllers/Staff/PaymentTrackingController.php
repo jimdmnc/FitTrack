@@ -3,15 +3,42 @@
 namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\MembersPayment;
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 
 class PaymentTrackingController extends Controller
 {
    // Display all members' payments
-   public function index()
+   public function index(Request $request)
    {
-       $payments = MembersPayment::with('user')->get(); // Fetch all payments with user details
+       $query = MembersPayment::with('user');
+   
+       // Filter by payment method
+       if ($request->filled('payment_method')) {
+           $query->where('payment_method', $request->payment_method);
+       }
+   
+       // Filter by time range
+       if ($request->filled('time_filter')) {
+           $today = Carbon::today();
+   
+           switch ($request->time_filter) {
+               case 'today':
+                   $query->whereDate('payment_date', $today);
+                   break;
+               case 'week':
+                   $query->whereBetween('payment_date', [$today->startOfWeek(), $today->endOfWeek()]);
+                   break;
+               case 'month':
+                   $query->whereBetween('payment_date', [$today->startOfMonth(), $today->endOfMonth()]);
+                   break;
+           }
+       }
+   
+       // Fetch the filtered results
+       $payments = $query->get();
+   
        return view('staff.paymentTracking', compact('payments'));
    }
 
