@@ -78,7 +78,7 @@
                         <div class="flex items-center space-x-4">
                             <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="Rockies Fitness Logo" class="w-12 h-12 rounded-full border-2 border-gray-700">
                             <div class="flex-shrink-0">
-                                <span class="text-gray-100 font-extrabold text-xl tracking-wider">ROCKIES <span class="gradient-text">FITNESS</span></span>
+                                <span class="text-gray-100 font-extrabold text-xl tracking-wider">ROCKIESs <span class="gradient-text">FITNESS</span></span>
                             </div>
                         </div>
                     </div>
