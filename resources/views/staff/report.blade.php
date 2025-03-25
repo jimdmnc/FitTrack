@@ -34,7 +34,7 @@
 
    
 
-    <div x-data="reportFilter()" class="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-lg space-y-6">
+<div x-data="reportFilter()" class="max-w-6xl mx-auto p-6 bg-white rounded-xl shadow-lg space-y-6">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
             <div>
@@ -47,10 +47,10 @@
                         
                     <div class="flex flex-col sm:flex-row gap-4 items-end">
                     <!-- Report Type Selector -->
-    <!-- Export Button -->
-    <div class="text-right">
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
-    </div>
+        <!-- Export Button -->
+        <div class="text-right">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
+        </div>
                             
                         <!-- Date Filter -->
                         <div class="w-full sm:w-auto">
@@ -245,8 +245,9 @@
         </table>
 
             <!-- Export Button -->
-    <div class="text-right">
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
+        <div class="text-right">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition" @click="exportReport">Export Report</button>
+        </div>
     </div>
     </div>
 
