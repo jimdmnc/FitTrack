@@ -2,7 +2,7 @@
     <!-- Make sure the guest layout doesn't have padding/margin restrictions -->
 
     <!-- Background image with improved full coverage -->
-    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/jim.jpg') }}');">
+    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/wallpaperr.jpg') }}');">
         <!-- Gradient overlay for better readability and visual appeal -->
         <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
         
@@ -14,7 +14,7 @@
                 <div class="text-center">
                     <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="logo" class="w-20 h-20 mx-auto rounded-full mb-4">
                     <div class="flex-shrink-0">
-                        <span class="text-gray-100 text-2xl tracking-wider font-black" style="font-weight: 900;">ROCKIES <span class="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent font-black">FITNESS</span></span>
+                        <span class="text-gray-100 text-2xl tracking-wider font-black" style="font-weight: 900;">ROCKIES <span class="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent font-black">FITNESS</span></span>
                     </div>
                 </div>
                 <!-- Login Form -->

@@ -6,13 +6,13 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <style>
         .glass-card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #121212;
             backdrop-filter: blur(10px);
             border-radius: 16px;
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
             transition: all 0.3s ease;
         }
-        .glass-card:hover {
+        .glass-card:hover { 
             box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
             transform: translateY(-5px);
         }
@@ -20,9 +20,8 @@
             background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
         }
         body {
-            background-color: #f9fafb;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: #121212;
+            color: white;
         }
         .chart-container {
             position: relative;
@@ -62,13 +61,13 @@
         .chart-action-button {
             padding: 6px;
             border-radius: 8px;
-            background: rgba(240, 240, 250, 0.9);
-            color: #4f46e5;
+            background: #121212;
+            color: #FF5722;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .chart-action-button:hover {
-            background: rgba(228, 228, 250, 1);
+            background: #1e1e1e;
             transform: scale(1.05);
         }
         
@@ -82,13 +81,13 @@
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 12px;
-            background: rgba(240, 240, 250, 0.9);
-            color: #6b7280;
+            background: #121212;
+            color: white;
             cursor: pointer;
             transition: all 0.2s ease;
         }
         .period-button.active {
-            background: #4f46e5;
+            background: #FF5722;
             color: white;
         }
         .period-button:hover:not(.active) {
@@ -112,7 +111,7 @@
             transition: all 0.2s ease;
         }
         .legend-item:hover {
-            background: rgba(240, 240, 250, 0.9);
+            background: rgba(35, 35, 36, 0.9);
         }
         .legend-color {
             width: 12px;
@@ -160,7 +159,7 @@
             transition: all 0.2s ease;
         }
         .member-table-row:hover {
-            background-color: rgba(248, 250, 252, 0.9);
+            background-color: #121212;
             transform: translateX(4px);
         }
         
@@ -199,7 +198,7 @@
     <style>
 /* Improved styling for the chart components */
 .glass-card {
-    background: rgba(255, 255, 255, 0.8);
+    background: #1E1E1E;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
@@ -210,7 +209,7 @@
 }
 
 .period-button:hover:not(.active) {
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: #121212;
 }
 
 .period-button.active {
@@ -229,49 +228,122 @@
 .stat-card:hover {
     transform: translateY(-2px);
 }
+
+    /* Base Dark Theme with Orange Accents */
+    body {
+        background-color: #121212;
+        color: white;
+    }
+
+    /* Glass Card Styles */
+    .glass-card {
+        background: rgba(30, 30, 30, 0.95); /* Dark gray with slight transparency */
+        border: 1px solid rgba(255, 109, 34, 0.2); /* Soft orange border */
+        backdrop-filter: blur(10px);
+    }
+
+    /* Header Gradient */
+    .bg-gradient-header {
+        background: linear-gradient(to right, #FF5722, #FF7043);
+    }
+
+    /* Accent Color Overrides */
+    .text-accent {
+        color: #FF5722;
+    }
+
+    .bg-accent {
+        background-color: #FF5722;
+    }
+
+    .border-accent {
+        border-color: #FF5722;
+    }
+
+    /* Interactive Elements */
+    .btn-primary {
+        background: linear-gradient(135deg, #FF5722 0%, #FF7043 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #FF7043 0%, #FF8A50 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255, 87, 34, 0.2);
+    }
+
+    /* Chart and Graph Accent Styling */
+    .chart-accent {
+        background-color: #FF5722;
+    }
+
+    /* Period Selector */
+    .period-button.active {
+        background-color: #FF5722;
+        color: white;
+    }
+
+    /* Status Indicators */
+    .status-active {
+        background-color: rgba(255, 87, 34, 0.2);
+        color: #FF5722;
+    }
+
+    .status-inactive {
+        background-color: rgba(244, 67, 54, 0.2);
+        color: #F44336;
+    }
+
+    /* Hover and Interactive Effects */
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 16px rgba(255, 87, 34, 0.1);
+    }
 </style>
 
-    <div class="container mx-auto py-8 px-4">
-        <!-- Header Section with Modern Design -->
-        <div class="mb-8">
-        <div class="glass-card p-6 bg-gray-300">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                    <h1 class="text-3xl md:text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600">
-                        Rockies Fitness Dashboard
-                    </h1>
-                    <p class="text-gray-700 mt-2">Track and analyze your gym's performance</p>
-                </div>
-                <div class="mt-4 md:mt-0 flex items-center gap-3">
-                    <button class="px-4 py-2 bg-white border border-gray-200 hover:border-gray-300 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
-                        <i class="fas fa-filter"></i> Filter
+<div class="container mx-auto py-8 px-4">
+    <!-- Header Section with Modern Design -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
+                    Rockies Fitness Dashboard
+                </h1>
+                <p class="text-gray-200 mt-2">Track and analyze your gym's performance</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex items-center gap-3">
+                <button class="px-4 py-2 bg-[#1E1E1E] border border-[#FF5722] hover:border-gray-200 text-gray-200 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
+                    <i class="text-[#FF5722] fas fa-filter"></i> Filter
+                </button>
+                <div class="relative">
+                    <button class="p-2 rounded-full shadow-sm text-[#FF5722] hover:text-gray-200 transition-all">
+                        <i class="fas fa-bell"></i>
                     </button>
-                    <div class="relative">
-                        <button class="p-2 bg-white border border-gray-200 hover:border-gray-300 rounded-full shadow-sm text-gray-500 hover:text-indigo-600 transition-all">
-                            <i class="fas fa-bell"></i>
-                        </button>
-                        <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
-                    </div>
+                    <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+
         
         <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
     <!-- New Members Card -->
-    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+    <div class="glass-card p-4 hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start">
             <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
-                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">
+                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
                     New <br>Members
                 </h3>
                 <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-900 mr-2">
+                    <div class="text-3xl font-bold text-gray-200 mr-2">
                         {{ $newMembersData['currentWeekNewMembers'] }}
                     </div>
-                    <span class="text-lg text-gray-700">members</span>
+                    <span class="text-lg text-gray-200">members</span>
                 </div>
 
                 <!-- Status Indicator (Green for Increase, Red for Decrease) -->
@@ -279,7 +351,7 @@
                     $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
                 @endphp
                 <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                    {{ $isIncrease ? 'bg-green-100 text-gray-700' : 'bg-red-100 text-red-700' }}">
                     <i class="fas fa-arrow-up w-4 h-4 mr-1 text-green-700"></i>
                     <span class="text-sm font-medium">
                         {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
@@ -288,8 +360,8 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center text-yellow-700">
-                <i class="fas fa-user-plus text-7xl"></i> <!-- Adjust icon size if necessary -->
+            <div class="w-1/3 flex items-center justify-center text-[#FF5722]">
+                <i class="fas fa-user-plus text-4xl"></i> <!-- Adjust icon size if necessary -->
             </div>
         </div>
     </div>
@@ -298,14 +370,14 @@
     <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start">
             <div class="w-2/3">
-                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">
+                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
                     Today's <br>Check-ins
                 </h3>
                 <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-900 mr-2">
+                    <div class="text-3xl font-bold text-gray-200 mr-2">
                         {{ $todaysCheckInsData['todaysCheckIns'] }}
                     </div>
-                    <span class="text-lg text-gray-700">members</span>
+                    <span class="text-lg text-gray-200">members</span>
                 </div>
 
                 <!-- Status Indicator (Green for Increase, Red for Decrease) -->
@@ -322,8 +394,8 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center text-green-900">
-                <i class="fas fa-check-circle text-7xl"></i>
+            <div class="w-1/3 flex items-center justify-center mt-8 mr-4 text-green-900">
+                <i class="fas fa-check-circle text-5xl text-[#FF5722]"></i>
             </div>
         </div>
     </div>
@@ -332,12 +404,12 @@
     <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
         <div class="flex justify-between items-start">
             <div class="w-2/3">
-                <h3 class="text-gray-600 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
+                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
                 <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-900 mr-2">{{ $expiringMemberships }}</div>
-                    <span class="text-lg text-gray-700">members</span>
+                    <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
+                    <span class="text-lg text-gray-200">members</span>
                 </div>
-                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-md inline-flex items-center group transition-colors duration-200">
+                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 border border-[#FF5722] text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover:bg-[#FF5722] hover:text-white">
                     <span class="text-sm font-medium">Manage Renewals</span>
                     <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
                 </a>
@@ -345,7 +417,7 @@
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
             <div class="w-1/3 flex items-center text-red-900">
-                <i class="fas fa-calendar-times text-7xl"></i>
+                <i class="fas fa-calendar-times text-7xl text-[#FF5722]"></i>
             </div>
 
         </div>
@@ -360,8 +432,8 @@
         <div class="glass-card p-4 grid-col-span-8 chart-card space-y-4 rounded-xl shadow-sm" id="checkinsChartCard">
             <div class="flex justify-between items-center mb-2">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-800">Check-ins Overview</h3>
-                        <p class="text-xs text-gray-500">Number of members visiting the gym</p>
+                        <h3 class="text-lg font-semibold text-gray-200">Check-ins Overview</h3>
+                        <p class="text-xs text-gray-200">Number of members visiting the gym</p>
                     </div>
                     <div class="flex space-x-2">
                         <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50" title="Download CSV">
@@ -376,8 +448,8 @@
                 </div>
                 
                 <!-- Improved period selector -->
-                <div class="period-selector flex bg-gray-100 p-1 rounded-lg w-fit">
-                    <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
+                <div class="period-selector flex p-1 rounded-lg w-fit">
+                    <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all " data-period="daily">Daily</button>
                     <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
                     <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
                     <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
@@ -385,49 +457,49 @@
                 
                 <!-- Summary stats above chart -->
                 <div class="stats-summary grid grid-cols-3 gap-4 mb-2">
-                    <div class="stat-card bg-white p-3 rounded-lg shadow-sm">
-                        <p class="text-xs text-gray-500">Total Check-ins</p>
-                        <h4 class="text-xl font-bold text-gray-800" id="total-checkins">0</h4>
+                    <div class="stat-card bg-[#1e1e1e] p-3">
+                        <p class="text-xs text-gray-200">Total Check-ins</p>
+                        <h4 class="text-xl font-bold text-gray-200" id="total-checkins">0</h4>
                     </div>
-                    <div class="stat-card bg-white p-3 rounded-lg shadow-sm">
-                        <p class="text-xs text-gray-500">Average</p>
-                        <h4 class="text-xl font-bold text-gray-800" id="avg-checkins">0</h4>
+                    <div class="stat-card bg-[#1e1e1e] p-3 ">
+                        <p class="text-xs text-gray-200">Average</p>
+                        <h4 class="text-xl font-bold text-gray-200" id="avg-checkins">0</h4>
                     </div>
-                    <div class="stat-card bg-white p-3 rounded-lg shadow-sm">
-                        <p class="text-xs text-gray-500">Peak Day</p>
-                        <h4 class="text-xl font-bold text-gray-800" id="peak-checkins">0</h4>
+                    <div class="stat-card bg-[#1e1e1e] p-3">
+                        <p class="text-xs text-gray-200">Peak Day</p>
+                        <h4 class="text-xl font-bold text-gray-200" id="peak-checkins">0</h4>
                     </div>
                 </div>
                 
                 <!-- Chart Container with loading indicator -->
-                <div class="chart-container relative bg-white p-4 rounded-lg shadow-sm" id="checkinsChartContainer" style="height: 300px;">
+                <div class="chart-container relative bg-[#1e1e1e] p-4 rounded-lg shadow-sm" id="checkinsChartContainer" style="height: 300px;">
                     <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10 hidden">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF5722]"></div>
                     </div>
                     <canvas id="checkins-chart"></canvas>
                 </div>
                 
                 <!-- Legend -->
-                <div class="flex items-center justify-center space-x-6 text-xs text-gray-500">
+                <div class="flex items-center justify-center space-x-6 text-xs text-gray-200">
                     <div class="flex items-center">
                         <span class="inline-block w-3 h-3 mr-1 bg-blue-400 rounded-sm"></span>
                         <span>Check-ins</span>
                     </div>
                     <div class="flex items-center">
-                        <span class="inline-block w-3 h-3 mr-1 border border-dashed border-gray-400 rounded-sm"></span>
+                        <span class="inline-block w-3 h-3 mr-1 border border-dashed border-gray-200 rounded-sm"></span>
                         <span>Previous Period</span>
                     </div>
                 </div>
             </div>
             
             <!-- Right panels - resized and vertical -->
-            <div class="grid-col-span-4 flex flex-col gap-4">
+            <div class="grid-col-span-4 flex flex-col gap-4 space-y-5">
                 <!-- Top right panel -->
                 <div class="glass-card p-2 chart-card relative" id="chartCard">
                     <div class="flex justify-between items-center mb-3">
                         <div>
-                            <h3 class="text-base font-semibold text-gray-800">Avg Time by Hour</h3>
-                            <p class="text-xs text-gray-500">Peak hours</p>
+                            <h3 class="text-base font-semibold text-gray-200">Avg Time by Hour</h3>
+                            <p class="text-xs text-gray-200">Peak hours</p>
                         </div>
                         <div class="chart-action-buttons space-x-1">
                             <div class="chart-action-button" title="Download CSV">
@@ -448,15 +520,15 @@
                 <div class="glass-card p-3 chart-card bg-white shadow-md rounded-lg relative" id="subscribersChartCard">
                     <div class="flex justify-between items-center mb-4">
                         <div>
-                            <h3 class="text-base font-semibold text-gray-800">Subscribers</h3>
-                            <p class="text-sm text-gray-500">Ongoing Memberships</p>
+                            <h3 class="text-base font-semibold text-gray-200">Subscribers</h3>
+                            <p class="text-sm text-gray-200">Ongoing Memberships</p>
                         </div>
                         <div class="chart-action-buttons space-x-2 flex items-center">
                             <div class="chart-action-button cursor-pointer" title="Download CSV">
-                                <i class="fas fa-download text-sm text-gray-700"></i>
+                                <i class="fas fa-download text-sm text-gray-200"></i>
                             </div>
                             <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
-                                <i class="fas fa-expand-alt text-sm text-gray-700"></i>
+                                <i class="fas fa-expand-alt text-sm text-gray-200"></i>
                             </div>
                         </div>
                     </div>
@@ -474,8 +546,8 @@
 <div class="glass-card p-6 grid-col-span-8 mt-6">
     <div class="flex justify-between items-center mb-6">
     <div>
-        <h3 class="text-xl font-bold text-blue-900">Top Active Members</h3>
-        <p class="text-sm text-gray-500 mt-1">Most frequent check-ins and their membership details</p>
+        <h3 class="text-xl font-bold text-gray-200">Top Active Members</h3>
+        <p class="text-sm text-gray-200 mt-1">Most frequent check-ins and their membership details</p>
     </div>
 
         <div class="flex items-center gap-3">
@@ -488,30 +560,30 @@
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
             <tr class="bg-gray-50 rounded-lg">
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> <!-- Added this column -->
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Type</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
+                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
         @foreach ($topActiveMembers as $index => $member)
             <tr class="hover:bg-gray-50 transition-colors member-table-row">
-                <td class="px-4 py-4 text-sm text-gray-500">{{ $loop->iteration }}</td> <!-- Added this cell -->
-                <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
+                <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> <!-- Added this cell -->
+                <td class="px-4 py-4 text-sm text-gray-200">{{ $member->rfid_uid }}</td>
                 <td class="px-4 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="h-10 w-10 flex-shrink-0 mr-3">
                             <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                <span class="text-blue-600 font-semibold">
+                                <span class="text-gray-200 font-semibold">
                                     {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
                                 </span>
                             </div>
                         </div>
                         <div>
-                            <div class="text-sm font-medium text-gray-900">{{ $member->first_name }} {{ $member->last_name }}</div>
+                            <div class="text-sm font-medium text-gray-200">{{ $member->first_name }} {{ $member->last_name }}</div>
                         </div>
                     </div>
                 </td>
