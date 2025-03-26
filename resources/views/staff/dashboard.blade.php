@@ -309,7 +309,7 @@
         <div class="flex flex-col md:flex-row justify-between items-center">
             <div>
                 <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
-                    Rockies Fitness Dashboard
+                   Dashboard
                 </h1>
                 <p class="text-gray-200 mt-2">Track and analyze your gym's performance</p>
             </div>
@@ -353,8 +353,8 @@
                     $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
                 @endphp
                 <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'bg-green-100 text-gray-700' : 'bg-red-100 text-red-700' }}">
-                    <i class="fas fa-arrow-up w-4 h-4 mr-1 text-green-700"></i>
+                    {{ $isIncrease ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                    <i class="fas fa-arrow-up w-4 h-4 mr-1 {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
                     <span class="text-sm font-medium">
                         {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
                     </span>
@@ -387,8 +387,9 @@
                     $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
                 @endphp
                 <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
-                    <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1"></i>
+                    {{ $isIncrease ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                    <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1 
+                        {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
                     <span class="text-sm font-medium">
                         {{ str_replace(['Increase', 'Decrease'], '', $todaysCheckInsData['formattedPercentageChange']) }}
                     </span>
@@ -396,7 +397,7 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center mr-4 text-green-900">
+            <div class="w-1/3 flex items-center justify-center mr-4">
                 <i class="fas fa-check-circle text-5xl text-[#FF5722]"></i>
             </div>
         </div>
@@ -484,7 +485,7 @@
                 <!-- Legend -->
                 <div class="flex items-center justify-center space-x-6 text-xs text-gray-200">
                     <div class="flex items-center">
-                        <span class="inline-block w-3 h-3 mr-1 bg-blue-400 rounded-sm"></span>
+                        <span class="inline-block w-3 h-3 mr-1 bg-orange-400 rounded-sm"></span>
                         <span>Check-ins</span>
                     </div>
                     <div class="flex items-center">
@@ -1137,9 +1138,9 @@
                     {
                         label: 'Current Period',
                         data: dataCounts,
-                        backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 1,
+                        backgroundColor: 'rgba(246, 174, 59, 0.8)',
+                        borderColor: '#FF5722',
+                        borderWidth: 2,
                         borderRadius: 4,
                         barThickness: 'flex',
                         maxBarThickness: 25
@@ -1149,9 +1150,9 @@
                         data: getPreviousPeriodData(dataCounts, 'daily'),
                         type: 'line',
                         fill: false,
-                        borderColor: 'rgba(156, 163, 175, 0.7)',
+                        borderColor: '#FF5722',
                         borderDash: [5, 5],
-                        pointBackgroundColor: 'rgba(156, 163, 175, 0.7)',
+                        pointBackgroundColor: '#FF5722',
                         tension: 0.1
                     }
                 ]
@@ -1196,7 +1197,7 @@
                     y: {
                         beginAtZero: true,
                         grid: {
-                            color: 'rgba(243, 244, 246, 1)'
+                            color: '#FF5722'
                         },
                         ticks: {
                             stepSize: 5,
@@ -1298,8 +1299,8 @@
                     label: 'Average Minutes',
                     data: peakHours.data || [],  // Ensure fallback to an empty array if undefined
                     fill: true,
-                    backgroundColor: 'rgba(79, 70, 229, 0.2)',
-                    borderColor: 'rgba(79, 70, 229, 1)',
+                    backgroundColor: 'rgba(255, 153, 0, 0.37)',
+                    borderColor: '#FF5722',
                     tension: 0.4
                 }]
             },
