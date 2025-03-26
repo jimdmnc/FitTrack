@@ -15,7 +15,7 @@
         }
         .gradient-bg {
             background: #1e1e1e;
-        }
+        } 
 
 </style>
 <div class="py-10 px-4 md:px-10">
