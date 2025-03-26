@@ -14,7 +14,7 @@
     <!-- Payment Table Card -->
     <div class="">
         <!-- Table Header with Search and Filter -->
-        <div class="p-5 border-b border-gray-100">
+        <div class="p-5">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="relative w-full md:w-64">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -46,7 +46,7 @@
         <!-- Responsive Table -->
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
-                <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-xs font-medium text-gray-200 uppercase tracking-wider divide-y divide-gray-800">
+                <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-xs font-medium text-gray-200 uppercase tracking-wider border border-black divide-y divide-black">
                     <tr>
                         <th class="px-6 py-4 text-left">#</th>
                         <th class="px-6 py-4 text-left">Customer</th>
@@ -57,10 +57,10 @@
                         <th class="px-6 py-4 text-left">Expiry</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-800">
+                <tbody class="divide-y divide-black">
                     @foreach ($payments as $payment)
                     <tr class="hover:bg-gray-50 transition-colors">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600">{{ $loop->iteration }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{{ $loop->iteration }}</td>
                     <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 font-medium mr-3">

@@ -100,9 +100,9 @@
                         </button>
                     </div>
                 @endif
-                <table class="min-w-full divide-y divide-gray-800">
+                <table class="min-w-full divide-y divide-black">
                             <thead>
-                                <tr class="bg-[#1A1A1A] rounded-lg">
+                                <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
@@ -112,11 +112,11 @@
                                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                    <tbody class="divide-y divide-gray-800">
+                    <tbody class="divide-y divide-black">
                         
                         @foreach ($members as $member)
                         
-                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
+                        <tr class="bg-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
                             
                             <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> 
                             <td class="px-4 py-4 whitespace-nowrap">
