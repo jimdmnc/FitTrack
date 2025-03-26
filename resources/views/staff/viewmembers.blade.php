@@ -19,7 +19,7 @@
                     <select 
                         name="status" 
                         onchange="this.form.submit()" 
-                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
+                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
                         aria-label="Filter members by status"
                     >
                         <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
@@ -38,7 +38,7 @@
                         name="search" 
                         value="{{ $query }}" 
                         placeholder="Search members" 
-                        class="w-full bg-[#212121] border border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
                     

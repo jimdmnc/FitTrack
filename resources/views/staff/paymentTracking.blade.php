@@ -22,18 +22,18 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                     </div>
-                    <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#ff5722] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments...">
+                    <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments...">
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Payment Method Filter -->
-                    <select id="paymentMethodFilter" class="pr-8 bg-[#212121] border border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
+                    <select id="paymentMethodFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                         <option value="">All Methods</option>
                         <option value="cash">Cash</option>
                         <option value="gcash">Gcash</option>
                     </select>
 
                     <!-- Time Filter -->
-                    <select id="timeFilter" class="pr-8 bg-[#212121] border border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
+                    <select id="timeFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                         <option value="">All Time</option>
                         <option value="today">Today</option>
                         <option value="week">This Week</option>

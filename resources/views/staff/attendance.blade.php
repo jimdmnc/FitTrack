@@ -21,7 +21,7 @@
                         name="search" 
                         value="{{ request('search') }}" 
                         placeholder="Search by name" 
-                        class="w-full px-4 py-2 border border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        class="w-full px-4 py-2 border border-[#666666] hover:border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
 
@@ -39,7 +39,7 @@
                     @if(request('search'))
                     <a 
                         href="{{ route('staff.attendance.index') }}" 
-                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#ff5722] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
+                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#666666] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
                     >
                         <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -52,7 +52,7 @@
 
             <div class="relative w-full sm:w-auto">
             <!-- Custom Select Button -->
-            <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#ff5722] rounded-full flex justify-between items-center">
+            <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full flex justify-between items-center">
                 <span id="selected-option">Today</span>
                 <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
