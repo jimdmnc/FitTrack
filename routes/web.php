@@ -18,8 +18,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route to fetch the latest RFID UID
-Route::get('/rfid/latest', [RFIDController::class, 'getLatestRfidUid']);
+
 
 // Route to handle attendance
 Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);

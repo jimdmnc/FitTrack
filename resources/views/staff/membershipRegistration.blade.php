@@ -383,8 +383,8 @@
 <script>
     // Function to fetch the latest RFID UID
     function fetchLatestUid() {
-        fetch('/rfid/latest')
-            .then(response => response.json())
+        fetch('/api/rfid/latest') // Ensure the URL matches Laravel's route
+        .then(response => response.json())
             .then(data => {
                 console.log('Data received:', data); // Debugging
                 if (data.uid) {
