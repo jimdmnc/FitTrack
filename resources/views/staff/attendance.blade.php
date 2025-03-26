@@ -21,7 +21,7 @@
                         name="search" 
                         value="{{ request('search') }}" 
                         placeholder="Search by name" 
-                        class="w-full px-4 py-2 border border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        class="w-full px-4 py-2 border border-[#666666] hover:border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
 
@@ -39,7 +39,7 @@
                     @if(request('search'))
                     <a 
                         href="{{ route('staff.attendance.index') }}" 
-                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#ff5722] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
+                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#666666] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
                     >
                         <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -52,7 +52,7 @@
 
             <div class="relative w-full sm:w-auto">
             <!-- Custom Select Button -->
-            <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#ff5722] rounded-full flex justify-between items-center">
+            <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full flex justify-between items-center">
                 <span id="selected-option">Today</span>
                 <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
@@ -71,8 +71,8 @@
         </div>
 
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-[#1a1a1a] border-b border-gray-800">
+            <table class="min-w-full divide-y divide-black">
+                <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Member</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Membership</th>
@@ -82,13 +82,13 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-black">
                     @foreach($attendances as $attendance)
-                    <tr class="@if($loop->even) bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] @else bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] @endif">
+                    <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
                         <!-- Member -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium ">
                                     {{ substr($attendance->user->first_name, 0, 1) }}{{ substr($attendance->user->last_name, 0, 1) }}
                                 </div>
                                 <div class="ml-4">

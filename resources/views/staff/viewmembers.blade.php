@@ -19,7 +19,7 @@
                     <select 
                         name="status" 
                         onchange="this.form.submit()" 
-                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
+                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
                         aria-label="Filter members by status"
                     >
                         <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
@@ -38,7 +38,7 @@
                         name="search" 
                         value="{{ $query }}" 
                         placeholder="Search members" 
-                        class="w-full bg-[#212121] border border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
                     
@@ -100,9 +100,9 @@
                         </button>
                     </div>
                 @endif
-                <table class="min-w-full divide-y divide-gray-800">
+                <table class="min-w-full divide-y divide-black">
                             <thead>
-                                <tr class="bg-[#1A1A1A] rounded-lg">
+                                <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
@@ -112,11 +112,11 @@
                                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                    <tbody class="divide-y divide-gray-800">
+                    <tbody class="divide-y divide-black">
                         
                         @foreach ($members as $member)
                         
-                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
+                        <tr class="bg-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
                             
                             <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> 
                             <td class="px-4 py-4 whitespace-nowrap">
