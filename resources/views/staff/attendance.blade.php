@@ -28,7 +28,7 @@
                     <!-- Search Button -->
                     <button 
                         type="submit" 
-                        class="px-6 py-2 bg-[#ff5722] text-white rounded-r-full hover:bg-[#e64a19] transition duration-300"
+                        class="px-6 py-2 bg-[#ff5722] text-white rounded-r-full hover:bg-[#e64a19] hover:scale-95 transition duration-300"
                         aria-label="Search"
                     >
                         Search

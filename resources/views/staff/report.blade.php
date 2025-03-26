@@ -93,7 +93,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <button type="button" id="exportButton" class="bg-transparent border border-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-[#ff5722] transition">Export Report</button>
+                        <button type="button" id="exportButton" class="bg-transparent border border-[#666666] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-[#ff5722] transition hover:scale-95">Export Report</button>
                     </div>
                 </div>
             </div>
