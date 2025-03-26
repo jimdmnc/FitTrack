@@ -33,29 +33,27 @@
     </style>
 
    
-<div>
-
-    <h2 class="text-3xl font-bold text-gray-800" id="reportTitle">Members Report</h2>
-    <p class="text-gray-500">View and analyze your data with ease</p>
-
-    <div x-data="reportFilter()" class="max-w-7xl mx-auto p-6 bg-white rounded-xl shadow-lg space-y-6">
+<div class="px-10">
+    <div class="py-8">
+        <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h2>
+        <p class="text-gray-300">View and analyze your data with ease</p>
+    </div>
+    <div x-data="reportFilter()" class="max-w-8xl mx-auto space-y-6 space-x-6">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6">            
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 ml-8">            
             <!-- Enhanced Filter Section -->
             <div>
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
                     <!-- Export Button -->
-                    <div class="text-right">
-                        <button type="button" id="exportButton" class="bg-blue-600 text-white px-4 py-2 rounded-md shadow hover:bg-blue-700 transition">Export Report</button>
-                    </div>
+                    
                                     
                     <!-- Date Filter -->
                     <div class="w-full sm:w-auto">
-                        <label class="block mb-1.5 text-sm font-medium text-gray-700">Time Period</label>
+                        <label class="block mb-1.5 text-sm font-medium text-gray-200">Time Period</label>
                         <div class="relative">
                             <select 
                                 id="dateFilter"
-                                class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2.5 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors">
                                 <option value="">All Time</option>
                                 <option value="today">Today</option>
                                 <option value="yesterday">Yesterday</option>
@@ -63,90 +61,92 @@
                                 <option value="last30">Last 30 Days</option>
                                 <option value="custom">Custom Range</option>
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
                         </div>
                     </div>
                     
+                   
                     <!-- Custom Date Range Picker -->
-                    <div id="customRange" class="hidden">
-                        <label for="startDate" class="block text-sm font-medium text-gray-700">Start Date</label>
-                        <input type="date" id="startDate" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md">
-                        <label for="endDate" class="block text-sm font-medium text-gray-700">End Date</label>
-                        <input type="date" id="endDate" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md">
+                    <div id="customRange" class="hidden flex items-center space-x-4">
+                        <!-- Start Date -->
+                        <div>
+                            <label for="startDate" class="block text-sm font-medium text-gray-200">Start Date</label>
+                            <input type="date" id="startDate" class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200">
+                        </div>
+
+                        <!-- End Date -->
+                        <div>
+                            <label for="endDate" class="block text-sm font-medium text-gray-200">End Date</label>
+                            <input type="date" id="endDate" class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200">
+                        </div>
                     </div>
 
+
                     <div class="w-full sm:w-auto">
-                        <label class="block mb-1.5 text-sm font-medium text-gray-700">Report Type</label>
+                        <label class="block mb-1.5 text-sm font-medium text-gray-200">Report Type</label>
                         <div class="relative">
                             <select 
                                 id="reportType" 
-                                class="appearance-none bg-white border border-gray-300 rounded-md pl-3 pr-10 py-2.5 text-gray-700 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                                class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors">
                                 <option value="members">Members Report</option>
                                 <option value="payments">Payments Report</option>
                             </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
                         </div>
+                    </div>
+                    <div class="text-right">
+                        <button type="button" id="exportButton" class="bg-transparent border border-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-[#ff5722] transition">Export Report</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Members Report Table -->
-        <div id="membersReport" class="overflow-hidden rounded-lg border border-gray-200">
-            <table class="min-w-full divide-y divide-gray-200">
+        <div id="membersReport" class="overflow-hidden rounded-lg bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+            <table class="min-w-full divide-y divide-black">
                 <thead>
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time In</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time Out</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time In</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time Out</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Contact</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200" id="membersTableBody">
+                <tbody class="bg-[#1e1e1e] divide-y divide-black" id="membersTableBody">
                 @if($attendances->count() > 0)
                     @foreach($attendances as $attendance)
-                        <tr class="@if($loop->even) bg-gray-100 @else bg-white @endif hover:bg-indigo-50 transition-colors duration-150" data-date="{{ $attendance->time_in ? $attendance->time_in->format('Y-m-d') : '' }}">
+                        <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif" data-date="{{ $attendance->time_in ? $attendance->time_in->format('Y-m-d') : '' }}">
                             <!-- # -->
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{{ $loop->iteration }}</td>
 
                             <!-- Member -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $attendance->user->first_name }} {{ $attendance->user->last_name }}</div>
+                                        <div class="text-sm font-medium text-gray-200">{{ $attendance->user->first_name }} {{ $attendance->user->last_name }}</div>
                                     </div>
                                 </div>
                             </td>
 
                             <!-- Membership -->
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                 {{ $attendance->user->membership_type_name }}
                             </td>
 
                             <!-- Date -->
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                 {{ $attendance->time_in ? $attendance->time_in->format('M d, Y') : 'N/A' }}
                             </td>
 
                             <!-- Time In -->
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">{{ $attendance->time_in ? $attendance->time_in->format('h:i A') : 'N/A' }}</div>
+                                <div class="text-sm text-gray-200">{{ $attendance->time_in ? $attendance->time_in->format('h:i A') : 'N/A' }}</div>
                             </td>
 
                             <!-- Time Out -->
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($attendance->time_out)
-                                    <div class="text-sm text-gray-900">{{ $attendance->time_out->format('h:i A') }}</div>
+                                    <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
                                 @else
                                     <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                         <span class="h-1.5 w-1.5 mr-1.5 rounded-full bg-green-400 animate-pulse"></span>
@@ -156,44 +156,46 @@
                             </td>
 
                             <!-- Contact -->
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                <div class="text-sm text-gray-500">{{ $attendance->user->phone_number ?? 'N/A' }}</div>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
+                                <div class="text-sm text-gray-200">{{ $attendance->user->phone_number ?? 'N/A' }}</div>
                             </td>
                         </tr>
                     @endforeach
-                    @else
-                        <tr>
+                    <div class="bg-[#1e1e1e]">
+                        @else
+                            <tr>
+                                <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
+                                    <p class="text-gray-200 text-lg">No attendance records found</p>
+                                </td>
+                            </tr>
+                        @endif
+                                    <!-- No results row for filtered results (hidden by default) -->
+                                    <tr id="membersNoResults" class="hidden">
                             <td colspan="7" class="px-6 py-12 text-center">
-                                <p class="text-gray-500 text-lg">No attendance records found</p>
+                                <p class="text-gray-200 text-lg">No records match your filter criteria</p>
+                                <button onclick="resetFilters('members')" class="mt-2 text-[#ff5722] hover:text-white">Reset filters</button>
                             </td>
                         </tr>
-                    @endif
-                                <!-- No results row for filtered results (hidden by default) -->
-                                <tr id="membersNoResults" class="hidden">
-                        <td colspan="7" class="px-6 py-12 text-center">
-                            <p class="text-gray-500 text-lg">No records match your filter criteria</p>
-                            <button onclick="resetFilters('members')" class="mt-2 text-blue-600 hover:text-blue-800">Reset filters</button>
-                        </td>
-                    </tr>
+                    </div>
                 </tbody>
             </table>
         </div>
 
         <!-- Payments Report Table -->
-        <div id="paymentsReport" class="hidden overflow-hidden rounded-lg border border-gray-200">
+        <div id="paymentsReport" class="hidden overflow-hidden rounded-lg bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
             <table class="w-full">
-                <thead class="bg-gray-100">
+                <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
                     <tr>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payment Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activation Date</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Payment Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Amount</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Method</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Activation Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Expiry Date</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200" id="paymentsTableBody">
+                <tbody class="bg-[#1e1e1e] divide-y divide-black" id="paymentsTableBody">
                 @if($payments->count() > 0)
 
                     @forelse ($payments as $index => $payment)
@@ -226,15 +228,15 @@
                     @empty
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
-                                <p class="text-gray-500 text-lg">No payments found with the current filters</p>
-                                <button wire:click="resetFilters" class="mt-2 text-blue-600 hover:text-blue-800">Reset filters</button>
+                                <p class="text-gray-200 text-lg">No payments found with the current filters</p>
+                                <button wire:click="resetFilters" class="mt-2 text-[#ff5722] hover:text-blue-800">Reset filters</button>
                             </td>
                         </tr>
                     @endforelse
                     @else
                         <tr>
                             <td colspan="7" class="px-6 py-12 text-center">
-                                <p class="text-gray-500 text-lg">No payment records found</p>
+                                <p class="text-gray-200 text-lg">No payment records found</p>
                             </td>
                         </tr>
                     @endif
@@ -242,7 +244,7 @@
                                 <tr id="paymentsNoResults" class="hidden">
                         <td colspan="7" class="px-6 py-12 text-center">
                             <p class="text-gray-500 text-lg">No records match your filter criteria</p>
-                            <button onclick="resetFilters('payments')" class="mt-2 text-blue-600 hover:text-blue-800">Reset filters</button>
+                            <button onclick="resetFilters('payments')" class="mt-2 text-[#ff5722] hover:text-gray-200">Reset filters</button>
                         </td>
                     </tr>
                 </tbody>
