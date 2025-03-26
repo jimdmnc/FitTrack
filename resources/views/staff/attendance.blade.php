@@ -9,65 +9,70 @@
         <p class="mt-1 ml-2 text-sm text-gray-300">Track member check-ins and check-outs</p>
     </div>
 
-    <div class="bg-[#1E1E1E] shadow overflow-hidden rounded-lg">
+    <div class="">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-800 gap-4">
-<form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-auto">
-    <div class="flex items-center space-x-2">
-        <!-- Search Input with Icon -->
-        <div class="flex w-full">
-  <!-- Search Input Field -->
-  <input 
-    type="text" 
-    name="search" 
-    value="{{ request('search') }}" 
-    placeholder="Search by name" 
-    class="w-full px-4 py-2 border border-[#ff5722] text-gray-300 bg-[#1e1e1e] rounded-l-full focus:outline-none focus:ring-0"
-    aria-label="Search members"
-  >
+            <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-auto">
+                <div class="flex items-center space-x-6">
+                    <!-- Search Input with Icon -->
+                    <div class="flex w-full">
+                    <!-- Search Input Field -->
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        placeholder="Search by name" 
+                        class="w-full px-4 py-2 border border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        aria-label="Search members"
+                    >
 
-  <!-- Search Button -->
-  <button 
-    type="submit" 
-    class="px-6 py-2 bg-[#ff5722] text-white rounded-r-full hover:bg-[#e64a19] transition duration-300"
-    aria-label="Search"
-  >
-    Search
-  </button>
-</div>
+                    <!-- Search Button -->
+                    <button 
+                        type="submit" 
+                        class="px-6 py-2 bg-[#ff5722] text-white rounded-r-full hover:bg-[#e64a19] transition duration-300"
+                        aria-label="Search"
+                    >
+                        Search
+                    </button>
+                    </div>
 
-        <!-- Clear Button (Appears Only If Search is Active) -->
-        @if(request('search'))
-        <a 
-            href="{{ route('staff.attendance.index') }}" 
-            class="px-3 py-2 text-gray-600 hover:text-gray-800 bg-gray-300 rounded-md focus:outline-none transition duration-150 ease-in-out flex items-center"
-        >
-            <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Clear
-        </a>
-        @endif
-    </div>
-</form>
-
-
-
-            <div class="flex space-x-2 w-full sm:w-auto">
-                <div class="w-full sm:w-auto">
-                    <select id="date-filter" class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-[#ff5722] focus:border-[#ff5722] sm:text-sm rounded-md">
-                        <option value="today">Today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="thisWeek">This Week</option>
-                        <option value="lastWeek">Last Week</option>
-                        <option value="thisMonth">This Month</option>
-                    </select>
+                    <!-- Clear Button (Appears Only If Search is Active) -->
+                    @if(request('search'))
+                    <a 
+                        href="{{ route('staff.attendance.index') }}" 
+                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#ff5722] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
+                    >
+                        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        Clear
+                    </a>
+                    @endif
                 </div>
+            </form>
+
+            <div class="relative w-full sm:w-auto">
+            <!-- Custom Select Button -->
+            <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#ff5722] rounded-full flex justify-between items-center">
+                <span id="selected-option">Today</span>
+                <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Dropdown Options -->
+            <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
+                <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
+                <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
+                <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
+                <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="lastWeek">Last Week</li>
+                <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisMonth">This Month</li>
+            </ul>
             </div>
         </div>
 
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-[#2c2c2c]">
+                <thead class="bg-[#1a1a1a] border-b border-gray-800">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Member</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Membership</th>
@@ -79,15 +84,15 @@
                 </thead>
                 <tbody>
                     @foreach($attendances as $attendance)
-                    <tr class="@if($loop->even) bg-gray-100 @else bg-white @endif hover:bg-indigo-50 transition-colors duration-150">
+                    <tr class="@if($loop->even) bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] @else bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] @endif">
                         <!-- Member -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
-                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-medium">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
                                     {{ substr($attendance->user->first_name, 0, 1) }}{{ substr($attendance->user->last_name, 0, 1) }}
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ $attendance->user ? $attendance->user->first_name . ' ' . $attendance->user->last_name : 'Unknown' }}</div>
+                                    <div class="text-sm font-medium text-gray-200">{{ $attendance->user ? $attendance->user->first_name . ' ' . $attendance->user->last_name : 'Unknown' }}</div>
                                 </div>
                             </div>
                         </td>
@@ -106,15 +111,15 @@
                         
                         <!-- Check-in Time -->
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">{{ $attendance->time_in->format('h:i A') }}</div>
-                            <div class="text-xs text-gray-500">{{ $attendance->time_in->format('M d, Y') }}</div>
+                            <div class="text-sm text-gray-200">{{ $attendance->time_in->format('h:i A') }}</div>
+                            <div class="text-xs text-gray-400">{{ $attendance->time_in->format('M d, Y') }}</div>
                         </td>
                         
                         <!-- Check-out Time -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->time_out)
-                                <div class="text-sm text-gray-900">{{ $attendance->time_out->format('h:i A') }}</div>
-                                <div class="text-xs text-gray-500">{{ $attendance->time_out->format('M d, Y') }}</div>
+                                <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
+                                <div class="text-xs text-gray-400">{{ $attendance->time_out->format('M d, Y') }}</div>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     <span class="h-1.5 w-1.5 mr-1.5 rounded-full bg-green-400 animate-pulse"></span>
@@ -124,13 +129,13 @@
                         </td>
                         
                         <!-- Duration -->
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                             {{ $attendance->formatted_duration }}
                         </td>
                         
                         <!-- Actions -->
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 px-3 py-1 rounded-md transition-colors duration-150">
+                            <button class="text-gray-200 hover:text-gray-200 bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150">
                                 Details
                             </button>
                         </td>
@@ -145,4 +150,29 @@
     </div>
     </div>
 </div>
+<script>
+  const selectBtn = document.getElementById('select-btn');
+  const dropdown = document.getElementById('dropdown');
+  const selectedOption = document.getElementById('selected-option');
+
+  // Toggle Dropdown
+  selectBtn.addEventListener('click', () => {
+    dropdown.classList.toggle('hidden');
+  });
+
+  // Select Option
+  dropdown.querySelectorAll('li').forEach(option => {
+    option.addEventListener('click', () => {
+      selectedOption.textContent = option.textContent;
+      dropdown.classList.add('hidden');
+    });
+  });
+
+  // Close dropdown when clicking outside
+  window.addEventListener('click', (e) => {
+    if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.add('hidden');
+    }
+  });
+</script>
 @endsection

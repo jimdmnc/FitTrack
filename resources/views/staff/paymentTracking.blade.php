@@ -3,57 +3,50 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Header Section with Gradient Card -->
-    <div class="bg-white rounded-xl shadow-lg border border-gray-100 mb-8 overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-3"></div>
-        <div class="p-6">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                <h1 class="text-2xl md:text-3xl font-bold text-gray-800">
-                    Payment Tracking
+    <div class="py-8 sm:px-6 lg:px-4">
+    <div class="mb-6">
+    <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
+                   Payment Tracking
                 </h1>
-        
-            </div>
-        </div>
     </div>
 
+
     <!-- Payment Table Card -->
-    <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div class="">
         <!-- Table Header with Search and Filter -->
         <div class="p-5 border-b border-gray-100">
             <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                 <div class="relative w-full md:w-64">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <svg class="w-4 h-4 text-[#ff5722]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                     </div>
-                    <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-200 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500" placeholder="Search payments...">
+                    <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#ff5722] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments...">
                 </div>
                 <div class="flex items-center gap-3">
                     <!-- Payment Method Filter -->
-                    <select id="paymentMethodFilter" class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                    <select id="paymentMethodFilter" class="pr-8 bg-[#212121] border border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                         <option value="">All Methods</option>
                         <option value="cash">Cash</option>
                         <option value="gcash">Gcash</option>
                     </select>
 
                     <!-- Time Filter -->
-                    <select id="timeFilter" class="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+                    <select id="timeFilter" class="pr-8 bg-[#212121] border border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                         <option value="">All Time</option>
                         <option value="today">Today</option>
                         <option value="week">This Week</option>
                         <option value="month">This Month</option>
                     </select>
                 </div>
- 
-
-
             </div>
         </div>
 
         <!-- Responsive Table -->
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
-                <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-xs font-medium text-gray-200 uppercase tracking-wider divide-y divide-gray-800">
                     <tr>
                         <th class="px-6 py-4 text-left">#</th>
                         <th class="px-6 py-4 text-left">Customer</th>
@@ -64,7 +57,7 @@
                         <th class="px-6 py-4 text-left">Expiry</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100">
+                <tbody class="divide-y divide-gray-800">
                     @foreach ($payments as $payment)
                     <tr class="hover:bg-gray-50 transition-colors">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-600">{{ $loop->iteration }}</td>

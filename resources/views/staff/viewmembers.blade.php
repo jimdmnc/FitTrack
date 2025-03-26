@@ -1,20 +1,17 @@
-
-
-        @extends('layouts.app') <!-- Assuming you have a main layout file -->
+@extends('layouts.app') <!-- Assuming you have a main layout file -->
 
 @section('content')
 
-    <section class="pt-10 mb-8">
-        <div class=" bg-white p-6 rounded-lg shadow-lg shadow-gray-400 border border-gray-200">
-            <div class="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
-                <h2 class="font-extrabold text-lg sm:text-3xl text-gray-800">
-                    <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-700 leading-snug">Gym Members</span>
-                </h2>
-            </div>
-        </div>
-    </section>
 
-<section class="mt-6 border border-white rounded-lg p-4 bg-white text-gray-700">
+<div class="py-8 sm:px-6 lg:px-4">
+    <div class="mb-6">
+    <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
+                    Gym Member 
+                </h1>
+        <p class="mt-1 ml-2 text-sm text-gray-300">Track members </p>
+    </div>
+
+<section class="mt-6 rounded-lg p-4 bg-transparent text-gray-200">
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
             <!-- Filter Dropdown -->
             <div class="w-full sm:w-auto">
@@ -22,7 +19,7 @@
                     <select 
                         name="status" 
                         onchange="this.form.submit()" 
-                        class="w-full sm:w-auto appearance-none bg-white border border-gray-200 px-4 py-2 pr-8 rounded text-sm text-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300"
+                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
                         aria-label="Filter members by status"
                     >
                         <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
@@ -41,13 +38,13 @@
                         name="search" 
                         value="{{ $query }}" 
                         placeholder="Search members" 
-                        class="w-full border border-gray-200 rounded py-2 pl-9 pr-3 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-gray-300 focus:border-gray-300"
+                        class="w-full bg-[#212121] border border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
                     
                     <!-- Search Icon (Inside Input) -->
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                         </svg>
                     </div>
@@ -56,7 +53,7 @@
                     @if($query)
                     <a 
                         href="{{ route('staff.viewmembers') }}" 
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-gray-400"
                         aria-label="Clear search"
                     >
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,72 +68,72 @@
         <div class="glass-card mt-5 ">
             <div class="overflow-x-auto">
                 <!-- Success Message -->
-@if(session('success'))
-    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
-        <div class="flex items-center">
-            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ session('success') }}</span>
-        </div>
-        <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
-            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-@endif
+                @if(session('success'))
+                    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                        <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
 
-<!-- Error Message -->
-@if(session('error'))
-    <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
-        <div class="flex items-center">
-            <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ session('error') }}</span>
-        </div>
-        <button type="button" class="text-red-500 hover:text-red-700" onclick="this.parentElement.style.display='none';">
-            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-@endif
-                <table class="min-w-full divide-y divide-gray-200">
+                <!-- Error Message -->
+                @if(session('error'))
+                    <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+                        <div class="flex items-center">
+                            <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                        <button type="button" class="text-red-500 hover:text-red-700" onclick="this.parentElement.style.display='none';">
+                            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+                <table class="min-w-full divide-y divide-gray-800">
                             <thead>
-                                <tr class="bg-gray-50 rounded-lg">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th> <!-- Added this column -->
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Member ID</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Membership Type</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Registration Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                <tr class="bg-[#1A1A1A] rounded-lg">
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Registration Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                    <tbody class="divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-800">
                         
                         @foreach ($members as $member)
                         
-                        <tr class="hover:bg-gray-50 transition-colors member-table-row" data-status="{{ $member->member_status }}">
+                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
                             
-                            <td class="px-4 py-4 text-sm text-gray-500">{{ $loop->iteration }}</td> 
+                            <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0 mr-3">
                                         <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span class="text-blue-600 font-semibold">
+                                            <span class="text-gray-800 font-semibold">
                                                 {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
                                             </span>
                                         </div>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-medium text-gray-900">{{ $member->first_name }} {{ $member->last_name }}</div>
+                                        <div class="text-sm font-medium text-gray-200">{{ $member->first_name }} {{ $member->last_name }}</div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500">{{ $member->rfid_uid }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-200">{{ $member->rfid_uid }}</td>
 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -148,7 +145,7 @@
                                     {{ $member->getMembershipType() }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-500">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     {{ $member->member_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -160,7 +157,7 @@
                                 @if($member->member_status == 'active')
                                     <button 
                                         onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-800 rounded-lg transition-all duration-200 font-medium text-sm border border-indigo-100 shadow-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
                                         aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
                                         title="View member details"
                                     >
@@ -173,7 +170,7 @@
                                 @elseif($member->member_status == 'expired')
                                     <button 
                                         onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                        class="inline-flex items-center px-3 py-1.5 bg-green-50 hover:bg-green-100 text-green-600 hover:text-green-800 rounded-lg transition-all duration-200 font-medium text-sm border border-green-100 shadow-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
                                         aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                         title="Renew expired membership"
                                     >
@@ -228,17 +225,17 @@
 
 
 <!-- Renew Member Modal -->
-<div id="renewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
+<div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+    <div class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-            <h2 class="text-lg font-bold text-gray-800 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-[#212121] z-10">
+            <h2 class="text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
                 Renew Membership
             </h2>
-            <button onclick="closeRenewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors" aria-label="Close modal">
+            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors" aria-label="Close modal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -254,15 +251,15 @@
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="editMemberID">Member ID</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="editMemberID">Member ID</label>
                     <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="editMemberName">Name</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="editMemberName">Name</label>
                     <input type="text" id="editMemberName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="membershipType">Membership Type</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="membershipType">Membership Type</label>
                     <select id="membershipType" name="membership_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white text-sm">
                     <option value="" selected disabled>Select Membership Type</option>
                         <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
@@ -272,35 +269,35 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="startDate">Renewal Date</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="startDate">Renewal Date</label>
                     <input type="date" id="startDate" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="endDate">Expiration Date</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="endDate">Expiration Date</label>
                     <input type="text" id="endDate" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" readonly>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1" for="membershipFee">Base Fee ($)</label>
+                    <label class="block text-sm font-medium text-gray-200 mb-1" for="membershipFee">Base Fee ($)</label>
                     <input type="text" id="membershipFee" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
                 </div>
             </div>
             
             <!-- Summary Box -->
-            <div class="mt-4 bg-blue-50 p-4 rounded-lg border border-blue-100 flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mt-4 bg-orange-50 p-4 rounded-lg flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div class="ml-3 text-sm text-blue-800">
+                <div class="ml-3 text-sm text-gray-800">
                     <span class="font-medium">Membership Summary:</span> Annual membership will be renewed. Total fee includes all applicable taxes.
                 </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-2 mt-4 pt-3 border-t">
-                <button type="submit" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg transition-colors text-sm">
+                <button type="submit" class="px-4 py-2 bg-gray-700 text-gray-200 hover:bg-opacity-80 hover:scale-95 rounded-lg transition-colors text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium flex items-center text-sm">
+                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:scale-95 text-gray-200 rounded-lg transition-colors font-medium flex items-center text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -313,17 +310,17 @@
 <!-- End Renew Member Modal -->
  
 <!-- View Member Modal -->
-        <div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+        <div id="viewMemberModal" class="fixed inset-0 bg-[#1E1E1E] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+            <div class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
                 <!-- Modal Header -->
                 <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <h2 class="text-xl font-bold text-gray-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         Member Profile
                     </h2>
-                    <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
+                    <button onclick="closeViewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#FF5722] rounded-full p-1 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -331,9 +328,9 @@
                 </div>
 
                 <!-- Horizontal ID Card Layout -->
-                <div class="bg-white border-2 border-blue-500 rounded-lg overflow-hidden shadow-md">
+                <div class="bg-white rounded-lg overflow-hidden shadow-md">
                     <!-- Card Header -->
-                    <div class="bg-blue-500 p-3 text-white">
+                    <div class="bg-gray-600 p-3 text-white">
                         <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
                     </div>
                     
@@ -407,7 +404,7 @@
                     </div>
                     
                     <!-- Footer -->
-                    <div class="bg-blue-500 text-white text-center py-2 text-xs">
+                    <div class="bg-gray-600 text-white text-center py-2 text-xs">
                         <p>Valid only with photo identification</p>
                     </div>
                 </div>
@@ -424,7 +421,7 @@
                 </div> -->
             </div>
         </div>
-
+</div>
         
 <script>
 document.getElementById('membershipType').addEventListener('change', updateMembershipFee);
@@ -487,6 +484,29 @@ function updateExpirationDate() {
     
 </script>     
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Ensure pagination links work normally
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            // Allow default link behavior
+        });
+    });
+    
+    // Alternatively, if you're using AJAX:
+    /*
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const url = this.getAttribute('href');
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    document.documentElement.innerHTML = html;
+                });
+        });
+    });
+    */
+});
 
     // Open View Modal
     function openViewModal(name, memberID, status, membershipType, startDate) {
