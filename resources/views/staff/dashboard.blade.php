@@ -314,9 +314,11 @@
                 <p class="text-gray-200 mt-2">Track and analyze your gym's performance</p>
             </div>
             <div class="mt-4 md:mt-0 flex items-center gap-3">
-                <button class="px-4 py-2 bg-[#1E1E1E] border border-[#FF5722] hover:border-gray-200 text-gray-200 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all">
-                    <i class="text-[#FF5722] fas fa-filter"></i> Filter
-                </button>
+            <button class="px-4 py-2 bg-[#1E1E1E] border border-[#FF5722] hover:bg-[#FF5722] text-gray-200 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all group">
+            <i class="text-[#FF5722] group-hover:text-gray-200 fas fa-filter"></i> 
+            Filter
+            </button>
+
                 <div class="relative">
                     <button class="p-2 rounded-full shadow-sm text-[#FF5722] hover:text-gray-200 transition-all">
                         <i class="fas fa-bell"></i>
@@ -361,7 +363,7 @@
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
             <div class="w-1/3 flex items-center justify-center text-[#FF5722]">
-                <i class="fas fa-user-plus text-4xl"></i> <!-- Adjust icon size if necessary -->
+                <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
             </div>
         </div>
     </div>
@@ -394,7 +396,7 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center mt-8 mr-4 text-green-900">
+            <div class="w-1/3 flex items-center justify-center mr-4 text-green-900">
                 <i class="fas fa-check-circle text-5xl text-[#FF5722]"></i>
             </div>
         </div>
@@ -416,8 +418,8 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center text-red-900">
-                <i class="fas fa-calendar-times text-7xl text-[#FF5722]"></i>
+            <div class="w-1/3 flex items-center justify-center ext-red-900">
+                <i class="fas fa-calendar-times text-5xl text-[#FF5722]"></i>
             </div>
 
         </div>
