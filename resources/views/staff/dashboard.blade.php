@@ -6,14 +6,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
     <style>
         .glass-card {
-            background: #121212;
+            background: #1e1e1e;
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
             transition: all 0.3s ease;
         }
         .glass-card:hover { 
-            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
+            box-shadow: 0 8px 20px rgba(31, 38, 135, 0.15);
+            transform: translateY(-5px);
+        }
+        .glass-card1 {
+            background: #1e1e1e;
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border-left: 8px solid #EA580C;
+            transition: all 0.3s ease;
+        }
+        .glass-card1:hover { 
+            box-shadow: 0 8px 20px rgba(31, 38, 135, 0.15);
             transform: translateY(-5px);
         }
         .gradient-bg {
@@ -195,7 +205,7 @@
 
         
     </style>
-    <style>
+    <!-- <style>
 /* Improved styling for the chart components */
 .glass-card {
     background: #1E1E1E;
@@ -238,7 +248,7 @@
     /* Glass Card Styles */
     .glass-card {
         background: rgba(30, 30, 30, 0.95); /* Dark gray with slight transparency */
-        border: 1px solid rgba(255, 109, 34, 0.2); /* Soft orange border */
+        border: none; /* Soft orange border */
         backdrop-filter: blur(10px);
     }
 
@@ -301,7 +311,7 @@
         transform: translateY(-5px);
         box-shadow: 0 12px 16px rgba(255, 87, 34, 0.1);
     }
-</style>
+</style> -->
 
 <div class="container mx-auto py-8 px-4">
     <!-- Header Section with Modern Design -->
@@ -311,21 +321,9 @@
                 <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
                    Dashboard
                 </h1>
-                <p class="text-gray-200 mt-2">Track and analyze your gym's performance</p>
+                <p class="text-gray-200 mt-2">Track and analyze the gym's performance</p>
             </div>
-            <div class="mt-4 md:mt-0 flex items-center gap-3">
-            <button class="px-4 py-2 bg-[#1E1E1E] border border-[#FF5722] hover:bg-[#FF5722] text-gray-200 rounded-lg shadow-sm flex items-center gap-2 text-sm font-medium transition-all group">
-            <i class="text-[#FF5722] group-hover:text-gray-200 fas fa-filter"></i> 
-            Filter
-            </button>
 
-                <div class="relative">
-                    <button class="p-2 rounded-full shadow-sm text-[#FF5722] hover:text-gray-200 transition-all">
-                        <i class="fas fa-bell"></i>
-                    </button>
-                    <div class="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></div>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -335,7 +333,7 @@
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
     <!-- New Members Card -->
-    <div class="glass-card p-4 hover:shadow-lg transition-shadow duration-300">
+    <div class="glass-card1 p-4">
         <div class="flex justify-between items-start">
             <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
                 <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
@@ -353,7 +351,7 @@
                     $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
                 @endphp
                 <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                    {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
                     <i class="fas fa-arrow-up w-4 h-4 mr-1 {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
                     <span class="text-sm font-medium">
                         {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
@@ -362,14 +360,14 @@
             </div>
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center text-[#FF5722]">
+            <div class="w-1/3 flex items-center justify-center text-orange-500">
                 <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
             </div>
         </div>
     </div>
 
     <!-- Today's Check-ins Card -->
-    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+    <div class="glass-card1 p-3">
         <div class="flex justify-between items-start">
             <div class="w-2/3">
                 <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
@@ -387,7 +385,7 @@
                     $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
                 @endphp
                 <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200' }}">
+                    {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
                     <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1 
                         {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
                     <span class="text-sm font-medium">
@@ -398,13 +396,13 @@
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
             <div class="w-1/3 flex items-center justify-center mr-4">
-                <i class="fas fa-check-circle text-5xl text-[#FF5722]"></i>
+                <i class="fas fa-check-circle text-5xl text-orange-500"></i>
             </div>
         </div>
     </div>
 
     <!-- Soon to Expire Card -->
-    <div class="glass-card p-3 hover:shadow-lg transition-shadow duration-300">
+    <div class="glass-card1 p-3">
         <div class="flex justify-between items-start">
             <div class="w-2/3">
                 <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
@@ -412,7 +410,7 @@
                     <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
                     <span class="text-lg text-gray-200">members</span>
                 </div>
-                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 border border-[#FF5722] text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover:bg-[#FF5722] hover:text-white">
+                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover: hover:text-orange-400">
                     <span class="text-sm font-medium">Manage Renewals</span>
                     <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
                 </a>
@@ -420,7 +418,7 @@
 
             <!-- Icon on the Right Side (Takes up 30% width) -->
             <div class="w-1/3 flex items-center justify-center ext-red-900">
-                <i class="fas fa-calendar-times text-5xl text-[#FF5722]"></i>
+                <i class="fas fa-calendar-times text-5xl text-orange-500"></i>
             </div>
 
         </div>
@@ -432,7 +430,7 @@
     <div class="dashboard-grid gap-4">
 
         <!-- Enhanced Check-ins Chart Card -->
-        <div class="glass-card p-4 grid-col-span-8 chart-card space-y-4 rounded-xl shadow-sm" id="checkinsChartCard">
+        <div class="glass-card p-4 grid-col-span-8 chart-card space-y-4 rounded-xl" id="checkinsChartCard">
             <div class="flex justify-between items-center mb-2">
                     <div>
                         <h3 class="text-lg font-semibold text-gray-200">Check-ins Overview</h3>
