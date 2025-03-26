@@ -29,15 +29,12 @@
                         </h1>
                         <p class="text-gray-200 mt-2">Complete the form below to register a new gym member</p>
                     </div>
-                    <div class="mt-4 md:mt-0 flex items-center gap-3">
-      
-                      
-                    </div>
+
                 </div>
             </div>
 
     <!-- Form Container -->
-    <div class="max-w-8xl mx-auto mt-10">
+    <div class="max-w-8xl mx-auto mt-8">
         
         <!-- Success Message -->
     @if(session('success'))
@@ -74,7 +71,7 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="first_name" name="first_name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required>
+                    <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required>
                     @error('first_name')
                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
                     @enderror
@@ -82,7 +79,7 @@
 
                 <div>
                     <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="last_name" name="last_name" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
+                    <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
                     @error('last_name')
                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
                     @enderror
@@ -91,7 +88,7 @@
                 <div>
                     <label for="birthdate" class="block text-gray-200 font-medium mb-2">Birthdate <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="date" id="birthdate" name="birthdate" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                        <input type="date" id="birthdate" name="birthdate" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
                             value="{{ old('birth_date') }}" required max="{{ date('Y-m-d') }}">
 
                     </div>
@@ -102,7 +99,7 @@
 
                 <div>
                     <label for="gender" class="block text-gray-200 font-medium mb-2">Gender <span class="text-red-500">*</span></label>
-                    <select id="gender" name="gender" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
+                    <select id="gender" name="gender" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
                         <option value="" selected disabled>Select Gender</option>
                         <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
@@ -115,7 +112,7 @@
                 <div>
                     <label for="phoneNumber" class="block text-gray-200 font-medium mb-2">Phone Number <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="tel" id="phoneNumber" name="phone_number" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                        <input type="tel" id="phoneNumber" name="phone_number" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
                             pattern="\d{11}" maxlength="11" placeholder="11-digit phone number" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '')">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -132,7 +129,7 @@
                 <div>
                     <label for="email" class="block text-gray-200 font-medium mb-2">Email Address <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="email" id="email" name="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                        <input type="email" id="email" name="email" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
                             placeholder="example@email.com" value="{{ old('email') }}" required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -160,7 +157,7 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
-                    <select id="membershipType" name="membership_type" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
+                    <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
                         <option value="" selected disabled>Select Membership Type</option>
                         <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
                         <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
@@ -174,13 +171,13 @@
                 
                 <div>
                     <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount</label>
-                    <input type="text" id="payment_amount" name="payment_amount" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
+                    <input type="text" id="payment_amount" name="payment_amount" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
                 </div>
 
                 <div>
                     <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="date" id="startDate" name="start_date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" required>
+                        <input type="date" id="startDate" name="start_date" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" required>
 
                     </div>
                     @error('start_date')
@@ -191,7 +188,7 @@
                 <div>
                     <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
                     <div class="relative">
-                        <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
+                        <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -206,7 +203,7 @@
                 <div>
                     <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input id="uid" name="uid" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" placeholder="Tap your RFID card on the reader" readonly />
+                        <input id="uid" name="uid" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c]  w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" placeholder="Tap your RFID card on the reader" readonly />
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -256,7 +253,7 @@
                         <span class="text-xs text-gray-300">Will be shown to the member</span>
                     </div>
                     <div class="relative mt-2">
-                        <input type="text" id="password" name="password" class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly required>
+                        <input type="text" id="password" name="password" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
