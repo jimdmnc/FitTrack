@@ -114,14 +114,17 @@ class RFIDController extends Controller
     // Fetch the latest RFID UID from the rfid_tags table
     public function getLatestRFID()
     {
-        $latestRFID = DB::table('rfid_tags')->latest('created_at')->first();
-
+        $latestRFID = DB::table('rfid_tags')
+            ->where('registered', 0) // Fetch only registered RFIDs
+            ->latest('created_at') // Get the most recent entry
+            ->first();
+    
         if (!$latestRFID) {
-            return response()->json(['error' => 'No RFID found.'], 404);
+            return response()->json(['error' => 'No registered RFID found.'], 404);
         }
-
+    
         return response()->json(['uid' => $latestRFID->uid]);
     }
-
+    
     
 }
