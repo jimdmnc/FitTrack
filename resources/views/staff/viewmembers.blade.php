@@ -3,7 +3,7 @@
 @section('content')
 
 
-<div class="py-8 sm:px-6 lg:px-4">
+<div class="py-8 sm:px-6 lg:px-4 h-screen">
     <div class="mb-6">
     <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
                     Gym Member 

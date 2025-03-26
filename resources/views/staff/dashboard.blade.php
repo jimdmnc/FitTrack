@@ -10,7 +10,7 @@
             backdrop-filter: blur(10px);
             border-radius: 16px;
             transition: all 0.3s ease;
-        }
+        } 
         .glass-card:hover { 
             box-shadow: 0 8px 20px rgba(31, 38, 135, 0.15);
             transform: translateY(-5px);
@@ -577,7 +577,7 @@
                 <td class="px-4 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="h-10 w-10 flex-shrink-0 mr-3">
-                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                            <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
                                 <span class="text-gray-200 font-semibold">
                                     {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
                                 </span>
@@ -592,7 +592,7 @@
                     <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                         @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
                         @elseif($member->getMembershipType() == 'Week') bg-green-100 text-green-800
-                        @elseif($member->getMembershipType() == 'Month') bg-blue-100 text-blue-800
+                        @elseif($member->getMembershipType() == 'Month') bg-orange-100 text-orange-800
                         @elseif($member->getMembershipType() == 'Session') bg-yellow-100 text-yellow-800
                         @endif">
                         {{ $member->getMembershipType() }}
@@ -625,7 +625,7 @@
                 <!-- Modal Header -->
                 <div class="flex justify-between items-center mb-6 border-b pb-3">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         Member Profile
@@ -638,9 +638,9 @@
                 </div>
 
                 <!-- Horizontal ID Card Layout -->
-                <div class="bg-white border-2 border-blue-500 rounded-lg overflow-hidden shadow-md">
+                <div class="bg-white border-2 border-orange-500 rounded-lg overflow-hidden shadow-md">
                     <!-- Card Header -->
-                    <div class="bg-blue-500 p-3 text-white">
+                    <div class="bg-orange-500 p-3 text-white">
                         <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
                     </div>
                     
@@ -714,14 +714,14 @@
                     </div>
                     
                     <!-- Footer -->
-                    <div class="bg-blue-500 text-white text-center py-2 text-xs">
+                    <div class="bg-orange-500 text-white text-center py-2 text-xs">
                         <p>Valid only with photo identification</p>
                     </div>
                 </div>
 
                 <!-- Modal Footer with Edit and Close Buttons -->
                 <!-- <div class="flex justify-end mt-6">
-                    <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
+                    <button onclick="openEditModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
@@ -738,7 +738,7 @@
                 <!-- Modal Header -->
                 <div class="flex justify-between items-center mb-6 border-b pb-3">
                     <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
                         Edit Member
@@ -772,7 +772,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <input type="text" id="editMemberName" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <input type="text" id="editMemberName" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors">
                         </div>
                     </div>
 
@@ -784,7 +784,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                                 </svg>
                             </div>
-                            <select id="editMembershipType" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none">
+                            <select id="editMembershipType" class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors appearance-none">
                                 <option value="Annual">Annual</option>
                                 <option value="Month">Monthly</option>
                                 <option value="Week">Weekly</option>
@@ -797,14 +797,14 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Status</label>
                         <div class="flex items-center space-x-4">
                             <label class="flex items-center">
-                                <input type="radio" name="status" value="active" class="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                <input type="radio" name="status" value="active" class="h-5 w-5 text-orange-600 focus:ring-orange-500 cursor-pointer">
                                 <div class="ml-2 flex items-center">
                                     <span class="inline-flex h-3 w-3 bg-green-500 rounded-full mr-1.5"></span>
                                     <span>Active</span>
                                 </div>
                             </label>
                             <label class="flex items-center">
-                                <input type="radio" name="status" value="expired" class="h-5 w-5 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                <input type="radio" name="status" value="expired" class="h-5 w-5 text-orange-600 focus:ring-orange-500 cursor-pointer">
                                 <div class="ml-2 flex items-center">
                                     <span class="inline-flex h-3 w-3 bg-red-500 rounded-full mr-1.5"></span>
                                     <span>Expired</span>
@@ -815,7 +815,7 @@
 
                     <!-- Modal Footer with Save and Cancel Buttons -->
                     <div class="flex justify-end mt-6">
-                        <button type="button" onclick="saveChanges()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
+                        <button type="button" onclick="saveChanges()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>
@@ -1217,11 +1217,11 @@
             button.addEventListener("click", function() {
                 // Remove active class from all buttons
                 document.querySelectorAll(".period-button").forEach(btn => {
-                    btn.classList.remove("active", "bg-white", "text-blue-600");
+                    btn.classList.remove("active", "bg-white", "text-orange-600");
                 });
                 
                 // Add active styling to clicked button
-                this.classList.add("active", "bg-white", "text-blue-600");
+                this.classList.add("active", "bg-white", "text-orange-600");
                 
                 // Show loading indicator
                 showLoading();
@@ -1268,11 +1268,11 @@
         // Add hover effects to action buttons
         document.querySelectorAll('.chart-action-button').forEach(button => {
             button.addEventListener('mouseenter', function() {
-                this.querySelector('i').classList.add('text-blue-600');
+                this.querySelector('i').classList.add('text-orange-600');
             });
             
             button.addEventListener('mouseleave', function() {
-                this.querySelector('i').classList.remove('text-blue-600');
+                this.querySelector('i').classList.remove('text-orange-600');
             });
         });
     });
@@ -1338,7 +1338,14 @@
                 datasets: [{
                     label: 'Membership Count',
                     data: membershipCounts,
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                    backgroundColor: [
+                        '#FFAD60',  // Soft orange (warm & inviting)
+                        '#FF7043',  // Vibrant orange (attention-grabbing)
+                        '#F57C00',  // Rich orange (strong but not harsh)
+                        '#FFA726',  // Light orange (friendly & energetic)
+                        '#D84315'   // Deep burnt orange (good contrast)
+                        ],
+                 
                     borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
                     borderWidth: 1
                 }]

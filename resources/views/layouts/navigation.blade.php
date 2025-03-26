@@ -3,7 +3,7 @@
         <!-- Left Section: Brand and Hamburger Menu -->
         <div class="flex items-center space-x-4">
             <!-- Hamburger Menu Button with Animation -->
-            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative group focus:outline-none focus:ring-2 focus:ring-[#FF5722] focus:ring-offset-2">
+            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative">
                 <div class="w-6 h-6 relative flex flex-col justify-center items-center">
                     <!-- Hamburger lines with transition effects -->
                     <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out -translate-y-1.5 group-hover:bg-gray-200"></span>

@@ -18,7 +18,7 @@
             transition: all 0.3s ease;
         }
         body {
-            background-color: #f9fafb;
+            background-color: #1e1e1e;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 20px 20px;
         }
@@ -33,12 +33,12 @@
     </style>
 
    
-<div class="px-10">
+<div class="mb-20">
     <div class="py-8">
         <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h2>
         <p class="text-gray-300">View and analyze your data with ease</p>
     </div>
-    <div x-data="reportFilter()" class="max-w-8xl mx-auto space-y-6 space-x-6">
+    <div x-data="reportFilter()" class="max-w-8xl mb-20 space-y-6">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 ml-8">            
             <!-- Enhanced Filter Section -->
