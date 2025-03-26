@@ -12,16 +12,15 @@ class Attendance extends Model
     use HasFactory;
 
     // Fields that can be mass-assigned
-    protected $fillable = [
-        'rfid_uid', // RFID UID of the user
-        'time_in',  // Time when the user tapped in
-        'time_out', // Time when the user tapped out
-    ];
+    protected $fillable = ['rfid_uid', 'time_in', 'time_out', 'status', 'attendance_date'];
+
 
     // Cast fields to appropriate data types
     protected $casts = [
         'time_in' => 'datetime',  // Cast 'time_in' to a DateTime object
         'time_out' => 'datetime', // Cast 'time_out' to a DateTime object
+        'attendance_date' => 'date:Y-m-d', // Ensures YYYY-MM-DD format
+
     ];
 
     // Disable auto-managing of created_at and updated_at timestamps

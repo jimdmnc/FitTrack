@@ -26,7 +26,7 @@ class AttendanceController extends Controller
         })
         
             ->orderBy('time_in', 'desc')
-            ->paginate(4); // Paginate results (10 per page)
+            ->paginate(10); // Paginate results (10 per page)
     
         return view('staff.attendance', compact('attendances', 'query'));
     }

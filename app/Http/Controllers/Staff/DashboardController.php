@@ -23,7 +23,7 @@ class DashboardController extends Controller
                     ->orWhere('last_name', 'like', "%{$query}%");
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(4)
+            ->paginate(10)
             ->withQueryString();
     
         // Calculate active members and new members data

@@ -17,48 +17,50 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // Get the selected filter type from the URL (default: all time)
-        $filterType = $request->query('filter', 'all');
-        $dateFilter = $request->query('date', now()->toDateString());
-        
-        // Determine the date based on the filter type
-        switch ($filterType) {
-            case 'yesterday':
-                $dateFilter = now()->subDay()->toDateString();
-                break;
-            case 'today':
-                $dateFilter = now()->toDateString();
-                break;
-            case 'custom':
-                $dateFilter = $request->query('date', now()->toDateString()); // Default to custom date if available
-                break;
-            default:
-                $dateFilter = now()->toDateString(); // Default to today if no filter
-        }
-        
-        // Fetch users who have attendance records for the selected date
-        $members = User::select('id', 'first_name', 'last_name', 'membership_type', 'member_status', 'phone_number', 'start_date', 'end_date', 'rfid_uid')
-            ->where('role', 'user')
-            ->whereHas('attendance', function ($query) use ($dateFilter) {
-                $query->whereDate('time_in', $dateFilter);
-            })
-            ->get(); 
-
-        // Fetch attendance records for the selected members
-        foreach ($members as $member) {
-            $member->attendance = Attendance::where('rfid_uid', $member->rfid_uid)
-                ->whereDate('time_in', $dateFilter)
-                ->first();
-        }
-
+        // Get the selected filter value
+        $filter = $request->input('filter', '');
+        $perPage = $request->input('per_page', 10);
     
-        // Fetch payments with user data
-        $payments = Payment::with('user')
-            ->select('rfid_uid', 'payment_date', 'amount', 'payment_method')
-            ->get();
+        // Base queries with eager loading
+        $attendancesQuery = Attendance::with('user');
+        $paymentsQuery = Payment::with('user');
     
-        return view('staff.report', compact('members', 'payments', 'filterType', 'dateFilter'));
+        // Get dates in application timezone
+        $today = Carbon::today();
+        $now = Carbon::now();
+        
+        // Apply filters
+        if ($filter == 'today') {
+            $attendancesQuery->whereDate('time_in', $today);
+            $paymentsQuery->whereDate('payment_date', $today);
+        } elseif ($filter == 'yesterday') {
+            $yesterday = Carbon::yesterday();
+            $attendancesQuery->whereDate('time_in', $yesterday);
+            $paymentsQuery->whereDate('payment_date', $yesterday);
+        } elseif ($filter == 'last7') {
+            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(7), $now]);
+            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(7), $now]);
+        } elseif ($filter == 'last30') {
+            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(30), $now]);
+            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(30), $now]);
+        } elseif ($filter == 'custom') {
+            $startDate = $request->input('start_date');
+            $endDate = $request->input('end_date');
+    
+            if ($startDate && $endDate) {
+                $attendancesQuery->whereBetween('time_in', [$startDate, $endDate]);
+                $paymentsQuery->whereBetween('payment_date', [$startDate, $endDate]);
+            }
+        }
+    
+        // Get results (with pagination if needed)
+        $attendances = $attendancesQuery->get();
+        $payments = $paymentsQuery->get();
+    
+        return view('staff.report', compact('attendances', 'payments'));
     }
+    
+    
     
     
 

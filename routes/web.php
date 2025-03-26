@@ -72,6 +72,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
         Route::post('/reports/generate', [ReportController::class, 'generateReport'])->name('staff.reports.generate');
         Route::get('/reports/export', [ReportController::class, 'exportReport'])->name('staff.reports.export');
+
     });
 
     // Profile routes
