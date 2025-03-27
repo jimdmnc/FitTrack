@@ -16,12 +16,14 @@ class AttendanceController extends Controller
         $query = Attendance::with('user')->orderBy('time_in', 'desc');
         
         // Search filter
-        if ($request->has('search')) {
+        if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->whereHas('user', function ($userQuery) use ($search) {
-                $userQuery->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
-                        ->orWhere('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%");
+            $query->whereHas('user', function($q) use ($search) {
+                $q->where(function($query) use ($search) {
+                    $query->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
+                });
             });
         }
 
@@ -57,12 +59,9 @@ class AttendanceController extends Controller
                     Carbon::now()->endOfMonth()
                 ]);
                 break;
-
-                // Default case ('all') shows all records - no additional where clause needed
-            case 'all':
-            default:
-                break;
+        
         }
+        
 
         // Always order by time_in descending (newest first)
         $query->orderBy('time_in', 'desc');

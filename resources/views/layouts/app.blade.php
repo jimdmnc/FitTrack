@@ -11,6 +11,8 @@
 
     <!-- Tailwind CSS -->
     @vite('resources/css/app.css')
+
+    @vite(['resources/js/alpine.js'])
     
     <!-- Alpine.js for interactions -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -18,7 +20,6 @@
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script src="//unpkg.com/alpinejs" defer></script>
     </head>
 <body class="font-sans">
     

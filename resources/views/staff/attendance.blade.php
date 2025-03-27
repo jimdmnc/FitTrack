@@ -4,6 +4,10 @@
 <style>
     [x-cloak] { display: none !important; }
 </style>
+<!-- Loading Indicator -->
+<div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
+    <div class="h-full bg-[#e64a19] animate-pulse"></div>
+</div>
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
     selectedAttendance: null,
@@ -68,7 +72,6 @@
                 </button>
 
                 <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
@@ -326,7 +329,7 @@
     const selectBtn = document.getElementById('select-btn');
     const dropdown = document.getElementById('dropdown');
     const selectedOption = document.getElementById('selected-option');
-    const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'all';
+    const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
     
     // Set initial selected option
     selectedOption.textContent = document.querySelector(`[data-value="${currentFilter}"]`).textContent;
