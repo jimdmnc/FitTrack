@@ -93,7 +93,12 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <button type="button" id="exportButton" class="bg-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-opacity-80 transition hover:scale-95">Export Report</button>
+                    <button type="button" id="exportButton" class="bg-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-opacity-80 transition hover:scale-95 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7m-9 0H6a2 2 0 00-2 2v5h16v-5a2 2 0 00-2-2h-3m-9 0v5m0 0v4h12v-4m-3 4v1m-6-1v1" />
+                        </svg>
+                        Print
+                    </button>
                     </div>
                 </div>
             </div>
@@ -199,31 +204,28 @@
                 @if($payments->count() > 0)
 
                     @forelse ($payments as $index => $payment)
-                        <tr class="hover:bg-gray-50 transition-colors" data-date="{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $index + 1 }}</td>
+                        <tr class="" data-date="{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{{ $index + 1 }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0 mr-3 bg-green-100 rounded-full flex items-center justify-center">
-                                        <span class="text-green-800 font-medium">{{ strtoupper(substr($payment->user->first_name, 0, 1)) . strtoupper(substr($payment->user->last_name, 0, 1)) }}</span>
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-900">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
+                                    <div class="text-sm font-medium text-gray-200">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($payment->payment_date)->format('m/d/Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->payment_date)->format('m/d/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">₱{{ number_format($payment->amount, 2) }}</div>
+                                <div class="text-sm font-medium text-gray-300">₱{{ number_format($payment->amount, 2) }}</div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($payment->payment_method == 'cash') bg-green-100 text-green-800 
-                                    @elseif($payment->payment_method == 'card') bg-blue-100 text-blue-800 
-                                    @elseif($payment->payment_method == 'bank') bg-purple-100 text-purple-800 
-                                    @else bg-gray-100 text-gray-800 @endif">
+                                    @if($payment->payment_method == 'cash') bg-green-900 text-green-200 
+                                    @elseif($payment->payment_method == 'card') bg-blue-900 text-blue-200 
+                                    @elseif($payment->payment_method == 'bank') bg-purple-900 text-purple-200 
+                                    @else bg-gray-900 text-gray-200 @endif">
                                     {{ $payment->payment_method }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($payment->user->start_date)->format('m/d/Y') }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ \Carbon\Carbon::parse($payment->user->end_date)->format('m/d/Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->start_date)->format('m/d/Y') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->end_date)->format('m/d/Y') }}</td>
                         </tr>
                     @empty
                         <tr>

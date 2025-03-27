@@ -5,106 +5,114 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
 use App\Models\User;
+use App\Models\GymEntry; // Make sure to import GymEntry
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Log; // For logging
+use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
-    // Show attendance records
     public function index(Request $request)
     {
-        $query = $request->input('search');
-    
-        // Fetch attendance records with user details, ordered by latest time_in
-        $attendances = Attendance::with('user')
-        ->when($query, function ($queryBuilder) use ($query) {
-            $queryBuilder->whereHas('user', function ($userQuery) use ($query) {
-                $userQuery->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
-                          ->orWhere('first_name', 'like', "%{$query}%")
-                          ->orWhere('last_name', 'like', "%{$query}%");
-            });
-        })
+        $query = Attendance::with('user')->orderBy('time_in', 'desc');
         
-            ->orderBy('time_in', 'desc')
-            ->paginate(10); // Paginate results (10 per page)
-    
-        return view('staff.attendance', compact('attendances', 'query'));
-    }
-    
+        // Search filter
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->whereHas('user', function ($userQuery) use ($search) {
+                $userQuery->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                        ->orWhere('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%");
+            });
+        }
 
-    // Record attendance when RFID is tapped
+        // Time period filter
+        $filter = $request->input('filter', 'today');
+
+        switch ($filter) {
+            case 'today':
+                $query->whereDate('time_in', Carbon::today());
+                break;
+                
+            case 'yesterday':
+                $query->whereDate('time_in', Carbon::yesterday());
+                break;
+                
+            case 'thisWeek':
+                $query->whereBetween('time_in', [
+                    Carbon::now()->startOfWeek(),
+                    Carbon::now()->endOfWeek()
+                ]);
+                break;
+                
+            case 'lastWeek':
+                $query->whereBetween('time_in', [
+                    Carbon::now()->subWeek()->startOfWeek(),
+                    Carbon::now()->subWeek()->endOfWeek()
+                ]);
+                break;
+                
+            case 'thisMonth':
+                $query->whereBetween('time_in', [
+                    Carbon::now()->startOfMonth(),
+                    Carbon::now()->endOfMonth()
+                ]);
+                break;
+
+                // Default case ('all') shows all records - no additional where clause needed
+            case 'all':
+            default:
+                break;
+        }
+
+        // Always order by time_in descending (newest first)
+        $query->orderBy('time_in', 'desc');
+
+        $attendances = $query->paginate(10);
+    
+        return view('staff.attendance', compact('attendances'));
+    }
 
     public function recordAttendance(Request $request)
     {
-        // Validate the request
         $request->validate([
             'rfid_uid' => 'required|string',
         ]);
     
-        // Get the RFID UID from the request
         $rfid_uid = $request->input('rfid_uid');
-    
-        // Get the current date and time
-        $currentDate = Carbon::now()->toDateString();
         $currentTime = Carbon::now();
     
-        // Check if the user is registered
         $user = User::where('rfid_uid', $rfid_uid)->first();
+        
         if (!$user) {
             return response()->json(['message' => 'RFID not registered.'], 404);
         }
     
-        // Check the member status
         if ($user->member_status === 'expired') {
             return response()->json(['message' => 'Membership expired! Please renew.'], 403);
         }
     
-        // Fetch the latest attendance record for today
-        $attendance = Attendance::where('rfid_uid', $rfid_uid)
-            ->whereDate('time_in', $currentDate)
+        // Check for open attendance (time_in without time_out)
+        $openAttendance = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereNull('time_out')
             ->latest('time_in')
             ->first();
     
-        if ($attendance) {
-            if ($attendance->time_out === null) {
-                // User is checking out
-                Log::info('Updating time-out for record ID: ' . $attendance->id);
-                $attendance->update(['time_out' => $currentTime]);
-    
-                return response()->json([
-                    'message' => 'Time-out recorded successfully.',
-                    'attendance' => $attendance,
-                ]);
-            } else {
-                // Create a new time-in record
-                Log::info('Creating new time-in record.');
-                $newAttendance = Attendance::create([
-                    'rfid_uid' => $rfid_uid,
-                    'time_in' => $currentTime,
-                    'time_out' => null,
-                ]);
-    
-                // ✅ **Also insert into `gym_entries`**
-                GymEntry::create([
-                    'rfid_uid' => $rfid_uid,
-                    'entry_time' => $currentTime,
-                ]);
-    
-                return response()->json([
-                    'message' => 'Time-in recorded successfully.',
-                    'attendance' => $newAttendance,
-                ]);
-            }
+        if ($openAttendance) {
+            // User is checking out
+            $openAttendance->update(['time_out' => $currentTime]);
+            
+            return response()->json([
+                'message' => 'Time-out recorded successfully.',
+                'attendance' => $openAttendance,
+            ]);
         } else {
-            // No record exists for today, create a new time-in record
-            Log::info('No attendance record found for today. Creating new time-in record.');
+            // User is checking in
             $attendance = Attendance::create([
                 'rfid_uid' => $rfid_uid,
                 'time_in' => $currentTime,
                 'time_out' => null,
             ]);
     
-            // ✅ **Also insert into `gym_entries`**
             GymEntry::create([
                 'rfid_uid' => $rfid_uid,
                 'entry_time' => $currentTime,
@@ -116,5 +124,4 @@ class AttendanceController extends Controller
             ]);
         }
     }
-    
 }

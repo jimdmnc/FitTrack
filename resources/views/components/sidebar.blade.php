@@ -5,11 +5,15 @@
     text-white transition-transform duration-500 ease-in-out 
     -translate-x-full lg:translate-x-0"><div class="flex flex-col w-full">
     <div class="flex items-center p-6">
-            <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="Rockies Logo" class="h-18 w-18 p-3 rounded-full">
-            <span x-show="open || isMobile" class="p-4 text-xl font-extrabold text-white" style="line-height: 1; font-family: 'Rajdhani', sans-serif;">
+            <a href="{{ route('staff.dashboard') }}">
+                <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="Rockies Logo" class="h-18 w-18 p-3 rounded-full">
+            </a>
+            <a href="{{ route('staff.dashboard') }}"> 
+                <span x-show="open || isMobile" class="p-4 text-xl font-extrabold text-white" style="line-height: 1; font-family: 'Rajdhani', sans-serif;">
                 Rockies 
-                <span class="gradient-text bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Fitness</span>
-            </span>
+                    <span class="p-4 gradient-text bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Fitness</span>
+                </span>
+            </a>
     </div>  
 
         <div class="flex flex-col flex-grow px-4 mt-5">

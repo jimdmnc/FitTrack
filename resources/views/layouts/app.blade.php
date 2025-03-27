@@ -17,6 +17,8 @@
     
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="//unpkg.com/alpinejs" defer></script>
     </head>
 <body class="font-sans">
     

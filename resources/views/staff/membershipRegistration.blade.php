@@ -1,8 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_orange.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <style>
- .glass-card {
+        .glass-card {
             background: #1e1e1e;
             backdrop-filter: blur(10px);
             border-radius: 16px;
@@ -15,8 +18,24 @@
         }
         .gradient-bg {
             background: #1e1e1e;
-        } 
+        }
+            /* For Webkit browsers (Chrome, Safari, Edge) */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(50%) sepia(90%) saturate(1000%) hue-rotate(330deg) brightness(100%) contrast(100%);
+        cursor: pointer;
+        padding: 0;
+        margin: 0;
+    }
 
+    /* For Firefox */
+    input[type="date"]::-moz-calendar-picker-indicator {
+        filter: invert(50%) sepia(90%) saturate(1000%) hue-rotate(330deg) brightness(100%) contrast(100%);
+        cursor: pointer;
+    }
+           /* For Edge */
+        input[type="date"]::-ms-clear {
+            display: none;
+        } 
 </style>
 <div class="py-10 px-4 md:px-10">
     <!-- Page Title -->
@@ -36,22 +55,57 @@
     <!-- Form Container -->
     <div class="max-w-8xl mx-auto mt-8">
         
-        <!-- Success Message -->
-    @if(session('success'))
-        <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
+    <!-- Success Message -->
+@if(session('success'))
+    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert" x-data="{ show: true }" x-show="show">
+        <div class="flex items-center">
+            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+            </svg>
+            <span>{{ session('success') }}</span>
+        </div>
+        <button type="button" @click="show = false" class="text-green-500 hover:text-green-700">
+            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+            </svg>
+        </button>
+    </div>
+@endif
+
+<!-- Error Message -->
+@if($errors->any() || session('error'))
+    <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert" x-data="{ show: true }" x-show="show">
+        <div class="flex justify-between items-center">
             <div class="flex items-center">
-                <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                 </svg>
-                <span>{{ session('success') }}</span>
+                <span>
+                    @if(session('error'))
+                        {{ session('error') }}
+                    @else
+                        Please fix the following errors:
+                    @endif
+                </span>
             </div>
-            <button type="button" class="text-green-500 hover:text-green-700" onclick="this.parentElement.style.display='none';">
+            <button type="button" @click="show = false" class="text-red-500 hover:text-red-700">
                 <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                 </svg>
             </button>
         </div>
-    @endif
+        
+        @if($errors->any())
+            <ul class="mt-2 list-disc list-inside text-sm">
+                @foreach($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        @endif
+    </div>
+@endif
+
+<!-- Registration Form -->  
         <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-[#1e1e1e] rounded-xl shadow-lg overflow-hidden">
             @csrf
             
@@ -79,27 +133,33 @@
 
                 <div>
                     <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
+                    <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
                     @error('last_name')
                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
                     @enderror
                 </div>
 
-                <div>
-                    <label for="birthdate" class="block text-gray-200 font-medium mb-2">Birthdate <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input type="date" id="birthdate" name="birthdate" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
-                            value="{{ old('birth_date') }}" required max="{{ date('Y-m-d') }}">
+                <div class="relative">
+    <label for="birthdate" class="block text-gray-200 font-medium mb-2">
+        Birthdate <span class="text-red-500">*</span>
+    </label>
+    <div class="relative">
+        <input type="date" id="birthdate" name="birthdate"
+               class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent"
+               value="{{ old('birthdate') }}"
+               max="{{ date('Y-m-d') }}"
+               required>
+    </div>
+    @error('birthdate')
+        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+    @enderror
+</div>
 
-                    </div>
-                    @error('birthdate')
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
-               </div>
+
 
                 <div>
                     <label for="gender" class="block text-gray-200 font-medium mb-2">Gender <span class="text-red-500">*</span></label>
-                    <select id="gender" name="gender" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
+                    <select id="gender" name="gender" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
                         <option value="" selected disabled>Select Gender</option>
                         <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
                         <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
@@ -112,7 +172,7 @@
                 <div>
                     <label for="phoneNumber" class="block text-gray-200 font-medium mb-2">Phone Number <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="tel" id="phoneNumber" name="phone_number" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                        <input type="tel" id="phoneNumber" name="phone_number" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
                             pattern="\d{11}" maxlength="11" placeholder="11-digit phone number" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '')">
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,7 +189,7 @@
                 <div>
                     <label for="email" class="block text-gray-200 font-medium mb-2">Email Address <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="email" id="email" name="email" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                        <input type="email" id="email" name="email" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
                             placeholder="example@email.com" value="{{ old('email') }}" required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -157,7 +217,7 @@
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
-                    <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
+                    <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
                         <option value="" selected disabled>Select Membership Type</option>
                         <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
                         <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
@@ -171,15 +231,29 @@
                 
                 <div>
                     <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount</label>
-                    <input type="text" id="payment_amount" name="payment_amount" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
+                    <input 
+                        type="text" 
+                        id="payment_amount" 
+                        name="payment_amount" 
+                        class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" 
+                        readonly
+                        style="box-shadow: none;"
+                    >
                 </div>
 
                 <div>
                     <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input type="date" id="startDate" name="start_date" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" required>
-
+                        <input 
+                            type="date" 
+                            id="startDate" 
+                            name="start_date" 
+                            class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                            value="{{ old('start_date') ?? date('Y-m-d') }}" 
+                            required
+                        >
                     </div>
+
                     @error('start_date')
                         <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
                     @enderror
@@ -188,7 +262,7 @@
                 <div>
                     <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
                     <div class="relative">
-                        <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly>
+                        <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -203,7 +277,7 @@
                 <div>
                     <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input id="uid" name="uid" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c]  w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" placeholder="Tap your RFID card on the reader" readonly />
+                        <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c]  w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" placeholder="Tap your RFID card on the reader" readonly />
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -253,7 +327,7 @@
                         <span class="text-xs text-gray-300">Will be shown to the member</span>
                     </div>
                     <div class="relative mt-2">
-                        <input type="text" id="password" name="password" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" readonly required>
+                        <input type="text" id="password" name="password" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly required>
                         <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -288,13 +362,14 @@
 </div>
 
 
-
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
+        // =============================================
+        // 1. Payment Amount Calculation
+        // =============================================
         const membershipType = document.getElementById("membershipType");
         const paymentAmount = document.getElementById("payment_amount");
-
-        // Define payment amounts for each membership type
+        
         const paymentRates = {
             "1": "100",   // 1-day session
             "7": "500",   // 7-day weekly
@@ -302,139 +377,173 @@
             "365": "20000" // 1-year membership
         };
 
-        // Function to update payment amount based on selection
         function updatePaymentAmount() {
-            const selectedType = membershipType.value;
-            paymentAmount.value = paymentRates[selectedType] || "0"; // Default ₱0 if nothing selected
+            paymentAmount.value = paymentRates[membershipType.value] || "0";
         }
 
-        // Listen for changes in membership type
-        membershipType.addEventListener("change", updatePaymentAmount);
-    });
-</script>
+        if (membershipType && paymentAmount) {
+            membershipType.addEventListener("change", updatePaymentAmount);
+            updatePaymentAmount(); // Initialize on load
+        }
 
+        // 2. Expiry Date Calculation
+        function updateEndDate() {
+            const membershipType = document.getElementById('membershipType');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
 
-
-
-
-
-<!-- JavaScript for Expiry Date -->
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const form = document.getElementById('registrationForm');
-        const clearButton = form.querySelector('button[type="button"]');
-        
-        // Clear form functionality
-        clearButton.addEventListener('click', function() {
-            if (confirm('Are you sure you want to clear the form?')) {
-                form.reset();
-                document.getElementById('endDate').value = '';
-                document.getElementById('password').value = '';
-                document.getElementById('rfid_status').innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>Please Tap Your Card...';
-                document.getElementById('rfid_status').className = 'mt-2 text-sm text-blue-500 flex items-center';
+            if (startDateInput && startDateInput.value && membershipType && membershipType.value) {
+                const startDate = new Date(startDateInput.value);
+                const duration = parseInt(membershipType.value);
+                startDate.setDate(startDate.getDate() + duration);
+                
+                const day = String(startDate.getDate()).padStart(2, '0');
+                const month = String(startDate.getMonth() + 1).padStart(2, '0');
+                const year = startDate.getFullYear();
+                endDateInput.value = `${day}/${month}/${year}`;
+            } else if (endDateInput) {
+                endDateInput.value = '';
             }
+        }
+
+        const startDateEl = document.getElementById('startDate');
+        const membershipTypeEl = document.getElementById('membershipType');
+        
+        if (startDateEl) startDateEl.addEventListener('change', updateEndDate);
+        if (membershipTypeEl) membershipTypeEl.addEventListener('change', updateEndDate);
+        updateEndDate(); // Initialize on load
+
+        // =============================================
+        // 3. Form Handling
+        // =============================================
+        const form = document.getElementById('registrationForm');
+        
+        if (form) {
+            // Clear form functionality
+            const clearButton = form.querySelector('button[type="button"]');
+            if (clearButton) {
+                clearButton.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to clear the form?')) {
+                        form.reset();
+                        document.getElementById('endDate').value = '';
+                        document.getElementById('password').value = '';
+                        updateRfidStatus('waiting', 'Please Tap Your Card...');
+                        updatePaymentAmount();
+                        updateEndDate();
+                    }
+                });
+            }
+
+            // Password Generation
+            function updatePassword() {
+                const lastName = document.getElementById("last_name");
+                const birthdate = document.getElementById("birthdate");
+                const passwordField = document.getElementById("password");
+                
+                if (lastName && birthdate && passwordField) {
+                    const lastNameValue = lastName.value.toLowerCase();
+                    const birthdateValue = birthdate.value;
+                    
+                    if (lastNameValue && birthdateValue) {
+                        const dateParts = birthdateValue.split("-");
+                        passwordField.value = `${lastNameValue}${dateParts[1]}${dateParts[2]}${dateParts[0]}`;
+                    } else {
+                        passwordField.value = '';
+                    }
+                }
+            }
+
+            const lastNameInput = document.getElementById("last_name");
+            const birthdateInput = document.getElementById("birthdate");
+            
+            if (lastNameInput) lastNameInput.addEventListener("input", updatePassword);
+            if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
+            updatePassword(); // Initialize on load
+
+            // Form submission loading state
+            form.addEventListener('submit', function(e) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = `
+                        <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Processing...
+                    `;
+                }
+            });
+        }
+
+        // =============================================
+        // 4. RFID Handling
+        // =============================================
+        function updateRfidStatus(type, message) {
+            const rfidStatus = document.getElementById('rfid_status');
+            if (!rfidStatus) return;
+
+            const icons = {
+                success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>`,
+                waiting: `<svg class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>`,
+                error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>`
+            };
+
+            const colors = {
+                success: 'text-green-500',
+                waiting: 'text-blue-500',
+                error: 'text-red-500'
+            };
+
+            rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
+            rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
+        }
+
+        function fetchLatestUid() {
+            fetch('/api/rfid/latest')
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
+                .then(data => {
+                    const uidInput = document.getElementById('uid');
+                    if (data.uid && uidInput) {
+                        uidInput.value = data.uid;
+                        updateRfidStatus('success', 'Card detected');
+                    } else {
+                        if (uidInput) uidInput.value = '';
+                        updateRfidStatus('waiting', 'Please Tap Your Card...');
+                    }
+                })
+        }
+
+        // Handle session messages
+        @if (session('success'))
+            const uidInput = document.getElementById('uid');
+            if (uidInput) uidInput.value = '';
+            updateRfidStatus('success', 'Registration successful!');
+        @endif
+
+        @if (session('error'))
+            updateRfidStatus('error', '{{ session('error') }}');
+        @endif
+
+        // Initialize and poll
+        fetchLatestUid();
+        const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+
+        // Clean up interval when leaving page
+        window.addEventListener('beforeunload', function() {
+            clearInterval(rfidPollInterval);
         });
     });
 
-    document.getElementById('membershipType').addEventListener('change', updateEndDate);
-    document.getElementById('startDate').addEventListener('change', updateEndDate);
 
-    function updateEndDate() {
-        let membershipType = document.getElementById('membershipType').value;
-        let startDateInput = document.getElementById('startDate').value;
-        let endDateInput = document.getElementById('endDate');
-
-        if (startDateInput && membershipType) {
-            let startDate = new Date(startDateInput);
-
-            switch (membershipType) {
-                case '1': // Session (1 day)
-                    startDate.setDate(startDate.getDate() + 1);
-                    break;
-                case '7': // Weekly (7 days)
-                    startDate.setDate(startDate.getDate() + 7);
-                    break;
-                case '30': // Monthly (30 days)
-                    startDate.setDate(startDate.getDate() + 30);
-                    break;
-                case '365': // Annual (365 days)
-                    startDate.setDate(startDate.getDate() + 365);
-                    break;
-                default:
-                    break;
-            }
-
-            let day = String(startDate.getDate()).padStart(2, '0');
-            let month = String(startDate.getMonth() + 1).padStart(2, '0');
-            let year = startDate.getFullYear();
-
-            let formattedDate = `${day}/${month}/${year}`;
-            endDateInput.value = formattedDate;
-        } else {
-            endDateInput.value = '';
-        }
-    }
-</script>
-<script>
-    // Function to fetch the latest RFID UID
-    function fetchLatestUid() {
-        fetch('/api/rfid/latest') // Ensure the URL matches Laravel's route
-        .then(response => response.json())
-            .then(data => {
-                console.log('Data received:', data); // Debugging
-                if (data.uid) {
-                    document.getElementById('uid').value = data.uid;
-                    document.getElementById('rfid_status').textContent = 'Card detected.';
-                    document.getElementById('rfid_status').style.color = 'green';
-                } else {
-                    console.log('No UID found'); // Debugging
-                    document.getElementById('rfid_status').textContent = 'Please Tap Your Card...';
-                    // document.getElementById('rfid_status').style.color = 'blue';
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching UID:', error); // Debugging
-                document.getElementById('rfid_status').textContent = 'Error fetching UID.';
-                document.getElementById('rfid_status').style.color = 'red';
-            });
-    }
-
-    // Fetch the latest UID every 2 seconds (adjust interval as needed)
-    setInterval(fetchLatestUid, 2000);
-
-    // Fetch the latest UID immediately when the page loads
-    fetchLatestUid();
-
-    // Clear the UID input field after successful form submission
-    @if (session('success'))
-        document.getElementById('uid').value = ''; // Clear the UID input field
-        document.getElementById('rfid_status').textContent = 'UID submitted successfully!';
-        document.getElementById('rfid_status').style.color = 'green';
-    @endif
-
-    @if (session('error'))
-        document.getElementById('rfid_status').textContent = 'Error submitting UID.';
-        document.getElementById('rfid_status').style.color = 'red';
-    @endif
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // Automatically fill password when birthdate or last name is entered
-        function updatePassword() {
-            let lastName = document.getElementById("last_name").value.toLowerCase();
-    let birthdate = this.value; // Format is YYYY-MM-DD
-
-    if (lastName && birthdate) {
-        let dateParts = birthdate.split("-"); // Split into [YYYY, MM, DD]
-        let formattedPassword = `${lastName}${dateParts[1]}${dateParts[2]}${dateParts[0]}`; // lastNameMMDDYYYY
-        document.getElementById("password").value = formattedPassword;
-    }
-        }
-
-        // Attach event listeners
-        document.querySelector("input[name='last_name']").addEventListener("input", updatePassword);
-        document.querySelector("input[name='birthdate']").addEventListener("input", updatePassword);
-    });
 </script>
 @endsection

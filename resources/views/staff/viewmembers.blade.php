@@ -137,10 +137,10 @@
 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
-                                    @elseif($member->getMembershipType() == 'Week') bg-green-100 text-green-800
-                                    @elseif($member->getMembershipType() == 'Month') bg-blue-100 text-blue-800
-                                    @elseif($member->getMembershipType() == 'Session') bg-yellow-100 text-yellow-800
+                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
+                                    @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
+                                    @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
+                                    @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
                                     @endif">
                                     {{ $member->getMembershipType() }}
                                 </span>
@@ -148,7 +148,7 @@
                             <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $member->member_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $member->member_status == 'active' ? ' text-green-400' : ' text-red-400' }}">
                                     {{ $member->member_status }}
                                 </span>
                             </td>

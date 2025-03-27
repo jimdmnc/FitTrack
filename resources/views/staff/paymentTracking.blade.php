@@ -12,7 +12,7 @@
 
 
         <!-- Payment Table Card -->
-        <div class="bg-[#1e1e1e]  rounded-xl ">
+        <div class=" ">
             <!-- Table Header with Search and Filter -->
             <div class="p-5">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
@@ -59,14 +59,11 @@
                     </thead>
                     <tbody class="divide-y divide-black">
                         @foreach ($payments as $payment)
-                        <tr class="hover:bg-gray-50 transition-colors">
+                        <tr class="bg-[#1e1e1e]">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{{ $loop->iteration }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
-                                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-500 font-medium mr-3">
-                                        {{ substr(optional($payment->user)->first_name ?? 'U', 0, 1) }}
-                                    </div>
-                                    <div class="text-sm font-medium text-gray-700">
+                                    <div class="text-sm font-medium text-gray-200">
                                         {{ optional($payment->user)->first_name . ' ' . optional($payment->user)->last_name ?? 'Unknown User' }}
                                     </div>
                                 </div>
@@ -74,17 +71,17 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="px-2.5 py-1 text-xs font-medium rounded-full
                                     @if(strtolower(optional($payment->user)->membership_type_name ?? '') == 'premium')
-                                        bg-indigo-100 text-indigo-800
+                                        bg-indigo-900 text-indigo-200
                                     @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'basic')
-                                        bg-blue-100 text-blue-800
+                                        bg-blue-900 text-blue-200
                                     @else
-                                        bg-gray-100 text-gray-800
+                                        bg-gray-900 text-gray-200
                                     @endif
                                 ">
                                     {{ optional($payment->user)->membership_type_name ?? 'N/A' }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">₱{{ number_format($payment->amount, 2) }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">₱{{ number_format($payment->amount, 2) }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     @if(strtolower($payment->payment_method) == 'cash')
@@ -100,13 +97,13 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                     @endif
-                                    <span class="text-sm text-gray-600">{{ $payment->payment_method }}</span>
+                                    <span class="text-sm text-gray-200">{{ $payment->payment_method }}</span>
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                 {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                 @if(optional($payment->user)->end_date)
                                     <span class="@if(\Carbon\Carbon::parse($payment->user->end_date)->isPast()) text-red-600 @endif">
                                         {{ \Carbon\Carbon::parse($payment->user->end_date)->format('M d, Y') }}
