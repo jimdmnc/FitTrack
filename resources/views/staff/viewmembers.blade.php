@@ -220,84 +220,89 @@
 </section>
 
 
-
-
-
-
 <!-- Renew Member Modal -->
 <div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-    <div class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b sticky top-0 bg-[#212121] z-10">
+        <div class="flex justify-between items-center p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
             <h2 class="text-lg font-bold text-gray-200 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
                 Renew Membership
             </h2>
-            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors" aria-label="Close modal">
+            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200" aria-label="Close modal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
-
-
-
         <!-- Renew Form -->
         <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-6">
-        @csrf
+            @csrf
+            <input type="hidden" name="user_id" id="editUserId">
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Member ID -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="editMemberID">Member ID</label>
-                    <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
+                    <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
                 </div>
+                
+                <!-- Member Name -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="editMemberName">Name</label>
-                    <input type="text" id="editMemberName" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
+                    <input type="text" id="editMemberName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
                 </div>
+                
+                <!-- Membership Type -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="membershipType">Membership Type</label>
-                    <select id="membershipType" name="membership_type" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors appearance-none bg-white text-sm">
-                    <option value="" selected disabled>Select Membership Type</option>
-                        <option value="1" {{ old('membership_type') == '1' ? 'selected' : '' }}>Session (1 day)</option>
-                        <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
-                        <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
-                        <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type</label>
+                    <select id="membershipType" name="membership_type" required class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-sm">
+                        <option value="" selected disabled>Select Membership Type</option>
+                        <option value="1">Session (1 day)</option>
+                        <option value="7">Weekly (7 days)</option>
+                        <option value="30">Monthly (30 days)</option>
+                        <option value="365">Annual (365 days)</option>
                     </select>
                 </div>
+                
+                <!-- Renewal Date -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="startDate">Renewal Date</label>
-                    <input type="date" id="startDate" name="start_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm">
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date</label>
+                    <input type="date" id="startDate" name="start_date" required class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-sm">
                 </div>
+                
+                <!-- Expiration Date -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="endDate">Expiration Date</label>
-                    <input type="text" id="endDate" name="end_date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm" readonly>
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
+                    <input type="text" id="endDate" name="end_date" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
                 </div>
+
+                <!-- Membership Fee -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-200 mb-1" for="membershipFee">Base Fee ($)</label>
-                    <input type="text" id="membershipFee" class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 text-sm" readonly>
+                    <label class="block text-sm font-medium text-gray-300 mb-1" for="membershipFee">Base Fee</label>
+                    <input type="text" id="membershipFee" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
                 </div>
             </div>
             
             <!-- Summary Box -->
-            <div class="mt-4 bg-orange-50 p-4 rounded-lg flex items-start">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-4 rounded-lg flex items-start border border-[#ff5722] border-opacity-30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div class="ml-3 text-sm text-gray-800">
-                    <span class="font-medium">Membership Summary:</span> Annual membership will be renewed. Total fee includes all applicable taxes.
+                <div class="ml-3 text-sm text-gray-300">
+                    <span class="font-medium">Membership Summary:</span> <span id="membershipSummaryText">Select membership type to see details.</span>
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-2 mt-4 pt-3 border-t">
-                <button type="submit" class="px-4 py-2 bg-gray-700 text-gray-200 hover:bg-opacity-80 hover:scale-95 rounded-lg transition-colors text-sm">
+            <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-700">
+                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-lg transition-colors duration-200 text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:scale-95 text-gray-200 rounded-lg transition-colors font-medium flex items-center text-sm">
+                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-[#e04a1e] text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -424,37 +429,110 @@
 </div>
         
 <script>
-document.getElementById('membershipType').addEventListener('change', updateMembershipFee);
-document.getElementById('startDate').addEventListener('change', updateExpirationDate);
+document.addEventListener('DOMContentLoaded', function() {
+    // Get DOM elements
+    const membershipTypeSelect = document.getElementById('membershipType');
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const membershipFeeInput = document.getElementById('membershipFee');
+    const summaryText = document.getElementById('membershipSummaryText');
 
-function updateMembershipFee() {
-    let membershipType = document.getElementById('membershipType').value;
-    let membershipFeeInput = document.getElementById('membershipFee');
-
-    // Define the membership fees
-    let fees = {
-        '1': 60,  // Session (1 day)
-        '7': 300, // Weekly (7 days)
-        '30': 1000, // Monthly (30 days)
-        '365': 5000 // Annual (365 days)
+    // Define membership fees and names
+    const membershipData = {
+        '1': { fee: 60, name: 'Session (1 day)' },
+        '7': { fee: 300, name: 'Weekly (7 days)' },
+        '30': { fee: 1000, name: 'Monthly (30 days)' },
+        '365': { fee: 5000, name: 'Annual (365 days)' }
     };
 
-    membershipFeeInput.value = fees[membershipType] || 0;
-}
+    // Set today's date as default and max date
+    const today = new Date();
+    const todayFormatted = formatDate(today);
+    startDateInput.value = todayFormatted;
+    startDateInput.min = todayFormatted; // Prevent past dates
 
-function updateExpirationDate() {
-    let membershipType = parseInt(document.getElementById('membershipType').value);
-    let renewalDate = document.getElementById('startDate').value;
-    let endDateInput = document.getElementById('endDate');
+    // Event listeners
+    membershipTypeSelect.addEventListener('change', updateAllDetails);
+    startDateInput.addEventListener('change', function() {
+        // Validate the selected date is not in the past
+        const selectedDate = new Date(this.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            this.value = todayFormatted; // Reset to today if past date selected
+        }
+        updateAllDetails();
+    });
+    // Initialize on load
+    updateAllDetails();
 
-    if (renewalDate && membershipType) {
-        let renewal = new Date(renewalDate);
-        renewal.setDate(renewal.getDate() + membershipType);
-        endDateInput.value = renewal.toISOString().split('T')[0];
+    function updateAllDetails() {
+        updateMembershipFee();
+        updateExpirationDate();
+        updateSummaryText();
     }
-}
 
+    function updateMembershipFee() {
+        const selectedType = membershipTypeSelect.value;
+        membershipFeeInput.value = selectedType ? membershipData[selectedType].fee.toFixed(2) : '0.00';
+    }
 
+    function updateExpirationDate() {
+        const selectedType = parseInt(membershipTypeSelect.value);
+        const renewalDate = startDateInput.value;
+        
+        if (renewalDate && selectedType) {
+            try {
+                const renewal = new Date(renewalDate);
+                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+                
+                renewal.setDate(renewal.getDate() + selectedType);
+                endDateInput.value = formatDate(renewal);
+            } catch (error) {
+                console.error('Error calculating expiration date:', error);
+                endDateInput.value = '';
+            }
+        } else {
+            endDateInput.value = '';
+        }
+    }
+
+    function updateSummaryText() {
+        const selectedType = membershipTypeSelect.value;
+        const renewalDate = startDateInput.value;
+        const endDate = endDateInput.value;
+        
+        if (!selectedType) {
+            summaryText.textContent = 'Select membership type to see details.';
+            return;
+        }
+
+        const typeName = membershipData[selectedType].name;
+        const fee = membershipData[selectedType].fee.toFixed(2);
+        
+        if (renewalDate && endDate) {
+            const formattedStart = formatDisplayDate(new Date(renewalDate));
+            const formattedEnd = formatDisplayDate(new Date(endDate));
+            summaryText.textContent = `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
+        } else {
+            summaryText.textContent = `${typeName} membership. Total fee: ₱${fee}`;
+        }
+    }
+
+    // Helper functions
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    function formatDisplayDate(date) {
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+});
 
 </script>
 

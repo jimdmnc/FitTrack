@@ -469,7 +469,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center mr-3">
-                            <span class="text-gray-200 font-medium">
+                            <span class="text-gray-100 font-medium">
                                 {{ strtoupper(substr($member->first_name, 0, 1)) }}{{ strtoupper(substr($member->last_name, 0, 1)) }}
                             </span>
                         </div>

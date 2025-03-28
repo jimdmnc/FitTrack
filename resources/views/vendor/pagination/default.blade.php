@@ -24,7 +24,7 @@
                 @endif
 
                 {{-- Pagination Elements --}}
-                <div class="hidden px-2 sm:flex sm:items-center">
+                <div class="flex px-2 items-center"> <!-- Changed from hidden to flex -->
                     @foreach ($elements as $element)
                         {{-- "Three Dots" Separator --}}
                         @if (is_string($element))

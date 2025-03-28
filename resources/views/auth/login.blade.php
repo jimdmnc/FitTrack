@@ -2,7 +2,7 @@
     <!-- Make sure the guest layout doesn't have padding/margin restrictions -->
 
     <!-- Background image with improved full coverage -->
-    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/wallpaperr.jpg') }}');">
+    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/loginbg.jpg') }}');">
         <!-- Gradient overlay for better readability and visual appeal -->
         <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
         

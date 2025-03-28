@@ -11,6 +11,7 @@ use PDF;
 use App\Models\Attendance;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+
 class ReportController extends Controller
 {
     /**
@@ -18,148 +19,137 @@ class ReportController extends Controller
      */
     public function index(Request $request)
     {
-        // Get the selected filter value
         $filter = $request->input('filter', '');
         $perPage = $request->input('per_page', 10);
     
-        // Base queries with eager loading
-        $attendancesQuery = Attendance::with('user');
-        $paymentsQuery = Payment::with('user');
+        $attendancesQuery = Attendance::with('user')->orderBy('time_in', 'desc');
+        $paymentsQuery = Payment::with('user')->orderBy('payment_date', 'desc');
     
-        // Get dates in application timezone
-        $today = Carbon::today();
-        $now = Carbon::now();
+        // Use application timezone consistently
+        $timezone = config('app.timezone');
+        $today = Carbon::today($timezone);
+        $now = Carbon::now($timezone);
         
-        // Apply filters
         if ($filter == 'today') {
             $attendancesQuery->whereDate('time_in', $today);
             $paymentsQuery->whereDate('payment_date', $today);
         } elseif ($filter == 'yesterday') {
-            $yesterday = Carbon::yesterday();
+            $yesterday = Carbon::yesterday($timezone);
             $attendancesQuery->whereDate('time_in', $yesterday);
             $paymentsQuery->whereDate('payment_date', $yesterday);
         } elseif ($filter == 'last7') {
-            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(7), $now]);
-            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(7), $now]);
+            $attendancesQuery->where('time_in', '>=', $now->copy()->subDays(7)->startOfDay());
+            $paymentsQuery->where('payment_date', '>=', $now->copy()->subDays(7)->startOfDay());
         } elseif ($filter == 'last30') {
-            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(30), $now]);
-            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(30), $now]);
+            $attendancesQuery->where('time_in', '>=', $now->copy()->subDays(30)->startOfDay());
+            $paymentsQuery->where('payment_date', '>=', $now->copy()->subDays(30)->startOfDay());
         } elseif ($filter == 'custom') {
             $startDate = $request->input('start_date');
             $endDate = $request->input('end_date');
     
             if ($startDate && $endDate) {
-                $attendancesQuery->whereBetween('time_in', [$startDate, $endDate]);
-                $paymentsQuery->whereBetween('payment_date', [$startDate, $endDate]);
+                // Convert to Carbon with timezone and include full end date
+                $start = Carbon::parse($startDate, $timezone)->startOfDay();
+                $end = Carbon::parse($endDate, $timezone)->endOfDay();
+                
+                $request->validate([
+                    'start_date' => 'required|date|before_or_equal:'.$today,
+                    'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:'.$today
+                ]);
+    
+                $attendancesQuery->whereBetween('time_in', [$start, $end]);
+                $paymentsQuery->whereBetween('payment_date', [$start, $end]);
             }
         }
     
-        // Get results (with pagination if needed)
-        $attendances = $attendancesQuery->get();
-        $payments = $paymentsQuery->get();
+        $attendances = $attendancesQuery->paginate($perPage);
+        $payments = $paymentsQuery->paginate($perPage);
     
-        return view('staff.report', compact('attendances', 'payments'));
+        return view('staff.report', compact('attendances', 'payments', 'filter'));
     }
     
-    
-    
+
     public function generateReport(Request $request)
-    {
-        // Get the type of report requested ('members' or 'payments')
-        $type = $request->get('type');
-        $filter = $request->get('date_filter', '');
-        $startDate = $request->get('start_date');
-        $endDate = $request->get('end_date');
+{
+    // Get filter parameters from the request
+    $type = $request->get('type');
+    $filter = $request->get('date_filter', '');
+    $startDate = $request->get('start_date');
+    $endDate = $request->get('end_date');
     
-        // Base queries
-        $attendancesQuery = Attendance::query();
-        $paymentsQuery = Payment::query();
-    
-        // Get dates in application timezone
-        $today = Carbon::today();
-        $now = Carbon::now();
-    
-        // Apply filters
-        if ($filter == 'today') {
-            $attendancesQuery->whereDate('time_in', $today);
-            $paymentsQuery->whereDate('payment_date', $today);
-        } elseif ($filter == 'yesterday') {
-            $yesterday = Carbon::yesterday();
-            $attendancesQuery->whereDate('time_in', $yesterday);
-            $paymentsQuery->whereDate('payment_date', $yesterday);
-        } elseif ($filter == 'last7') {
-            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(7), $now]);
-            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(7), $now]);
-        } elseif ($filter == 'last30') {
-            $attendancesQuery->whereBetween('time_in', [Carbon::now()->subDays(30), $now]);
-            $paymentsQuery->whereBetween('payment_date', [Carbon::now()->subDays(30), $now]);
-        } elseif ($filter == 'custom' && $startDate && $endDate) {
-            $attendancesQuery->whereBetween('time_in', [$startDate, $endDate]);
-            $paymentsQuery->whereBetween('payment_date', [$startDate, $endDate]);
-        }
-    
-        // Fetch filtered data
-        $attendances = $attendancesQuery->get();
-        $payments = $paymentsQuery->get();
-    
-        // Initialize Dompdf
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $dompdf = new Dompdf($options);
-    
-        // Generate the appropriate report based on the 'type' parameter
-        if ($type == 'members') {
-            $html = view('reports.members_report', compact('attendances'))->render();
-        } elseif ($type == 'payments') {
-            $html = view('reports.payments_report', compact('payments'))->render();
-        } else {
-            return response()->json(['error' => 'Invalid report type'], 400);
-        }
-    
-        // Load the HTML content into Dompdf
-        $dompdf->loadHtml($html);
-    
-        // Set paper size
-        $dompdf->setPaper('A4', 'portrait');
-    
-        // Render PDF (first pass, to parse the HTML)
-        $dompdf->render();
-    
-        // Stream the PDF or download it
-        return $dompdf->stream($type . '_report.pdf');
+    // Validate the report type (either 'members' or 'payments')
+    if (!in_array($type, ['members', 'payments'])) {
+        return response()->json(['error' => 'Invalid report type'], 400);
     }
+
+    // Set the query based on the report type
+    $query = $type === 'members' 
+        ? Attendance::with('user') // Get attendances with user data
+        : Payment::with('user'); // Get payments with user data
+
+    $timezone = config('app.timezone');
+    $today = Carbon::today($timezone);
+    $now = Carbon::now($timezone);
+
+    // Apply date filters
+    if ($filter == 'today') {
+        $query->whereDate($type === 'members' ? 'time_in' : 'payment_date', $today);
+    } elseif ($filter == 'yesterday') {
+        $query->whereDate($type === 'members' ? 'time_in' : 'payment_date', Carbon::yesterday($timezone));
+    } elseif ($filter == 'last7') {
+        $query->where($type === 'members' ? 'time_in' : 'payment_date', '>=', $now->copy()->subDays(7)->startOfDay());
+    } elseif ($filter == 'last30') {
+        $query->where($type === 'members' ? 'time_in' : 'payment_date', '>=', $now->copy()->subDays(30)->startOfDay());
+    } elseif ($filter == 'custom' && $startDate && $endDate) {
+        // Handle custom date range filter
+        $start = Carbon::parse($startDate, $timezone)->startOfDay();
+        $end = Carbon::parse($endDate, $timezone)->endOfDay();
+        
+        $query->whereBetween($type === 'members' ? 'time_in' : 'payment_date', [$start, $end]);
+    }
+
+    // Get the data based on the query
+    $data = $query->get();
+
+    // If no data found, return an error response
+    if ($data->isEmpty()) {
+        return response()->json(['error' => 'No data found for the selected filters'], 404);
+    }
+
+    // Prepare the view data for rendering the report
+    $viewData = [
+        'data' => $data,
+        'type' => $type,
+        'attendances' => $type === 'members' ? $data : collect(),
+        'payments' => $type === 'payments' ? $data : collect(),
+        'start_date' => $startDate ?? null,
+        'end_date' => $endDate ?? null,
+    ];
+
+    // Select the correct view based on the report type
+    $view = $type === 'members' ? 'reports.members_report' : 'reports.payments_report';
+
+    // Render the view as HTML
+    $html = view($view, $viewData)->render();
+
+    // Setup the DOMPDF options
+    $options = new Options();
+    $options->set('isHtml5ParserEnabled', true);
+    $options->set('isPhpEnabled', true);
+
+    // Initialize Dompdf
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('A4', 'portrait');
+    $dompdf->render();
+
+    // Return the generated PDF as a download
+    $filename = "{$type}_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
+    return $dompdf->stream($filename);
+}
+
     
-
-    /**
-     * Generate reports based on filters.
-     */
-    // public function generateReport(Request $request)
-    // {
-    //     $request->validate([
-    //         'type' => 'required|in:finance,members',
-    //         'period' => 'required|in:today,thisWeek,thisMonth,thisYear,custom',
-    //         'start_date' => 'nullable|date',
-    //         'end_date' => 'nullable|date|after_or_equal:start_date',
-    //     ]);
-
-    //     $type = $request->input('type');
-    //     $period = $request->input('period');
-    //     $startDate = $request->input('start_date');
-    //     $endDate = $request->input('end_date');
-
-    //     if ($type === 'finance') {
-    //         $data = $this->generateFinanceReport($period, $startDate, $endDate);
-    //     } else {
-    //         $data = $this->generateMembersReport($period, $startDate, $endDate);
-    //     }
-
-    //     return response()->json($data);
-    // }
-
-    /**
-     * Generate finance report.
-     */
+    
     private function generateFinanceReport($period, $startDate = null, $endDate = null)
     {
         $query = Payment::query();
@@ -179,6 +169,16 @@ class ReportController extends Controller
                 break;
             case 'custom':
                 if ($startDate && $endDate) {
+                    // Validate dates are not in the future
+                    $today = Carbon::today()->format('Y-m-d');
+                    validator([
+                        'start_date' => $startDate,
+                        'end_date' => $endDate
+                    ], [
+                        'start_date' => 'required|date|before_or_equal:'.$today,
+                        'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:'.$today
+                    ])->validate();
+                    
                     $query->whereBetween('payment_date', [$startDate, $endDate]);
                 }
                 break;
@@ -193,9 +193,6 @@ class ReportController extends Controller
         ];
     }
     
-    /**
-     * Generate members report.
-     */
     private function generateMembersReport($period, $startDate = null, $endDate = null)
     {
         $query = User::where('role', 'user');
@@ -215,6 +212,16 @@ class ReportController extends Controller
                 break;
             case 'custom':
                 if ($startDate && $endDate) {
+                    // Validate dates are not in the future
+                    $today = Carbon::today()->format('Y-m-d');
+                    validator([
+                        'start_date' => $startDate,
+                        'end_date' => $endDate
+                    ], [
+                        'start_date' => 'required|date|before_or_equal:'.$today,
+                        'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:'.$today
+                    ])->validate();
+                    
                     $query->whereBetween('created_at', [$startDate, $endDate]);
                 }
                 break;
@@ -229,9 +236,6 @@ class ReportController extends Controller
         ];
     }
 
-    /**
-     * Export report as PDF.
-     */
     public function exportReport(Request $request)
     {
         $request->validate([
@@ -245,6 +249,15 @@ class ReportController extends Controller
         $period = $request->input('period');
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+
+        // Validate dates are not in the future for custom range
+        if ($period === 'custom') {
+            $today = Carbon::today()->format('Y-m-d');
+            $request->validate([
+                'start_date' => 'required|date|before_or_equal:'.$today,
+                'end_date' => 'required|date|after_or_equal:start_date|before_or_equal:'.$today
+            ]);
+        }
 
         if ($type === 'finance') {
             $data = $this->generateFinanceReport($period, $startDate, $endDate);
