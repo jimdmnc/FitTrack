@@ -29,35 +29,35 @@
 
     <div class="">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-800 gap-4">
-            <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-auto">
-                <div class="flex items-center space-x-6">
-                    <div class="flex w-full">
-                        <input 
-                            type="text" 
-                            name="search" 
-                            value="{{ request('search') }}" 
-                            placeholder="Search by name" 
-                            class="w-full px-4 py-2 border border-[#666666] hover:border-[#ff5722] text-gray-300 bg-[#212121] placeholder-gray-400 rounded-l-full focus:outline-none focus:ring-0 focus:border-[#ff5722]"
-                            aria-label="Search members"
-                        >
-                        <button 
-                            type="submit" 
-                            class="px-6 py-2 bg-[#ff5722] text-white rounded-r-full hover:bg-[#e64a19] hover:scale-95 transition duration-300"
-                            aria-label="Search"
-                        >
-                            Search
-                        </button>
+            <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
+                <div class="relative flex items-center">
+                    <!-- Search Input -->
+                    <input 
+                        type="text" 
+                        name="search" 
+                        value="{{ request('search') }}" 
+                        placeholder="Search by name" 
+                        class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
+                        aria-label="Search members"
+                    >
+                    
+                    <!-- Search Icon (Inside Input) -->
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                        </svg>
                     </div>
-
+                    
+                    <!-- Clear Button (Only When Search Active) -->
                     @if(request('search'))
                     <a 
                         href="{{ route('staff.attendance.index') }}" 
-                        class="px-3 py-2 text-gray-200 bg-transparent hover:bg-[#ff5722] border border-[#666666] rounded-full focus:outline-none transition duration-150 ease-in-out flex items-center"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition duration-150 ease-in-out"
+                        aria-label="Clear search"
                     >
-                        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
-                        Clear
                     </a>
                     @endif
                 </div>
@@ -202,115 +202,116 @@
                     </div>
                 </div>
 
-                <!-- Calendar Section -->
-                <div class="mt-4" x-data="{
-                currentMonth: new Date().getUTCMonth(),
-                currentYear: new Date().getUTCFullYear(),
-                attendanceDay: null,
-                attendanceMonth: null,
-                attendanceYear: null,
-                
-                init() {
-                    if (this.selectedAttendance?.time_in) {
-                        const date = new Date(this.selectedAttendance.time_in);
-                        this.currentMonth = date.getUTCMonth();
-                        this.currentYear = date.getUTCFullYear();
-                        this.attendanceDay = date.getUTCDate();
-                        this.attendanceMonth = date.getUTCMonth();
-                        this.attendanceYear = date.getUTCFullYear();
-                    }
-                },
-                
-                getDaysInMonth() {
-                    return new Date(Date.UTC(this.currentYear, this.currentMonth + 1, 0)).getUTCDate();
-                },
-                
-                getFirstDayOfMonth() {
-                    return new Date(Date.UTC(this.currentYear, this.currentMonth, 1)).getUTCDay();
-                },
-                
-                prevMonth() {
-                    if (this.currentMonth === 0) {
-                        this.currentMonth = 11;
-                        this.currentYear--;
-                    } else {
-                        this.currentMonth--;
-                    }
-                },
-                
-                nextMonth() {
-                    if (this.currentMonth === 11) {
-                        this.currentMonth = 0;
-                        this.currentYear++;
-                    } else {
-                        this.currentMonth++;
-                    }
-                },
-                
-                monthName() {
-                    return new Date(Date.UTC(this.currentYear, this.currentMonth)).toLocaleString('default', { month: 'long' });
-                },
-                
-                isAttendanceDay(day) {
-                    if (!this.selectedAttendance?.user?.all_attendances) return false;
-                    
-                    const currentDate = new Date(Date.UTC(this.currentYear, this.currentMonth, day));
-                    
-                    return this.selectedAttendance.user.all_attendances.some(attendance => {
-                        const attendanceDate = new Date(attendance.time_in);
-                        return attendanceDate.getUTCFullYear() === currentDate.getUTCFullYear() &&
-                            attendanceDate.getUTCMonth() === currentDate.getUTCMonth() &&
-                            attendanceDate.getUTCDate() === currentDate.getUTCDate();
-                    });
-                },
-                
-                isCurrentAttendanceDay(day) {
-                    if (!this.selectedAttendance?.time_in) return false;
-                    const date = new Date(this.selectedAttendance.time_in);
-                    return day === date.getUTCDate() && 
-                        this.currentMonth === date.getUTCMonth() && 
-                        this.currentYear === date.getUTCFullYear();
-                }
-            }">
-            <!-- Month Navigation -->
-            <div class="flex justify-between items-center mb-2">
-                <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                </button>
-                <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
-                <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
-                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </button>
-            </div>
+               <!-- Calendar Section -->
+<div class="mt-4" x-data="{
+    currentMonth: new Date().getUTCMonth(),
+    currentYear: new Date().getUTCFullYear(),
+    attendanceDay: null,
+    attendanceMonth: null,
+    attendanceYear: null,
+    today: new Date().getUTCDate(),
+    todayMonth: new Date().getUTCMonth(),
+    todayYear: new Date().getUTCFullYear(),
+    
+    init() {
+        if (this.selectedAttendance?.time_in) {
+            const date = new Date(this.selectedAttendance.time_in);
+            this.currentMonth = date.getUTCMonth();
+            this.currentYear = date.getUTCFullYear();
+            this.attendanceDay = date.getUTCDate();
+            this.attendanceMonth = date.getUTCMonth();
+            this.attendanceYear = date.getUTCFullYear();
+        }
+    },
+    
+    getDaysInMonth() {
+        return new Date(Date.UTC(this.currentYear, this.currentMonth + 1, 0)).getUTCDate();
+    },
+    
+    getFirstDayOfMonth() {
+        return new Date(Date.UTC(this.currentYear, this.currentMonth, 1)).getUTCDay();
+    },
+    
+    prevMonth() {
+        if (this.currentMonth === 0) {
+            this.currentMonth = 11;
+            this.currentYear--;
+        } else {
+            this.currentMonth--;
+        }
+    },
+    
+    nextMonth() {
+        if (this.currentMonth === 11) {
+            this.currentMonth = 0;
+            this.currentYear++;
+        } else {
+            this.currentMonth++;
+        }
+    },
+    
+    monthName() {
+        return new Date(Date.UTC(this.currentYear, this.currentMonth)).toLocaleString('default', { month: 'long' });
+    },
+    
+    isAttendanceDay(day) {
+        if (!this.selectedAttendance?.user?.all_attendances) return false;
+        
+        const currentDate = new Date(Date.UTC(this.currentYear, this.currentMonth, day));
+        
+        return this.selectedAttendance.user.all_attendances.some(attendance => {
+            const attendanceDate = new Date(attendance.time_in);
+            return attendanceDate.getUTCFullYear() === currentDate.getUTCFullYear() &&
+                attendanceDate.getUTCMonth() === currentDate.getUTCMonth() &&
+                attendanceDate.getUTCDate() === currentDate.getUTCDate();
+        });
+    },
+    
+    isToday(day) {
+        return day === this.today && 
+            this.currentMonth === this.todayMonth && 
+            this.currentYear === this.todayYear;
+    }
+}">
+    <!-- Month Navigation -->
+    <div class="flex justify-between items-center mb-2">
+        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
+        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
 
-            <!-- Calendar Grid -->
-            <div class="grid grid-cols-7 gap-1 text-center">
-                <!-- Day headers -->
-                <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
-                    <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
-                </template>
+    <!-- Calendar Grid -->
+    <div class="grid grid-cols-7 gap-1 text-center">
+        <!-- Day headers -->
+        <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
+            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+        </template>
 
-                <!-- Empty days from previous month -->
-                <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
-                    <div class="p-1 text-sm text-gray-600"></div>
-                </template>
+        <!-- Empty days from previous month -->
+        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+            <div class="p-1 text-sm text-gray-600"></div>
+        </template>
 
-                <!-- Days of current month -->
-                <template x-for="day in getDaysInMonth()" :key="'day-' + day">
-                    <div class="relative flex flex-col items-center p-1">
-                        <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors"
-                            :class="{
-                                'text-gray-300 hover:bg-gray-700': !isAttendanceDay(day),
-                                'text-white': isAttendanceDay(day) && !isCurrentAttendanceDay(day),
-                                'text-white font-extrabold': isCurrentAttendanceDay(day)
-                            }"
-                            x-text="day">
+        <!-- Days of current month -->
+        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+            <div class="relative flex flex-col items-center p-1">
+                <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors"
+                    :class="{
+                        'text-gray-300 hover:bg-gray-700': !isAttendanceDay(day),
+                        'text-white': isAttendanceDay(day),
+                        'font-extrabold': isToday(day)
+                    }"
+                    x-text="day">
                 </div>
-                <!-- Dot indicator for all attendance days except current -->
+                <!-- Dot indicator for all attendance days -->
                 <div x-show="isAttendanceDay(day)" 
                     class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
             </div>

@@ -61,14 +61,18 @@ class AttendanceController extends Controller
                 break;
         
         }
-        
+    
 
         // Always order by time_in descending (newest first)
         $query->orderBy('time_in', 'desc');
 
-        $attendances = $query->paginate(10);
+        $attendances = $query->paginate(10)
+        ->appends([
+            'filter' => $request->input('filter'),
+            'search' => $request->input('search')
+        ]);
     
-        return view('staff.attendance', compact('attendances'));
+        return view('staff.attendance', compact('attendances', 'filter'));
     }
 
     public function recordAttendance(Request $request)

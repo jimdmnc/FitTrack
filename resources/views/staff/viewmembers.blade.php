@@ -53,7 +53,7 @@
                     @if($query)
                     <a 
                         href="{{ route('staff.viewmembers') }}" 
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-gray-400"
+                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors"
                         aria-label="Clear search"
                     >
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -330,7 +330,7 @@
                 <!-- Horizontal ID Card Layout -->
                 <div class="bg-white rounded-lg overflow-hidden shadow-md">
                     <!-- Card Header -->
-                    <div class="bg-gray-600 p-3 text-white">
+                    <div class="bg-[#5c5c5c] p-3 text-white">
                         <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
                     </div>
                     
@@ -404,7 +404,7 @@
                     </div>
                     
                     <!-- Footer -->
-                    <div class="bg-gray-600 text-white text-center py-2 text-xs">
+                    <div class="bg-[#5c5c5c] text-white text-center py-2 text-xs">
                         <p>Valid only with photo identification</p>
                     </div>
                 </div>

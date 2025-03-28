@@ -205,114 +205,6 @@
 
         
     </style>
-    <!-- <style>
-/* Improved styling for the chart components */
-.glass-card {
-    background: #1E1E1E;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.period-button {
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.period-button:hover:not(.active) {
-    background-color: #121212;
-}
-
-.period-button.active {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.chart-action-button {
-    transition: all 0.2s ease;
-    cursor: pointer;
-}
-
-.stat-card {
-    transition: transform 0.2s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-}
-
-    /* Base Dark Theme with Orange Accents */
-    body {
-        background-color: #121212;
-        color: white;
-    }
-
-    /* Glass Card Styles */
-    .glass-card {
-        background: rgba(30, 30, 30, 0.95); /* Dark gray with slight transparency */
-        border: none; /* Soft orange border */
-        backdrop-filter: blur(10px);
-    }
-
-    /* Header Gradient */
-    .bg-gradient-header {
-        background: linear-gradient(to right, #FF5722, #FF7043);
-    }
-
-    /* Accent Color Overrides */
-    .text-accent {
-        color: #FF5722;
-    }
-
-    .bg-accent {
-        background-color: #FF5722;
-    }
-
-    .border-accent {
-        border-color: #FF5722;
-    }
-
-    /* Interactive Elements */
-    .btn-primary {
-        background: linear-gradient(135deg, #FF5722 0%, #FF7043 100%);
-        color: white;
-        border: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #FF7043 0%, #FF8A50 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(255, 87, 34, 0.2);
-    }
-
-    /* Chart and Graph Accent Styling */
-    .chart-accent {
-        background-color: #FF5722;
-    }
-
-    /* Period Selector */
-    .period-button.active {
-        background-color: #FF5722;
-        color: white;
-    }
-
-    /* Status Indicators */
-    .status-active {
-        background-color: rgba(255, 87, 34, 0.2);
-        color: #FF5722;
-    }
-
-    .status-inactive {
-        background-color: rgba(244, 67, 54, 0.2);
-        color: #F44336;
-    }
-
-    /* Hover and Interactive Effects */
-    .hover-lift:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 12px 16px rgba(255, 87, 34, 0.1);
-    }
-</style> -->
-
 <div class="container mx-auto py-8 px-4">
     <!-- Header Section with Modern Design -->
     <div class="mb-8">
@@ -438,11 +330,11 @@
                     </div>
                     <div class="flex space-x-2">
                         <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50" title="Download CSV">
-                            <i class="fas fa-download text-sm text-gray-600"></i>
+                            <i class="fas fa-download text-sm "></i>
                         </button>
                         <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 expand-checkins-btn" 
                             title="Expand">
-                            <i class="fas fa-expand-alt text-sm text-gray-600"></i>
+                            <i class="fas fa-expand-alt text-sm"></i>
                         </button>
 
                     </div>
@@ -504,7 +396,7 @@
                         </div>
                         <div class="chart-action-buttons space-x-1">
                             <div class="chart-action-button" title="Download CSV">
-                                <i class="fas fa-download text-sm"></i>
+                                <i class="hover:text-gray-200 fas fa-download text-sm"></i>
                             </div>
                             <div class="chart-action-button expand-peak-btn" title="Expand">
                                 <i class="fas fa-expand-alt text-sm"></i>
@@ -526,10 +418,10 @@
                         </div>
                         <div class="chart-action-buttons space-x-2 flex items-center">
                             <div class="chart-action-button cursor-pointer" title="Download CSV">
-                                <i class="fas fa-download text-sm text-gray-200"></i>
+                                <i class="fas fa-download text-sm"></i>
                             </div>
                             <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
-                                <i class="fas fa-expand-alt text-sm text-gray-200"></i>
+                                <i class="fas fa-expand-alt text-sm "></i>
                             </div>
                         </div>
                     </div>
@@ -558,79 +450,82 @@
         </div>
     </div>
     <div class="overflow-x-auto">
-    <table class="min-w-full divide-y divide-gray-200">
+    <table class="min-w-full divide-y divide-gray-800">
         <thead>
-            <tr class="bg-gray-50 rounded-lg">
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
-                <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
-                <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
+            <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">#</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Member ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Membership Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
+                <th class="px-10 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200">
+        <tbody class="divide-y divide-gray-800">
         @foreach ($topActiveMembers as $index => $member)
-            <tr class="hover:bg-gray-50 transition-colors member-table-row">
-                <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> <!-- Added this cell -->
-                <td class="px-4 py-4 text-sm text-gray-200">{{ $member->rfid_uid }}</td>
-                <td class="px-4 py-4 whitespace-nowrap">
+            <tr class="bg-[#2c2c2c] transition-colors duration-150">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ $loop->iteration }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ $member->rfid_uid }}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
-                        <div class="h-10 w-10 flex-shrink-0 mr-3">
-                            <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
-                                <span class="text-gray-200 font-semibold">
-                                    {{ strtoupper(substr($member->first_name, 0, 1)) . strtoupper(substr($member->last_name, 0, 1)) }}
-                                </span>
-                            </div>
+                        <div class="flex-shrink-0 h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-gray-200 font-medium">
+                                {{ strtoupper(substr($member->first_name, 0, 1)) }}{{ strtoupper(substr($member->last_name, 0, 1)) }}
+                            </span>
                         </div>
                         <div>
                             <div class="text-sm font-medium text-gray-200">{{ $member->first_name }} {{ $member->last_name }}</div>
                         </div>
                     </div>
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        @if($member->getMembershipType() == 'Annual') bg-purple-100 text-purple-800
-                        @elseif($member->getMembershipType() == 'Week') bg-green-100 text-green-800
-                        @elseif($member->getMembershipType() == 'Month') bg-orange-100 text-orange-800
-                        @elseif($member->getMembershipType() == 'Session') bg-yellow-100 text-yellow-800
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
+                        @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
+                        @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
+                        @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
                         @endif">
                         {{ $member->getMembershipType() }}
                     </span>
                 </td>
-                <td class="px-4 py-4 whitespace-nowrap">
-                    <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        {{ $member->member_status == 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {{ $member->member_status == 'active' ? ' text-green-500' : ' text-red-500' }}">
                         {{ $member->member_status }}
                     </span>
                 </td>
-                <td class="px-4 py-4 text-right text-sm">
-                    <button onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                        class="text-indigo-600 hover:text-indigo-900 font-medium mr-2">View</button>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button 
+                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:scale-95 transition-colors duration-150"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View
+                    </button>
                 </td>
             </tr>
-            @endforeach
+        @endforeach
         </tbody>
     </table>
-
-
-    </div>
-
+</div>
     
 
 </div>
         <!-- View Member Modal -->
         <div id="viewMemberModal" class="fixed inset-0 bg-gray-900 bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+            <div class="bg-[#1E1E1E] rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
                 <!-- Modal Header -->
                 <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h2 class="text-xl font-bold text-gray-800 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <h2 class="text-xl font-bold text-gray-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         Member Profile
                     </h2>
-                    <button onclick="closeViewModal()" class="text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full p-1 transition-colors">
+                    <button onclick="closeViewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] hover-scale-105 hover:scale-95 rounded-full p-1 transition-colors">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -638,9 +533,9 @@
                 </div>
 
                 <!-- Horizontal ID Card Layout -->
-                <div class="bg-white border-2 border-orange-500 rounded-lg overflow-hidden shadow-md">
+                <div class="bg-white rounded-lg overflow-hidden shadow-md">
                     <!-- Card Header -->
-                    <div class="bg-orange-500 p-3 text-white">
+                    <div class="bg-[#5c5c5c]   00 p-3 text-gray-200">
                         <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
                     </div>
                     
@@ -714,21 +609,10 @@
                     </div>
                     
                     <!-- Footer -->
-                    <div class="bg-orange-500 text-white text-center py-2 text-xs">
+                    <div class="bg-[#5c5c5c] text-gray-200 text-center py-2 text-xs">
                         <p>Valid only with photo identification</p>
                     </div>
                 </div>
-
-                <!-- Modal Footer with Edit and Close Buttons -->
-                <!-- <div class="flex justify-end mt-6">
-                    <button onclick="openEditModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        Edit
-                    </button>
-                    <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
-                </div> -->
             </div>
         </div>
 
@@ -856,7 +740,7 @@
                 card.style.height = "90vh"; 
                 card.style.maxWidth = "1100px"; 
                 card.style.maxHeight = "800px"; 
-                card.style.background = "white";
+                card.style.background = "#1e1e1e";
                 card.style.padding = "30px"; 
                 card.style.borderRadius = "12px"; 
                 card.style.overflow = "auto";  // 🔥 Make it scrollable when needed

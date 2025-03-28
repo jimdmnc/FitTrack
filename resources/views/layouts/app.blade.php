@@ -28,7 +28,7 @@
     @include('components.sidebar')
 
     <!-- Main Content -->
-    <div id="main-content" class="flex-1 transition-all duration-300 lg:ml-64">
+    <div id="main-content" class="bg-[#121212] flex-1 transition-all duration-300 lg:ml-64">
         <div class="">
             @include('layouts.navigation')
         </div>
