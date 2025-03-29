@@ -65,11 +65,11 @@ class User extends Authenticatable
     }
     
 
+    // Define the relationship from User to UserDetails
     public function userDetails()
     {
-        return $this->hasOne(UserDetail::class, 'rfid_uid', 'rfid_uid');
+        return $this->hasMany(UserDetail::class, 'rfid_uid', 'rfid_uid');
     }
-
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'rfid_uid', 'rfid_uid');

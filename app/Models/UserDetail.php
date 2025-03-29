@@ -9,9 +9,8 @@ class UserDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'rfid_uid', 'age', 'gender', 'weight', 'height', 'activity_level'
-    ];
+    protected $fillable = ['rfid_uid', 'gender', 'activity_level', 'age', 'height', 'weight', 'target_muscle', 'goal'];
+
 
     public function user()
     {
