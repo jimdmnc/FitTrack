@@ -86,7 +86,7 @@
             </header>
 
             <!-- Hero Section with Background Image -->
-            <div class="hero-section relative flex-grow flex items-center" style="background-image: url('{{ asset('images/welcomebg.jpg') }}');">
+            <div class="hero-section relative flex-grow flex items-center" style="background-image: url('{{ asset('images/welcomebggg.jpg') }}');">
                 <!-- Overlay -->
                 <div class="hero-overlay absolute inset-0"></div>
                 

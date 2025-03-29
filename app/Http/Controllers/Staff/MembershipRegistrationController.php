@@ -6,11 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
 use App\Models\RfidTag;
 use Carbon\Carbon;
 use App\Models\MembersPayment;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class MembershipRegistrationController extends Controller
 {
@@ -23,69 +23,94 @@ class MembershipRegistrationController extends Controller
     // Handle the form submission (Manual Registration)
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'gender' => 'required|string',
-            'phone_number' => 'required|string|max:15',
-            'membership_type' => 'required|string',
-            'start_date' => 'required|date',
-            'birthdate' => 'required|date', // ✅ Added birthdate validation
-            'uid' => 'required|string|max:255|unique:users,rfid_uid',
+        try {
+            $validatedData = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'email' => [
+                    'required',
+                    'string',
+                    'email',
+                    'max:255',
+                    Rule::unique('users')
+                ],
+                'gender' => 'required|string|in:male,female,other',
+                'phone_number' => 'required|string|max:15',
+                'membership_type' => 'required|string|in:1,7,30,365',
+                'start_date' => 'required|date|after_or_equal:today',
+                'birthdate' => 'required|date|before:today',
+                'uid' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    Rule::unique('users', 'rfid_uid')
+                ],
+            ]);
 
-        ]);
-     // ✅ Membership payment rates
-     $paymentRates = [
-        "1" => 100,   // 1-day session
-        "7" => 500,   // 7-day weekly
-        "30" => 1800, // 30-day monthly
-        "365" => 20000 // 1-year membership
-    ];
+            // Membership payment rates
+            $paymentRates = [
+                "1" => 100,   // 1-day session
+                "7" => 500,   // 7-day weekly
+                "30" => 1800, // 30-day monthly
+                "365" => 20000 // 1-year membership
+            ];
 
-        // ✅ Determine the amount based on the membership type
-        $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
+            $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
 
+            // Generate password
+            $lastName = strtolower($validatedData['last_name']);
+            $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
+            $generatedPassword = $lastName . $birthdate;
 
-        // ✅ Generate password using last name and birthdate
-        $lastName = strtolower($validatedData['last_name']); // Convert last name to lowercase
-        $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY'); // Format: MMDDYYYY
-        $generatedPassword = $lastName . $birthdate; // Combine last name with birthdate
+            // Use transaction for data consistency
+            DB::transaction(function () use ($validatedData, $paymentAmount, $generatedPassword) {
+                // Create user
+                $user = User::create([
+                    'first_name' => $validatedData['first_name'],
+                    'last_name' => $validatedData['last_name'],
+                    'email' => $validatedData['email'],
+                    'gender' => $validatedData['gender'],
+                    'phone_number' => $validatedData['phone_number'],
+                    'membership_type' => $validatedData['membership_type'],
+                    'start_date' => $validatedData['start_date'],
+                    'birthdate' => $validatedData['birthdate'],
+                    'password' => Hash::make($generatedPassword),
+                    'role' => 'user',
+                    'rfid_uid' => $validatedData['uid'],
+                    'end_date' => Carbon::parse($validatedData['start_date'])
+                    ->addDays((int)$validatedData['membership_type'])
+                    ->format('Y-m-d'),
+                ]);
 
+                // Create payment record
+                MembersPayment::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'amount' => $paymentAmount,
+                    'payment_method' => 'cash',
+                    'payment_date' => now(),
+                ]);
+
+                // Update RFID tag
+                RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
+            });
+
+            return redirect()->route('staff.membershipRegistration')
+                ->with([
+                    'success' => 'Member registered successfully!',
+                    'generated_password' => $generatedPassword
+                ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->route('staff.membershipRegistration')
+                ->withErrors($e->validator)
+                ->withInput();
+                
+        } catch (\Exception $e) {
+            logger()->error('Registration Error: ' . $e->getMessage());
             
-        // ✅ Hash the generated password before saving
-        $validatedData['password'] = Hash::make($generatedPassword); // 🔥 Important: Hash the password!
-    
-        // Set default role
-        $validatedData['role'] = 'user';
-    
-        // Rename 'uid' to 'rfid_uid'
-        $validatedData['rfid_uid'] = $validatedData['uid'];
-        unset($validatedData['uid']);
-    
-        // Calculate end_date
-        $duration = (int) $request->input('membership_type');
-        $validatedData['end_date'] = Carbon::parse($validatedData['start_date'])->addDays($duration)->format('Y-m-d');
-    
-    // ✅ Save user in 'users' table
-        $user = User::create($validatedData);
-
-        // ✅ Set payment method to "cash" by default
-        MembersPayment::create([
-            'rfid_uid' => $user->rfid_uid, 
-            'amount' => $paymentAmount,
-            'payment_method' => 'cash', // ✅ Default to "cash"
-            'payment_date' => now(),
-        ]);
-
-        // ✅ Update RFID Tag
-        RfidTag::where('uid', $request->input('uid'))->update(['registered' => true]);
-    
-        return redirect()->route('staff.membershipRegistration')
-            ->with('success', 'Member registered successfully!');
+            return redirect()->route('staff.membershipRegistration')
+                ->withInput()
+                ->with('error', 'Registration failed: ' . $e->getMessage());
+        }
     }
-
-
-    
-
 }

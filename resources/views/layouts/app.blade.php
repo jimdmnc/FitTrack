@@ -8,15 +8,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
     <!-- <script src="https://cdn.tailwindcss.com"></script> -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 
     <!-- Tailwind CSS -->
     @vite('resources/css/app.css')
+
+    @vite(['resources/js/alpine.js'])
     
     <!-- Alpine.js for interactions -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     </head>
 <body class="font-sans">
     
@@ -25,7 +31,7 @@
     @include('components.sidebar')
 
     <!-- Main Content -->
-    <div id="main-content" class="flex-1 transition-all duration-300 lg:ml-64">
+    <div id="main-content" class="bg-[#121212] flex-1 transition-all duration-300 lg:ml-64">
         <div class="">
             @include('layouts.navigation')
         </div>
@@ -166,8 +172,19 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
     document.head.appendChild(style);
 });
-</script>
 
+
+</script>
+@auth
+<script>
+// Nuclear option - forces reload if back button used
+window.onpageshow = function(event) {
+    if (event.persisted) {
+        window.location.reload();
+    }
+};
+</script>
+@endauth
 
 
 

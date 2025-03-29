@@ -2,7 +2,7 @@
     <!-- Make sure the guest layout doesn't have padding/margin restrictions -->
 
     <!-- Background image with improved full coverage -->
-    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/wallpaperr.jpg') }}');">
+    <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/loginbg.jpg') }}');">
         <!-- Gradient overlay for better readability and visual appeal -->
         <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
         
@@ -26,7 +26,7 @@
                         <div class="relative">
                             <input id="email" type="email" name="email" class="w-full bg-white/20 border border-white/30 text-white pl-4 pr-10 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400" value="{{ old('email') }}" placeholder="User Name" required autofocus autocomplete="username">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
@@ -40,7 +40,7 @@
                             <input id="password" type="password" name="password" class="w-full bg-white/20 border border-white/30 text-white pl-4 pr-10 py-3 rounded-lg focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400" placeholder="Password" required autocomplete="current-password">
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                                 <button type="button" class="text-white hover:text-gray-200 focus:outline-none" onclick="togglePasswordVisibility()">
-                                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
