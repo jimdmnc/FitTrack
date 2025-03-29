@@ -299,10 +299,10 @@
 
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:scale-95 text-gray-200 rounded-lg transition-colors duration-200 text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-[#e04a1e] text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
+                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:scale-95 text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -315,117 +315,134 @@
 <!-- End Renew Member Modal -->
  
 <!-- View Member Modal -->
-        <div id="viewMemberModal" class="fixed inset-0 bg-[#1E1E1E] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-            <div class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-3xl p-6 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
-                <!-- Modal Header -->
-                <div class="flex justify-between items-center mb-6 border-b pb-3">
-                    <h2 class="text-xl font-bold text-gray-200 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        Member Profile
-                    </h2>
-                    <button onclick="closeViewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#FF5722] rounded-full p-1 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
+<div id="viewMemberModal" class="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+    <div class="bg-[#1e1e1e] rounded-2xl shadow-2xl w-full max-w-3xl p-8 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Member Profile
+            </h2>
+            <button onclick="closeViewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] hover:scale-95 rounded-full p-2 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
 
-                <!-- Horizontal ID Card Layout -->
-                <div class="bg-white rounded-lg overflow-hidden shadow-md">
-                    <!-- Card Header -->
-                    <div class="bg-[#5c5c5c] p-3 text-white">
-                        <h3 class="font-bold text-center">MEMBER IDENTIFICATION</h3>
+        <!-- Modern Card Design -->
+        <div class="bg-[#2c2c2c] rounded-xl overflow-hidden">
+            <!-- Card Header -->
+            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] py-4 px-6 rounded-t-xl shadow-lg">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-white text-lg tracking-wider">MEMBER IDENTIFICATION</h3>
+                    <div class="px-3 py-1 rounded-full">
+                        <span id="viewStatus" class="text-sm font-semibold text-white">Active</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modern Horizontal Layout -->
+            <div class="flex flex-col md:flex-row">
+                
+                <div class="w-full md:w-1/4 p-6 flex flex-col items-center justify-center bg-[#2c2c2c] mx-4 border-transparent">
+                    <div class="w-32 h-32 bg-[#444444] rounded-full flex items-center justify-center border-2 border-orange-500 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <!-- Optional: Add space for additional elements below the avatar -->
+                    <div class="w-full text-center">
+                        <p class="text-xs text-gray-400">Profile Image</p>
+                    </div>
+                </div>
+                
+                <!-- Middle Column - Primary Info -->
+                <div class="w-full md:w-2/5 p-6 bg-[#1e1e1e] flex flex-col justify-between">
+                    <!-- Name -->
+                    <div class="mb-5">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Name</p>
+                        <p class="font-bold text-white text-xl" id="viewMemberName">John Doe</p>
                     </div>
                     
-                    <!-- Horizontal Layout Container -->
-                    <div class="flex">
-                        <!-- Left Column - Photo Area -->
-                        <div class="w-1/4 p-4 flex flex-col items-center justify-center border-r">
-                            <div class="w-32 h-32 bg-gray-100 border rounded-full flex items-center justify-center mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <!-- Membership Type -->
+                    <div class="mb-5">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Membership Type</p>
+                        <div class="bg-orange-600 text-gray-200 inline-block px-3 py-1 rounded-lg text-sm">
+                            <p class="font-medium" id="viewMembershipType">Monthly</p>
+                        </div>
+                    </div>
+                    
+                    <!-- registration date -->
+                    <div class="mb-5">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Issued Date</p>
+                        <div class="flex items-center mt-2">
+                            <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
-                            <!-- Status Badge -->
-                            <span id="viewStatus" class="inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800">Active</span>
-                        </div>
-                        
-                        <!-- Middle Column - Primary Info -->
-                        <div class="w-2/5 p-4 bg-white">
-                            <!-- Name -->
-                            <div class="mb-4">
-                                <p class="text-xs text-gray-500 uppercase">Name</p>
-                                <p class="font-bold text-gray-800 text-lg" id="viewMemberName">John Doe</p>
+                            <div>
+                                <p class="font-medium text-gray-200" id="viewStartDate">Jan 1, 2025</p>
+                            </div>                           
+                        </div>                      
+                    </div>
+                </div>
+                
+                <!-- Right Column - RFID Card -->
+                <div class="w-full md:w-1/3 p-6 bg-[#2c2c2c] flex flex-col justify-between">
+                    <!-- RFID Card Area -->
+                    <div class="mb-5">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">RFID Card</p>
+                        <div class="bg-[#1e1e1e] rounded-lg p-3 shadow-inner">
+                            <div class="flex items-center mb-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke-width="1.5" />
+                                    <path d="M7 15a4 4 0 010-6" stroke-width="1.5" />
+                                    <path d="M11 13a2 2 0 010-2" stroke-width="1.5" />
+                                    <line x1="17" y1="9" x2="17" y2="9" stroke-width="2" stroke-linecap="round" />
+                                    <line x1="17" y1="15" x2="17" y2="15" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                                <span class="text-sm font-medium text-gray-300">RFID UID</span>
                             </div>
-                            
-                            <!-- Member ID -->
-                            <div class="mb-4">
-                                <p class="text-xs text-gray-500 uppercase">Member ID</p>
-                                <p class="font-medium text-gray-800" id="viewMemberID">M12345678</p>
-                            </div>
-                            
-                            <!-- Registration Date -->
-                            <div class="flex items-center mb-4">
-                                <div class="bg-yellow-100 p-2 rounded-full mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase">Registration Date</p>
-                                    <p class="font-medium text-gray-800" id="viewStartDate">Jan 15, 2025</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Right Column - Membership Type & Barcode -->
-                        <div class="w-1/3 p-4 bg-gray-50">
-                            <!-- Membership Type -->
-                            <div class="flex items-center mb-6">
-                                <div class="bg-purple-100 p-2 rounded-full mr-3">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <p class="text-xs text-gray-500 uppercase">Membership Type</p>
-                                    <p class="font-medium text-gray-800" id="viewMembershipType">Premium</p>
-                                </div>
-                            </div>
-                            
-                            <!-- Barcode Area -->
-                            <div class="mb-2">
-                                <p class="text-xs text-gray-500 uppercase mb-1">Card ID</p>
-                                <div class="bg-gray-100 h-12 flex items-center justify-center rounded">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
-                                    </svg>
-                                    <span class="text-sm font-medium text-gray-600">ID: 123456789</span>
+                            <div class="bg-[#121212] bg-opacity-50 p-2 rounded flex items-center justify-between">
+                                <span id="viewRfid" class="text-sm font-medium text-gray-300">ID: 123456789</span>
+                                <div class="flex space-x-1">
+                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
+                                    <div class="w-1 h-8 bg-[#555555] rounded"></div>
+                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
+                                    <div class="w-1 h-8 bg-[#555555] rounded"></div>
+                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- Footer -->
-                    <div class="bg-[#5c5c5c] text-white text-center py-2 text-xs">
-                        <p>Valid only with photo identification</p>
+                    <!-- expiration date -->
+                    <div class="mb-5">
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
+                        <div class="flex items-center mt-2">                           
+                            <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white" id="viewEndDate">Jan 15, 2025</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Modal Footer with Edit and Close Buttons -->
-                <!-- <div class="flex justify-end mt-6">
-                    <button onclick="openEditModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition-colors shadow-sm flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        Edit
-                    </button>
-                    <button onclick="closeViewModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg transition-colors shadow-sm">Close</button>
-                </div> -->
+            </div>
+            
+            <!-- Footer -->
+            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] text-gray-400 border-t border-[#333333] py-3 px-6 flex justify-between items-center">
+                <p class="text-xs text-gray-300 mx-auto">Valid only with photo identification</p>
             </div>
         </div>
+    </div>
 </div>
         
 <script>
@@ -450,6 +467,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const todayFormatted = formatDate(today);
     startDateInput.value = todayFormatted;
     startDateInput.min = todayFormatted; // Prevent past dates
+
 
     // Event listeners
     membershipTypeSelect.addEventListener('change', updateAllDetails);
@@ -587,32 +605,65 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
     // Open View Modal
-    function openViewModal(name, memberID, status, membershipType, startDate) {
-        // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewMemberID').textContent = memberID;
-        document.getElementById('viewStatus').textContent = status;
-        document.getElementById('membershipType').textContent = membershipType;
-        document.getElementById('startDate').textContent = startDate;
-
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
-        } else {
-            statusBadge.className = "inline-block px-2 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
-        }
-
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-        
-        modal.classList.remove('hidden'); // Make it visible
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0'); // Animate opening
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
+    // Open View Modal with proper data
+function openViewModal(memberID, name, membershipType, startDate, status) {
+    // Set modal data
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+    
+    // Calculate and set expiration date based on membership type
+    const start = new Date(startDate);
+    let endDate = new Date(start);
+    
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+            endDate.setDate(start.getDate() + 1);
+            break;
+        case 'week':
+            endDate.setDate(start.getDate() + 7);
+            break;
+        case 'month':
+            endDate.setMonth(start.getMonth() + 1);
+            break;
+        case 'annual':
+            endDate.setFullYear(start.getFullYear() + 1);
+            break;
+        default:
+            endDate = 'N/A';
     }
+    
+    document.getElementById('viewEndDate').textContent = typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+    // Change status color based on status
+    let statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    if (status.toLowerCase() === 'active') {
+        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
+    } else {
+        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
+    }
+
+    // Show modal
+    const modal = document.getElementById('viewMemberModal');
+    const modalContent = document.getElementById('viewModalContent');
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
+
+// Helper function to format dates
+function formatDisplayDate(date) {
+    return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+    });
+}
 
     // Function to close the modal
     function closeViewModal() {
