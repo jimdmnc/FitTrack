@@ -15,6 +15,7 @@ class ModifyTargetMuscleColumnInUserDetailsTable extends Migration
 
     public function down()
     {
+        Schema::table('user_details', function (Blueprint $table) {
             $table->enum('target_muscle', ['Back', 'Chest', 'Arms', 'Core', 'Legs', 'Full Body'])->nullable()->change();
         });
     }
