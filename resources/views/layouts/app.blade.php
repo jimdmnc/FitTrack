@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     </head>
-<body class="font-sans">
+<body class="font-sans bg-[#121212]">
     
 <div class="flex h-screen min-w-[1024px]">
     <!-- Include Sidebar -->
@@ -35,7 +35,7 @@
         <div class="">
             @include('layouts.navigation')
         </div>
-        <div class="px-2 md:px-10 bg-[#121212] h-auto">
+        <div class="px-2 md:px-10 h-full">
             @yield('content')
         </div>
     </div>

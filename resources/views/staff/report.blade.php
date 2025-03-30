@@ -17,11 +17,7 @@
         .transition-all {
             transition: all 0.3s ease;
         }
-        body {
-            background-color: #1e1e1e;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
+
         .chart-container {
             position: relative;
             height: 300px;

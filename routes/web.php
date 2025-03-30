@@ -1,5 +1,8 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\RFIDController;
 use App\Http\Controllers\ProfileController;
@@ -9,16 +12,12 @@ use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
-
 use App\Http\Controllers\Member\MemberDashboardController;
-
 
 // Public routes
 Route::get('/', function () {
     return view('welcome');
 });
-
-
 
 // Route to handle attendance
 Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);
@@ -35,7 +34,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
             ->name('staff.membershipRegistration.store');
 
-
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('renew.membership');
 
@@ -49,8 +47,7 @@ Route::middleware('auth')->group(function () {
             ->name('staff.record-attendance');
 
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-       
-       
+
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])
             ->name('staff.paymentTracking');
         Route::post('/staff/paymentTracking/store', [PaymentTrackingController::class, 'store'])
@@ -63,13 +60,27 @@ Route::middleware('auth')->group(function () {
         // Report routes
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
-
     });
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // **📩 Email Verification Routes**
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->middleware('auth')->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        return redirect('/profile')->with('status', 'Email verified successfully!');
+    })->middleware(['auth', 'signed'])->name('verification.verify');
+
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'Verification link sent!');
+    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     // Member routes
     Route::prefix('member')->group(function () {
