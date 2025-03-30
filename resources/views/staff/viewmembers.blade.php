@@ -16,6 +16,7 @@
             <!-- Filter Dropdown -->
             <div class="w-full sm:w-auto">
                 <form action="{{ route('staff.viewmembers') }}" method="GET" class="inline-block w-full sm:w-auto">
+                    <input type="hidden" name="page" value="1"> <!-- Add this line -->
                     <select 
                         name="status" 
                         onchange="this.form.submit()" 
@@ -31,6 +32,7 @@
 
             <!-- Search Form -->
             <form method="GET" action="{{ route('staff.viewmembers') }}" class="w-full sm:w-64 md:w-80">
+                <input type="hidden" name="page" value="1">
                 <div class="relative flex items-center">
                     <!-- Search Input -->
                     <input 
@@ -51,11 +53,9 @@
                     
                     <!-- Clear Button (Only When Search Active) -->
                     @if($query)
-                    <a 
-                        href="{{ route('staff.viewmembers') }}" 
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors"
-                        aria-label="Clear search"
-                    >
+                    <a href="{{ route('staff.viewmembers', ['page' => 1]) }}" 
+                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors"
+                    aria-label="Clear search">
                         <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
@@ -213,10 +213,11 @@
             </div>
                 
             <!-- Pagination Links -->
+            @if($members->hasPages())
             <div class="mt-4">
-                <!-- Custom Pagination Links -->
-                {{ $members->links('vendor.pagination.default') }}
+                {{ $members->appends(request()->except('page'))->links('vendor.pagination.default') }}
             </div>
+            @endif
 </section>
 
 
@@ -339,7 +340,7 @@
                 <div class="flex justify-between items-center">
                     <h3 class="font-bold text-white text-lg tracking-wider">MEMBER IDENTIFICATION</h3>
                     <div class="px-3 py-1 rounded-full">
-                        <span id="viewStatus" class="text-sm font-semibold text-white">Active</span>
+                        <span id="viewStatus" class="text-sm font-semibold text-gray-200">Active</span>
                     </div>
                 </div>
             </div>
@@ -354,7 +355,7 @@
                         </svg>
                     </div>
                     <!-- Optional: Add space for additional elements below the avatar -->
-                    <div class="w-full text-center">
+                    <div class="w-full text-center mt-4">
                         <p class="text-xs text-gray-400">Profile Image</p>
                     </div>
                 </div>
@@ -456,7 +457,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Define membership fees and names
     const membershipData = {
-        '1': { fee: 60, name: 'Session (1 day)' },
+        '1': { fee: 70, name: 'Session (1 day)' },
         '7': { fee: 300, name: 'Weekly (7 days)' },
         '30': { fee: 1000, name: 'Monthly (30 days)' },
         '365': { fee: 5000, name: 'Annual (365 days)' }
@@ -640,9 +641,9 @@ function openViewModal(memberID, name, membershipType, startDate, status) {
     let statusBadge = document.getElementById('viewStatus');
     statusBadge.textContent = status;
     if (status.toLowerCase() === 'active') {
-        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-100 text-green-800";
+        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200";
     } else {
-        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-100 text-red-800";
+        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200";
     }
 
     // Show modal

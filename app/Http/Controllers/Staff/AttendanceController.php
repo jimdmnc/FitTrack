@@ -12,68 +12,60 @@ use Illuminate\Support\Facades\Log;
 class AttendanceController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Attendance::with('user')->orderBy('time_in', 'desc');
-        
-        // Search filter
-        if ($request->filled('search')) {
-            $search = $request->input('search');
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where(function($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
-                });
+{
+    $query = Attendance::with('user');
+    
+    // Search filter
+    $search = $request->input('search', '');
+    if (!empty($search)) {
+        $query->whereHas('user', function($q) use ($search) {
+            $q->where(function($query) use ($search) {
+                $query->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
             });
-        }
-
-        // Time period filter
-        $filter = $request->input('filter', 'today');
-
-        switch ($filter) {
-            case 'today':
-                $query->whereDate('time_in', Carbon::today());
-                break;
-                
-            case 'yesterday':
-                $query->whereDate('time_in', Carbon::yesterday());
-                break;
-                
-            case 'thisWeek':
-                $query->whereBetween('time_in', [
-                    Carbon::now()->startOfWeek(),
-                    Carbon::now()->endOfWeek()
-                ]);
-                break;
-                
-            case 'lastWeek':
-                $query->whereBetween('time_in', [
-                    Carbon::now()->subWeek()->startOfWeek(),
-                    Carbon::now()->subWeek()->endOfWeek()
-                ]);
-                break;
-                
-            case 'thisMonth':
-                $query->whereBetween('time_in', [
-                    Carbon::now()->startOfMonth(),
-                    Carbon::now()->endOfMonth()
-                ]);
-                break;
-        
-        }
-    
-
-        // Always order by time_in descending (newest first)
-        $query->orderBy('time_in', 'desc');
-
-        $attendances = $query->paginate(10)
-        ->appends([
-            'filter' => $request->input('filter'),
-            'search' => $request->input('search')
-        ]);
-    
-        return view('staff.attendance', compact('attendances', 'filter'));
+        });
     }
+
+    // Time period filter
+    $filter = $request->input('filter', 'today');
+    switch ($filter) {
+        case 'today':
+            $query->whereDate('time_in', Carbon::today());
+            break;
+        case 'yesterday':
+            $query->whereDate('time_in', Carbon::yesterday());
+            break;
+        case 'thisWeek':
+            $query->whereBetween('time_in', [
+                Carbon::now()->startOfWeek(),
+                Carbon::now()->endOfWeek()
+            ]);
+            break;
+        case 'lastWeek':
+            $query->whereBetween('time_in', [
+                Carbon::now()->subWeek()->startOfWeek(),
+                Carbon::now()->subWeek()->endOfWeek()
+            ]);
+            break;
+        case 'thisMonth':
+            $query->whereBetween('time_in', [
+                Carbon::now()->startOfMonth(),
+                Carbon::now()->endOfMonth()
+            ]);
+            break;
+    }
+
+    // Always order by time_in descending (newest first)
+    $attendances = $query->orderBy('time_in', 'desc')
+        ->paginate(10)
+        ->appends([
+            'filter' => $filter,
+            'search' => $search,
+        ]);
+
+    return view('staff.attendance', compact('attendances', 'filter', 'search'));
+}
 
     public function recordAttendance(Request $request)
     {

@@ -174,12 +174,18 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Members Report Table Footer -->
+            <!-- For Members Report -->
             @if($attendances->count() > 0)
                 <tfoot class="">
                     <tr>
                         <td colspan="7" class="px-6 py-4">
-                            {{ $attendances->onEachSide(1)->links('vendor.pagination.default') }}
+                            {{ $attendances->appends([
+                                'type' => request('type', 'members'),
+                                'filter' => request('filter'),
+                                'start_date' => request('start_date'),
+                                'end_date' => request('end_date'),
+                                'per_page' => request('per_page', 10)
+                            ])->links('vendor.pagination.default') }}
                         </td>
                     </tr>
                 </tfoot>
@@ -241,307 +247,377 @@
                             </td>
                         </tr>
                     </tbody>
-                    <!-- Payments Report Table Footer -->
+                <!-- For Payments Report -->
                 @if($payments->count() > 0)
                     <tfoot class="bg-[#1e1e1e]">
                         <tr>
                             <td colspan="7" class="px-6 py-4">
-                                {{ $payments->onEachSide(1)->links('vendor.pagination.default') }}
+                                {{ $payments->appends([
+                                    'type' => request('type', 'members'),
+                                    'date_filter' => request('date_filter'),
+                                    'start_date' => request('start_date'),
+                                    'end_date' => request('end_date')
+                                ])->links('vendor.pagination.default') }}
                             </td>
                         </tr>
                     </tfoot>
                 @endif
                 </table>
-                
             </div>
             
         </div>
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // DOM elements
-            const reportTypeSelect = document.getElementById('reportType');
-            const reportTitle = document.getElementById('reportTitle');
-            const membersReport = document.getElementById('membersReport');
-            const paymentsReport = document.getElementById('paymentsReport');
-            const dateFilter = document.getElementById('dateFilter');
-            const customRange = document.getElementById('customRange');
-            const startDate = document.getElementById('startDate');
-            const endDate = document.getElementById('endDate');
-            const exportBtn = document.getElementById('exportButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        // DOM elements
+        const reportTypeSelect = document.getElementById('reportType');
+        const reportTitle = document.getElementById('reportTitle');
+        const membersReport = document.getElementById('membersReport');
+        const paymentsReport = document.getElementById('paymentsReport');
+        const dateFilter = document.getElementById('dateFilter');
+        const customRange = document.getElementById('customRange');
+        const startDate = document.getElementById('startDate');
+        const endDate = document.getElementById('endDate');
+        const exportBtn = document.getElementById('exportButton');
+        
+        // Initialize from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('type')) {
+            reportTypeSelect.value = urlParams.get('type');
+            // Trigger the change event to show the correct report
+            reportTypeSelect.dispatchEvent(new Event('change'));
+        }
+        
+        if (urlParams.has('date_filter')) {
+            dateFilter.value = urlParams.get('date_filter');
+            if (urlParams.get('date_filter') === 'custom') {
+                customRange.classList.remove('hidden');
+                if (urlParams.has('start_date')) {
+                    startDate.value = urlParams.get('start_date');
+                }
+                if (urlParams.has('end_date')) {
+                    endDate.value = urlParams.get('end_date');
+                }
+            }
+        }
+        
+        // Toggle report type
+        reportTypeSelect.addEventListener('change', function() {
+            const type = this.value;
+            reportTitle.textContent = type === 'members' ? 'Members Report' : 'Payments Report';
             
-            // Toggle report type
-            reportTypeSelect.addEventListener('change', function() {
-                const type = this.value;
-                reportTitle.textContent = type === 'members' ? 'Members Report' : 'Payments Report';
+            if (type === 'members') {
+                membersReport.classList.remove('hidden');
+                paymentsReport.classList.add('hidden');
+            } else {
+                membersReport.classList.add('hidden');
+                paymentsReport.classList.remove('hidden');
+            }
+            updatePaginationLinks();
+        });
+        
+        // Toggle custom date range
+        dateFilter.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customRange.classList.remove('hidden');
                 
-                if (type === 'members') {
-                    membersReport.classList.remove('hidden');
-                    paymentsReport.classList.add('hidden');
-                } else {
-                    membersReport.classList.add('hidden');
-                    paymentsReport.classList.remove('hidden');
-                }
-            });
-            
-            // Toggle custom date range
-            dateFilter.addEventListener('change', function() {
-                if (this.value === 'custom') {
-                    customRange.classList.remove('hidden');
-                    
-                    // Set max date to today for both inputs
-                    const today = new Date().toISOString().split('T')[0];
-                    startDate.max = today;
-                    endDate.max = today;
-                    
-                    // Set default values to today if empty
-                    if (!startDate.value) startDate.value = today;
-                    if (!endDate.value) endDate.value = today;
-                } else {
-                    customRange.classList.add('hidden');
-                    filterTables();
-                }
-            });
-
-            // Validate start date
-    startDate.addEventListener('change', function() {
-        const startDateValue = this.value;
-        const endDateValue = endDate.value;
-        const today = new Date().toISOString().split('T')[0];
-
-        // Ensure start date is not after today
-        if (startDateValue > today) {
-            this.value = today;
-        }
-
-        // If end date exists, ensure it's not before start date
-        if (endDateValue) {
-            if (endDateValue < startDateValue) {
-                endDate.value = startDateValue;
-            }
-        } else {
-            // If no end date, set it to start date
-            endDate.value = startDateValue;
-        }
-
-        // Set the minimum end date to the start date
-        endDate.min = startDateValue;
-        filterTables();
-    });
-
-    // Validate end date
-    endDate.addEventListener('change', function() {
-        const startDateValue = startDate.value;
-        const endDateValue = this.value;
-        const today = new Date().toISOString().split('T')[0];
-
-        // Ensure end date is not after today
-        if (endDateValue > today) {
-            this.value = today;
-        }
-
-        // Ensure end date is not before start date
-        if (endDateValue < startDateValue) {
-            this.value = startDateValue;
-        }
-        
-        filterTables();
-    });
-
-            endDate.addEventListener('change', function() {
-                const startDateValue = startDate.value;
-                if (startDateValue && this.value < startDateValue) {
-                    startDate.value = this.value;
-                }
+                // Set max date to today for both inputs
+                const today = new Date().toISOString().split('T')[0];
+                startDate.max = today;
+                endDate.max = today;
+                
+                // Set default values to today if empty
+                if (!startDate.value) startDate.value = today;
+                if (!endDate.value) endDate.value = today;
+            } else {
+                customRange.classList.add('hidden');
                 filterTables();
-            });
-            
-            // Apply date filter when custom dates change
-            startDate.addEventListener('change', filterTables);
-            endDate.addEventListener('change', filterTables);
-            
-            // Filter tables based on selected date range
-            function filterTables() {
-    const filterValue = dateFilter.value;
-    let start, end;
-    
-    // Set date range based on filter - using UTC to avoid timezone issues
-    const today = new Date();
-    today.setUTCHours(0, 0, 0, 0);
-    
-    switch(filterValue) {
-        case 'today':
-            start = new Date(today);
-            end = new Date(today);
-            end.setUTCHours(23, 59, 59, 999);
-            break;
-        case 'yesterday':
-            start = new Date(today);
-            start.setUTCDate(start.getUTCDate() - 1);
-            end = new Date(today);
-            end.setUTCDate(end.getUTCDate() - 1);
-            end.setUTCHours(23, 59, 59, 999);
-            break;
-        case 'last7':
-            start = new Date(today);
-            start.setUTCDate(start.getUTCDate() - 6);
-            end = new Date(today);
-            end.setUTCHours(23, 59, 59, 999);
-            break;
-        case 'last30':
-            start = new Date(today);
-            start.setUTCDate(start.getUTCDate() - 29);
-            end = new Date(today);
-            end.setUTCHours(23, 59, 59, 999);
-            break;
-        case 'custom':
-            const startDateValue = startDate.value;
-            const endDateValue = endDate.value;
-            if (!startDateValue || !endDateValue) return;
-            
-            // Parse dates in UTC to avoid timezone issues
-            start = new Date(startDateValue + 'T00:00:00Z');
-            end = new Date(endDateValue + 'T23:59:59.999Z');
-            
-            // Validate dates
-            if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-                console.error('Invalid date range');
-                return;
             }
-            break;
-        default: // All time
-            // Show all rows and hide no results message
-            document.querySelectorAll('#membersTableBody tr[data-date]').forEach(row => {
-                row.style.display = '';
-            });
-            document.querySelectorAll('#paymentsTableBody tr[data-date]').forEach(row => {
-                row.style.display = '';
-            });
-            document.getElementById('membersNoResults').classList.add('hidden');
-            document.getElementById('paymentsNoResults').classList.add('hidden');
-            return;
-    }
-    
-    // Filter tables
-    filterTable('members', start, end);
-    filterTable('payments', start, end);
-}
-
-function filterTable(tableType, start, end) {
-    const tableBody = document.getElementById(`${tableType}TableBody`);
-    const noResults = document.getElementById(`${tableType}NoResults`);
-    let hasVisible = false;
-    
-    document.querySelectorAll(`#${tableType}TableBody tr[data-date]`).forEach(row => {
-        const rowDateStr = row.getAttribute('data-date');
-        if (!rowDateStr) {
-            row.style.display = 'none';
-            return;
-        }
-        
-        // Parse date in UTC context
-        const rowDate = new Date(rowDateStr + 'T00:00:00Z');
-        if (isNaN(rowDate.getTime())) {
-            row.style.display = 'none';
-            return;
-        }
-        
-        const isVisible = (rowDate >= start && rowDate <= end);
-        row.style.display = isVisible ? '' : 'none';
-        if (isVisible) hasVisible = true;
-    });
-    
-    noResults.classList.toggle('hidden', hasVisible);
-}
-
-function resetFilters(tableType) {
-    // Reset all filter controls
-    document.getElementById('dateFilter').value = '';
-    document.getElementById('startDate').value = '';
-    document.getElementById('endDate').value = '';
-    document.getElementById('customRange').classList.add('hidden');
-    
-    // Reset both tables
-    filterTables();
-    
-    // Specific no results reset if needed
-    if (tableType) {
-        document.getElementById(`${tableType}NoResults`).classList.add('hidden');
-    } else {
-        document.getElementById('membersNoResults').classList.add('hidden');
-        document.getElementById('paymentsNoResults').classList.add('hidden');
-    }
-}
-            
-            // In the export button click handler
-            document.getElementById('exportButton').addEventListener('click', function() {
-                const selectedType = document.getElementById('reportType').value;
-                const selectedDateFilter = document.getElementById('dateFilter').value;
-                const startDateValue = document.getElementById('startDate').value;
-                const endDateValue = document.getElementById('endDate').value;
-
-                // Build the URL for the selected report type and filter
-                let url = "{{ route('generate.report') }}?type=" + selectedType + "&date_filter=" + selectedDateFilter;
-
-                // Include custom date range if available
-                if (selectedDateFilter === 'custom' && startDateValue && endDateValue) {
-                    url += "&start_date=" + startDateValue + "&end_date=" + endDateValue;
-                    
-                    // Explicitly indicate we want to include the full end date
-                    url += "&include_full_end_date=true";
-                }
-
-                if (selectedType === 'members' || selectedType === 'payments') {
-                    window.location.href = url;
-                } else {
-                    alert('Please select a report type');
-                }
-            });
+            updatePaginationLinks();
         });
 
-        function reportFilter() {
-            return {
-                reportType: 'members', // Default report type
+        // Validate start date
+        startDate.addEventListener('change', function() {
+            const startDateValue = this.value;
+            const endDateValue = endDate.value;
+            const today = new Date().toISOString().split('T')[0];
 
-                // Function to toggle between members and payments
-                toggleReportType(type) {
-                    this.reportType = type;
-                },
+            // Ensure start date is not after today
+            if (startDateValue > today) {
+                this.value = today;
+            }
 
-                // Return members or payments based on the selected report type
-                get data() {
-                    if (this.reportType === 'members') {
-                        return @json($attendances); // Load members data
-                    } else {
-                        return @json($payments); // Load payments data
-                    }
-                },
-
-                // Format time for display
-                formatTime(timeStr) {
-                    return new Date(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                },
-
-                // Format date for display
-                formatDate(dateStr) {
-                    if (!dateStr || dateStr === '0000-00-00') return 'N/A';
-
-                    const parsedDate = new Date(dateStr);
-                    if (isNaN(parsedDate.getTime())) return 'N/A';
-
-                    return parsedDate.toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                },
-
-                // Reset the report type to default
-                resetReportType() {
-                    this.reportType = 'members';
+            // If end date exists, ensure it's not before start date
+            if (endDateValue) {
+                if (endDateValue < startDateValue) {
+                    endDate.value = startDateValue;
                 }
+            } else {
+                // If no end date, set it to start date
+                endDate.value = startDateValue;
+            }
+
+            // Set the minimum end date to the start date
+            endDate.min = startDateValue;
+            filterTables();
+            updatePaginationLinks();
+        });
+
+        // Validate end date
+        endDate.addEventListener('change', function() {
+            const startDateValue = startDate.value;
+            const endDateValue = this.value;
+            const today = new Date().toISOString().split('T')[0];
+
+            // Ensure end date is not after today
+            if (endDateValue > today) {
+                this.value = today;
+            }
+
+            // Ensure end date is not before start date
+            if (endDateValue < startDateValue) {
+                this.value = startDateValue;
+            }
+            
+            filterTables();
+            updatePaginationLinks();
+        });
+        
+        // Filter tables based on selected date range
+        function filterTables() {
+            const filterValue = dateFilter.value;
+            const type = reportTypeSelect.value;
+            let start, end;
+            
+            // Set date range based on filter - using UTC to avoid timezone issues
+            const today = new Date();
+            today.setUTCHours(0, 0, 0, 0);
+            
+            switch(filterValue) {
+            case 'today':
+                start = new Date(today);
+                end = new Date(today);
+                end.setUTCHours(23, 59, 59, 999);
+                break;
+            case 'yesterday':
+                start = new Date(today);
+                start.setUTCDate(start.getUTCDate() - 1);
+                end = new Date(today);
+                end.setUTCDate(end.getUTCDate() - 1);
+                end.setUTCHours(23, 59, 59, 999);
+                break;
+            case 'last7':
+                start = new Date(today);
+                start.setUTCDate(start.getUTCDate() - 6);
+                end = new Date(today);
+                end.setUTCHours(23, 59, 59, 999);
+                break;
+            case 'last30':
+                start = new Date(today);
+                start.setUTCDate(start.getUTCDate() - 29);
+                end = new Date(today);
+                end.setUTCHours(23, 59, 59, 999);
+                break;
+            case 'custom':
+                const startDateValue = startDate.value;
+                const endDateValue = endDate.value;
+                if (!startDateValue || !endDateValue) return;
+                
+                // Parse dates in UTC to avoid timezone issues
+                start = new Date(startDateValue + 'T00:00:00Z');
+                end = new Date(endDateValue + 'T23:59:59.999Z');
+                
+                // Validate dates
+                if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+                    console.error('Invalid date range');
+                    return;
+                }
+                break;
+            default: // All time
+                // Instead of showing all rows client-side, reload with server-side filtering
+                reloadWithFilters();
+                return;
+            }
+
+            // For non-default filters, reload with server-side filtering
+            reloadWithFilters();
+            
+            // Filter tables
+            filterTable('members', start, end);
+            filterTable('payments', start, end);
+        }
+
+        function reloadWithFilters() {
+        const type = reportTypeSelect.value;
+        const filterValue = dateFilter.value;
+        const startDateValue = startDate.value;
+        const endDateValue = endDate.value;
+        
+        // Build new URL with all current filters
+        const url = new URL(window.location.href.split('?')[0]);
+        url.searchParams.set('type', type);
+        
+        if (filterValue) {
+            url.searchParams.set('filter', filterValue);
+        }
+        
+        if (filterValue === 'custom' && startDateValue && endDateValue) {
+            url.searchParams.set('start_date', startDateValue);
+            url.searchParams.set('end_date', endDateValue);
+        }
+        
+        // Reset to page 1 when filters change
+        url.searchParams.delete('page');
+        
+        window.location.href = url.toString();
+    }
+
+
+        function filterTable(tableType, start, end) {
+            const tableBody = document.getElementById(`${tableType}TableBody`);
+            const noResults = document.getElementById(`${tableType}NoResults`);
+            let hasVisible = false;
+            
+            document.querySelectorAll(`#${tableType}TableBody tr[data-date]`).forEach(row => {
+                const rowDateStr = row.getAttribute('data-date');
+                if (!rowDateStr) {
+                    row.style.display = 'none';
+                    return;
+                }
+                
+                // Parse date in UTC context
+                const rowDate = new Date(rowDateStr + 'T00:00:00Z');
+                if (isNaN(rowDate.getTime())) {
+                    row.style.display = 'none';
+                    return;
+                }
+                
+                const isVisible = (rowDate >= start && rowDate <= end);
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) hasVisible = true;
+            });
+            
+            noResults.classList.toggle('hidden', hasVisible);
+        }
+
+        function resetFilters(tableType) {
+            // Reset all filter controls
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('startDate').value = '';
+            document.getElementById('endDate').value = '';
+            document.getElementById('customRange').classList.add('hidden');
+
+            const url = new URL(window.location.href.split('?')[0]);
+            url.searchParams.set('type', reportTypeSelect.value);
+            window.location.href = url.toString();
+            
+            // Reset both tables
+            filterTables();
+            
+            // Specific no results reset if needed
+            if (tableType) {
+                document.getElementById(`${tableType}NoResults`).classList.add('hidden');
+            } else {
+                document.getElementById('membersNoResults').classList.add('hidden');
+                document.getElementById('paymentsNoResults').classList.add('hidden');
+            }
+            updatePaginationLinks();
+        }
+        
+        // Update pagination links with current filters
+        function updatePaginationLinks() {
+            const type = reportTypeSelect.value;
+            const dateFilterValue = dateFilter.value;
+            const startDateValue = startDate.value;
+            const endDateValue = endDate.value;
+            
+            // Update all pagination links
+            document.querySelectorAll('.pagination a').forEach(link => {
+                const url = new URL(link.href);
+                url.searchParams.set('type', type);
+                if (dateFilterValue) {
+                    url.searchParams.set('date_filter', dateFilterValue);
+                }
+                if (dateFilterValue === 'custom' && startDateValue && endDateValue) {
+                    url.searchParams.set('start_date', startDateValue);
+                    url.searchParams.set('end_date', endDateValue);
+                }
+                link.href = url.toString();
+            });
+        }
+        
+        // Initialize pagination links
+        updatePaginationLinks();
+        
+        // Export button handler
+        document.getElementById('exportButton').addEventListener('click', function() {
+            const selectedType = reportTypeSelect.value;
+            const selectedDateFilter = dateFilter.value;
+            const startDateValue = startDate.value;
+            const endDateValue = endDate.value;
+
+            // Build the URL for the selected report type and filter
+            let url = "{{ route('generate.report') }}?type=" + selectedType + "&date_filter=" + selectedDateFilter;
+
+            // Include custom date range if available
+            if (selectedDateFilter === 'custom' && startDateValue && endDateValue) {
+                url += "&start_date=" + startDateValue + "&end_date=" + endDateValue;
+                
+                // Explicitly indicate we want to include the full end date
+                url += "&include_full_end_date=true";
+            }
+
+            if (selectedType === 'members' || selectedType === 'payments') {
+                window.location.href = url;
+            } else {
+                alert('Please select a report type');
+            }
+        });
+    });
+
+    function reportFilter() {
+        return {
+            reportType: 'members', // Default report type
+
+            // Function to toggle between members and payments
+            toggleReportType(type) {
+                this.reportType = type;
+            },
+
+            // Return members or payments based on the selected report type
+            get data() {
+                if (this.reportType === 'members') {
+                    return @json($attendances); // Load members data
+                } else {
+                    return @json($payments); // Load payments data
+                }
+            },
+
+            // Format time for display
+            formatTime(timeStr) {
+                return new Date(timeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            },
+
+            // Format date for display
+            formatDate(dateStr) {
+                if (!dateStr || dateStr === '0000-00-00') return 'N/A';
+
+                const parsedDate = new Date(dateStr);
+                if (isNaN(parsedDate.getTime())) return 'N/A';
+
+                return parsedDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            },
+
+            // Reset the report type to default
+            resetReportType() {
+                this.reportType = 'members';
             }
         }
-    </script>
+    }
+</script>
 @endsection

@@ -321,7 +321,7 @@
             </div>
         </div>
         <div class="mt-4">
-            {{ $attendances->links('vendor.pagination.default') }}
+            {{ $attendances->appends(['search' => request('search'), 'filter' => request('filter')])->links('vendor.pagination.default') }}
         </div>
     </div>
 </div>
@@ -331,9 +331,12 @@
     const dropdown = document.getElementById('dropdown');
     const selectedOption = document.getElementById('selected-option');
     const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
-    
+
     // Set initial selected option
-    selectedOption.textContent = document.querySelector(`[data-value="${currentFilter}"]`).textContent;
+    const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
+    if (initialOption) {
+        selectedOption.textContent = initialOption.textContent;
+    }
 
     selectBtn.addEventListener('click', () => {
         dropdown.classList.toggle('hidden');
@@ -345,10 +348,18 @@
             selectedOption.textContent = option.textContent;
             dropdown.classList.add('hidden');
             
-            // Update URL with the selected filter
+            // Get current URL parameters
             const url = new URL(window.location.href);
-            url.searchParams.set('filter', filterValue);
-            window.location.href = url.toString();
+            const searchParams = new URLSearchParams(url.search);
+            
+            // Update filter parameter
+            searchParams.set('filter', filterValue);
+            
+            // Remove page parameter to go back to first page
+            searchParams.delete('page');
+            
+            // Update URL
+            window.location.href = `${url.pathname}?${searchParams.toString()}`;
         });
     });
 
