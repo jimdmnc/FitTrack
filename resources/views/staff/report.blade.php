@@ -168,11 +168,17 @@
                                 </tr>
                             @endforeach
                         @else
-                            <tr>
-                                <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
-                                    <p class="text-gray-200 text-lg">No attendance records found</p>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
+                                <div class="flex flex-col items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                    </svg>
+                                    <p class="text-gray-200 text-lg font-medium">No attendance records found</p>
+                                    <p class="text-gray-400 text-sm mt-1">There are no records matching your criteria.</p>
+                                </div>
+                            </td>
+                        </tr>
                         @endif
                         <!-- No results row for filtered results (hidden by default) -->
                         <tr id="membersNoResults" class="hidden">
@@ -241,11 +247,15 @@
                                 </tr>
                             @endforeach
                         @else
-                            <tr>
-                                <td colspan="7" class="px-6 py-12 text-center">
-                                    <p class="text-gray-200 text-lg">No payment records found</p>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                                <h3 class="mt-2 text-lg font-medium text-gray-300">No payment records found</h3>
+                                <p class="mt-1 text-sm text-gray-400">There are no payment records matching your criteria.</p>
+                            </td>
+                        </tr>
                         @endif
                         <!-- No results row for filtered results (hidden by default) -->
                         <tr id="paymentsNoResults" class="hidden">
