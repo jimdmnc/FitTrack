@@ -94,7 +94,7 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-black">
-                    @foreach($attendances as $attendance)
+                    @forelse($attendances as $attendance)
                     <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
@@ -162,7 +162,21 @@
                         </button>
                         </td>
                     </tr>
-                    @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <div class="flex flex-col items-center justify-center">
+                                <h3 class="mt-4 text-lg font-medium text-gray-200">No attendance records found</h3>
+                                <p class="mt-1 text-sm text-gray-400">There are no attendance records matching your criteria.</p>
+                                @if(request('search') || request('filter'))
+                                <a href="{{ route('staff.attendance.index') }}" class="mt-4 text-sm text-[#ff5722] hover:text-[#e64a19] transition-colors">
+                                    Clear filters
+                                </a>
+                                @endif
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
