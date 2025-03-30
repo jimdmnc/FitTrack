@@ -329,9 +329,9 @@
                         <p class="text-xs text-gray-200">Number of members visiting the gym</p>
                     </div>
                     <div class="flex space-x-2">
-                        <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50" title="Download CSV">
+                        <!-- <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50" title="Download CSV">
                             <i class="fas fa-download text-sm "></i>
-                        </button>
+                        </button> -->
                         <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 expand-checkins-btn" 
                             title="Expand">
                             <i class="fas fa-expand-alt text-sm"></i>
@@ -395,9 +395,9 @@
                             <p class="text-xs text-gray-200">Peak hours</p>
                         </div>
                         <div class="chart-action-buttons space-x-1">
-                            <div class="chart-action-button" title="Download CSV">
+                            <!-- <div class="chart-action-button" title="Download CSV">
                                 <i class="hover:text-gray-200 fas fa-download text-sm"></i>
-                            </div>
+                            </div> -->
                             <div class="chart-action-button expand-peak-btn" title="Expand">
                                 <i class="fas fa-expand-alt text-sm"></i>
                             </div>
@@ -417,9 +417,9 @@
                             <p class="text-sm text-gray-200">Ongoing Memberships</p>
                         </div>
                         <div class="chart-action-buttons space-x-2 flex items-center">
-                            <div class="chart-action-button cursor-pointer" title="Download CSV">
+                            <!-- <div class="chart-action-button cursor-pointer" title="Download CSV">
                                 <i class="fas fa-download text-sm"></i>
-                            </div>
+                            </div> -->
                             <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
                                 <i class="fas fa-expand-alt text-sm "></i>
                             </div>

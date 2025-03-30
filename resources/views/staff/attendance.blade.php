@@ -11,15 +11,15 @@
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
     selectedAttendance: null,
+    selectedDayCheckIn: null,
+    selectedDayCheckOut: null,
+    selectedDayDate: null,
+    selectedDayDuration: null,
     openModal(attendance) {
-        if (typeof attendance === 'object') {
-            this.selectedAttendance = attendance;
-        } else {
-            this.selectedAttendance = JSON.parse(attendance);
-        }
+        this.selectedAttendance = attendance;
         this.showModal = true;
     }
-}" x-init="showModal = false" x-cloak>
+}" x-cloak>
     <div class="mb-6">
         <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
             Gym Member Attendance
@@ -30,7 +30,7 @@
     <div class="">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-800 gap-4">
             <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
-                <div class="relative flex items-center">
+                <div class="relative flex items-center -ml-4 mb-2">
                     <!-- Search Input -->
                     <input 
                         type="text" 
@@ -105,6 +105,7 @@
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
+                            @if($attendance->user)
                             <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                 @if($attendance->user->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
                                 @elseif($attendance->user->getMembershipType() == 'Week') bg-green-900 text-green-200
@@ -113,6 +114,11 @@
                                 @endif">
                                 {{ $attendance->user->getMembershipType() }}
                             </span>
+                            @else
+                            <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-200">
+                                Unknown
+                            </span>
+                            @endif
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap">
@@ -133,33 +139,36 @@
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                            {{ $attendance->formatted_duration }}
+                            {{ $attendance->formatted_duration ?? 'N/A' }}
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        @if($attendance->user)
                         <button 
-                            class="text-gray-200 hover:text-gray-200 hover:scale-95 bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
+                            class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
                             @click="openModal({
                                 user: {
-                                    first_name: '{{ $attendance->user->first_name }}',
-                                    last_name: '{{ $attendance->user->last_name }}',
-                                    getMembershipType: '{{ $attendance->user->getMembershipType() }}',
-                                    all_attendances: [
-                                        @foreach($attendance->user->attendances as $userAttendance)
-                                        {
-                                            time_in: '{{ $userAttendance->time_in->format('Y-m-d\TH:i:s.v\Z') }}',
-                                            time_out: {{ $userAttendance->time_out ? "'".$userAttendance->time_out->format('Y-m-d\TH:i:s.v\Z')."'" : 'null' }},
-                                        },
-                                        @endforeach
-                                    ]
+                                    first_name: '{{ addslashes($attendance->user->first_name) }}',
+                                    last_name: '{{ addslashes($attendance->user->last_name) }}',
+                                    membership_type: '{{ $attendance->user->getMembershipType() }}',
+                                    attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
+                                        return [
+                                            'time_in' => $a->time_in->toISOString(),
+                                            'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
+                                            'formatted_duration' => $a->formatted_duration ?? 'N/A'
+                                        ];
+                                    })) }}
                                 },
-                                time_in: '{{ $attendance->time_in->format('Y-m-d\TH:i:s.v\Z') }}',
-                                time_out: {{ $attendance->time_out ? "'".$attendance->time_out->format('Y-m-d\TH:i:s.v\Z')."'" : 'null' }},
-                                formatted_duration: '{{ $attendance->formatted_duration }}'
+                                time_in: '{{ $attendance->time_in->toISOString() }}',
+                                time_out: {{ $attendance->time_out ? "'".$attendance->time_out->toISOString()."'" : 'null' }},
+                                formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
                             })"
                         >
                             Details
                         </button>
+                        @else
+                        <span class="text-gray-400">N/A</span>
+                        @endif
                         </td>
                     </tr>
                     @empty
@@ -182,7 +191,7 @@
         </div>
 
         <!-- Calendar Modal -->
-        <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" x-cloak @click.away="showModal = false">
+        <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.away="showModal = false">
             <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-6 w-full max-w-md" @click.stop>
                 <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
@@ -200,138 +209,198 @@
                         </div>
                         <div>
                             <h3 class="text-lg font-medium text-gray-200" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
-                            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.getMembershipType : ''"></p>
+                            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-400">Date</p>
+                            <p class="text-gray-200" x-text="selectedDayDate || (selectedAttendance ? new Date(selectedAttendance.time_in).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '')"></p>
+                        </div>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-400">Duration</p>
+                            <p class="text-gray-200" x-text="selectedDayDuration || (selectedAttendance ? selectedAttendance.formatted_duration : 'N/A')"></p>
                         </div>
                     </div>
                     
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <p class="text-sm text-gray-400">Check-in</p>
-                            <p class="text-gray-200" x-text="selectedAttendance ? new Date(selectedAttendance.time_in).toLocaleString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''"></p>
+                            <p class="text-gray-200" x-text="selectedDayCheckIn || (selectedAttendance ? new Date(selectedAttendance.time_in).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A')"></p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-400">Check-out</p>
-                            <p class="text-gray-200" x-text="selectedAttendance ? (selectedAttendance.time_out ? new Date(selectedAttendance.time_out).toLocaleString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'In Session') : ''"></p>
+                            <p class="text-gray-200" x-text="selectedDayCheckOut || (selectedAttendance && selectedAttendance.time_out ? new Date(selectedAttendance.time_out).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A')"></p>
                         </div>
                     </div>
+                    
+                    
                 </div>
 
-               <!-- Calendar Section -->
-<div class="mt-4" x-data="{
-    currentMonth: new Date().getUTCMonth(),
-    currentYear: new Date().getUTCFullYear(),
-    attendanceDay: null,
-    attendanceMonth: null,
-    attendanceYear: null,
-    today: new Date().getUTCDate(),
-    todayMonth: new Date().getUTCMonth(),
-    todayYear: new Date().getUTCFullYear(),
-    
-    init() {
-        if (this.selectedAttendance?.time_in) {
-            const date = new Date(this.selectedAttendance.time_in);
-            this.currentMonth = date.getUTCMonth();
-            this.currentYear = date.getUTCFullYear();
-            this.attendanceDay = date.getUTCDate();
-            this.attendanceMonth = date.getUTCMonth();
-            this.attendanceYear = date.getUTCFullYear();
-        }
-    },
-    
-    getDaysInMonth() {
-        return new Date(Date.UTC(this.currentYear, this.currentMonth + 1, 0)).getUTCDate();
-    },
-    
-    getFirstDayOfMonth() {
-        return new Date(Date.UTC(this.currentYear, this.currentMonth, 1)).getUTCDay();
-    },
-    
-    prevMonth() {
-        if (this.currentMonth === 0) {
-            this.currentMonth = 11;
-            this.currentYear--;
-        } else {
-            this.currentMonth--;
-        }
-    },
-    
-    nextMonth() {
-        if (this.currentMonth === 11) {
-            this.currentMonth = 0;
-            this.currentYear++;
-        } else {
-            this.currentMonth++;
-        }
-    },
-    
-    monthName() {
-        return new Date(Date.UTC(this.currentYear, this.currentMonth)).toLocaleString('default', { month: 'long' });
-    },
-    
-    isAttendanceDay(day) {
-        if (!this.selectedAttendance?.user?.all_attendances) return false;
-        
-        const currentDate = new Date(Date.UTC(this.currentYear, this.currentMonth, day));
-        
-        return this.selectedAttendance.user.all_attendances.some(attendance => {
-            const attendanceDate = new Date(attendance.time_in);
-            return attendanceDate.getUTCFullYear() === currentDate.getUTCFullYear() &&
-                attendanceDate.getUTCMonth() === currentDate.getUTCMonth() &&
-                attendanceDate.getUTCDate() === currentDate.getUTCDate();
-        });
-    },
-    
-    isToday(day) {
-        return day === this.today && 
-            this.currentMonth === this.todayMonth && 
-            this.currentYear === this.todayYear;
-    }
-}">
-    <!-- Month Navigation -->
-    <div class="flex justify-between items-center mb-2">
-        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-            </svg>
-        </button>
-        <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
-        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-            </svg>
-        </button>
-    </div>
+                <!-- Enhanced Calendar Section -->
+                <div class="mt-4" x-data="{
+                    currentMonth: new Date().getMonth(),
+                    currentYear: new Date().getFullYear(),
+                    today: new Date().getDate(),
+                    selectedDay: null,
+                    
+                    getDaysInMonth() {
+                        return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+                    },
+                    
+                    getFirstDayOfMonth() {
+                        return new Date(this.currentYear, this.currentMonth, 1).getDay();
+                    },
+                    
+                    prevMonth() {
+                        if (this.currentMonth === 0) {
+                            this.currentMonth = 11;
+                            this.currentYear--;
+                        } else {
+                            this.currentMonth--;
+                        }
+                        this.selectedDay = null;
+                        $data.selectedDayCheckIn = null;
+                        $data.selectedDayCheckOut = null;
+                        $data.selectedDayDate = null;
+                        $data.selectedDayDuration = null;
+                    },
+                    
+                    nextMonth() {
+                        if (this.currentMonth === 11) {
+                            this.currentMonth = 0;
+                            this.currentYear++;
+                        } else {
+                            this.currentMonth++;
+                        }
+                        this.selectedDay = null;
+                        $data.selectedDayCheckIn = null;
+                        $data.selectedDayCheckOut = null;
+                        $data.selectedDayDate = null;
+                        $data.selectedDayDuration = null;
+                    },
+                    
+                    monthName() {
+                        return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
+                    },
+                    
+                    isAttendanceDay(day) {
+                        if (!$data.selectedAttendance?.user?.attendances) return false;
+                        
+                        const currentDate = new Date(this.currentYear, this.currentMonth, day);
+                        
+                        return $data.selectedAttendance.user.attendances.some(attendance => {
+                            const attendanceDate = new Date(attendance.time_in);
+                            return attendanceDate.getFullYear() === currentDate.getFullYear() &&
+                                attendanceDate.getMonth() === currentDate.getMonth() &&
+                                attendanceDate.getDate() === currentDate.getDate();
+                        });
+                    },
+                    
+                    isToday(day) {
+                        const today = new Date();
+                        return day === today.getDate() && 
+                            this.currentMonth === today.getMonth() && 
+                            this.currentYear === today.getFullYear();
+                    },
+                    
+                    selectDay(day) {
+                        this.selectedDay = day;
+                        this.loadDayAttendance(day);
+                    },
+                    
+                    loadDayAttendance(day) {
+                        const selectedDate = new Date(this.currentYear, this.currentMonth, day);
+                        $data.selectedDayDate = selectedDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                        
+                        // Reset values
+                        $data.selectedDayCheckIn = 'N/A';
+                        $data.selectedDayCheckOut = 'N/A';
+                        $data.selectedDayDuration = 'N/A';
+                        
+                        if (!$data.selectedAttendance?.user?.attendances) {
+                            return;
+                        }
+                        
+                        const attendanceForDay = $data.selectedAttendance.user.attendances.find(attendance => {
+                            const attendanceDate = new Date(attendance.time_in);
+                            return attendanceDate.getFullYear() === selectedDate.getFullYear() &&
+                                attendanceDate.getMonth() === selectedDate.getMonth() &&
+                                attendanceDate.getDate() === selectedDate.getDate();
+                        });
+                        
+                        if (attendanceForDay) {
+                            $data.selectedDayCheckIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            $data.selectedDayCheckOut = attendanceForDay.time_out ? 
+                                new Date(attendanceForDay.time_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                            $data.selectedDayDuration = attendanceForDay.formatted_duration || 'N/A';
+                        }
+                    },
+                    
+                    isSelectedDay(day) {
+                        return this.selectedDay === day;
+                    }
+                }" x-init="
+                    $nextTick(() => {
+                    console.log('Modal initialized', $data.selectedAttendance);
+                        if ($data.selectedAttendance?.time_in) {
+                            const date = new Date($data.selectedAttendance.time_in);
+                            currentMonth = date.getMonth();
+                            currentYear = date.getFullYear();
+                            selectedDay = date.getDate();
+                            loadDayAttendance(selectedDay);
+                        }
+                    })
+                ">
+                    <!-- Month Navigation -->
+                    <div class="flex justify-between items-center mb-2">
+                        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
+                        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                    </div>
 
-    <!-- Calendar Grid -->
-    <div class="grid grid-cols-7 gap-1 text-center">
-        <!-- Day headers -->
-        <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
-            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
-        </template>
+                    <!-- Calendar Grid -->
+                    <div class="grid grid-cols-7 gap-1 text-center">
+                        <!-- Day headers -->
+                        <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
+                            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+                        </template>
 
-        <!-- Empty days from previous month -->
-        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
-            <div class="p-1 text-sm text-gray-600"></div>
-        </template>
+                        <!-- Empty days from previous month -->
+                        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+                            <div class="p-1 text-sm text-gray-600"></div>
+                        </template>
 
-        <!-- Days of current month -->
-        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
-            <div class="relative flex flex-col items-center p-1">
-                <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors"
-                    :class="{
-                        'text-gray-300 hover:bg-gray-700': !isAttendanceDay(day),
-                        'text-white': isAttendanceDay(day),
-                        'font-extrabold': isToday(day)
-                    }"
-                    x-text="day">
+                        <!-- Days of current month -->
+                        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+                            <div class="relative flex flex-col items-center p-1">
+                                <button 
+                                    @click="selectDay(day)" 
+                                    class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors focus:outline-none"
+                                    :class="{
+                                        'text-gray-300 hover:bg-gray-700': !isSelectedDay(day),
+                                        'text-white bg-[#ff5722]': isSelectedDay(day),
+                                        'font-extrabold': isToday(day)
+                                    }"
+                                    x-text="day"
+                                >
+                                </button>
+                                <!-- Dot indicator for attendance days -->
+                                <div x-show="isAttendanceDay(day) && !isSelectedDay(day)" 
+                                    class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
+                            </div>
+                        </template>
+                    </div>
                 </div>
-                <!-- Dot indicator for all attendance days -->
-                <div x-show="isAttendanceDay(day)" 
-                    class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
-            </div>
-        </template>
-    </div>
-</div>
             </div>
         </div>
         <div class="mt-4">
@@ -341,46 +410,48 @@
 </div>
 
 <script>
-    const selectBtn = document.getElementById('select-btn');
-    const dropdown = document.getElementById('dropdown');
-    const selectedOption = document.getElementById('selected-option');
-    const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectBtn = document.getElementById('select-btn');
+        const dropdown = document.getElementById('dropdown');
+        const selectedOption = document.getElementById('selected-option');
+        const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
 
-    // Set initial selected option
-    const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
-    if (initialOption) {
-        selectedOption.textContent = initialOption.textContent;
-    }
-
-    selectBtn.addEventListener('click', () => {
-        dropdown.classList.toggle('hidden');
-    });
-
-    dropdown.querySelectorAll('li').forEach(option => {
-        option.addEventListener('click', () => {
-            const filterValue = option.getAttribute('data-value');
-            selectedOption.textContent = option.textContent;
-            dropdown.classList.add('hidden');
-            
-            // Get current URL parameters
-            const url = new URL(window.location.href);
-            const searchParams = new URLSearchParams(url.search);
-            
-            // Update filter parameter
-            searchParams.set('filter', filterValue);
-            
-            // Remove page parameter to go back to first page
-            searchParams.delete('page');
-            
-            // Update URL
-            window.location.href = `${url.pathname}?${searchParams.toString()}`;
-        });
-    });
-
-    window.addEventListener('click', (e) => {
-        if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
+        // Set initial selected option
+        const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
+        if (initialOption) {
+            selectedOption.textContent = initialOption.textContent;
         }
-    });
+
+        selectBtn.addEventListener('click', () => {
+            dropdown.classList.toggle('hidden');
+        });
+
+        dropdown.querySelectorAll('li').forEach(option => {
+            option.addEventListener('click', () => {
+                const filterValue = option.getAttribute('data-value');
+                selectedOption.textContent = option.textContent;
+                dropdown.classList.add('hidden');
+                
+                // Get current URL parameters
+                const url = new URL(window.location.href);
+                const searchParams = new URLSearchParams(url.search);
+                
+                // Update filter parameter
+                searchParams.set('filter', filterValue);
+                
+                // Remove page parameter to go back to first page
+                searchParams.delete('page');
+                
+                // Update URL
+                window.location.href = `${url.pathname}?${searchParams.toString()}`;
+            });
+        });
+
+        window.addEventListener('click', (e) => {
+            if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    }); 
 </script>
 @endsection

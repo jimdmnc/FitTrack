@@ -41,8 +41,8 @@
                             {{ substr($user->first_name ?? 'U', 0, 1) }}
                         </div>
                         <div>
-                            <h2 class="text-3xl font-bold text-gray-200 tracking-tight">Your Profile</h2>
-                            <p class="text-gray-400">Manage how others see you</p>
+                            <h2 class="text-3xl font-bold text-gray-200 tracking-tight">Profile</h2>
+                            <p class="text-gray-400">Manage your profile information</p>
                         </div>
                     </div>
                     <button 
@@ -107,7 +107,7 @@
                     <button 
                         x-data=""
                         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                        class="text-red-500 hover:text-red-400 font-medium flex items-center space-x-2 transition-colors hover:underline"
+                        class="text-red-500 hover:text-red-200 hover:translate-y-[-2px] font-medium flex items-center space-x-2 transition-colors "
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />

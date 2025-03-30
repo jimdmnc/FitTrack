@@ -13,22 +13,7 @@
 
 <section class="mt-6 rounded-lg p-4 bg-transparent text-gray-200">
         <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-            <!-- Filter Dropdown -->
-            <div class="w-full sm:w-auto">
-                <form action="{{ route('staff.viewmembers') }}" method="GET" class="inline-block w-full sm:w-auto">
-                    <input type="hidden" name="page" value="1"> <!-- Add this line -->
-                    <select 
-                        name="status" 
-                        onchange="this.form.submit()" 
-                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
-                        aria-label="Filter members by status"
-                    >
-                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Members</option>
-                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired Members</option>
-                    </select>
-                </form>
-            </div>
+            
 
             <!-- Search Form -->
             <form method="GET" action="{{ route('staff.viewmembers') }}" class="w-full sm:w-64 md:w-80">
@@ -63,6 +48,24 @@
                     @endif
                 </div>
             </form>
+
+            <!-- Filter Dropdown -->
+            <div class="w-full sm:w-auto">
+                <form action="{{ route('staff.viewmembers') }}" method="GET" class="inline-block w-full sm:w-auto">
+                    <input type="hidden" name="page" value="1"> <!-- Add this line -->
+                    <select 
+                        name="status" 
+                        onchange="this.form.submit()" 
+                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
+                        aria-label="Filter members by status"
+                    >
+                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
+                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Members</option>
+                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired Members</option>
+                    </select>
+                </form>
+            </div>
+
         </div>
 
         <div class="glass-card mt-5 ">
@@ -157,7 +160,7 @@
                                 @if($member->member_status == 'active')
                                     <button 
                                         onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
                                         aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
                                         title="View member details"
                                     >
@@ -170,7 +173,7 @@
                                 @elseif($member->member_status == 'expired')
                                     <button 
                                         onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
                                         aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                         title="Renew expired membership"
                                     >
@@ -300,10 +303,10 @@
 
             <!-- Action Buttons -->
             <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:scale-95 text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:scale-95 text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
+                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>

@@ -309,14 +309,14 @@
             </div>
                 
             <div class="p-6">
-                <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200 mb-6">
+                <div class="bg-[#ff5722] bg-opacity-10 p-4 rounded-lg border border-[#ff5722] mb-6">
                     <div class="flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-600 mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722] mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                         </svg>
                         <div>
-                            <h3 class="text-sm font-medium text-yellow-800">Password Information</h3>
-                            <p class="text-sm text-yellow-700 mt-1">A password will be automatically generated based on the member's last name and birth date.</p>
+                            <h3 class="text-sm font-medium text-gray-300">Password Information</h3>
+                            <p class="text-sm text-gray-300 mt-1">A password will be automatically generated based on the member's last name and birth date.</p>
                         </div>
                     </div>
                 </div>
@@ -340,7 +340,7 @@
             <!-- Submit Button -->
             <div class="p-6 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-[#121212] shadow-lg">
                 <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                    <button type="button" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-95 hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-md">
+                    <button type="button" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-full">
                         <span class="flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6l1-1M5 7h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v0a2 2 0 002 2z" />
@@ -348,7 +348,7 @@
                             Clear Form
                         </span>
                     </button>
-                    <button type="submit" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:scale-95 hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
+                    <button type="submit" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
