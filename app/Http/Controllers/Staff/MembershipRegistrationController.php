@@ -49,10 +49,10 @@ class MembershipRegistrationController extends Controller
 
             // Membership payment rates
             $paymentRates = [
-                "1" => 100,   // 1-day session
-                "7" => 500,   // 7-day weekly
-                "30" => 1800, // 30-day monthly
-                "365" => 20000 // 1-year membership
+                "1" => 60,   // 1-day session
+                "7" => 300,   // 7-day weekly
+                "30" => 800, // 30-day monthly
+                "365" => 2000 // 1-year membership
             ];
 
             $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
