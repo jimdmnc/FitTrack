@@ -371,10 +371,10 @@
         const paymentAmount = document.getElementById("payment_amount");
         
         const paymentRates = {
-            "1": "100",   // 1-day session
-            "7": "500",   // 7-day weekly
+            "1": "60",   // 1-day session
+            "7": "300",   // 7-day weekly
             "30": "1800", // 30-day monthly
-            "365": "20000" // 1-year membership
+            "365": "2000" // 1-year membership
         };
 
         function updatePaymentAmount() {
