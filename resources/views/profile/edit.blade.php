@@ -68,7 +68,8 @@
                             </svg>
                             <p class="text-sm text-gray-400">Full Name</p>
                         </div>
-                        <p class="text-xl font-semibold text-gray-200">{{ $user->first_name ?? 'Not set' }}</p>
+                        <p class="text-sm font-semibold text-gray-200">{{ ($user->first_name ?? 'Not set') . ' ' . ($user->last_name ?? '') }}
+                        </p>
                     </div>
                     <div class="bg-[#1e1e1e] rounded-xl p-5 shadow-md transform hover:scale-105 transition-transform duration-300 border border-gray-800">
                         <div class="flex items-center space-x-2 mb-3">
@@ -77,7 +78,7 @@
                             </svg>
                             <p class="text-sm text-gray-400">Email Address</p>
                         </div>
-                        <p class="text-xl font-semibold text-gray-200">{{ $user->email }}</p>
+                        <p class="text-sm font-semibold text-gray-200">{{ $user->email }}</p>
                     </div>
                     <div class="bg-[#1e1e1e] rounded-xl p-5 shadow-md transform hover:scale-105 transition-transform duration-300 border border-gray-800">
                         <div class="flex items-center space-x-2 mb-3">
@@ -86,7 +87,7 @@
                             </svg>
                             <p class="text-sm text-gray-400">Phone Number</p>
                         </div>
-                        <p class="text-xl font-semibold text-gray-200">
+                        <p class="text-sm font-semibold text-gray-200">
                             {{ $user->phone_number ?? 'Not provided' }}
                         </p>
                     </div>
@@ -104,7 +105,7 @@
                             Account created: {{ $user->created_at->format('F d, Y') }}
                         </p>
                     </div>
-                    <button 
+                    <!-- <button 
                         x-data=""
                         x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
                         class="text-red-500 hover:text-red-200 hover:translate-y-[-2px] font-medium flex items-center space-x-2 transition-colors "
@@ -113,7 +114,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         <span>Delete Account</span>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -231,7 +232,7 @@
                             type="tel"
                             class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                             :value="old('phone', $user->phone)"
-                            placeholder="+1 (xxx) xxx-xxxx (Optional)"
+                            placeholder="09** **** *** (Optional)"
                         />
                         <x-input-error :messages="$errors->updateProfile->get('phone')" class="mt-2" />
                     </div>

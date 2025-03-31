@@ -30,7 +30,7 @@ class AttendanceController extends Controller
     // Time period filter
     $filter = $request->input('filter', 'today');
     switch ($filter) {
-        case 'today':
+         case 'today':
             $query->whereDate('time_in', Carbon::today());
             break;
         case 'yesterday':
