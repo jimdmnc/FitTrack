@@ -46,6 +46,14 @@
                     Members Attendance
                 </a>
 
+                <a href="{{ route('staff.manageApproval') }}" class="flex items-center px-4 py-2 mt-1 text-sm font-medium rounded-md group 
+                    {{ Request::routeIs('staff.manageApproval') ? 'bg-orange-700 text-white group-hover:text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-transform transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mr-3 
+                        {{ Request::routeIs('staff.approvals') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
+                    </svg>
+                    Manage Approval
+                </a>
 
                 <a href="{{ route('staff.viewmembers') }}" class="flex items-center px-4 py-2 mt-1 text-sm font-medium rounded-md group 
                     {{ Request::routeIs('staff.viewmembers') ? 'bg-orange-700 text-white group-hover:text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-transform transform hover:scale-105">

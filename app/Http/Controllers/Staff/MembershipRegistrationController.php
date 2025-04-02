@@ -46,7 +46,7 @@ class MembershipRegistrationController extends Controller
                     Rule::unique('users', 'rfid_uid')
                 ],
             ]);
-
+    
             // Membership payment rates
             $paymentRates = [
                 "1" => 60,   // 1-day session
@@ -54,17 +54,17 @@ class MembershipRegistrationController extends Controller
                 "30" => 800, // 30-day monthly
                 "365" => 2000 // 1-year membership
             ];
-
+    
             $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
-
+    
             // Generate password
             $lastName = strtolower($validatedData['last_name']);
             $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
             $generatedPassword = $lastName . $birthdate;
-
+    
             // Use transaction for data consistency
             DB::transaction(function () use ($validatedData, $paymentAmount, $generatedPassword) {
-                // Create user
+                // Create user with default session_status as 'pending'
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
@@ -77,11 +77,16 @@ class MembershipRegistrationController extends Controller
                     'password' => Hash::make($generatedPassword),
                     'role' => 'user',
                     'rfid_uid' => $validatedData['uid'],
+                    'session_status' => 'pending', // Default status
                     'end_date' => Carbon::parse($validatedData['start_date'])
-                    ->addDays((int)$validatedData['membership_type'])
-                    ->format('Y-m-d'),
+                        ->addDays((int)$validatedData['membership_type'])
+                        ->format('Y-m-d'),
                 ]);
-
+    
+                // After the user is created, change session_status to 'approved'
+                $user->session_status = 'approved';
+                $user->save();
+    
                 // Create payment record
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
@@ -89,28 +94,29 @@ class MembershipRegistrationController extends Controller
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
-
+    
                 // Update RFID tag
                 RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
+    
             });
-
+    
             return redirect()->route('staff.membershipRegistration')
                 ->with([
                     'success' => 'Member registered successfully!',
                     'generated_password' => $generatedPassword
                 ]);
-
+    
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->route('staff.membershipRegistration')
                 ->withErrors($e->validator)
                 ->withInput();
-                
         } catch (\Exception $e) {
             logger()->error('Registration Error: ' . $e->getMessage());
-            
             return redirect()->route('staff.membershipRegistration')
                 ->withInput()
                 ->with('error', 'Registration failed: ' . $e->getMessage());
         }
     }
+    
+    
 }

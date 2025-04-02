@@ -12,12 +12,19 @@ use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
+use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Member\MemberDashboardController;
+use App\Http\Controllers\SelfRegistrationController;
 
 // Public routes
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
+Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
+Route::get('/qr-scanner', function () {
+    return view('self.qr-scanner');
+})->name('qr.scanner');
 
 // Route to handle attendance
 Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);
@@ -41,6 +48,14 @@ Route::middleware('auth')->group(function () {
             ->name('staff.attendance');
         Route::get('/staff/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance.index');
+
+
+
+        Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
+        Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
+        Route::put('/staff/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
+
+
 
         // Route to record attendance
         Route::post('/staff/record-attendance', [AttendanceController::class, 'recordAttendance'])

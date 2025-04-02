@@ -454,7 +454,7 @@
         <thead>
             <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">#</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Member ID</th>
+                <!-- <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Member ID</th> -->
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Name</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Membership Type</th>
                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
@@ -465,7 +465,7 @@
         @foreach ($topActiveMembers as $index => $member)
             <tr class="bg-[#2c2c2c] transition-colors duration-150">
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ $loop->iteration }}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ $member->rfid_uid }}</td>
+                <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ $member->rfid_uid }}</td> -->
                 <td class="px-6 py-4 whitespace-nowrap">
                     <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10 bg-gray-500 rounded-full flex items-center justify-center mr-3">

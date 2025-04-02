@@ -40,14 +40,7 @@ class RFIDController extends Controller
 
             if ($attendance) {
                 if (!$attendance->time_out) {
-                    $time_in = Carbon::parse($attendance->time_in);
-                    $time_diff = $current_time->diffInSeconds($time_in);
-                    $min_time_difference = 30; // Minimum time between time-in and time-out
-
-                    if ($time_diff < $min_time_difference) {
-                        return response()->json(['message' => 'Please wait at least ' . $min_time_difference . ' seconds before checking out.'], 400);
-                    }
-
+                    // User is checking out (if time_out is null)
                     DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
                     DB::commit();
 
@@ -62,7 +55,7 @@ class RFIDController extends Controller
                 'time_in' => $current_time,
                 'attendance_date' => $current_time->toDateString() // Add this line
             ]);
-                        DB::commit();
+            DB::commit();
 
             Log::info("User {$full_name} (UID: {$uid}) Time-in recorded at {$current_time}");
             return response()->json(['message' => 'Time-in recorded successfully.', 'name' => $full_name]);
@@ -71,6 +64,7 @@ class RFIDController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
     // Function to save RFID tag
     public function saveRFID(Request $request)
     {
@@ -111,6 +105,7 @@ class RFIDController extends Controller
             ->whereRaw('TIMESTAMPDIFF(MINUTE, created_at, NOW()) >= 2')
             ->delete();
     }
+
     // Fetch the latest RFID UID from the rfid_tags table
     public function getLatestRFID()
     {
@@ -125,6 +120,4 @@ class RFIDController extends Controller
     
         return response()->json(['uid' => $latestRFID->uid]);
     }
-    
-    
 }

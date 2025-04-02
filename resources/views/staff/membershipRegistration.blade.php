@@ -39,6 +39,7 @@
 </style>
 <div class="py-10 px-4 md:px-10">
     <!-- Page Title -->
+     
             <div class="p-6">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div>
@@ -106,7 +107,7 @@
 @endif
 
 <!-- Registration Form -->  
-        <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-[#1e1e1e] rounded-xl shadow-lg overflow-hidden">
+<form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-[#1e1e1e] rounded-xl shadow-lg overflow-hidden">
             @csrf
             
   
@@ -150,10 +151,10 @@
                max="{{ date('Y-m-d') }}"
                required>
     </div>
-    @error('birthdate')
-        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-    @enderror
-</div>
+        @error('birthdate')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
+    </div>
 
 
 
@@ -356,7 +357,7 @@
                     </button>
                 </div>
             </div>
-        </form>
+</form>
 
     </div>
 </div>
