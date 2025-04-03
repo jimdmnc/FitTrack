@@ -7,6 +7,26 @@
     <meta name="theme-color" content="#3B82F6">
     <title>App Landing Page</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Add these animations to your CSS file -->
+<style>
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    .animate-slide-up {
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
     <script>
         // Timeout functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -63,11 +83,11 @@
     <!-- Main Content -->
     <div id="main-content" class="min-h-screen transition-opacity duration-300">
         <!-- Header -->
-        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white sticky top-0 z-40 shadow-md">
+        <header class="bg-gradient-to-r from-gray-900 to-gray-700 text-white sticky top-0 z-40 shadow-md">
             <div class="container mx-auto px-4 py-3">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center">
-                        <div class="text-xl font-bold">AppName</div>
+                        <div class="text-xl font-bold">FitTrack</div>
                     </div>
                     
                     <!-- Mobile menu button -->
@@ -97,49 +117,268 @@
                 </div>
             </div>
         </header>
+        <!-- Success Alert Modal -->
         @if(session('success'))
-            <div class="bg-green-500 text-white p-4 rounded mb-4">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="bg-red-500 text-white p-4 rounded mb-4">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        <!-- Hero Section -->
-        <section class="py-12 md:py-20 bg-gradient-to-b from-indigo-700 to-blue-500 text-white">
-            <div class="container mx-auto px-4 flex flex-col items-center">
-                <div class="text-center mb-8 md:mb-10">
-                    <h1 class="text-3xl md:text-5xl font-bold mb-4 md:mb-6">Your Journey Begins Here</h1>
-                    <p class="text-lg md:text-xl mb-6 md:mb-8 max-w-lg mx-auto">Download our app today and transform the way you work and play.</p>
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <a href="#download" class="inline-block bg-white text-blue-700 hover:bg-blue-100 font-bold py-4 px-8 rounded-lg text-lg shadow-lg transition duration-300">
-                            Get Started
-                        </a>
-                        @if(auth()->check() && auth()->user()->rfid_uid)
-                            <form action="{{ url('/attendance/timeout') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                                <button type="submit" class="bg-red-600 text-white hover:bg-red-700 font-bold py-4 px-8 rounded-lg text-lg shadow-lg transition duration-300">
-                                    Time Out
-                                </button>
-                            </form>
-                        @else
-                            <p class="text-red-500 font-bold">Error: User is not authenticated or RFID UID is missing.</p>
-                        @endif
-
-
-
+            <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="successAlert">
+                <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('successAlert').classList.add('hidden')"></div>
+                <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
+                    <!-- Header with colored bar -->
+                    <div class="bg-green-500 h-2"></div>
+                    
+                    <div class="p-5">
+                        <!-- Success Icon and Message -->
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 pt-0.5">
+                                <h3 class="text-lg font-medium text-gray-900">Success!</h3>
+                                <p class="mt-1 text-gray-600">{{ session('success') }}</p>
+                            </div>
+                            <!-- Close Button -->
+                            <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('successAlert').classList.add('hidden')">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('successAlert').classList.add('hidden')">
+                            Got it
+                        </button>
                     </div>
                 </div>
-                <div class="w-full max-w-lg">
-                    <img src="/api/placeholder/500/400" alt="App Screenshot" class="rounded-lg shadow-2xl w-full" />
+            </div>
+            
+            <!-- Auto-dismiss after 5 seconds -->
+            <script>
+                setTimeout(function() {
+                    const alert = document.getElementById('successAlert');
+                    if (alert) {
+                        alert.classList.add('hidden');
+                    }
+                }, 5000);
+            </script>
+        @endif
+
+        <!-- Error Alert Modal -->
+        @if(session('error'))
+            <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="errorAlert">
+                <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('errorAlert').classList.add('hidden')"></div>
+                <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
+                    <!-- Header with colored bar -->
+                    <div class="bg-red-500 h-2"></div>
+                    
+                    <div class="p-5">
+                        <!-- Error Icon and Message -->
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div class="flex-1 pt-0.5">
+                                <h3 class="text-lg font-medium text-gray-900">Error</h3>
+                                <p class="mt-1 text-gray-600">{{ session('error') }}</p>
+                            </div>
+                            <!-- Close Button -->
+                            <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('errorAlert').classList.add('hidden')">
+                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Button -->
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('errorAlert').classList.add('hidden')">
+                            Close
+                        </button>
+                    </div>
                 </div>
             </div>
-        </section>
+            
+            <!-- Auto-dismiss after 5 seconds -->
+            <script>
+                setTimeout(function() {
+                    const alert = document.getElementById('errorAlert');
+                    if (alert) {
+                        alert.classList.add('hidden');
+                    }
+                }, 5000);
+            </script>
+        @endif
+
+
+
+<!-- Hero Section -->
+<section class="relative min-h-screen bg-cover bg-center text-white" style="background-image: url('/images/image1.png');">
+    <!-- Dark Overlay -->
+    <div class="absolute inset-0 bg-black bg-opacity-70"></div>
+    
+    <!-- Main Content Container -->
+    <div class="container mx-auto px-4 py-10 flex flex-col justify-between h-full relative">
+        <!-- Top Content: Header, Paragraph, Button -->
+        <div class="text-center mb-12 mt-40 ">
+        <h1 class="text-4xl md:text-4xl font-bold mb-2 bg-clip-text text-transparent bg-gradient-to-r from-orange-500 via-yellow-500 to-red-500">
+            Transform Your Life
+        </h1>
+            <p class="text-base md:text-lg mb-4 max-w-lg mx-auto">
+                Join our fitness community for real results.
+            </p>
+    
+            @if(auth()->check() && auth()->user()->rfid_uid)
+    <!-- When user is logged in, show both buttons side by side -->
+    <div class="flex flex-row justify-center gap-4">
+        <a href="#membership" class="inline-block bg-transparent border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-bold py-3 px-6 rounded-lg text-base shadow-md transition duration-300">
+            Get Started
+        </a>
+        
+        <!-- Time Out Button with Modal Trigger -->
+        <button onclick="document.getElementById('timeout-modal').showModal()" 
+                class="inline-block bg-red-600 text-red-200 hover:bg-red-700 font-bold py-3 px-6 rounded-lg text-base shadow-md transition duration-300">
+            Time Out
+        </button>
+    </div>
+    
+    <!-- Time Out Confirmation Modal -->
+    <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+        <div class="text-center">
+            <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+            <p class="mb-6">Are you sure you want to time out?</p>
+            
+            <div class="flex justify-center gap-4">
+                <form action="{{ url('/attendance/timeout') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                    <button type="submit" 
+                            class="bg-red-600 text-white hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        Yes, Time Out
+                    </button>
+                </form>
+                <button onclick="document.getElementById('timeout-modal').close()" 
+                        class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </dialog>
+@else
+    <!-- When user is not logged in, show only the wider Get Started button -->
+    <div class="flex justify-center">
+        <a href="#membership" class="inline-block bg-transparent border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white font-bold py-3 px-8 rounded-lg text-base shadow-md transition duration-300">
+            Get Started
+        </a>
+    </div>
+@endif
+        </div>
+        
+        <!-- Bottom Content: Carousel -->
+        <div class="w-full max-w-5xl mx-auto mb-8">
+            <!-- Image Carousel Showcase -->
+            <div class="relative w-full overflow-hidden rounded-lg shadow-xl">
+                <!-- Main Carousel Container -->
+                <div id="gym-carousel" class="flex transition-transform duration-700 ease-in-out h-64 sm:h-80 md:h-96">
+                    <!-- Before/After Transformation 1 -->
+                    <div class="min-w-full relative">
+                        <div class="absolute inset-0 flex">
+                            <!-- Before Image (Left Half) -->
+                            <div class="w-1/2 h-full overflow-hidden relative">
+                                <img src="/images/before1.png" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                    <span class="font-bold">BEFORE</span>
+                                </div>
+                            </div>
+                            <!-- After Image (Right Half) -->
+                            <div class="w-1/2 h-full overflow-hidden relative">
+                                <img src="/images/after1.png" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                    <span class="font-bold">AFTER</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                            <p class="text-white text-center font-semibold text-sm md:text-base">John lost 30lbs in 3 months with our personal training program</p>
+                        </div>
+                    </div>
+
+                    <!-- Before/After Transformation 2 -->
+                    <div class="min-w-full relative">
+                        <div class="absolute inset-0 flex">
+                            <div class="w-1/2 h-full overflow-hidden relative">
+                                <img src="/images/before2.png" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                    <span class="font-bold">BEFORE</span>
+                                </div>
+                            </div>
+                            <div class="w-1/2 h-full overflow-hidden relative">
+                                <img src="/images/after2.png" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                    <span class="font-bold">AFTER</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                            <p class="text-white text-center font-semibold text-sm md:text-base">Sarah gained strength and defined muscle in just 8 weeks</p>
+                        </div>
+                    </div>
+
+                    <!-- Gym Facility Image 1 -->
+                    <div class="min-w-full relative">
+                        <img src="/images/welcomebggg.jpg" class="absolute inset-0 w-full h-full object-cover" alt="State-of-the-art gym equipment">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                            <p class="text-white text-center font-semibold text-sm md:text-base">Our state-of-the-art weight training section</p>
+                        </div>
+                    </div>
+
+                    <!-- Gym Facility Image 2 -->
+                    <div class="min-w-full relative">
+                        <img src="/images/cardio1.png" class="absolute inset-0 w-full h-full object-cover" alt="Modern cardio equipment">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                            <p class="text-white text-center font-semibold text-sm md:text-base">Spacious cardio area with premium equipment</p>
+                        </div>
+                    </div>
+
+                    <!-- Healthy Environment with Good People Around -->
+                    <div class="min-w-full relative">
+                        <img src="/images/environment.png" class="absolute inset-0 w-full h-full object-cover" alt="Healthy environment with good people around">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                            <p class="text-white text-center font-semibold text-sm md:text-base">Surround yourself with good people and embrace a healthy environment</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Navigation Controls -->
+                <button class="absolute left-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="prev-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="next-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+                
+                <!-- Navigation Dots -->
+                <div class="absolute -bottom-1 left-0 right-0 flex justify-center space-x-2 py-3 bg-gradient-to-t from-black to-transparent">
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot active" data-index="0" aria-label="Slide 1"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="1" aria-label="Slide 2"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="2" aria-label="Slide 3"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="3" aria-label="Slide 4"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="4" aria-label="Slide 5"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 
 
         <!-- Features Section -->
@@ -257,7 +496,7 @@
             <div class="container mx-auto px-4">
                 <div class="flex flex-col space-y-8 md:space-y-0 md:flex-row md:justify-between">
                     <div class="mb-6 md:mb-0">
-                        <h3 class="text-xl font-bold mb-3">AppName</h3>
+                        <h3 class="text-xl font-bold mb-3">FitTrack</h3>
                         <p class="text-gray-400">Transform your digital experience</p>
                     </div>
                     
@@ -316,4 +555,85 @@
         </a>
     </div>
 </body>
+<!-- JavaScript for carousel functionality -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const carousel = document.getElementById('gym-carousel');
+        const slides = carousel.children;
+        const dots = document.querySelectorAll('.carousel-dot');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        let currentIndex = 0;
+        let intervalId;
+        
+        // Set initial position
+        updateCarousel();
+        
+        // Auto-scroll every 5 seconds
+        startAutoSlide();
+        
+        // Previous button
+        prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+            updateCarousel();
+            resetAutoSlide();
+        });
+        
+        // Next button
+        nextBtn.addEventListener('click', function() {
+            nextSlide();
+            resetAutoSlide();
+        });
+        
+        // Dot navigation
+        dots.forEach(dot => {
+            dot.addEventListener('click', function() {
+                currentIndex = parseInt(this.getAttribute('data-index'));
+                updateCarousel();
+                resetAutoSlide();
+            });
+        });
+        
+        // Pause auto-scrolling when hovering over carousel
+        carousel.addEventListener('mouseenter', function() {
+            clearInterval(intervalId);
+        });
+        
+        // Resume auto-scrolling when mouse leaves carousel
+        carousel.addEventListener('mouseleave', function() {
+            startAutoSlide();
+        });
+        
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateCarousel();
+        }
+        
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            
+            // Update active dot
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('active');
+                    dot.classList.add('opacity-100');
+                    dot.classList.remove('opacity-50');
+                } else {
+                    dot.classList.remove('active');
+                    dot.classList.remove('opacity-100');
+                    dot.classList.add('opacity-50');
+                }
+            });
+        }
+        
+        function startAutoSlide() {
+            intervalId = setInterval(nextSlide, 5000);
+        }
+        
+        function resetAutoSlide() {
+            clearInterval(intervalId);
+            startAutoSlide();
+        }
+    });
+</script>
 </html>

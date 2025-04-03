@@ -94,9 +94,9 @@ class AttendanceController extends Controller
               ->latest('time_in')
               ->first();
   
-          if (!$attendance) {
-              return back()->with('error', "No active session found for RFID: $rfid_uid.");
-          }
+              if (!$attendance) {
+                return back()->with('error', "Session Expired - You need to register again.");
+            }
   
           // Set the time_out
           $attendance->update(['time_out' => Carbon::now()]);
