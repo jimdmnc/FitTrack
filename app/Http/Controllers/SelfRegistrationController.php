@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth; // Import Auth at the top
 
 class SelfRegistrationController extends Controller
 {
@@ -28,19 +29,16 @@ public function store(Request $request)
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:15',
-            'email' => 'required|email|unique:users,email',  // Validate the email
-            'gender' => 'required|string|in:male,female,other',  // Ensure gender is required and valid
+            'email' => 'required|email|unique:users,email',
+            'gender' => 'required|string|in:male,female,other',
             'membership_type' => 'required|string|in:1',
-
         ]);
 
         // Generate a unique RFID UID (using UUID)
-        $rfidUid = Str::uuid();  // Generates a unique RFID UID
+        $rfidUid = Str::uuid();
 
-        $paymentAmount = 60;  // Fixed payment amount for session membership
-
-        DB::transaction(function () use ($validatedData, $paymentAmount, $rfidUid) {
-            // Create the session member user
+        // Create the user inside a database transaction
+        $user = DB::transaction(function () use ($validatedData, $rfidUid) {
             $user = User::create([
                 'first_name' => $validatedData['first_name'],
                 'last_name' => $validatedData['last_name'],
@@ -49,25 +47,28 @@ public function store(Request $request)
                 'gender' => $validatedData['gender'],
                 'membership_type' => $validatedData['membership_type'],
                 'role' => 'user',
-                'session_status' => 'active',
+                'session_status' => 'pending',
                 'start_date' => Carbon::now(),
-                'rfid_uid' => $rfidUid,  // Use the unique RFID UID here
+                'rfid_uid' => $rfidUid,
+                'password' => Hash::make('defaultpassword123'), // Set a default password
             ]);
 
-            // Create a payment record for the session membership
+            // Create a payment record
             MembersPayment::create([
-                'rfid_uid' => $user->rfid_uid,  // Use the RFID UID created for the user
-                'amount' => $paymentAmount,
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => 60,
                 'payment_method' => 'cash',
                 'payment_date' => now(),
             ]);
+
+            return $user;
         });
 
-        // Redirect back to the registration form with success message
-        return redirect()->route('self.registration')
-            ->with(['success' => 'Session membership registered successfully!']);
+        // **Automatically log in the newly registered user**
+        Auth::login($user);
+
+        return redirect()->route('self.landing')->with('success', 'Registration successful! Welcome to our gym.');
     } catch (\Exception $e) {
-        // Log the error and return an error message
         logger()->error('Session Membership Registration Error: ' . $e->getMessage());
         return redirect()->route('self.registration')
             ->withInput()

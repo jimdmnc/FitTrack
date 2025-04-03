@@ -56,13 +56,5 @@ class StaffApprovalController extends Controller
         return redirect()->route('staff.manageApproval')->with('success', 'User rejected successfully!');
     }
 
-    // Request More Info
-    // public function requestInfo($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $user->session_status = 'info_requested';
-    //     $user->save();
 
-    //     return response()->json(['message' => 'More info requested']);
-    // }
 }

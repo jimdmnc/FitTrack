@@ -4,11 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan QR Code</title>
-    
-    <!-- QR Scanner Library -->
+
     <script src="https://unpkg.com/html5-qrcode"></script>
-    
-    <!-- TailwindCSS for styling -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
@@ -27,11 +24,33 @@
 </div>
 
 <script>
-    function onScanSuccess(qrCodeMessage) {
-        document.getElementById('qr-result').value = qrCodeMessage;
-        alert("QR Code Scanned: " + qrCodeMessage);
-        window.location.href = '/'; // Redirect after scanning
+    function onScanSuccess(rfidUid) {
+        fetch('/attendance/scan', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'  // Include CSRF token for security
+            },
+            body: JSON.stringify({
+                rfid_uid: rfidUid,  // Sending the scanned RFID UID
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);  // Show success message
+                window.location.href = '/'; // Redirect to home or other page after scanning
+            } else {
+                alert(data.message);  // Show error message
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while processing the QR code.');
+        });
     }
+
+
 
     function onScanError(errorMessage) {
         console.warn(`QR Scan Error: ${errorMessage}`);
@@ -39,8 +58,8 @@
 
     // Initialize the scanner
     const html5QrcodeScanner = new Html5QrcodeScanner("qr-reader", {
-        fps: 10, // Frames per second
-        qrbox: { width: 250, height: 250 } // Scanner box size
+        fps: 10,  // Frames per second
+        qrbox: { width: 250, height: 250 }  // Scanner box size
     });
 
     html5QrcodeScanner.render(onScanSuccess, onScanError);
