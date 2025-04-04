@@ -36,7 +36,7 @@ class SelfRegistrationController extends Controller
             // Check if user exists by email and phone
             $existingUser = User::where(function ($query) use ($validatedData) {
                 $query->where('email', $validatedData['email'])
-                      ->orWhere('phone_number', $validatedData['phone_number'])
+                    //   ->orWhere('phone_number', $validatedData['phone_number'])
                       ->orWhere(function ($subQuery) use ($validatedData) {
                           $subQuery->where('first_name', $validatedData['first_name'])
                                    ->where('last_name', $validatedData['last_name']);
@@ -53,6 +53,7 @@ class SelfRegistrationController extends Controller
                     'membership_type' => $validatedData['membership_type'],
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
+                    'end_date' => Carbon::now(), // ✅ Add this
                     'needs_approval' => true, // <-- ADD THIS
 
                 ]);
@@ -85,6 +86,7 @@ class SelfRegistrationController extends Controller
                     'role' => 'user',
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
+                    'end_date' => Carbon::now(), // ✅ Add this here
                     'rfid_uid' => $rfidUid,
                     'password' => Hash::make('defaultpassword123'),
                     'needs_approval' => true, // ✅ here too
