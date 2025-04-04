@@ -15,7 +15,6 @@ use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
-use App\Http\Controllers\QRCodeController;
 
 // Public routes
 Route::get('/', function () {
@@ -23,23 +22,10 @@ Route::get('/', function () {
 });
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
-// Route for QR scanner inside the 'self' folder
-Route::get('/self/qr-scanner', function () {
-    return view('self.qr-scanner'); // This corresponds to 'resources/views/self/qr-scanner.blade.php'
-})->name('self.qr-scanner');
 
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
 
-Route::get('/generate-qr-code', [QRCodeController::class, 'generateGymQRCode']);
 
-
-Route::get('/generate-gym-qr', [QRCodeController::class, 'generateGymQRCode'])->name('generate.qr');
-Route::get('/save-gym-qr', [QRCodeController::class, 'saveGymQRCode'])->name('save.qr');
-Route::get('/time-out', function() {
-    return "User Time-Out Page"; // This will be the page when the QR code is scanned
-})->name('time-out');
-
-Route::post('/scan', [AttendanceController::class, 'scan']);
 
 Route::get('/landing', function () {
     return view('self.landing');

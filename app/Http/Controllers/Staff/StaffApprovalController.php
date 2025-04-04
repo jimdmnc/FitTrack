@@ -13,8 +13,10 @@ class StaffApprovalController extends Controller
     {
         // Retrieve only users with session_status 'pending' and role 'user'
         $pendingUsers = User::where('session_status', 'pending')
-                            ->where('role', 'user')  // Add the condition for 'role'
-                            ->get();
+            ->where('needs_approval', true)
+            ->where('role', 'user')
+            ->get();
+
     
         return view('staff.manageApproval', compact('pendingUsers'));
     }
@@ -27,6 +29,7 @@ class StaffApprovalController extends Controller
     
         // Update the user's session status to approved
         $user->session_status = 'approved';
+        $user->needs_approval = false; // <-- reset
         $user->save();
     
         // Create an attendance record when the user is approved

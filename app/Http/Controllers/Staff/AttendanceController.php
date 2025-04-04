@@ -66,49 +66,55 @@ class AttendanceController extends Controller
         return view('staff.attendance', compact('attendances', 'filter', 'search'));
     }
 
-  // Handle Time-Out when QR code is scanned
-  public function timeOut(Request $request)
-  {
-      try {
-          // Validate input
-          $request->validate([
-              'rfid_uid' => 'required|string',
-          ]);
-  
-          $rfid_uid = $request->input('rfid_uid');
-  
-          // Find the user with an approved session
-          $user = User::where('rfid_uid', $rfid_uid)->first();
-  
-          if (!$user) {
-              return back()->with('error', "User not found with RFID: $rfid_uid.");
-          }
-  
-          if ($user->session_status !== 'approved') {
-              return back()->with('error', "User $user->first_name is not approved.");
-          }
-  
-          // Find the latest attendance record using RFID UID
-          $attendance = Attendance::where('rfid_uid', $rfid_uid)
-              ->whereNull('time_out')
-              ->latest('time_in')
-              ->first();
-  
-              if (!$attendance) {
+    public function timeOut(Request $request)
+    {
+        try {
+            // Validate input
+            $request->validate([
+                'rfid_uid' => 'required|string',
+            ]);
+    
+            $rfid_uid = $request->input('rfid_uid');
+    
+            // Find the user with an approved session
+            $user = User::where('rfid_uid', $rfid_uid)->first();
+    
+            if (!$user) {
+                return back()->with('error', "User not found with RFID: $rfid_uid.");
+            }
+    
+            if ($user->session_status !== 'approved') {
+                return back()->with('error', "User $user->first_name is not approved.");
+            }
+    
+            // Find the latest attendance record using RFID UID
+            $attendance = Attendance::where('rfid_uid', $rfid_uid)
+                ->whereNull('time_out')
+                ->latest('time_in')
+                ->first();
+    
+            if (!$attendance) {
                 return back()->with('error', "Session Expired - You need to register again.");
             }
-  
-          // Set the time_out
-          $attendance->update(['time_out' => Carbon::now()]);
-  
-          Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Time-out recorded at " . now());
-  
-          return back()->with('success', "✅ Time-out recorded successfully for {$user->first_name}.");
-      } catch (\Exception $e) {
-          Log::error("❌ Time-out error: " . $e->getMessage());
-          return back()->with('error', 'Error: ' . $e->getMessage());
-      }
-  }
+    
+            // Set the time_out
+            $attendance->update(['time_out' => Carbon::now()]);
+    
+            // ✅ Update session_status and member_status
+            $user->update([
+                'session_status' => 'pending',
+                'member_status' => 'expired',
+            ]);
+    
+            \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Time-out recorded at " . now());
+    
+            return back()->with('success', "✅ Time-out recorded successfully for {$user->first_name}. Membership marked as expired.");
+        } catch (\Exception $e) {
+            \Log::error("❌ Time-out error: " . $e->getMessage());
+            return back()->with('error', 'Error: ' . $e->getMessage());
+        }
+    }
+    
   
   
 

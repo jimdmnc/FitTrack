@@ -37,6 +37,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'birthdate', // ✅ Added birthdate here
         'password', // ✅ This must be here!
         'member_status',
+        'session_status', // ✅ must be here!
+        'needs_approval',
 
 
     ];
