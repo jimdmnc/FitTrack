@@ -277,15 +277,38 @@
 
                 <div>
                     <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c]  w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" placeholder="Tap your RFID card on the reader" readonly />
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 9a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                    </div>
+                      <!-- Input with improved visual cues -->
+    <div class="relative">
+
+        
+        <input 
+            id="uid" 
+            name="uid" 
+            class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all"
+            placeholder="Waiting for card tap..." 
+            readonly 
+        />
+        
+        <!-- Loading indicator -->
+        <div class="absolute inset-y-0 right-3 flex items-center">
+            <div id="rfid-loading" class="animate-pulse flex items-center">
+                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+            </div>
+            
+            <!-- Clear button - Initially hidden -->
+            <button 
+                id="clearRfidBtn" 
+                type="button" 
+                onclick="clearRfid()" 
+                class="ml-2 bg-gray-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden"
+                aria-label="Clear RFID input"
+            >
+                &times;
+            </button>
+        </div>
+    </div>
                     <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -521,6 +544,8 @@
                         if (uidInput) uidInput.value = '';
                         updateRfidStatus('waiting', 'Please Tap Your Card...');
                     }
+                    toggleClearButton(); // <-- Add this
+
                 })
         }
 
@@ -544,6 +569,53 @@
             clearInterval(rfidPollInterval);
         });
     });
+
+
+    function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
+
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
+        }
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton(); // <-- Add this
+
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
+
+    function toggleClearButton() {
+        const uidInput = document.getElementById('uid');
+        const clearBtn = document.getElementById('clearRfidBtn');
+
+        if (uidInput && clearBtn) {
+            if (uidInput.value.trim() !== '') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+    }
 
 
 </script>

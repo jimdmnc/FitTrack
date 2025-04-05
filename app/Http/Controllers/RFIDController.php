@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\RfidTag;
 
 class RFIDController extends Controller
 {
@@ -119,5 +120,17 @@ class RFIDController extends Controller
         }
     
         return response()->json(['uid' => $latestRFID->uid]);
+    }
+    public function clear($uid)
+    {
+        $tag = RfidTag::where('uid', $uid)->first();
+
+        if (!$tag) {
+            return response()->json(['success' => false, 'message' => 'RFID not found'], 404);
+        }
+
+        $tag->delete(); // Or you can update registered to 0: $tag->update(['registered' => 0]);
+
+        return response()->json(['success' => true, 'message' => 'RFID cleared']);
     }
 }
