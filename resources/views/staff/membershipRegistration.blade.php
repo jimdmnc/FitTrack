@@ -56,105 +56,102 @@
     <!-- Form Container -->
     <div class="max-w-8xl mx-auto mt-8">
         
-    <!-- Success Message -->
-@if(session('success'))
-    <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert" x-data="{ show: true }" x-show="show">
-        <div class="flex items-center">
-            <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            <span>{{ session('success') }}</span>
-        </div>
-        <button type="button" @click="show = false" class="text-green-500 hover:text-green-700">
-            <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-            </svg>
-        </button>
-    </div>
-@endif
-
-<!-- Error Message -->
-@if($errors->any() || session('error'))
-    <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert" x-data="{ show: true }" x-show="show">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center">
-                <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                </svg>
-                <span>
-                    @if(session('error'))
-                        {{ session('error') }}
-                    @else
-                        Please fix the following errors:
-                    @endif
-                </span>
-            </div>
-            <button type="button" @click="show = false" class="text-red-500 hover:text-red-700">
-                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                </svg>
-            </button>
-        </div>
-        
-        @if($errors->any())
-            <ul class="mt-2 list-disc list-inside text-sm">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        @endif
-    </div>
-@endif
-
-<!-- Registration Form -->  
-<form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-[#1e1e1e] rounded-xl shadow-lg overflow-hidden">
-            @csrf
-            
-  
-            
-            <!-- Personal Information Section -->
-            <div class="p-6 border-b border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
-                <h2 class="text-xl font-semibold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        <!-- Success Message -->
+        @if(session('success'))
+            <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert" x-data="{ show: true }" x-show="show">
+                <div class="flex items-center">
+                    <svg class="h-5 w-5 text-green-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
-                    Personal Information
-                </h2>
-                <p class="text-sm text-gray-200 mt-1 mb-4">Enter the member's personal details</p>
+                    <span>{{ session('success') }}</span>
+                </div>
+                <button type="button" @click="show = false" class="text-green-500 hover:text-green-700">
+                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
             </div>
-            
-            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required>
-                    @error('first_name')
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
+        @endif
 
-                <div>
-                    <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
-                    <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
-                    @error('last_name')
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
+        <!-- Error Message -->
+        @if($errors->any() || session('error'))
+            <div class="max-w-4xl mx-auto bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6" role="alert" x-data="{ show: true }" x-show="show">
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center">
+                        <svg class="h-5 w-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                        <span>
+                            @if(session('error'))
+                                {{ session('error') }}
+                            @else
+                                Please fix the following errors:
+                            @endif
+                        </span>
+                    </div>
+                    <button type="button" @click="show = false" class="text-red-500 hover:text-red-700">
+                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
                 </div>
+                
+                @if($errors->any())
+                    <ul class="mt-2 list-disc list-inside text-sm">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+            </div>
+        @endif
 
+            <!-- Registration Form -->  
+            <form id="registrationForm" action="{{ route('staff.membershipRegistration') }}" method="POST" class="bg-[#1e1e1e] rounded-xl shadow-lg overflow-hidden">
+                        @csrf                                                         
+                        <!-- Personal Information Section -->
+                        <div class="p-6 border-b border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+                            <h2 class="text-xl font-semibold text-gray-200 flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                Personal Information
+                            </h2>
+                            <p class="text-sm text-gray-200 mt-1 mb-4">Enter the member's personal details</p>
+                        </div>
+                        
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required>
+                                @error('first_name')
+                                    <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
+                                <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required>
+                                @error('last_name')
+                                    <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div class="relative">
+                <label for="birthdate" class="block text-gray-200 font-medium mb-2">
+                    Birthdate <span class="text-red-500">*</span>
+                </label>
                 <div class="relative">
-    <label for="birthdate" class="block text-gray-200 font-medium mb-2">
-        Birthdate <span class="text-red-500">*</span>
-    </label>
-    <div class="relative">
-        <input type="date" id="birthdate" name="birthdate"
-               class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent"
-               value="{{ old('birthdate') }}"
-               max="{{ date('Y-m-d') }}"
-               required>
-    </div>
-        @error('birthdate')
-            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-        @enderror
-    </div>
+                    <input type="date" id="birthdate" name="birthdate"
+                        class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent"
+                        value="{{ old('birthdate') }}"
+                        max="{{ date('Y-m-d') }}"
+                        required>
+                </div>
+                    @error('birthdate')
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+                    @enderror
+                </div>
 
 
 

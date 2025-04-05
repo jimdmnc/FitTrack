@@ -27,7 +27,7 @@
         <p class="mt-1 ml-2 text-sm text-gray-300">Track member check-ins and check-outs</p>
     </div>
 
-    <div class="">
+    <div class="p-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-800 gap-4">
             <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
                 <div class="relative flex items-center -ml-4 mb-2">

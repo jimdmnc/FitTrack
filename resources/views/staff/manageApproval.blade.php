@@ -2,7 +2,11 @@
 
 @section('content')
 <div class="p-6">
-    <h2 class="text-2xl font-bold mb-4">Member Approval Dashboard</h2>
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Member Approval Dashboard</h2>
+        <p class="text-gray-500 text-md ml-1">Review and process new membership requests</p>
+    </div>
+    
 
     @if(session('success'))
         <div class="bg-green-100 text-green-700 p-4 rounded-md mb-4 flex items-center">
@@ -20,19 +24,15 @@
         </div>
     @endif
 
-    <div class="bg-white p-6 shadow-md rounded-lg">
+    <div class="p-4" >
         <div class="flex justify-between items-center mb-4">
-            <div>
-                <h3 class="text-lg font-semibold">Pending Approvals</h3>
-                <p class="text-gray-500 text-sm">Review and process new membership requests</p>
-            </div>
             <div class="flex gap-2">
-                <select id="filterOptions" class="border rounded-md px-3 py-2 text-sm">
+                <select id="filterOptions" class="bg-[#212121] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-[#ff5722] focus:border-[#ff5722]">
                     <option value="all">All Pending</option>
                     <option value="today">Today's Requests</option>
                     <option value="week">This Week</option>
                 </select>
-                <button id="refreshBtn" class="bg-blue-100 text-blue-700 px-3 py-2 rounded-md text-sm hover:bg-blue-200 transition-colors flex items-center">
+                <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-3 py-2 rounded-md text-sm transition-colors flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
@@ -41,24 +41,24 @@
             </div>
         </div>
 
-        @if(count($pendingUsers) > 0)
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-600 text-sm">
-                            <th class="border-b p-3 text-left">Full Name</th>
-                            <th class="border-b p-3 text-left">Gender</th>
-                            <th class="border-b p-3 text-left">Registration Date</th>
-                            <th class="border-b p-3 text-center">Actions</th>
-                        </tr>
+                    <thead> 
+                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                            <th class="border-gray-700 p-3 text-left">Full Name</th>
+                            <th class="p-3 text-left">Gender</th>
+                            <th class="p-3 text-left">Registration Date</th>
+                            <th class="p-3 text-center">Actions</th>
+                        </tr>   
                     </thead>
-                    <tbody>
+                    @if(count($pendingUsers) > 0)                    
+                    <tbody class="divide-y divide-black">
                         @foreach($pendingUsers as $user)
-                            <tr class="hover:bg-gray-50 border-b border-gray-100">
-                                <td class="p-3 font-medium">{{ $user->first_name }} {{ $user->last_name }}</td>
-                                <td class="p-3">{{ ucfirst($user->gender) }}</td>
-                                <td class="p-3 text-gray-600">
-                                    <span class="whitespace-nowrap">{{ $user->updated_at->format('M d, Y') }}</span>
+                            <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                                <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
+                                <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
+                                <td class="p-3 font-medium">
+                                    <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
                                     <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
                                 </td>
                                 <td class="p-3 text-center">
@@ -66,7 +66,7 @@
                                         <form action="{{ route('staff.approveUser', $user->id) }}" method="POST" class="inline-block">
                                             @csrf
                                             @method('PUT')
-                                            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:bg-green-600 transition-colors flex items-center">
+                                            <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-green-600 transition-colors flex items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                 </svg>
@@ -74,8 +74,7 @@
                                             </button>
                                         </form>
 
-
-                                        <button onclick="rejectUser({{ $user->id }})" class="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:bg-red-600 transition-colors flex items-center">
+                                        <button onclick="rejectUser({{ $user->id }})" class="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-600 transition-colors flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                                             </svg>
@@ -86,50 +85,42 @@
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
-            </div>
-            <div class="mt-4 flex justify-between items-center text-sm text-gray-500">
-                <span>Showing {{ count($pendingUsers) }} pending requests</span>
-                <div class="flex items-center">
-                    <button class="px-3 py-1 border rounded-md mr-2 hover:bg-gray-50">Previous</button>
-                    <span class="px-3 py-1 bg-blue-50 border border-blue-200 rounded-md">1</span>
-                    <button class="px-3 py-1 border rounded-md ml-2 hover:bg-gray-50">Next</button>
-                </div>
             </div>
         @else
             <div class="text-center p-8">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <h3 class="mt-3 text-lg font-medium text-gray-600">No Pending Approvals</h3>
-                <p class="text-gray-400 mt-1">All membership requests have been processed</p>
+                <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
+                <p class="text-gray-300 mt-1">All membership requests have been processed</p>
             </div>
         @endif
+        </table>
     </div>
 </div>
 
 <!-- Reject Confirmation Modal -->
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-800">Reject Membership Request</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+            <h3 class="text-lg font-bold text-gray-200">Reject Membership Request</h3>
+            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <p class="text-gray-600 mb-4">Please provide a reason for rejecting this membership request. This information may be shared with the applicant.</p>
+        <p class="text-gray-400 mb-4">Please provide a reason for rejecting this membership request. This information may be shared with the applicant.</p>
         <form id="rejectForm" method="POST">
             @csrf
             @method('PUT')
             <input type="hidden" id="rejectUserId" name="user_id">
             <div class="mb-4">
-                <label for="rejection_reason" class="block text-sm font-medium text-gray-700 mb-1">Rejection Reason</label>
+                <label for="rejection_reason" class="block text-sm font-medium text-gray-200 mb-1">Rejection Reason</label>
                 <textarea 
                     name="rejection_reason" 
                     id="rejection_reason"
-                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#212121] text-gray-200 placeholder-gray-400"
                     rows="4"
                     placeholder="Example: Incomplete information provided"></textarea>
             </div>
@@ -150,6 +141,11 @@
 
 
 <script>
+    function closeModal() {
+        document.getElementById('rejectModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
+
     let currentUserId = null;
 
     function rejectUser(userId) {
@@ -158,12 +154,6 @@
         document.getElementById('rejectModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
     }
-
-
-
-
-
-
 
     // Filter options change
     document.getElementById('filterOptions').addEventListener('change', function() {

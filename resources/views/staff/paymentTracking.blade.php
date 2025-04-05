@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#121212] h-screen">
+<div class="bg-[#121212] p-2">
     <!-- Header Section with Gradient Card -->
     <div class="py-8">
         <div class="mb-6">
@@ -12,7 +12,7 @@
 
 
         <!-- Payment Table Card -->
-        <div class=" ">
+        <div class="p-4">
             <!-- Table Header with Search and Filter -->
             <div class="p-5">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
