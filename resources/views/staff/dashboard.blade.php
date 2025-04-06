@@ -205,127 +205,125 @@
 
         
     </style>
-<div class="container mx-auto py-8 px-4">
-    <!-- Header Section with Modern Design -->
-    <div class="mb-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-            <div>
-                <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
-                   Dashboard
-                </h1>
-                <p class="text-gray-200 mt-2">Track and analyze the gym's performance</p>
-            </div>
+    <div class="container mx-auto py-8 px-4">
+        <!-- Header Section with Modern Design -->
+        <div class="mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div>
+                    <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
+                    Dashboard
+                    </h1>
+                    <p class="text-gray-200 mt-2">Track and analyze the gym's performance</p>
+                </div>
 
+            </div>
         </div>
     </div>
-</div>
 
         
         <!-- Stats Cards -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-
-    <!-- New Members Card -->
-    <div class="glass-card1 p-4">
-        <div class="flex justify-between items-start">
-            <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
-                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
-                    New <br>Members
-                </h3>
-                <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-200 mr-2">
-                        {{ $newMembersData['currentWeekNewMembers'] }}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- New Members Card -->
+        <div class="glass-card1 p-4">
+            <div class="flex justify-between items-start">
+                <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
+                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
+                        New <br>Members
+                    </h3>
+                    <div class="flex items-baseline">
+                        <div class="text-3xl font-bold text-gray-200 mr-2">
+                            {{ $newMembersData['currentWeekNewMembers'] }}
+                        </div>
+                        <span class="text-lg text-gray-200">members</span>
                     </div>
-                    <span class="text-lg text-gray-200">members</span>
-                </div>
 
-                <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                @php
-                    $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
-                @endphp
-                <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
-                    <i class="fas fa-arrow-up w-4 h-4 mr-1 {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
-                    <span class="text-sm font-medium">
-                        {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
-                    </span>
-                </div>
-            </div>
-
-            <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center text-orange-500">
-                <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Today's Check-ins Card -->
-    <div class="glass-card1 p-3">
-        <div class="flex justify-between items-start">
-            <div class="w-2/3">
-                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
-                    Today's <br>Check-ins
-                </h3>
-                <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-200 mr-2">
-                        {{ $todaysCheckInsData['todaysCheckIns'] }}
+                    <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                    @php
+                        $isIncrease = strpos($newMembersData['formattedPercentageChange'], '▲') !== false;
+                    @endphp
+                    <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                        {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
+                        <i class="fas fa-arrow-up w-4 h-4 mr-1 {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
+                        <span class="text-sm font-medium">
+                            {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
+                        </span>
                     </div>
-                    <span class="text-lg text-gray-200">members</span>
                 </div>
 
-                <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                @php
-                    $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
-                @endphp
-                <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                    {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
-                    <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1 
-                        {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
-                    <span class="text-sm font-medium">
-                        {{ str_replace(['Increase', 'Decrease'], '', $todaysCheckInsData['formattedPercentageChange']) }}
-                    </span>
+                <!-- Icon on the Right Side (Takes up 30% width) -->
+                <div class="w-1/3 flex items-center justify-center text-orange-500">
+                    <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
                 </div>
             </div>
+        </div>
 
-            <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center mr-4">
-                <i class="fas fa-check-circle text-5xl text-orange-500"></i>
+        <!-- Today's Check-ins Card -->
+        <div class="glass-card1 p-3">
+            <div class="flex justify-between items-start">
+                <div class="w-2/3">
+                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
+                        Today's <br>Check-ins
+                    </h3>
+                    <div class="flex items-baseline">
+                        <div class="text-3xl font-bold text-gray-200 mr-2">
+                            {{ $todaysCheckInsData['todaysCheckIns'] }}
+                        </div>
+                        <span class="text-lg text-gray-200">members</span>
+                    </div>
+
+                    <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                    @php
+                        $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
+                    @endphp
+                    <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                        {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
+                        <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1 
+                            {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
+                        <span class="text-sm font-medium">
+                            {{ str_replace(['Increase', 'Decrease'], '', $todaysCheckInsData['formattedPercentageChange']) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Icon on the Right Side (Takes up 30% width) -->
+                <div class="w-1/3 flex items-center justify-center mr-4">
+                    <i class="fas fa-check-circle text-5xl text-orange-500"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Soon to Expire Card -->
+        <div class="glass-card1 p-3">
+            <div class="flex justify-between items-start">
+                <div class="w-2/3">
+                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
+                    <div class="flex items-baseline">
+                        <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
+                        <span class="text-lg text-gray-200">members</span>
+                    </div>
+                    <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover: hover:text-orange-400 hover:translate-y-[-2px]">
+                        <span class="text-sm font-medium">Manage Renewals</span>
+                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
+                    </a>
+                </div>
+
+                <!-- Icon on the Right Side (Takes up 30% width) -->
+                <div class="w-1/3 flex items-center justify-center ext-red-900">
+                    <i class="fas fa-calendar-times text-5xl text-orange-500"></i>
+                </div>
+
             </div>
         </div>
     </div>
-
-    <!-- Soon to Expire Card -->
-    <div class="glass-card1 p-3">
-        <div class="flex justify-between items-start">
-            <div class="w-2/3">
-                <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
-                <div class="flex items-baseline">
-                    <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
-                    <span class="text-lg text-gray-200">members</span>
-                </div>
-                <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover: hover:text-orange-400 hover:translate-y-[-2px]">
-                    <span class="text-sm font-medium">Manage Renewals</span>
-                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
-                </a>
-            </div>
-
-            <!-- Icon on the Right Side (Takes up 30% width) -->
-            <div class="w-1/3 flex items-center justify-center ext-red-900">
-                <i class="fas fa-calendar-times text-5xl text-orange-500"></i>
-            </div>
-
-        </div>
-    </div>
-</div>
 
 
     <!-- Rearranged and Resized Dashboard Grid Charts Section -->
     <div class="dashboard-grid gap-4">
-
         <!-- Enhanced Check-ins Chart Card -->
         <div class="glass-card p-4 grid-col-span-8 chart-card space-y-4 rounded-xl" id="checkinsChartCard">
             <div class="flex justify-between items-center mb-2">
                     <div>
-                        <h3 class="text-lg font-semibold text-gray-200">Check-ins Overview</h3>
+                        <h3 class="text-lg font-semibold text-gray-200" id="h3">Daily Check-ins</h3>
                         <p class="text-xs text-gray-200">Number of members visiting the gym</p>
                     </div>
                     <div class="flex space-x-2">
@@ -391,8 +389,8 @@
                 <div class="glass-card p-2 chart-card relative" id="chartCard">
                     <div class="flex justify-between items-center mb-3">
                         <div>
-                            <h3 class="text-base font-semibold text-gray-200">Avg Time by Hour</h3>
-                            <p class="text-xs text-gray-200">Peak hours</p>
+                            <h3 class="text-base font-semibold text-gray-200">Peak hours</h3>
+                            <p class="text-xs text-gray-200">Average Time by Hour</p>
                         </div>
                         <div class="chart-action-buttons space-x-1">
                             <!-- <div class="chart-action-button" title="Download CSV">
@@ -429,7 +427,7 @@
                     <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 190px;">
                         <canvas id="membershipChart"></canvas>
                     </div>
-                </div>
+            </div>
 
         </div>
     </div>
@@ -444,7 +442,6 @@
     </div>
 
         <div class="flex items-center gap-3">
-<!-- Search Form -->
 
 
         </div>
@@ -853,7 +850,7 @@
 
 
 
-
+<!-- =============================================Table============================================= -->
 <script>
 
 
@@ -991,216 +988,250 @@
 </script>
 
 
-<!-- // Check INs data is correctly passed from PHP -->
+<!-- ============================================= Check INs data is correctly passed from PHP============================================= -->
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get check-in data from Laravel
-        var dailyCheckIns = @json($dailyCheckIns);
-        var weeklyCheckIns = @json($weeklyCheckIns);
-        var monthlyCheckIns = @json($monthlyCheckIns);
-        var yearlyCheckIns = @json($yearlyCheckIns);
+document.addEventListener("DOMContentLoaded", function () {
+    // Get check-in data from Laravel
+    var dailyCheckIns = @json($dailyCheckIns);
+    var weeklyCheckIns = @json($weeklyCheckIns);
+    var monthlyCheckIns = @json($monthlyCheckIns);
+    var yearlyCheckIns = @json($yearlyCheckIns);
+
+    // These variables are defined but not used for the trend line
+    // You can remove them if not needed elsewhere
+    // var previousDailyCheckIns = @json($previousDailyCheckIns);
+    // var previousWeeklyCheckIns = @json($previousWeeklyCheckIns);
+    // var previousMonthlyCheckIns = @json($previousMonthlyCheckIns);
+    // var previousYearlyCheckIns = @json($previousYearlyCheckIns);
+
+    function getChartData(dataSet) {
+        return {
+            labels: dataSet.map(item => item.date),
+            dataCounts: dataSet.map(item => item.count)
+        };
+    }
+
+    function calculateTrendLine(counts, period = 'daily') {
+    if (counts.length < 2) return counts;
+    
+    // Determine window size based on period
+    let windowSize;
+    switch(period) {
+        case 'weekly':
+            windowSize = 4; // 4 weeks to see monthly pattern
+            break;
+        case 'monthly':
+            windowSize = 6; // 6 months to see half-year pattern
+            break;
+        case 'yearly':
+            windowSize = 3; // 3 years to see multi-year pattern
+            break;
+        default: // daily
+            windowSize = 7; // 7 days to see weekly pattern
+    }
+    
+    // Ensure window isn't larger than dataset
+    windowSize = Math.min(windowSize, counts.length);
+    
+    const trendLine = [];
+    
+    for (let i = 0; i < counts.length; i++) {
+        // Determine the window bounds
+        const start = Math.max(0, i - windowSize + 1);
+        const end = i + 1;
+        const windowData = counts.slice(start, end);
         
-        // Function to extract labels and data counts from check-in data
-        function getChartData(dataSet) {
-            return {
-                labels: dataSet.map(item => item.date),
-                dataCounts: dataSet.map(item => item.count)
-            };
+        // Calculate linear regression for this window
+        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+        const n = windowData.length;
+        
+        for (let j = 0; j < n; j++) {
+            sumX += j;
+            sumY += windowData[j];
+            sumXY += j * windowData[j];
+            sumXX += j * j;
         }
         
-        // Function to calculate and display summary statistics
-        function updateSummaryStats(dataSet) {
-            const counts = dataSet.map(item => item.count);
-            const total = counts.reduce((sum, count) => sum + count, 0);
-            const avg = Math.round(total / counts.length);
-            const peak = Math.max(...counts);
-            const peakDay = dataSet.find(item => item.count === peak)?.date || 'N/A';
-            
-            document.getElementById('total-checkins').textContent = total.toLocaleString();
-            document.getElementById('avg-checkins').textContent = avg.toLocaleString();
-            document.getElementById('peak-checkins').textContent = `${peak} (${peakDay})`;
-        }
+        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        const b = (sumY - m * sumX) / n;
         
-        // Show loading indicator
-        function showLoading() {
-            document.getElementById('chart-loading').classList.remove('hidden');
-        }
-        
-        // Hide loading indicator
-        function hideLoading() {
-            document.getElementById('chart-loading').classList.add('hidden');
-        }
-        
-        // Get previous period data (for comparison)
-        function getPreviousPeriodData(currentData, period) {
-            // This is a simplified implementation - in a real app, you'd need proper date calculations
-            // to determine the previous period's data based on your database
-            return currentData.map(item => Math.max(0, item * 0.8 + Math.random() * 10));
-        }
-        
-        // Initial dataset (Daily Check-ins)
-        var { labels, dataCounts } = getChartData(dailyCheckIns);
-        updateSummaryStats(dailyCheckIns);
-        
-        // Chart configuration with improved styling and tooltip
-        var ctx = document.getElementById("checkins-chart").getContext("2d");
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: 'Current Period',
-                        data: dataCounts,
-                        backgroundColor: 'rgba(246, 174, 59, 0.8)',
-                        borderColor: '#FF5722',
-                        borderWidth: 2,
-                        borderRadius: 4,
-                        barThickness: 'flex',
-                        maxBarThickness: 25
-                    },
-                    {
-                        label: 'Previous Period',
-                        data: getPreviousPeriodData(dataCounts, 'daily'),
-                        type: 'line',
-                        fill: false,
-                        borderColor: '#FF5722',
-                        borderDash: [5, 5],
-                        pointBackgroundColor: '#FF5722',
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
+        // Use the most recent trend value
+        trendLine.push(m * (n-1) + b);
+    }
+    
+    return trendLine;
+}
+
+    function updateSummaryStats(dataSet) {
+        const counts = dataSet.map(item => item.count);
+        const total = counts.reduce((sum, count) => sum + count, 0);
+        const avg = Math.round(total / counts.length);
+        const peak = Math.max(...counts);
+        const peakDay = dataSet.find(item => item.count === peak)?.date || 'N/A';
+
+        document.getElementById('total-checkins').textContent = total.toLocaleString();
+        document.getElementById('avg-checkins').textContent = avg.toLocaleString();
+        document.getElementById('peak-checkins').textContent = `${peak} (${peakDay})`;
+    }
+
+    function showLoading() {
+        document.getElementById('chart-loading').classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        document.getElementById('chart-loading').classList.add('hidden');
+    }
+
+    // Initial dataset
+    var { labels, dataCounts } = getChartData(dailyCheckIns);
+    updateSummaryStats(dailyCheckIns);
+
+    var myChart = new Chart(document.getElementById("checkins-chart").getContext("2d"), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Check-ins',
+                    data: dataCounts,
+                    backgroundColor: 'rgba(246, 174, 59, 0.8)',
+                    borderColor: '#FF5722',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    barThickness: 'flex',
+                    maxBarThickness: 25
                 },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-                        titleColor: '#1F2937',
-                        bodyColor: '#4B5563',
-                        borderColor: '#E5E7EB',
-                        borderWidth: 1,
-                        padding: 12,
-                        boxPadding: 6,
-                        usePointStyle: true,
-                        callbacks: {
-                            label: function(context) {
-                                return context.dataset.label + ': ' + context.parsed.y.toLocaleString() + ' check-ins';
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            maxRotation: 0,
-                            color: '#9CA3AF'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: '#FF5722'
-                        },
-                        ticks: {
-                            stepSize: 5,
-                            color: '#9CA3AF',
-                            callback: function(value) {
-                                return value.toLocaleString();
-                            }
-                        }
-                    }
-                },
-                animation: {
-                    duration: 500
+                {
+                    label: 'Trend',
+                    data: calculateTrendLine(dataCounts),
+                    type: 'line',
+                    fill: false,
+                    borderColor: '#FF5722',
+                    borderDash: [5, 5],
+                    pointBackgroundColor: '#FF5722',
+                    tension: 0.1
                 }
-            }
-        });
-        
-        // Enhanced period selector with loading simulation
-        document.querySelectorAll(".period-button").forEach(button => {
-            button.addEventListener("click", function() {
-                // Remove active class from all buttons
-                document.querySelectorAll(".period-button").forEach(btn => {
-                    btn.classList.remove("active", "bg-white", "text-orange-600");
-                });
-                
-                // Add active styling to clicked button
-                this.classList.add("active", "bg-white", "text-orange-600");
-                
-                // Show loading indicator
-                showLoading();
-                
-                // Get the selected period and update the chart (with delay to show loading effect)
-                const period = this.dataset.period;
-                setTimeout(() => {
-                    let newData;
-                    
-                    switch (period) {
-                        case "weekly":
-                            newData = getChartData(weeklyCheckIns);
-                            updateSummaryStats(weeklyCheckIns);
-                            document.querySelector('h3').textContent = 'Weekly Check-ins';
-                            break;
-                        case "monthly":
-                            newData = getChartData(monthlyCheckIns);
-                            updateSummaryStats(monthlyCheckIns);
-                            document.querySelector('h3').textContent = 'Monthly Check-ins';
-                            break;
-                        case "yearly":
-                            newData = getChartData(yearlyCheckIns);
-                            updateSummaryStats(yearlyCheckIns);
-                            document.querySelector('h3').textContent = 'Yearly Check-ins';
-                            break;
-                        default:
-                            newData = getChartData(dailyCheckIns);
-                            updateSummaryStats(dailyCheckIns);
-                            document.querySelector('h3').textContent = 'Daily Check-ins';
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#1F2937',
+                    bodyColor: '#4B5563',
+                    borderColor: '#E5E7EB',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxPadding: 6,
+                    usePointStyle: true,
+                    callbacks: {
+                        label: function (context) {
+                            if (context.datasetIndex === 0) {
+                                return 'Check-ins: ' + context.parsed.y.toLocaleString();
+                            } else {
+                                return 'Trend: ' + context.parsed.y.toFixed(1);
+                            }
+                        }
                     }
-                    
-                    // Update the chart with new data and a comparison line
-                    myChart.data.labels = newData.labels;
-                    myChart.data.datasets[0].data = newData.dataCounts;
-                    myChart.data.datasets[1].data = getPreviousPeriodData(newData.dataCounts, period);
-                    myChart.update();
-                    
-                    // Hide loading indicator
-                    hideLoading();
-                }, 500);
+                }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    ticks: {
+                        maxRotation: 0,
+                        color: '#9CA3AF'
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#FF5722' },
+                    ticks: {
+                        stepSize: 5,
+                        color: '#9CA3AF',
+                        callback: function (value) {
+                            return value.toLocaleString();
+                        }
+                    }
+                }
+            },
+            animation: { duration: 500 }
+        }
+    });
+
+    // Switch chart by period
+    document.querySelectorAll(".period-button").forEach(button => {
+        button.addEventListener("click", function () {
+            document.querySelectorAll(".period-button").forEach(btn => {
+                btn.classList.remove("active", "bg-white", "text-orange-600");
             });
-        });
-        
-        // Add hover effects to action buttons
-        document.querySelectorAll('.chart-action-button').forEach(button => {
-            button.addEventListener('mouseenter', function() {
-                this.querySelector('i').classList.add('text-orange-600');
-            });
-            
-            button.addEventListener('mouseleave', function() {
-                this.querySelector('i').classList.remove('text-orange-600');
-            });
+            this.classList.add("active", "bg-white", "text-orange-600");
+            showLoading();
+
+            const period = this.dataset.period;
+
+            setTimeout(() => {
+                let newData;
+                
+
+                switch (period) {
+                    case "weekly":
+                        newData = getChartData(weeklyCheckIns);
+                        updateSummaryStats(weeklyCheckIns);
+                        document.getElementById('h3').textContent = 'Weekly Check-ins';
+                        break;
+                    case "monthly":
+                        newData = getChartData(monthlyCheckIns);
+                        updateSummaryStats(monthlyCheckIns);
+                        document.getElementById('h3').textContent = 'Monthly Check-ins';
+                        break;
+                    case "yearly":
+                        newData = getChartData(yearlyCheckIns);
+                        updateSummaryStats(yearlyCheckIns);
+                        document.getElementById('h3').textContent = 'Yearly Check-ins';
+                        break;
+                    default:
+                        newData = getChartData(dailyCheckIns);
+                        updateSummaryStats(dailyCheckIns);
+                        document.getElementById('h3').textContent = 'Daily Check-ins';
+                }
+
+                myChart.data.labels = newData.labels;
+                myChart.data.datasets[0].data = newData.dataCounts;
+                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts);
+                myChart.update();
+
+                hideLoading();
+            }, 500);
         });
     });
+
+    document.querySelectorAll('.chart-action-button').forEach(button => {
+        button.addEventListener('mouseenter', function () {
+            this.querySelector('i').classList.add('text-orange-600');
+        });
+
+        button.addEventListener('mouseleave', function () {
+            this.querySelector('i').classList.remove('text-orange-600');
+        });
+    });
+});
 </script>
 
-<!-- // Check if peakHours data is correctly passed from PHP -->
+
+<!-- ============================================= Check if peakHours data is correctly passed from PHP============================================= -->
 <script>
-    const peakHours = @json($peakHours, JSON_PRETTY_PRINT);  // Debugging-friendly JSON format
+    const peakHours = @json($peakHours, JSON_PRETTY_PRINT);
 
-    console.log("Peak Hours Data:", peakHours); // Debugging output in the console
+    console.log("Peak Hours Data:", peakHours);
 
-    // Ensure the chart element exists before initializing
     const timeOfDayCanvas = document.getElementById('time-of-day-chart');
     if (timeOfDayCanvas) {
         const timeOfDayCtx = timeOfDayCanvas.getContext('2d');
@@ -1208,10 +1239,10 @@
         const timeOfDayChart = new Chart(timeOfDayCtx, {
             type: 'line',
             data: {
-                labels: peakHours.labels || [],  // Ensure fallback to an empty array if undefined
+                labels: peakHours.labels || [],
                 datasets: [{
-                    label: 'Average Minutes',
-                    data: peakHours.data || [],  // Ensure fallback to an empty array if undefined
+                    label: 'Number of Check-ins',
+                    data: peakHours.data || [],
                     fill: true,
                     backgroundColor: 'rgba(255, 153, 0, 0.37)',
                     borderColor: '#FF5722',
@@ -1223,12 +1254,28 @@
                 maintainAspectRatio: false,
                 scales: {
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Check-in Count'
+                        },
+                        grid: {
+                            color: 'rgba(255, 153, 0, 0.2)' // Orange grid lines Y-axis
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time of Day'
+                        },
+                        grid: {
+                            color: 'rgba(255, 153, 0, 0.2)' // Orange grid lines X-axis
+                        }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false // 🔴 Hides the legend since there's only one dataset
+                        display: false
                     }
                 }
             }
@@ -1239,7 +1286,8 @@
 </script>
 
 
-<!-- // Get the membership data from Laravel -->
+
+<!-- ============================================= Get the membership data from Laravel =============================================-->
 <script>
         // Get the membership data from Laravel
         var membershipLabels = {!! json_encode($membershipData['labels']) !!};

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User; // Make sure to import the User model
 use Carbon\Carbon;
 use App\Models\Attendance;
+use Illuminate\Support\Facades\DB;
 
 
 class DashboardController extends Controller
@@ -38,6 +39,11 @@ class DashboardController extends Controller
         $yearlyCheckIns = $this->getYearlyCheckIns();
         $topActiveMembers = $this->getTopActiveMembers(); // Get top 10 active members
 
+        $previousDailyCheckIns = $this->getPreviousDailyCheckIns();
+        $previousWeeklyCheckIns = $this->getPreviousWeeklyCheckIns();
+        $previousMonthlyCheckIns = $this->getPreviousMonthlyCheckIns();
+        $previousYearlyCheckIns = $this->getPreviousYearlyCheckIns();
+
         return view('staff.dashboard', compact(
             'members', 
             'query', 
@@ -50,85 +56,20 @@ class DashboardController extends Controller
             'weeklyCheckIns', // Last 4 weeks
             'monthlyCheckIns', // Last 12 months
             'yearlyCheckIns',  // Last 5 years
-            'topActiveMembers' // Pass to view
+            'topActiveMembers', // Pass to view
+                // new previous period datasets
+            'previousDailyCheckIns',
+            'previousWeeklyCheckIns',
+            'previousMonthlyCheckIns',
+            'previousYearlyCheckIns'
         ));
     }
 
     
 
 
-    public function getTopActiveMembers()
-    {
-        return User::where('role', 'user')
-            ->where('member_status', 'active')
-            ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
-            ->select(
-                'users.id', 
-                'users.rfid_uid', // Include RFID UID
-                'users.first_name', 
-                'users.last_name', 
-                'users.membership_type', // Include membership type
-                'users.member_status', // Include member status
-                \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
-            )
-            ->groupBy('users.id', 'users.rfid_uid', 'users.first_name', 'users.last_name', 'users.membership_type', 'users.member_status') // Add to GROUP BY
-            ->orderByDesc('check_ins_count')
-            ->limit(10)
-            ->get();
-    }
-    
-    
-
-
-
-
-
-
-
-
-
-
-    // private function getActiveMembersData()
-    // {
-    //     // Get the current date and the start of the current week
-    //     $now = Carbon::now();
-    //     $startOfCurrentWeek = $now->startOfWeek()->toDateTimeString();
-    //     $endOfCurrentWeek = $now->endOfWeek()->toDateTimeString();
-
-    //     // Get the start of last week
-    //     $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
-    //     $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
-
-    //     // Count active members this week
-    //     $currentWeekActiveMembers = User::where('role', 'user')
-    //         ->where('member_status', 'active')
-    //         ->whereBetween('start_date', [$startOfCurrentWeek, $endOfCurrentWeek])
-    //         ->count();
-
-    //     // Count active members last week
-    //     $lastWeekActiveMembers = User::where('role', 'user')
-    //         ->where('member_status', 'active')
-    //         ->whereBetween('start_date', [$startOfLastWeek, $endOfLastWeek])
-    //         ->count();
-
-    //     // Calculate percentage change
-    //     $percentageChange = 0;
-    //     if ($lastWeekActiveMembers > 0) {
-    //         $percentageChange = (($currentWeekActiveMembers - $lastWeekActiveMembers) / $lastWeekActiveMembers) * 100;
-    //     }
-
-    //     // Determine the arrow indicator
-    //     $arrowIndicator = ($percentageChange >= 0) ? '▲' : '▼';
-
-    //     // Format the percentage change
-    //     $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week ' . $arrowIndicator;
-
-    //     return [
-    //         'currentWeekActiveMembers' => $currentWeekActiveMembers,
-    //         'formattedPercentageChange' => $formattedPercentageChange,
-    //     ];
-    // }
-
+ 
+// cards========================================================
     private function getNewMembersData()
     {
         // Get the current date and the start and end of the current week
@@ -171,6 +112,7 @@ class DashboardController extends Controller
     }
     
 
+
     private function getTodaysCheckInsData()
     {
         // Get the current date range
@@ -209,6 +151,8 @@ class DashboardController extends Controller
             ];
     }
 
+
+
     public function getExpiringMemberships()
     {
         // Define the date range for expiring memberships (next 7 days)
@@ -221,91 +165,37 @@ class DashboardController extends Controller
 
         return $expiringMemberships;
     }
+// cards========================================================
 
-    // Method to get peak hours data
-    public function getPeakHours()
-    {
-        // Get the attendance data grouped by the hour
-        $attendances = Attendance::selectRaw('HOUR(time_in) as hour, COUNT(*) as count')
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->get();
-    
-        // Debugging line to see if the data is being fetched
-        // dd($attendances->toArray()); // This will show the raw data as an array
-    
-        // Prepare labels (hours) and data (frequency of check-ins per hour)
-        $labels = [];
-        $data = [];
-    
-        // Iterate over the attendance data to create labels and data for the chart
-        foreach ($attendances as $attendance) {
-            // Format the hour as '12 AM', '1 PM', etc.
-            $labels[] = Carbon::createFromTime($attendance->hour, 0)->format('h A');
-            $data[] = $attendance->count;
-        }
-    
-        // Ensure all hours are included, even those with zero attendance
-        for ($i = 0; $i < 24; $i++) {
-            if (!in_array($i, array_column($attendances->toArray(), 'hour'))) {
-                $labels[] = Carbon::createFromTime($i, 0)->format('h A');
-                $data[] = 0;  // No check-ins for this hour
-            }
-        }
-    
-        return [
-            'labels' => $labels,
-            'data' => $data
-        ];
-    }
-    
-    // Add this function inside your DashboardController class
 
-    private function getMembershipTypeData()
+
+
+
+// Check-ins bar Graph==========================
+    // Get weekly check-ins (last 7 days)
+    private function getDailyCheckIns()
     {
-        // Fetch the membership data for active users only, grouped by membership type
-        $membershipData = User::where('role', 'user')
-            ->where('member_status', 'active')  // Only include active users
-            ->selectRaw('membership_type, COUNT(*) as count')
-            ->groupBy('membership_type')
+        return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
+            ->where('time_in', '>=', Carbon::now()->subDays(7))
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
             ->get();
-    
-        // Prepare the data for the chart
-        $labels = [];
-        $data = [];
-    
-        // Loop through each data point and map the numeric membership type to its label
-        foreach ($membershipData as $dataPoint) {
-            // Get the label for the membership type using the predefined MEMBERSHIP_TYPES constant
-            $membershipLabel = User::MEMBERSHIP_TYPES[$dataPoint->membership_type] ?? 'Unknown';
-    
-            // Add the label and count to the arrays
-            $labels[] = $membershipLabel;
-            $data[] = $dataPoint->count;
-        }
-    
-        // Return the data in a format that can be used by the chart
-        return [
-            'labels' => $labels,
-            'data' => $data,
-        ];
     }
 
 
+    private function getPreviousDailyCheckIns()
+    {
+        return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
+            ->whereBetween('time_in', [
+                Carbon::now()->subDays(14)->startOfDay(),
+                Carbon::now()->subDays(7)->endOfDay()
+            ])
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get();
+    }
 
-    
-
-   // Get daily check-ins (last 7 days)
-   private function getDailyCheckIns()
-   {
-       return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
-           ->where('time_in', '>=', Carbon::now()->subDays(7))
-           ->groupBy('date')
-           ->orderBy('date', 'asc')
-           ->get();
-   }
-
-   // Get weekly check-ins (last 4 weeks)
+    // Get weekly check-ins (last 4 weeks)
    private function getWeeklyCheckIns()
    {
        return Attendance::selectRaw('YEARWEEK(time_in, 1) as week, COUNT(*) as count')
@@ -323,6 +213,27 @@ class DashboardController extends Controller
            });
    }
 
+
+   private function getPreviousWeeklyCheckIns()
+   {
+       return Attendance::selectRaw('YEARWEEK(time_in, 1) as week, COUNT(*) as count')
+           ->whereBetween('time_in', [
+               Carbon::now()->subWeeks(8),
+               Carbon::now()->subWeeks(4)
+           ])
+           ->groupBy('week')
+           ->orderBy('week', 'asc')
+           ->get()
+           ->map(function ($item) {
+               $year = substr($item->week, 0, 4);
+               $week = substr($item->week, 4, 2);
+               return (object)[
+                   'date' => Carbon::now()->setISODate($year, $week)->format('Y-m-d'),
+                   'count' => $item->count
+               ];
+           });
+   }
+   
    // Get monthly check-ins (last 12 months)
    private function getMonthlyCheckIns()
    {
@@ -339,6 +250,25 @@ class DashboardController extends Controller
            });
    }
 
+
+   private function getPreviousMonthlyCheckIns()
+   {
+       return Attendance::selectRaw('DATE_FORMAT(time_in, "%Y-%m") as month, COUNT(*) as count')
+           ->whereBetween('time_in', [
+               Carbon::now()->subMonths(24)->startOfMonth(),
+               Carbon::now()->subMonths(12)->endOfMonth()
+           ])
+           ->groupBy('month')
+           ->orderBy('month', 'asc')
+           ->get()
+           ->map(function ($item) {
+               return (object)[
+                   'date' => Carbon::createFromFormat('Y-m', $item->month)->format('F Y'),
+                   'count' => $item->count
+               ];
+           });
+   }
+   
    // Get yearly check-ins (last 5 years)
    private function getYearlyCheckIns()
    {
@@ -354,7 +284,127 @@ class DashboardController extends Controller
                ];
            });
    }
+
+
+    private function getPreviousYearlyCheckIns()
+    {
+        return Attendance::selectRaw('YEAR(time_in) as year, COUNT(*) as count')
+            ->whereBetween('time_in', [
+                Carbon::now()->subYears(10)->startOfYear(),
+                Carbon::now()->subYears(5)->endOfYear()
+            ])
+            ->groupBy('year')
+            ->orderBy('year', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return (object)[
+                    'date' => $item->year,
+                    'count' => $item->count
+                ];
+            });
+    }
+
+// Check-ins bar Graph==========================
+
+
+
+// Peak hours line graph==========================================
+public function getPeakHours()
+{
+    // Fetch attendance data grouped by hour
+    $attendances = Attendance::selectRaw('HOUR(time_in) as hour, COUNT(*) as count')
+        ->whereBetween(DB::raw('HOUR(time_in)'), [7, 21]) // Limit to 7 AM - 9 PM
+        ->groupBy('hour')
+        ->orderBy('hour')
+        ->get()
+        ->keyBy('hour'); // Makes it easy to find by hour
+
+    // Initialize arrays
+    $labels = [];
+    $data = [];
+
+    // Loop from 7 AM to 9 PM (hour 7 to 21)
+    for ($i = 7; $i <= 21; $i++) {
+        $labels[] = Carbon::createFromTime($i, 0)->format('h A');
+        $data[] = $attendances->has($i) ? $attendances[$i]->count : 0;
+    }
+
+    return [
+        'labels' => $labels,
+        'data' => $data
+    ];
+}
+
+// Peak hours line graph==========================================
+
+
+
+
+// pie grpah for membership type===============================
+    private function getMembershipTypeData()
+    {
+        // Fetch the membership data for active users only, grouped by membership type
+        $membershipData = User::where('role', 'user')
+            // ->where('member_status', 'active')  // Only include active users
+            ->selectRaw('membership_type, COUNT(*) as count')
+            ->groupBy('membership_type')
+            ->get();
+
+        // Prepare the data for the chart
+        $labels = [];
+        $data = [];
+
+        // Loop through each data point and map the numeric membership type to its label
+        foreach ($membershipData as $dataPoint) {
+            // Get the label for the membership type using the predefined MEMBERSHIP_TYPES constant
+            $membershipLabel = User::MEMBERSHIP_TYPES[$dataPoint->membership_type] ?? 'Unknown';
+
+            // Add the label and count to the arrays
+            $labels[] = $membershipLabel;
+            $data[] = $dataPoint->count;
+        }
+
+        // Return the data in a format that can be used by the chart
+        return [
+            'labels' => $labels,
+            'data' => $data,
+        ];
+    }
+// pie grpah for membership type===============================
+
+
+
+
+
+// table for top 10 active membbers==========================
+    public function getTopActiveMembers()
+    {
+        return User::where('role', 'user')
+            ->where('member_status', 'active')
+            ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
+            ->select(
+                'users.id', 
+                'users.rfid_uid', // Include RFID UID
+                'users.first_name', 
+                'users.last_name', 
+                'users.membership_type', // Include membership type
+                'users.member_status', // Include member status
+                \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
+            )
+            ->groupBy('users.id', 'users.rfid_uid', 'users.first_name', 'users.last_name', 'users.membership_type', 'users.member_status') // Add to GROUP BY
+            ->orderByDesc('check_ins_count')
+            ->limit(10)
+            ->get();
+    }
+// table for top 10 active membbers==========================
+
+
+
     
+
+  
+
+
     
 
     
