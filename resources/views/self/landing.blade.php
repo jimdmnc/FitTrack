@@ -68,36 +68,45 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-black text-white py-4 px-6 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <div class="text-2xl font-bold">FitTrack</div>
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
-                <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
-                <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-            </div>            @if(auth()->check() && auth()->user()->rfid_uid)
-
-            <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center">
-                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-            </button>
-            @endif
-
-
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-white focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-            </div>
+    <nav class="bg-black text-white py-2 px-6 sticky top-0 z-50">
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Logo Image -->
+        <div class="flex items-center">
+        <img src="images/fittracklogo.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
+        <!-- <div class="text-2xl font-bold">FitTrack</div> -->
         </div>
         
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
-            <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
-            <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
-            <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
+        <!-- Navigation Links -->
+        <div class="hidden md:flex space-x-8">
+            <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
+            <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
+            <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
         </div>
-    </nav>
+
+        <!-- Time Out Button -->
+        @if(auth()->check() && auth()->user()->rfid_uid)
+        <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 text-xs rounded-lg transition duration-300 flex items-center">
+    <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
+</button>
+
+        @endif
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+            <button id="mobile-menu-button" class="text-white focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
+        <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
+        <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
+        <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
+    </div>
+</nav>
+
         <!-- Success Alert Modal -->
             @if(session('success'))
                     <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="successAlert">
