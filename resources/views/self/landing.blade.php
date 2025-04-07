@@ -85,9 +85,9 @@
 
         <!-- Time Out Button -->
         @if(auth()->check() && auth()->user()->rfid_uid)
-        <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 text-xs rounded-lg transition duration-300 flex items-center">
-    <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
-</button>
+        <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 text-sm rounded-lg transition duration-300 flex items-center">
+            <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
+        </button>
 
         @endif
 
@@ -415,23 +415,24 @@
             </div>
         </div>
         
-        <div class="text-center mt-12">
+        <!-- <div class="text-center mt-12">
             <a href="#" class="btn-primary bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg inline-flex items-center">
                 <i class="fas fa-video mr-2"></i> Watch Full Tutorial
             </a>
-        </div>
+        </div> -->
     </div>
 </section>
 
 
     <!-- In Here Section -->
-    <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative">
+    <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('images/welcomebgg.jpg'); background-size: cover; background-position: center;">
         <div class="absolute inset-0 bg-black bg-opacity-60"></div>
         <div class="container mx-auto px-6 z-10 text-center">
             <h2 class="text-5xl font-extrabold text-white mb-6">WELCOME TO THE GYM HUB</h2>
             <p class="text-xl text-white mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
         </div>
     </section>
+
 
     <!-- Footer -->
     <footer class="bg-black text-white py-12">
