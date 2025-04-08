@@ -10,38 +10,42 @@ use Illuminate\Http\Request;
 class ViewmembersController extends Controller
 {
     public function index(Request $request)
-{
-    $searchQuery = $request->input('search');
-    $status = $request->input('status', 'all');
-    
-    $query = User::where('role', 'user');
-    
-    if ($status !== 'all') {
-        $query->where('member_status', $status);
-    }
-    
-    if ($searchQuery) {
-        $query->where(function($q) use ($searchQuery) {
-            $q->where('first_name', 'like', "%{$searchQuery}%")
-              ->orWhere('last_name', 'like', "%{$searchQuery}%")
-              ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
-        });
-    }
-    
-    $members = $query->orderBy('created_at', 'desc')
-                      ->paginate(10)
-                      ->appends(request()->except('page'));
-    
-    $message = $members->isEmpty() ? 'No members found' : '';
+    {
+        $searchQuery = $request->input('search');
+        $status = $request->input('status', 'all');
+        
+        $query = User::where('role', 'user');
+        
+        if ($status !== 'all') {
+            $query->where('member_status', $status);
+        }
+        
+        if ($searchQuery) {
+            $query->where(function($q) use ($searchQuery) {
+                $q->where('first_name', 'like', "%{$searchQuery}%")
+                  ->orWhere('last_name', 'like', "%{$searchQuery}%")
+                  ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
+            });
+        }
+        
+        $members = $query->orderBy('created_at', 'desc')
+                          ->paginate(10)
+                          ->appends(request()->except('page'));
+        
+        // For AJAX requests, return JSON response
+        if ($request->ajax()) {
+            return response()->json([
+                'table' => view('partials.members_table', compact('members'))->render(),
+                'pagination' => $members->links()->render()
+            ]);
+        }
 
-    return view('staff.viewmembers', [
-        'members' => $members,
-        'query' => $searchQuery,
-        'message' => $message,
-        'status' => $status
-    ]);
-}
-
+        return view('staff.viewmembers', [
+            'members' => $members,
+            'query' => $searchQuery,
+            'status' => $status
+        ]);
+    }
 
     /**
      * Handle membership renewal.
