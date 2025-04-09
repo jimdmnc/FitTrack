@@ -37,15 +37,13 @@
                     </div>
                     
                     <!-- Clear Button (Only When Search Active) -->
-                    @if($query)
                     <a href="{{ route('staff.viewmembers', ['page' => 1]) }}" 
-                    class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors"
-                    aria-label="Clear search">
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </a>
-                    @endif
+                id="clearSearchBtn" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors hidden"
+                aria-label="Clear search">
+                    <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </a>
                 </div>
             </form>
 
@@ -448,16 +446,130 @@
         </div>
     </div>
 </div>
-        
+    
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Get DOM elements
+    document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    let searchTimeout;
+    const searchInput = document.querySelector('input[name="search"]');
+    const statusSelect = document.querySelector('select[name="status"]');
+    const tableContainer = document.querySelector('.glass-card .overflow-x-auto');
+    const paginationContainer = document.querySelector('.pagination');
+    const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
+    
+    // Debounce function to limit how often we make requests
+    const debounce = (func, delay) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(func, delay);
+    };
+    
+    // Function to fetch members with current filters
+    const fetchMembers = (url = null) => {
+        const params = new URLSearchParams();
+        
+        // Add search query if exists
+        if (searchInput.value) {
+            params.append('search', searchInput.value);
+        }
+        
+        // Add status filter if not 'all'
+        if (statusSelect.value !== 'all') {
+            params.append('status', statusSelect.value);
+        }
+        
+        // If a specific URL is provided (for pagination), use that
+        const fetchUrl = url || '{{ route("staff.viewmembers") }}?' + params.toString();
+        
+        // Show loading state
+        tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+        
+        fetch(fetchUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update table and pagination
+            tableContainer.innerHTML = data.table;
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination || '';
+            }
+            
+            // Reinitialize any event listeners that might have been lost
+            initializeEventListeners();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+        });
+    };
+    
+    // Initialize event listeners
+    const initializeEventListeners = () => {
+        // Search input event - triggers after typing stops for 500ms
+        searchInput.addEventListener('input', () => {
+            debounce(() => {
+                fetchMembers();
+            }, 500);
+        });
+
+        // Clear search button event
+        if (clearSearchButton) {
+            clearSearchButton.addEventListener('click', () => {
+                // Clear the search input and fetch members without search query
+                searchInput.value = '';
+                fetchMembers();
+                toggleClearButtonVisibility(); // Hide the clear button
+            });
+        }
+        
+        // Status select change event - triggers immediately
+        statusSelect.addEventListener('change', () => {
+            fetchMembers();
+        });
+        
+        // Pagination link clicks - prevent default and fetch via AJAX
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchMembers(this.href);
+            });
+        });
+    };
+
+    // Function to toggle visibility of the "Clear" button based on search input
+    const toggleClearButtonVisibility = () => {
+        if (searchInput.value.trim() !== '') {
+            clearSearchButton.style.display = 'flex'; // Show the button
+        } else {
+            clearSearchButton.style.display = 'none'; // Hide the button
+        }
+    };
+
+    // Event listener for when the user types in the search field
+    searchInput.addEventListener('input', function() {
+            toggleClearButtonVisibility(); // Check visibility each time the user types
+        });
+
+        clearSearchBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Prevent the form from submitting
+            searchInput.value = ''; // Clear the search input
+            toggleClearButtonVisibility(); // Hide the clear button
+            // Optionally, you can also trigger an AJAX request to fetch the results without a search query
+        });
+    
+    // Initialize the event listeners
+    initializeEventListeners();
+    toggleClearButtonVisibility();
+    
+    // Membership renewal modal logic (keep your existing modal functions)
     const membershipTypeSelect = document.getElementById('membershipType');
     const startDateInput = document.getElementById('startDate');
     const endDateInput = document.getElementById('endDate');
     const membershipFeeInput = document.getElementById('membershipFee');
     const summaryText = document.getElementById('membershipSummaryText');
-
+    
     // Define membership fees and names
     const membershipData = {
         '1': { fee: 70, name: 'Session (1 day)' },
@@ -465,50 +577,63 @@ document.addEventListener('DOMContentLoaded', function() {
         '30': { fee: 1000, name: 'Monthly (30 days)' },
         '365': { fee: 5000, name: 'Annual (365 days)' }
     };
-
+    
     // Set today's date as default and max date
     const today = new Date();
     const todayFormatted = formatDate(today);
     startDateInput.value = todayFormatted;
     startDateInput.min = todayFormatted; // Prevent past dates
-
-
-    // Event listeners
-    membershipTypeSelect.addEventListener('change', updateAllDetails);
-    startDateInput.addEventListener('change', function() {
-        // Validate the selected date is not in the past
-        const selectedDate = new Date(this.value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-            this.value = todayFormatted; // Reset to today if past date selected
-        }
-        updateAllDetails();
-    });
-    // Initialize on load
-    updateAllDetails();
-
+    
+    // Event listeners for renewal modal
+    if (membershipTypeSelect) {
+        membershipTypeSelect.addEventListener('change', updateAllDetails);
+    }
+    if (startDateInput) {
+        startDateInput.addEventListener('change', function() {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+    
+            if (selectedDate < today) {
+                this.value = todayFormatted;
+            }
+            updateAllDetails();
+        });
+    }
+    
+    // Helper functions for date formatting
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    function formatDisplayDate(date) {
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+    
     function updateAllDetails() {
         updateMembershipFee();
         updateExpirationDate();
         updateSummaryText();
     }
-
+    
     function updateMembershipFee() {
         const selectedType = membershipTypeSelect.value;
         membershipFeeInput.value = selectedType ? membershipData[selectedType].fee.toFixed(2) : '0.00';
     }
-
+    
     function updateExpirationDate() {
         const selectedType = parseInt(membershipTypeSelect.value);
         const renewalDate = startDateInput.value;
-        
+    
         if (renewalDate && selectedType) {
             try {
                 const renewal = new Date(renewalDate);
                 if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-                
+    
                 renewal.setDate(renewal.getDate() + selectedType);
                 endDateInput.value = formatDate(renewal);
             } catch (error) {
@@ -519,20 +644,20 @@ document.addEventListener('DOMContentLoaded', function() {
             endDateInput.value = '';
         }
     }
-
+    
     function updateSummaryText() {
         const selectedType = membershipTypeSelect.value;
         const renewalDate = startDateInput.value;
         const endDate = endDateInput.value;
-        
+    
         if (!selectedType) {
             summaryText.textContent = 'Select membership type to see details.';
             return;
         }
-
+    
         const typeName = membershipData[selectedType].name;
         const fee = membershipData[selectedType].fee.toFixed(2);
-        
+    
         if (renewalDate && endDate) {
             const formattedStart = formatDisplayDate(new Date(renewalDate));
             const formattedEnd = formatDisplayDate(new Date(endDate));
@@ -541,135 +666,59 @@ document.addEventListener('DOMContentLoaded', function() {
             summaryText.textContent = `${typeName} membership. Total fee: ₱${fee}`;
         }
     }
-
-    // Helper functions
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
-
-    function formatDisplayDate(date) {
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
-    }
 });
 
-</script>
-
-
-
-
-
-
-
-<script>
-    document.getElementById('memberFilter').addEventListener('change', function () {
-        const selectedStatus = this.value; // Get the selected value (active or expired)
-        const rows = document.querySelectorAll('tbody tr[data-status]'); // Get all table rows
-
-        rows.forEach(row => {
-            const rowStatus = row.getAttribute('data-status'); // Get the row's status
-            if (selectedStatus === 'all' || rowStatus === selectedStatus) {
-                row.style.display = ''; // Show the row
-            } else {
-                row.style.display = 'none'; // Hide the row
-            }
-        });
-    });
-
-
-
-    
-</script>     
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Ensure pagination links work normally
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            // Allow default link behavior
-        });
-    });
-    
-    // Alternatively, if you're using AJAX:
-    /*
-    document.querySelectorAll('.pagination a').forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const url = this.getAttribute('href');
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    document.documentElement.innerHTML = html;
-                });
-        });
-    });
-    */
-});
-
-    // Open View Modal
-    // Open View Modal with proper data
+// Modal functions (keep your existing modal functions)
 function openViewModal(memberID, name, membershipType, startDate, status) {
-    // Set modal data
-    document.getElementById('viewMemberName').textContent = name;
-    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-    document.getElementById('viewMembershipType').textContent = membershipType;
-    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
-    
-    // Calculate and set expiration date based on membership type
-    const start = new Date(startDate);
-    let endDate = new Date(start);
-    
-    switch(membershipType.toLowerCase()) {
-        case 'session':
-            endDate.setDate(start.getDate() + 1);
-            break;
-        case 'week':
-            endDate.setDate(start.getDate() + 7);
-            break;
-        case 'month':
-            endDate.setMonth(start.getMonth() + 1);
-            break;
-        case 'annual':
-            endDate.setFullYear(start.getFullYear() + 1);
-            break;
-        default:
-            endDate = 'N/A';
+        // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+
+        // Calculate and set expiration date based on membership type
+        const start = new Date(startDate);
+        let endDate = new Date(start);
+
+        switch(membershipType.toLowerCase()) {
+            case 'session':
+                endDate.setDate(start.getDate() + 1);
+                break;
+            case 'week':
+                endDate.setDate(start.getDate() + 7);
+                break;
+            case 'month':
+                endDate.setMonth(start.getMonth() + 1);
+                break;
+            case 'annual':
+                endDate.setFullYear(start.getFullYear() + 1);
+                break;
+            default:
+                endDate = 'N/A';
+        }
+
+        document.getElementById('viewEndDate').textContent = typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+        // Change status color based on status
+        let statusBadge = document.getElementById('viewStatus');
+        statusBadge.textContent = status;
+        if (status.toLowerCase() === 'active') {
+            statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200";
+        } else {
+            statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200";
+        }
+
+        // Show modal
+        const modal = document.getElementById('viewMemberModal');
+        const modalContent = document.getElementById('viewModalContent');
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
     }
-    
-    document.getElementById('viewEndDate').textContent = typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
 
-    // Change status color based on status
-    let statusBadge = document.getElementById('viewStatus');
-    statusBadge.textContent = status;
-    if (status.toLowerCase() === 'active') {
-        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200";
-    } else {
-        statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200";
-    }
-
-    // Show modal
-    const modal = document.getElementById('viewMemberModal');
-    const modalContent = document.getElementById('viewModalContent');
-    
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
-
-// Helper function to format dates
-function formatDisplayDate(date) {
-    return date.toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'short', 
-        day: 'numeric' 
-    });
-}
-
-    // Function to close the modal
     function closeViewModal() {
         const modal = document.getElementById('viewMemberModal');
         const modalContent = document.getElementById('viewModalContent');
@@ -683,61 +732,40 @@ function formatDisplayDate(date) {
         }, 300);
     }
 
-    // Close View Modal
-    function closeViewModal() {
-            const modal = document.getElementById('viewModalContent');
-            modal.classList.remove('scale-100', 'opacity-100');
-            modal.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                document.getElementById("viewMemberModal").classList.add("hidden");
+    function openRenewModal(memberID, name, membershipType, memberStatus) {
+        // Set form values
+        document.getElementById("editMemberID").value = memberID;
+        document.getElementById("editMemberName").value = name;
+        document.getElementById("membershipType").value = membershipType;
 
-            }, 300);
+        // Ensure status value is lowercase for comparison
+        let formattedStatus = memberStatus.trim().toLowerCase();
+
+        // Set radio button based on status
+        const radioButtons = document.getElementsByName('status');
+        for (const radioButton of radioButtons) {
+            if (radioButton.value.toLowerCase() === formattedStatus) {
+                radioButton.checked = true;
+                break;
+            }
+        }
+
+        // Show modal with animation
+        document.getElementById("renewMemberModal").classList.remove("hidden");
+        setTimeout(() => {
+            document.getElementById('editModalContent').classList.remove('scale-95', 'opacity-0');
+            document.getElementById('editModalContent').classList.add('scale-100', 'opacity-100');
+        }, 10);
     }
 
-        // Open Renew Modal
-        function openRenewModal(memberID, name, membershipType, memberStatus) {
-
-            // Set form values
-            document.getElementById("editMemberID").value = memberID;
-            document.getElementById("editMemberName").value = name;
-            document.getElementById("membershipType").value = membershipType;
-
-            // Ensure status value is lowercase for comparison
-            let formattedStatus = memberStatus.trim().toLowerCase();
-
-            // Set radio button based on status
-            const radioButtons = document.getElementsByName('status');
-            for (const radioButton of radioButtons) {
-                if (radioButton.value.toLowerCase() === formattedStatus) {
-                    radioButton.checked = true;
-                    break;
-                }
-            }
-
-            // Show modal with animation
-            document.getElementById("renewMemberModal").classList.remove("hidden");
-            setTimeout(() => {
-                document.getElementById('editModalContent').classList.remove('scale-95', 'opacity-0');
-                document.getElementById('editModalContent').classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        // Close Renew Modal
-        function closeRenewModal() {
-            const modal = document.getElementById('editModalContent');
-            modal.classList.remove('scale-100', 'opacity-100');
-            modal.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                document.getElementById("renewMemberModal").classList.add("hidden");
-
-            }, 300);
-        }
-
-       
-
+    function closeRenewModal() {
+        const modal = document.getElementById('editModalContent');
+        modal.classList.remove('scale-100', 'opacity-100');
+        modal.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            document.getElementById("renewMemberModal").classList.add("hidden");
+        }, 300);
+    }
 </script>
-
-
 @endsection
