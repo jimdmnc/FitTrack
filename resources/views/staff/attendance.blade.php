@@ -453,5 +453,104 @@
             }
         });
     }); 
+    document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.querySelector('input[name="search"]');
+    const filterDropdown = document.getElementById('dropdown');
+    const selectedOption = document.getElementById('selected-option');
+    const tableContainer = document.querySelector('.overflow-x-auto');
+    const paginationContainer = document.querySelector('.pagination');
+    const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
+    let searchTimeout;
+
+    // Debounce function for search input
+    const debounce = (func, delay) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(func, delay);
+    };
+
+    // Function to fetch attendances based on search and filter
+    const fetchAttendances = () => {
+        const params = new URLSearchParams();
+
+        // Append search if present
+        if (searchInput.value.trim()) {
+            params.append('search', searchInput.value);
+        }
+
+        // Append filter from dropdown
+        const filterValue = new URLSearchParams(window.location.search).get('filter') || 'today';
+        params.append('filter', filterValue);
+
+        // Build URL for AJAX request
+        const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
+
+        // Show loading state while fetching
+        tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+
+        // Fetch data via AJAX
+        fetch(fetchUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            tableContainer.innerHTML = data.table;
+            paginationContainer.innerHTML = data.pagination || '';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+        });
+    };
+
+    // Listen for search input to trigger AJAX fetch
+    searchInput.addEventListener('input', () => {
+        debounce(fetchAttendances, 500);  // Trigger after 500ms of typing
+    });
+
+    // Clear search input and fetch new data
+    if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', () => {
+            searchInput.value = '';  // Clear input
+            fetchAttendances();  // Fetch data without search term
+            toggleClearButtonVisibility();  // Hide clear button
+        });
+    }
+
+    // Show/hide clear button based on search input
+    const toggleClearButtonVisibility = () => {
+        if (searchInput.value.trim()) {
+            clearSearchButton.style.display = 'flex';  // Show button
+        } else {
+            clearSearchButton.style.display = 'none';  // Hide button
+        }
+    };
+
+    // Update filter value and fetch new data without page reload
+    filterDropdown.querySelectorAll('li').forEach(option => {
+        option.addEventListener('click', () => {
+            const filterValue = option.getAttribute('data-value');
+            selectedOption.textContent = option.textContent;
+            filterDropdown.classList.add('hidden');
+
+            // Get current URL and update filter parameter
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            searchParams.set('filter', filterValue);
+
+            // Remove page parameter to reset pagination
+            searchParams.delete('page');
+            
+            // Update URL without refreshing the page
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            fetchAttendances();  // Trigger AJAX with updated filter
+        });
+    });
+
+    // Initialize the clear button visibility
+    toggleClearButtonVisibility();
+});
+
 </script>
 @endsection
