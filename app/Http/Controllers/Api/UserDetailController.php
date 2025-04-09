@@ -104,4 +104,62 @@ class UserDetailController extends Controller
             'data' => $userDetail
         ]);
     }
+
+
+
+    public function getDailyCalories(Request $request)
+    {
+        $user = $request->user(); // from Sanctum
+        $details = UserDetail::where('rfid_uid', $user->rfid_uid)->first();
+    
+        if (!$details) {
+            return response()->json(['error' => 'User details not found.'], 404);
+        }
+    
+        $age = $details->age;
+        $gender = $details->gender;
+        $weight = $details->weight;
+        $height = $details->height;
+        $activity = $details->activity_level;
+        $goal = $details->goal;
+    
+        // BMR calculation
+        $bmr = ($gender === 'Male')
+            ? 10 * $weight + 6.25 * $height - 5 * $age + 5
+            : 10 * $weight + 6.25 * $height - 5 * $age - 161;
+    
+        // TDEE (Total Daily Energy Expenditure)
+        $multiplier = match ($activity) {
+            'Beginner' => 1.2,
+            'Intermediate' => 1.55,
+            'Advanced' => 1.9,
+            default => 1.2,
+        };
+        $tdee = $bmr * $multiplier;
+    
+        if ($goal === 'Gain Muscle') {
+            $tdee += 300;
+        } elseif ($goal === 'Lose Weight') {
+            $tdee -= 300;
+        }
+    
+        $dailyCalories = (int) $tdee;
+    
+        // Macronutrient goals (percentage-based)
+        $proteinGrams = ($dailyCalories * 0.30) / 4;
+        $fatsGrams = ($dailyCalories * 0.25) / 9;
+        $carbsGrams = ($dailyCalories * 0.45) / 4;
+    
+        return response()->json([
+            'daily_calories' => $dailyCalories,
+            'protein' => (int) $proteinGrams,
+            'fats' => (int) $fatsGrams,
+            'carbs' => (int) $carbsGrams,
+        ]);
+    }
+    
+    
+
+
+
 }

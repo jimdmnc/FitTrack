@@ -52,9 +52,13 @@ class AuthController extends Controller
     // ✅ Get Authenticated User
     public function user(Request $request)
     {
-        return response()->json($request->user()); // Return the authenticated user
+        $user = $request->user(); // Get the authenticated user
+        return response()->json([
+            'user' => $user,
+            'rfid_uid' => $user->rfid_uid,  // Explicitly return RFID UID if needed
+        ]);
     }
-
+    
     // ✅ User Logout
     public function logout(Request $request)
     {

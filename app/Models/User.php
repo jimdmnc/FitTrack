@@ -139,6 +139,10 @@ public function getMembershipStatusTextAttribute()
     return self::MEMBERSHIP_TYPES[$this->membership_status] ?? 'Unknown';
 }
 
+public function foodLogs()
+{
+    return $this->hasMany(FoodLog::class);
+}
 
 
 }

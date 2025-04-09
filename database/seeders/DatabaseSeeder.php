@@ -23,8 +23,9 @@ class DatabaseSeeder extends Seeder
 
        // Call additional seeders
        $this->call([
-        \Database\Seeders\MemberSeeder::class, // Use the fully qualified namespace
-        \Database\Seeders\PaymentSeeder::class,
+
+        \Database\Seeders\FoodSeeder::class,
+
     ]);
         
     }
