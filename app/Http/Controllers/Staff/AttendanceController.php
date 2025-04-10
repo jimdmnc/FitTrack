@@ -54,6 +54,9 @@ class AttendanceController extends Controller
                 Carbon::now()->endOfMonth()
             ]);
             break;
+        default:
+            \Log::error("Invalid filter type: {$filter}");
+            return back()->with('error', 'Invalid filter type.');
     }
 
     $attendances = $query->orderBy('time_in', 'desc')
@@ -66,9 +69,9 @@ class AttendanceController extends Controller
     // If the request is AJAX
     if ($request->ajax()) {
         return response()->json([
-            'table' => view('partials.attendance.table', compact('attendances'))->render(),
-            'pagination' => view('vendor.pagination.default', compact('attendances'))->render(),
-        ]);
+            'table' => view('partials.attendance_table', compact('attendances'))->render(),
+            'pagination' => view('vendor.pagination.default', ['paginator' => $attendances])->render(),
+        ]);        
     }
 
     return view('staff.attendance', compact('attendances', 'filter', 'search'));

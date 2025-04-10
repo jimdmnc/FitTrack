@@ -767,5 +767,16 @@ function openViewModal(memberID, name, membershipType, startDate, status) {
             document.getElementById("renewMemberModal").classList.add("hidden");
         }, 300);
     }
+
+    function formatDisplayDate(date) {
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
 </script>
 @endsection

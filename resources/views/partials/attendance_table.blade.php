@@ -64,8 +64,8 @@
                 class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
                 @click="openModal({
                     user: {
-                        first_name: '{{ addslashes($attendance->user->first_name) }}',
-                        last_name: '{{ addslashes($attendance->user->last_name) }}',
+                        first_name: '{{ $attendance->user->first_name }}',
+                        last_name: '{{ $attendance->user->last_name }}',
                         membership_type: '{{ $attendance->user->getMembershipType() }}',
                         attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
                             return [
@@ -76,7 +76,7 @@
                         })) }}
                     },
                     time_in: '{{ $attendance->time_in->toISOString() }}',
-                    time_out: {{ $attendance->time_out ? "'".$attendance->time_out->toISOString()."'" : 'null' }},
+                    time_out: {{ $attendance->time_out ? "'".$attendance->time_out->toISOString()."'" : 'null' }}',
                     formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
                 })"
             >

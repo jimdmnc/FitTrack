@@ -495,12 +495,23 @@
         })
         .then(response => response.json())
         .then(data => {
-            tableContainer.innerHTML = data.table;
-            paginationContainer.innerHTML = data.pagination || '';
+            const tableContainer = document.querySelector('.overflow-x-auto');
+            const paginationContainer = document.querySelector('.pagination');
+
+            if (tableContainer) {
+                tableContainer.innerHTML = data.table;
+            }
+
+            if (paginationContainer) {
+                paginationContainer.innerHTML = data.pagination || '';
+            }
         })
         .catch(error => {
             console.error('Error:', error);
-            tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+            const tableContainer = document.querySelector('.overflow-x-auto');
+            if (tableContainer) {
+                tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+            }
         });
     };
 
@@ -520,12 +531,16 @@
 
     // Show/hide clear button based on search input
     const toggleClearButtonVisibility = () => {
-        if (searchInput.value.trim()) {
-            clearSearchButton.style.display = 'flex';  // Show button
-        } else {
-            clearSearchButton.style.display = 'none';  // Hide button
+        const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
+        if (clearSearchButton) {
+            if (searchInput.value.trim()) {
+                clearSearchButton.style.display = 'flex'; // Show button
+            } else {
+                clearSearchButton.style.display = 'none'; // Hide button
+            }
         }
     };
+
 
     // Update filter value and fetch new data without page reload
     filterDropdown.querySelectorAll('li').forEach(option => {

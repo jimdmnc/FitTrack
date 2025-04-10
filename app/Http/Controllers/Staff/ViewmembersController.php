@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Renewal;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ViewmembersController extends Controller
 {
@@ -16,6 +17,20 @@ class ViewmembersController extends Controller
         
         $query = User::where('role', 'user');
         
+
+        // Check for expired members by comparing the end_date with today's date
+         $currentDate = Carbon::now(); // Get today's date
+
+         $members = $query->get(); // Get all members first
+        foreach ($members as $member) {
+            if ($member->end_date && Carbon::parse($member->end_date)->isPast()) {
+                // Update member status to expired if the end date is in the past
+                $member->update(['member_status' => 'expired']);
+            }
+        }
+
+        $query = User::where('role', 'user');
+
         if ($status !== 'all') {
             $query->where('member_status', $status);
         }
