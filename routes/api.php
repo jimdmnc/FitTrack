@@ -20,8 +20,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/foods', [FoodController::class, 'index']);
 
-    Route::post('log-food', [FoodLogController::class, 'logFood']); // Log food
-    // Route::get('food-logs/{rfidUid}', [FoodLogController::class, 'getFoodLogs']); // Get food logs for a user
+    Route::post('/log-food', [FoodLogController::class, 'logFood']); // Log food
+    // Route to get food logs by date
+    Route::get('/food-logs', [FoodLogController::class, 'getFoodLogsByDate']);
 
 
 });

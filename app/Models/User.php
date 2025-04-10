@@ -141,7 +141,7 @@ public function getMembershipStatusTextAttribute()
 
 public function foodLogs()
 {
-    return $this->hasMany(FoodLog::class);
+    return $this->hasMany(FoodLog::class, 'rfid_uid', 'rfid_uid');
 }
 
 
