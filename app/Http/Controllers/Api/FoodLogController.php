@@ -14,65 +14,58 @@ class FoodLogController extends Controller
 {
     public function logFood(Request $request)
     {
-        // Add Sanctum authentication check
-        if (!auth('sanctum')->check()) {
-            return response()->json(['message' => 'Unauthenticated'], 401);
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return $this->unauthorizedResponse();
         }
 
         $validator = Validator::make($request->all(), [
             'food_id' => ['required', 'integer', Rule::exists('foods', 'id')],
-            'rfid_uid' => 'required|string|max:255',
-            'quantity' => 'required|numeric|min:0.01|max:1000',
-            'date' => 'required|date_format:Y-m-d',
-            'meal_type' => 'required|string|in:Breakfast,Lunch,Dinner,Snacks', // Add meal type validation
-            // Include the calculated fields in validation
-            'total_calories' => 'required|numeric',
-            'total_protein' => 'required|numeric',
-            'total_fats' => 'required|numeric',
-            'total_carbs' => 'required|numeric',
+            'rfid_uid' => ['required', 'string', 'max:255', Rule::exists('users', 'rfid_uid')],
+            'quantity' => ['required', 'numeric', 'min:0.01', 'max:1000'],
+            'date' => ['required', 'date_format:Y-m-d'],
+            'meal_type' => ['required', 'string', 'in:Breakfast,Lunch,Dinner,Snacks'],
+            'total_calories' => ['required', 'numeric', 'min:0'],
+            'total_protein' => ['required', 'numeric', 'min:0'],
+            'total_fats' => ['required', 'numeric', 'min:0'],
+            'total_carbs' => ['required', 'numeric', 'min:0'],
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
+            return $this->validationErrorResponse($validator);
         }
 
         try {
-            $validated = $validator->validated();
-            
-            // Get the authenticated user
-            $user = auth('sanctum')->user();
-            
             $foodLog = FoodLog::create([
-                'food_id' => $validated['food_id'],
-                'rfid_uid' => $validated['rfid_uid'],
-                'quantity' => $validated['quantity'],
-                'date' => $validated['date'],
-                'meal_type' => $validated['meal_type'], // Add meal type
-                'total_calories' => $validated['total_calories'],
-                'total_protein' => $validated['total_protein'],
-                'total_fats' => $validated['total_fats'],
-                'total_carbs' => $validated['total_carbs'],
+                'food_id' => $request->food_id,
+                'rfid_uid' => $request->rfid_uid,
+                'quantity' => $request->quantity,
+                'date' => $request->date,
+                'meal_type' => $request->meal_type,
+                'total_calories' => $request->total_calories,
+                'total_protein' => $request->total_protein,
+                'total_fats' => $request->total_fats,
+                'total_carbs' => $request->total_carbs,
             ]);
 
             return response()->json([
+                'success' => true,
                 'message' => 'Food logged successfully',
-                'data' => $foodLog
+                'data' => $foodLog->load('food') // Eager load food relationship
             ], 201);
 
         } catch (\Exception $e) {
-            Log::error('Food log error: '.$e->getMessage());
-            Log::error('Request data: '.json_encode($request->all()));
-            Log::error('Stack trace: '.$e->getTraceAsString());
+            Log::error('Food log error', [
+                'error' => $e->getMessage(),
+                'stack' => $e->getTraceAsString(),
+                'request' => $request->all(),
+                'user' => $user->id
+            ]);
             
-            return response()->json([
-                'message' => 'Server error occurred',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->serverErrorResponse($e);
         }
     }
+
 // app/Http/Controllers/FoodLogController.php
 public function getFoodLogsByDate(Request $request)
 {
@@ -88,7 +81,7 @@ public function getFoodLogsByDate(Request $request)
     // Format the logs to include the 'foodName' from the related 'food' table
     $formattedLogs = $logs->map(function ($log) {
         return [
-            // 'id' => $log->id,
+            'id' => $log->id,
             'food_id' => $log->food_id,
             'foodName' => $log->food ? $log->food->foodName : null, // Make sure food_name is being sent
             'meal_type' => $log->meal_type,
@@ -106,6 +99,42 @@ public function getFoodLogsByDate(Request $request)
         'food_logs' => $formattedLogs
     ]);
 }
+public function destroy($id)
+{
+    $user = auth('sanctum')->user();
+    if (!$user) {
+        return $this->unauthorizedResponse();
+    }
+
+    try {
+        $foodLog = FoodLog::where('id', $id)
+            ->where('rfid_uid', $user->rfid_uid)
+            ->firstOrFail();
+
+        $foodLog->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Food log deleted successfully'
+        ]);
+
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Food log not found or unauthorized'
+        ], 404);
+        
+    } catch (\Exception $e) {
+        Log::error('Delete food log error', [
+            'error' => $e->getMessage(),
+            'food_log_id' => $id,
+            'user' => $user->id
+        ]);
+        
+        return $this->serverErrorResponse($e);
+    }
+}
+
 
 
 }

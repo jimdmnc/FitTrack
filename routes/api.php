@@ -23,8 +23,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/log-food', [FoodLogController::class, 'logFood']); // Log food
     // Route to get food logs by date
     Route::get('/food-logs', [FoodLogController::class, 'getFoodLogsByDate']);
-
-
+    Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy'])
+    ->name('food-logs.destroy');
+ 
 });
 
 

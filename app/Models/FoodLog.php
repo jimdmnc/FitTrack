@@ -39,9 +39,5 @@ class FoodLog extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function getFoodNameAttribute()
-{
-    return optional($this->food)->name;
-}
 
 }
