@@ -128,7 +128,29 @@ class AttendanceController extends Controller
     }
     
   
-  
+    // public function getAttendanceDates(Request $request)
+    // {
+    //     $request->validate([
+    //         'rfid_uid' => 'required|string'
+    //     ]);
+    
+    //     $rfidUid = $request->input('rfid_uid');
+    
+    //     // Get all dates where user has attendance records
+    //     $dates = Attendance::where('rfid_uid', $rfidUid)
+    //         ->select('attendance_date')
+    //         ->distinct()
+    //         ->orderBy('attendance_date')
+    //         ->pluck('attendance_date')
+    //         ->map(function ($date) {
+    //             return $date->format('Y-m-d');
+    //         });
+    
+    //     return response()->json($dates);
+    // }
+
+
+
 
 
 }

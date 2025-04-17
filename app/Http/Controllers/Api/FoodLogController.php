@@ -66,7 +66,6 @@ class FoodLogController extends Controller
         }
     }
 
-// app/Http/Controllers/FoodLogController.php
 public function getFoodLogsByDate(Request $request)
 {
     // Get the date from the query string or default to today's date
@@ -99,6 +98,8 @@ public function getFoodLogsByDate(Request $request)
         'food_logs' => $formattedLogs
     ]);
 }
+
+
 public function destroy($id)
 {
     $user = auth('sanctum')->user();
@@ -136,5 +137,82 @@ public function destroy($id)
 }
 
 
+public function getAllFoodLogs(Request $request)
+{
+    $rfidUid = $request->query('rfid_uid');
+
+    if (!$rfidUid) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Missing rfid_uid'
+        ], 400);
+    }
+
+    $foodLogs = FoodLog::select('food_logs.*', 'foods.foodName')
+                ->join('foods', 'food_logs.food_id', '=', 'foods.id')
+                ->where('rfid_uid', $rfidUid)
+                ->orderBy('food_logs.created_at', 'desc')
+                ->get();
+
+    return response()->json([
+        'success' => true,
+        'food_logs' => $foodLogs
+    ]);
+}
+
+
+
+// public function getAllFoodLogs(Request $request)
+// {
+//     try {
+//         $user = auth()->user();
+        
+//         // Validate user has RFID UID
+//         if (!$user->rfid_uid) {
+//             return response()->json([
+//                 'status' => 'error',
+//                 'message' => 'User RFID not found'
+//             ], 400);
+//         }
+
+//         // Get logs with pagination (optional)
+//         $logs = FoodLog::with('food')
+//             ->where('rfid_uid', $user->rfid_uid)
+//             ->orderBy('date', 'desc')
+//             ->orderBy('created_at', 'desc')
+//             ->get();
+
+//         $formattedLogs = $logs->map(function ($log) {
+//             return [
+//                 'id' => $log->id,
+//                 'food_id' => $log->food_id,
+//                 'foodName' => $log->food ? $log->food->foodName : 'Unknown Food',
+//                 'meal_type' => $log->meal_type,
+//                 'quantity' => (float)$log->quantity,
+//                 'total_calories' => (float)$log->total_calories,
+//                 'total_protein' => (float)$log->total_protein,
+//                 'total_fats' => (float)$log->total_fats,
+//                 'total_carbs' => (float)$log->total_carbs,
+//                 'date' => $log->date, // Already formatted in model (see note below)
+//                 'time' => optional($log->created_at)->format('H:i:s'), // Add time
+//             ];
+//         });
+
+//         return response()->json([
+//             'status' => 'success',
+//             'data' => [
+//                 'food_logs' => $formattedLogs,
+//                 'count' => $logs->count()
+//             ]
+//         ]);
+
+//     } catch (\Exception $e) {
+//         return response()->json([
+//             'status' => 'error',
+//             'message' => 'Server error',
+//             'error' => $e->getMessage()
+//         ], 500);
+//     }
+// }
 
 }
