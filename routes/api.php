@@ -13,7 +13,16 @@ use App\Http\Controllers\Staff\AttendanceController;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
     Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/user/details/{rfid_uid}', [UserDetailController::class, 'getDetailsByRfid']);
+
+    // Route::get('/member/{rfid_uid}', 'AuthController@getMemberByRfid');
+    // Route::get('/member/{rfid_uid}', [AuthController::class, 'getMemberByRfid']);
+
+
+
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/saveWalkthroughData', [UserDetailController::class, 'store']);
     Route::get('/calories', [UserCalorieController::class, 'getCalories']);

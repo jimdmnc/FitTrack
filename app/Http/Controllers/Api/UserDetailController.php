@@ -105,7 +105,41 @@ class UserDetailController extends Controller
         ]);
     }
 
+     /**
+     * Get user details by RFID UID
+     */
+    public function getDetailsByRfid($rfid)
+    {
+        // First validate the RFID format if needed
+        if (empty($rfid)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'RFID UID is required'
+            ], 400);
+        }
 
+        $details = UserDetail::where('rfid_uid', $rfid)->first();
+
+        if (!$details) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User details not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'age' => $details->age,
+                'gender' => $details->gender,
+                'weight' => $details->weight,
+                'height' => $details->height,
+                'activity_level' => $details->activity_level,
+                'goal' => $details->goal,
+                'target_muscle' => $details->target_muscle
+            ]
+        ]);
+    }
 
     public function getDailyCalories(Request $request)
     {
