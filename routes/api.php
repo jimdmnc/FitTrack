@@ -18,8 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/user/details/{rfid_uid}', [UserDetailController::class, 'getDetailsByRfid']);
 
-    // Route::get('/member/{rfid_uid}', 'AuthController@getMemberByRfid');
-    // Route::get('/member/{rfid_uid}', [AuthController::class, 'getMemberByRfid']);
+
 
 
 
