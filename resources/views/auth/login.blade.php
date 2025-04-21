@@ -62,7 +62,7 @@
                     
                     <!-- Sign in Button -->
                     <div class="grid place-items-center">
-                        <button type="submit" class="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 py-2 px-10 rounded-xl text-white font-medium inline-block btn-primary pulse text-center">
+                        <button type="submit" class="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 hover:translate-y-[-2px] py-2 px-10 rounded-xl text-white font-medium inline-block btn-primary pulse text-center">
                             Login
                         </button>
                     </div>

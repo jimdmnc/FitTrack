@@ -5,9 +5,9 @@
     [x-cloak] { display: none !important; }
 </style>
 <!-- Loading Indicator -->
-<div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
+<!-- <div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
     <div class="h-full bg-[#e64a19] animate-pulse"></div>
-</div>
+</div> -->
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
     selectedAttendance: null,
@@ -47,19 +47,16 @@
                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                         </svg>
                     </div>
-                    
-                    <!-- Clear Button (Only When Search Active) -->
-                    @if(request('search'))
+
+                    <!-- Clear Search Button -->
                     <a 
-                        href="{{ route('staff.attendance.index') }}" 
-                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition duration-150 ease-in-out"
-                        aria-label="Clear search"
-                    >
-                        <svg class="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    id="clearSearch" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors hidden cursor-pointer"
+                    aria-label="Clear search">
+                        <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </a>
-                    @endif
+
                 </div>
             </form>
 
@@ -411,56 +408,53 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const selectBtn = document.getElementById('select-btn');
-        const dropdown = document.getElementById('dropdown');
-        const selectedOption = document.getElementById('selected-option');
-        const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
-
-        // Set initial selected option
-        const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
-        if (initialOption) {
-            selectedOption.textContent = initialOption.textContent;
-        }
-
-        selectBtn.addEventListener('click', () => {
-            dropdown.classList.toggle('hidden');
-        });
-
-        dropdown.querySelectorAll('li').forEach(option => {
-            option.addEventListener('click', () => {
-                const filterValue = option.getAttribute('data-value');
-                selectedOption.textContent = option.textContent;
-                dropdown.classList.add('hidden');
-                
-                // Get current URL parameters
-                const url = new URL(window.location.href);
-                const searchParams = new URLSearchParams(url.search);
-                
-                // Update filter parameter
-                searchParams.set('filter', filterValue);
-                
-                // Remove page parameter to go back to first page
-                searchParams.delete('page');
-                
-                // Update URL
-                window.location.href = `${url.pathname}?${searchParams.toString()}`;
-            });
-        });
-
-        window.addEventListener('click', (e) => {
-            if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-    }); 
-    document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.querySelector('input[name="search"]');
-    const filterDropdown = document.getElementById('dropdown');
+    const selectBtn = document.getElementById('select-btn');
+    const dropdown = document.getElementById('dropdown');
     const selectedOption = document.getElementById('selected-option');
+    const searchInput = document.querySelector('input[name="search"]');
+    const clearSearchButton = document.getElementById('clearSearch');
     const tableContainer = document.querySelector('.overflow-x-auto');
     const paginationContainer = document.querySelector('.pagination');
-    const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
     let searchTimeout;
+    const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
+
+    // Set initial selected option
+    const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
+    if (initialOption) {
+        selectedOption.textContent = initialOption.textContent;
+    }
+
+    selectBtn.addEventListener('click', () => {
+        dropdown.classList.toggle('hidden');
+    });
+
+    dropdown.querySelectorAll('li').forEach(option => {
+        option.addEventListener('click', () => {
+            const filterValue = option.getAttribute('data-value');
+            selectedOption.textContent = option.textContent;
+            dropdown.classList.add('hidden');
+            
+            // Get current URL parameters
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            
+            // Update filter parameter
+            searchParams.set('filter', filterValue);
+            
+            // Remove page parameter to go back to first page
+            searchParams.delete('page');
+            
+            // Update URL and load new data
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            fetchAttendances();
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
 
     // Debounce function for search input
     const debounce = (func, delay) => {
@@ -495,77 +489,55 @@
         })
         .then(response => response.json())
         .then(data => {
-            const tableContainer = document.querySelector('.overflow-x-auto');
-            const paginationContainer = document.querySelector('.pagination');
-
             if (tableContainer) {
                 tableContainer.innerHTML = data.table;
             }
 
-            if (paginationContainer) {
-                paginationContainer.innerHTML = data.pagination || '';
+            if (paginationContainer && data.pagination) {
+                paginationContainer.innerHTML = data.pagination;
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            const tableContainer = document.querySelector('.overflow-x-auto');
             if (tableContainer) {
                 tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
             }
         });
     };
 
-    // Listen for search input to trigger AJAX fetch
-    searchInput.addEventListener('input', () => {
-        debounce(fetchAttendances, 500);  // Trigger after 500ms of typing
-    });
-
-    // Clear search input and fetch new data
-    if (clearSearchButton) {
-        clearSearchButton.addEventListener('click', () => {
-            searchInput.value = '';  // Clear input
-            fetchAttendances();  // Fetch data without search term
-            toggleClearButtonVisibility();  // Hide clear button
-        });
-    }
-
     // Show/hide clear button based on search input
     const toggleClearButtonVisibility = () => {
-        const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
-        if (clearSearchButton) {
-            if (searchInput.value.trim()) {
-                clearSearchButton.style.display = 'flex'; // Show button
-            } else {
-                clearSearchButton.style.display = 'none'; // Hide button
-            }
+        if (searchInput.value.trim()) {
+            clearSearchButton.classList.remove('hidden');
+        } else {
+            clearSearchButton.classList.add('hidden');
         }
     };
 
-
-    // Update filter value and fetch new data without page reload
-    filterDropdown.querySelectorAll('li').forEach(option => {
-        option.addEventListener('click', () => {
-            const filterValue = option.getAttribute('data-value');
-            selectedOption.textContent = option.textContent;
-            filterDropdown.classList.add('hidden');
-
-            // Get current URL and update filter parameter
-            const url = new URL(window.location.href);
-            const searchParams = new URLSearchParams(url.search);
-            searchParams.set('filter', filterValue);
-
-            // Remove page parameter to reset pagination
-            searchParams.delete('page');
-            
-            // Update URL without refreshing the page
-            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
-            fetchAttendances();  // Trigger AJAX with updated filter
-        });
+    // Listen for search input to trigger AJAX fetch
+    searchInput.addEventListener('input', () => {
+        toggleClearButtonVisibility();
+        debounce(fetchAttendances, 500); // Trigger after 500ms of typing
     });
 
-    // Initialize the clear button visibility
+    // Clear search button functionality
+    if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', () => {
+            searchInput.value = ''; // Clear input
+            clearSearchButton.classList.add('hidden'); // Hide clear button
+            
+            // Update URL to remove search parameter
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            searchParams.delete('search');
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            
+            fetchAttendances(); // Fetch data without search term
+        });
+    }
+
+    // Initialize the clear button visibility on page load
     toggleClearButtonVisibility();
 });
-
 </script>
 @endsection

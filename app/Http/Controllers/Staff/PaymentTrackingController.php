@@ -14,6 +14,16 @@ class PaymentTrackingController extends Controller
 {
     $query = MembersPayment::with('user')->orderBy('payment_date', 'desc');
 
+    // Search functionality
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->whereHas('user', function($q) use ($search) {
+            $q->where('first_name', 'like', "%$search%")
+              ->orWhere('last_name', 'like', "%$search%")
+              ->orWhere('rfid_uid', 'like', "%$search%");
+        });
+    }
+
     // Filter by payment method
     if ($request->filled('payment_method')) {
         $query->where('payment_method', $request->payment_method);
@@ -43,7 +53,12 @@ class PaymentTrackingController extends Controller
     }
 
     // Fetch the filtered results with pagination
-    $payments = $query->paginate(10); // Changed from get() to paginate()
+    $payments = $query->paginate(10);
+
+    // If it's an AJAX request, return the entire table section
+    if ($request->ajax()) {
+        return view('staff.paymentTracking', compact('payments'))->render();
+    }
 
     return view('staff.paymentTracking', compact('payments'));
 }

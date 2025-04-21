@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<!-- <div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
+    <div class="h-full bg-[#e64a19] animate-pulse"></div>
+</div> -->
 <div class="bg-[#121212] p-2">
     <!-- Header Section with Gradient Card -->
     <div class="py-8">
@@ -23,6 +26,15 @@
                             </svg>
                         </div>
                         <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-full bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments...">
+                        <!-- Clear Search Button -->
+                        <a 
+                            id="clearSearch" 
+                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors hidden cursor-pointer"
+                            aria-label="Clear search">
+                            <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </a>
                     </div>
                     <div class="flex items-center gap-3">
                         <!-- Payment Method Filter -->
@@ -136,37 +148,117 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const paymentMethodFilter = document.getElementById("paymentMethodFilter");
-        const timeFilter = document.getElementById("timeFilter");
-
-        function applyFilters() {
-            let params = new URLSearchParams(window.location.search);
-            if (paymentMethodFilter.value) {
-                params.set("payment_method", paymentMethodFilter.value);
-            } else {
-                params.delete("payment_method");
-            }
-            if (timeFilter.value) {
-                params.set("time_filter", timeFilter.value);
-            } else {
-                params.delete("time_filter");
-            }
-            window.location.search = params.toString(); // Reload page with new filters
-        }
-
-        paymentMethodFilter.addEventListener("change", applyFilters);
-        timeFilter.addEventListener("change", applyFilters);
-
-        // Set the selected values when the page loads
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has("payment_method")) {
-            paymentMethodFilter.value = urlParams.get("payment_method");
-        }
-        if (urlParams.has("time_filter")) {
-            timeFilter.value = urlParams.get("time_filter");
-        }
+$(document).ready(function () {
+    // Define the input and select elements
+    const paymentMethodFilter = $('#paymentMethodFilter');
+    const timeFilter = $('#timeFilter');
+    const searchInput = $('input[type="search"]');
+    const loadingIndicator = $('#loadingIndicator');
+    const clearSearchButton = $('#clearSearch');
+    
+    // Debounce function to prevent too many AJAX requests while typing
+    let debounceTimer;
+    function debounce(func, timeout = 500) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(func, timeout);
+    }
+    
+    // Listen for input in the search field with debounce
+    searchInput.on('input', function () {
+        debounce(fetchPayments);
     });
-</script>
 
+    // Listen for changes in the filters
+    paymentMethodFilter.add(timeFilter).on('change', function () {
+        fetchPayments();
+    });
+
+    // Function to fetch payments based on search and filters
+    function fetchPayments() {
+        const search = searchInput.val();
+        const paymentMethod = paymentMethodFilter.val();
+        const time = timeFilter.val();
+
+        // Show loading indicator
+        loadingIndicator.removeClass('hidden')
+
+        // Show loading state in table
+        $('tbody').html('<tr><td colspan="7" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
+        
+        // Send an AJAX request
+        $.ajax({
+            url: '{{ route("staff.paymentTracking") }}',
+            type: 'GET',
+            data: {
+                search: search,
+                payment_method: paymentMethod,
+                time_filter: time
+            },
+            success: function (data) {
+                // Replace the entire table (including pagination if needed)
+                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
+                // Hide loading indicator
+                loadingIndicator.addClass('hidden');
+            },
+            error: function () {
+                $('tbody').html('<tr><td colspan="7" class="text-center py-8 text-red-500">Error loading payments</td></tr>');
+                // Hide loading indicator even on error
+                loadingIndicator.addClass('hidden');
+            }
+        });
+    }
+
+    // Show/hide the clear search button based on input value
+    const toggleClearButtonVisibility = () => {
+        if (searchInput.val().trim() !== '') {
+            clearSearchButton.removeClass('hidden');  // Show button
+        } else {
+            clearSearchButton.addClass('hidden');    // Hide button
+        }
+    };
+
+    // Clear search functionality
+    clearSearchButton.on('click', function() {
+        searchInput.val('');  // Clear the input field
+        fetchPayments();      // Fetch data without search term
+        toggleClearButtonVisibility();  // Hide the clear button
+    });
+
+    // Set initial filter values from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has("payment_method")) {
+        paymentMethodFilter.val(urlParams.get("payment_method"));
+    }
+    if (urlParams.has("time_filter")) {
+        timeFilter.val(urlParams.get("time_filter"));
+    }
+});
+// Handle pagination links with AJAX
+$(document).on('click', '.pagination a', function(e) {
+    e.preventDefault();
+    let url = $(this).attr('href');
+
+    // Show loading indicator
+    loadingIndicator.removeClass('hidden');
+
+    $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
+                // Update URL without reload
+                window.history.pushState({}, '', url);
+                // Hide loading indicator
+                loadingIndicator.addClass('hidden');
+            },
+            error: function() {
+                // Hide loading indicator even on error
+                loadingIndicator.addClass('hidden');
+            }
+    });
+});
+
+toggleClearButtonVisibility();
+
+</script>
 @endsection
