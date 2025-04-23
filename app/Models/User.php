@@ -21,6 +21,8 @@ class User extends Authenticatable implements MustVerifyEmail
         30 => 'Month',
         365 => 'Annual',
         1 => 'Session',
+        // 'custom' => 'Custom Days', // New option
+
     ];
 
     protected $fillable = [
@@ -97,7 +99,7 @@ class User extends Authenticatable implements MustVerifyEmail
     // Method to get the membership type as a word
     public function getMembershipType()
     {
-        return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'N/A';
+        return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'Session';
     }
         // Relationship to gym entries
         public function gymEntries()
@@ -127,7 +129,7 @@ public function attendance()
     
     public function getMembershipTypeNameAttribute()
 {
-    return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'N/A';
+    return self::MEMBERSHIP_TYPES[$this->membership_type] ?? 'Session';
 }
 
     

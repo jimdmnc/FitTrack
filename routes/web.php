@@ -31,6 +31,11 @@ Route::get('/landing', function () {
     return view('self.landing');
 })->name('self.landing');
 
+// routes/web.php
+Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
+
+// routes/web.php
+Route::get('/check-approval', [SelfRegistrationController::class, 'checkApproval'])->name('self.checkApproval');
 
 
 // Route to handle attendance

@@ -72,7 +72,7 @@
     <div class="container mx-auto flex justify-between items-center">
         <!-- Logo Image -->
         <div class="flex items-center">
-        <img src="images/fittracklogo.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
+        <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
         <!-- <div class="text-2xl font-bold">FitTrack</div> -->
         </div>
         
@@ -84,11 +84,11 @@
         </div>
 
         <!-- Time Out Button -->
-        @if(auth()->check() && auth()->user()->rfid_uid)
-        <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-3 text-sm rounded-lg transition duration-300 flex items-center">
+        @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+        <button onclick="document.getElementById('timeout-modal').showModal()" 
+        class="bg-red-600 hover:bg-red-700 text-white ml-20 font-bold py-2 px-3 text-sm rounded-full transition duration-300 flex items-center"                id="timeout-button">
             <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
         </button>
-
         @endif
 
         <!-- Mobile Menu Button -->
@@ -205,27 +205,29 @@
             </script>
         @endif   
         <!-- Time Out Confirmation Modal -->
-                <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-                    <div class="text-center">
-                        <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-                        <p class="mb-6">Are you sure you want to time out?</p>
-                        
-                        <div class="flex justify-center gap-4">
-                            <form action="{{ url('/attendance/timeout') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                                <button type="submit" 
-                                        class="bg-red-600 text-white hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                                    Yes, Time Out
-                                </button>
-                            </form>
-                            <button onclick="document.getElementById('timeout-modal').close()" 
-                                    class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                                Cancel
+        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+                <p class="mb-6">Are you sure you want to time out?</p>
+                
+                <div class="flex justify-center gap-4">
+                    @auth
+                        <form action="{{ url('/attendance/timeout') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                            <button type="submit" 
+                                    class="bg-red-600 text-white hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                                Yes, Time Out
                             </button>
-                        </div>
-                    </div>
-                </dialog>
+                        </form>
+                    @endauth
+                    <button onclick="document.getElementById('timeout-modal').close()" 
+                            class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </dialog>
     <!-- Hero Section -->
     <section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
         <!-- Background with subtle gradient overlay -->
@@ -255,12 +257,7 @@
                     Get Started
                 </a>
                 
-                <a href="#" class="bg-white hover:bg-gray-100 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
-                    <svg class="w-5 h-5 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                        <path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                    </svg>
-                    Google Play
-                </a>
+              
             </div>
             
         </div>
@@ -394,7 +391,7 @@
                 <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
                 <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
                 <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                <a href="http://192.168.1.13/session-registration" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+                <a href="http://192.168.1.14/session-registration" class="text-blue-600 hover:text-blue-800">Click here to register</a>
                 <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
             </div>
             
@@ -581,6 +578,25 @@
                 }
             });
         });
+
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Hide button if session says we've timed out
+    @if(session('timed_out'))
+        const timeoutButton = document.getElementById('timeout-button');
+        if (timeoutButton) timeoutButton.style.display = 'none';
+    @endif
+
+    // Handle form submission
+    const timeoutForm = document.querySelector('#timeout-modal form');
+    if (timeoutForm) {
+        timeoutForm.addEventListener('submit', function() {
+            const timeoutButton = document.getElementById('timeout-button');
+            if (timeoutButton) timeoutButton.style.display = 'none';
+        });
+    }
+});
     </script>
 </body>
 </html>

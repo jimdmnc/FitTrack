@@ -60,7 +60,7 @@
 
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             @if($attendance->user)
-            <button 
+            <!-- <button 
                 class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
                 @click="openModal({
                     user: {
@@ -81,7 +81,7 @@
                 })"
             >
                 Details
-            </button>
+            </button> -->
             @else
             <span class="text-gray-400">N/A</span>
             @endif

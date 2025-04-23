@@ -120,34 +120,16 @@ class AttendanceController extends Controller
     
             \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Time-out recorded at " . now());
     
-            return back()->with('success', "✅ Time-out recorded successfully for {$user->first_name}. Membership marked as expired.");
-        } catch (\Exception $e) {
+            return back()
+            ->with('success', "✅ Time-out recorded successfully for {$user->first_name}. Membership marked as expired.")
+            ->with('timed_out', true); 
+         } catch (\Exception $e) {
             \Log::error("❌ Time-out error: " . $e->getMessage());
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
     
   
-    // public function getAttendanceDates(Request $request)
-    // {
-    //     $request->validate([
-    //         'rfid_uid' => 'required|string'
-    //     ]);
-    
-    //     $rfidUid = $request->input('rfid_uid');
-    
-    //     // Get all dates where user has attendance records
-    //     $dates = Attendance::where('rfid_uid', $rfidUid)
-    //         ->select('attendance_date')
-    //         ->distinct()
-    //         ->orderBy('attendance_date')
-    //         ->pluck('attendance_date')
-    //         ->map(function ($date) {
-    //             return $date->format('Y-m-d');
-    //         });
-    
-    //     return response()->json($dates);
-    // }
 
 
 

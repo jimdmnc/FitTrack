@@ -20,7 +20,6 @@ class MembershipRegistrationController extends Controller
         return view('staff.membershipRegistration');
     }
 
-    // Handle the form submission (Manual Registration)
     public function store(Request $request)
     {
         try {
@@ -36,7 +35,8 @@ class MembershipRegistrationController extends Controller
                 ],
                 'gender' => 'required|string|in:male,female,other',
                 'phone_number' => 'required|string|max:15',
-                'membership_type' => 'required|string|in:1,7,30,365',
+                'membership_type' => 'required|string|in:custom,7,30,365', // Add 'custom' to allowed values
+                'custom_days' => 'required_if:membership_type,custom|integer|min:1',
                 'start_date' => 'required|date|after_or_equal:today',
                 'birthdate' => 'required|date|before:today',
                 'uid' => [
@@ -49,13 +49,20 @@ class MembershipRegistrationController extends Controller
     
             // Membership payment rates
             $paymentRates = [
-                "1" => 60,   // 1-day session
                 "7" => 300,   // 7-day weekly
                 "30" => 800, // 30-day monthly
                 "365" => 2000 // 1-year membership
             ];
     
-            $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
+            // Calculate payment amount
+            if ($validatedData['membership_type'] === 'custom') {
+                $days = $validatedData['custom_days'];
+                $paymentAmount = $days * 60; // 60 pesos per day
+                $membershipDays = $days;
+            } else {
+                $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
+                $membershipDays = $validatedData['membership_type'];
+            }
     
             // Generate password
             $lastName = strtolower($validatedData['last_name']);
@@ -63,7 +70,7 @@ class MembershipRegistrationController extends Controller
             $generatedPassword = $lastName . $birthdate;
     
             // Use transaction for data consistency
-            DB::transaction(function () use ($validatedData, $paymentAmount, $generatedPassword) {
+            DB::transaction(function () use ($validatedData, $paymentAmount, $generatedPassword, $membershipDays) {
                 // Create user with default session_status as 'pending'
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
@@ -71,7 +78,9 @@ class MembershipRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'phone_number' => $validatedData['phone_number'],
-                    'membership_type' => $validatedData['membership_type'],
+                    'membership_type' => $validatedData['membership_type'] === 'custom' 
+                        ? $validatedData['custom_days'] 
+                        : $validatedData['membership_type'],
                     'start_date' => $validatedData['start_date'],
                     'birthdate' => $validatedData['birthdate'],
                     'password' => Hash::make($generatedPassword),
@@ -79,7 +88,7 @@ class MembershipRegistrationController extends Controller
                     'rfid_uid' => $validatedData['uid'],
                     'session_status' => 'pending', // Default status
                     'end_date' => Carbon::parse($validatedData['start_date'])
-                        ->addDays((int)$validatedData['membership_type'])
+                        ->addDays((int)$membershipDays)
                         ->format('Y-m-d'),
                 ]);
     
@@ -97,7 +106,6 @@ class MembershipRegistrationController extends Controller
     
                 // Update RFID tag
                 RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
-    
             });
     
             return redirect()->route('staff.membershipRegistration')
