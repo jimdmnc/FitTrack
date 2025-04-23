@@ -24,28 +24,26 @@
                     </a>
                 @endif
 
-                <!-- Page Numbers -->
-                @foreach ($elements as $element)
-                    <!-- "Three Dots" Separator -->
-                    @if (is_string($element))
-                        <span class="px-1 text-gray-300 mx-1">{{ $element }}</span>
-                    @endif
+                <!-- Pagination Links (Page Numbers) -->
+                @php
+                    $start = max($paginator->currentPage() - 2, 1);
+                    $end = min($start + 4, $paginator->lastPage());
+                    if ($end - $start < 4) {
+                        $start = max($end - 4, 1);
+                    }
+                @endphp
 
-                    <!-- Array Of Links -->
-                    @if (is_array($element))
-                        @foreach ($element as $page => $url)
-                            @if ($page == $paginator->currentPage())
-                                <span class="inline-flex items-center justify-center w-8 h-8 mx-1 text-gray-200 bg-[#ff5722] hover:translate-y-[-2px] rounded-full font-medium shadow-2xl" aria-current="page">
-                                    {{ $page }}
-                                </span>
-                            @else
-                                <a href="{{ $url }}" class="inline-flex items-center justify-center w-8 h-8 mx-1 text-gray-200 transition-transform duration-150 rounded-full bg-[#444444] hover:bg-[#ff5722] hover:translate-y-[-2px] hover:text-gray-200 shadow-2xl">
-                                    {{ $page }}
-                                </a>
-                            @endif
-                        @endforeach
+                @for ($i = $start; $i <= $end; $i++)
+                    @if ($i == $paginator->currentPage())
+                        <span class="inline-flex items-center justify-center w-8 h-8 mx-1 text-gray-200 bg-[#ff5722] hover:translate-y-[-2px] rounded-full font-medium shadow-2xl" aria-current="page">
+                            {{ $i }}
+                        </span>
+                    @else
+                        <a href="{{ $paginator->url($i) }}" class="inline-flex items-center justify-center w-8 h-8 mx-1 text-gray-200 transition-transform duration-150 rounded-full bg-[#444444] hover:bg-[#ff5722] hover:translate-y-[-2px] hover:text-gray-200 shadow-2xl">
+                            {{ $i }}
+                        </a>
                     @endif
-                @endforeach
+                @endfor
 
                 <!-- Next Page Button -->
                 @if ($paginator->hasMorePages())

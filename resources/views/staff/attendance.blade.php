@@ -62,13 +62,14 @@
 
             <div class="relative w-full sm:w-auto">
                 <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center">
-                    <span id="selected-option">Today</span>
+                    <span id="selected-option">all</span>
                     <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                     </svg>
                 </button>
 
                 <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
+                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
@@ -140,32 +141,32 @@
                         </td>
                         
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        @if($attendance->user)
-                        <button 
-                            class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
-                            @click="openModal({
-                                user: {
-                                    first_name: '{{ addslashes($attendance->user->first_name) }}',
-                                    last_name: '{{ addslashes($attendance->user->last_name) }}',
-                                    membership_type: '{{ $attendance->user->getMembershipType() }}',
-                                    attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
-                                        return [
-                                            'time_in' => $a->time_in->toISOString(),
-                                            'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
-                                            'formatted_duration' => $a->formatted_duration ?? 'N/A'
-                                        ];
-                                    })) }}
-                                },
-                                time_in: '{{ $attendance->time_in->toISOString() }}',
-                                time_out: {{ $attendance->time_out ? "'".$attendance->time_out->toISOString()."'" : 'null' }},
-                                formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
-                            })"
-                        >
-                            Details
-                        </button>
-                        @else
-                        <span class="text-gray-400">N/A</span>
-                        @endif
+                            @if($attendance->user)
+                            <button 
+                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
+                                @click="openModal({
+                                    user: {
+                                        first_name: '{{ $attendance->user->first_name }}',
+                                        last_name: '{{ $attendance->user->last_name }}',
+                                        membership_type: '{{ $attendance->user->getMembershipType() }}',
+                                        attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
+                                            return [
+                                                'time_in' => $a->time_in->toISOString(),
+                                                'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
+                                                'formatted_duration' => $a->formatted_duration ?? 'N/A'
+                                            ];
+                                        })) }}
+                                    },
+                                    time_in: '{{ $attendance->time_in->toISOString() }}',
+                                    time_out: '{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}',
+                                    formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
+                                })"
+                            >
+                                Details
+                            </button>
+                            @else
+                            <span class="text-gray-400">N/A</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -407,137 +408,220 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    const selectBtn = document.getElementById('select-btn');
-    const dropdown = document.getElementById('dropdown');
-    const selectedOption = document.getElementById('selected-option');
-    const searchInput = document.querySelector('input[name="search"]');
-    const clearSearchButton = document.getElementById('clearSearch');
-    const tableContainer = document.querySelector('.overflow-x-auto');
-    const paginationContainer = document.querySelector('.pagination');
-    let searchTimeout;
-    const currentFilter = new URLSearchParams(window.location.search).get('filter') || 'today';
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initial setup
+        initializeAttendancePage();
 
-    // Set initial selected option
-    const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
-    if (initialOption) {
-        selectedOption.textContent = initialOption.textContent;
-    }
-
-    selectBtn.addEventListener('click', () => {
-        dropdown.classList.toggle('hidden');
+        // Also run it when Alpine.js is finished initializing
+        document.addEventListener('alpine:init', initializeAttendancePage);
     });
 
-    dropdown.querySelectorAll('li').forEach(option => {
-        option.addEventListener('click', () => {
-            const filterValue = option.getAttribute('data-value');
-            selectedOption.textContent = option.textContent;
-            dropdown.classList.add('hidden');
-            
-            // Get current URL parameters
-            const url = new URL(window.location.href);
-            const searchParams = new URLSearchParams(url.search);
-            
-            // Update filter parameter
-            searchParams.set('filter', filterValue);
-            
-            // Remove page parameter to go back to first page
-            searchParams.delete('page');
-            
-            // Update URL and load new data
-            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
-            fetchAttendances();
+    // Function to initialize all the attendance page functionality
+    function initializeAttendancePage() {
+        const selectBtn = document.getElementById('select-btn');
+        const dropdown = document.getElementById('dropdown');
+        const selectedOption = document.getElementById('selected-option');
+        const searchInput = document.querySelector('input[name="search"]');
+        const clearSearchButton = document.getElementById('clearSearch');
+        const tableContainer = document.querySelector('.overflow-x-auto');
+        const paginationContainer = document.querySelector('.mt-4');
+        let searchTimeout;
+        
+        // Only proceed if we're on the attendance page
+        if (!selectBtn || !tableContainer) return;
+
+        // Set up the current filter based on URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentFilter = urlParams.get('filter') || 'all';
+
+        // Set initial selected option
+        const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
+        if (initialOption) {
+            selectedOption.textContent = initialOption.textContent;
+        }
+
+        // Set up dropdown toggle
+        selectBtn.addEventListener('click', () => {
+            dropdown.classList.toggle('hidden');
         });
-    });
 
-    window.addEventListener('click', (e) => {
-        if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
-            dropdown.classList.add('hidden');
-        }
-    });
+        // Set up filter options
+        dropdown.querySelectorAll('li').forEach(option => {
+            option.addEventListener('click', () => {
+                const filterValue = option.getAttribute('data-value');
+                selectedOption.textContent = option.textContent;
+                dropdown.classList.add('hidden');
+                
+                // Get current URL parameters
+                const url = new URL(window.location.href);
+                const searchParams = new URLSearchParams(url.search);
+                
+                // Update filter parameter
+                searchParams.set('filter', filterValue);
+                
+                // Remove page parameter to go back to first page
+                searchParams.delete('page');
+                
+                // Update URL and load new data
+                window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+                fetchAttendances();
+            });
+        });
 
-    // Debounce function for search input
-    const debounce = (func, delay) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(func, delay);
-    };
-
-    // Function to fetch attendances based on search and filter
-    const fetchAttendances = () => {
-        const params = new URLSearchParams();
-
-        // Append search if present
-        if (searchInput.value.trim()) {
-            params.append('search', searchInput.value);
-        }
-
-        // Append filter from dropdown
-        const filterValue = new URLSearchParams(window.location.search).get('filter') || 'today';
-        params.append('filter', filterValue);
-
-        // Build URL for AJAX request
-        const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
-
-        // Show loading state while fetching
-        tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
-
-        // Fetch data via AJAX
-        fetch(fetchUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (tableContainer) {
-                tableContainer.innerHTML = data.table;
-            }
-
-            if (paginationContainer && data.pagination) {
-                paginationContainer.innerHTML = data.pagination;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            if (tableContainer) {
-                tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+        // Close dropdown when clicking outside
+        window.addEventListener('click', (e) => {
+            if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
             }
         });
-    };
 
-    // Show/hide clear button based on search input
-    const toggleClearButtonVisibility = () => {
-        if (searchInput.value.trim()) {
-            clearSearchButton.classList.remove('hidden');
-        } else {
-            clearSearchButton.classList.add('hidden');
+        // Function to fetch attendances based on search and filter
+        window.fetchAttendances = function() {
+            const params = new URLSearchParams();
+
+            // Append search if present
+            if (searchInput.value.trim()) {
+                params.append('search', searchInput.value);
+            }
+
+            // Append filter from dropdown (only if not 'all')
+            const filterValue = new URLSearchParams(window.location.search).get('filter') || 'all';
+            if (filterValue !== 'all') {
+                params.append('filter', filterValue);
+            }
+
+            // Get current page number from the URL or default to 1
+            const page = new URLSearchParams(window.location.search).get('page') || 1;
+            params.append('page', page);  // Add the current page to the request
+
+            // Build URL for AJAX request
+            const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
+
+            // Show loading state while fetching
+            tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+
+            // Fetch data via AJAX
+            fetch(fetchUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (tableContainer) {
+                    tableContainer.innerHTML = data.table;
+                }
+
+                if (paginationContainer && data.pagination) {
+                    paginationContainer.innerHTML = data.pagination;
+                }
+
+                // Reinitialize event listeners for the new content
+                initializeModalButtons();
+                attachPaginationListeners(); // Reattach pagination listeners after the new data
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if (tableContainer) {
+                    tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+                }
+            });
+        };
+
+
+        // Attach event listeners to pagination links
+        function attachPaginationListeners() {
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Get the page URL from pagination link
+                    const pageUrl = this.getAttribute('href');
+                    const page = new URL(pageUrl).searchParams.get('page');  // Get page number from URL
+
+                    // Update browser URL without page reload
+                    const url = new URL(window.location.href);
+                    const searchParams = new URLSearchParams(url.search);
+                    searchParams.set('page', page);  // Update page number in URL
+                    window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+
+                    // Fetch attendance data for the new page
+                    fetchAttendances();
+                });
+            });
         }
-    };
 
-    // Listen for search input to trigger AJAX fetch
-    searchInput.addEventListener('input', () => {
+        // Function to initialize modal open buttons
+        function initializeModalButtons() {
+            const detailButtons = document.querySelectorAll('[x-on\\:click="openModal"]');
+            detailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // This will trigger Alpine.js openModal function
+                    const attendanceData = JSON.parse(this.getAttribute('x-data'));
+                    // Use Alpine.js to open the modal
+                    const component = Alpine.getRoot(this);
+                    if (component && component.$data) {
+                        component.$data.openModal(attendanceData);
+                    }
+                });
+            });
+        }
+
+        // Show/hide clear button based on search input
+        const toggleClearButtonVisibility = () => {
+            if (searchInput.value.trim()) {
+                clearSearchButton.classList.remove('hidden');
+            } else {
+                clearSearchButton.classList.add('hidden');
+            }
+        };
+
+        // Debounce function for search input
+        const debounce = (func, delay) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(func, delay);
+        };
+
+        // Listen for search input to trigger AJAX fetch
+        searchInput.addEventListener('input', () => {
+            toggleClearButtonVisibility();
+            debounce(fetchAttendances, 500); // Trigger after 500ms of typing
+        });
+
+        // Clear search button functionality
+        if (clearSearchButton) {
+            clearSearchButton.addEventListener('click', () => {
+                searchInput.value = ''; // Clear input
+                clearSearchButton.classList.add('hidden'); // Hide button
+                
+                // Update URL to remove search parameter
+                const url = new URL(window.location.href);
+                const searchParams = new URLSearchParams(url.search);
+                searchParams.delete('search');
+                window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+
+                fetchAttendances(); // Fetch data without search term
+            });
+        }
+
+        // Initialize the clear button visibility on page load
         toggleClearButtonVisibility();
-        debounce(fetchAttendances, 500); // Trigger after 500ms of typing
-    });
-
-    // Clear search button functionality
-    if (clearSearchButton) {
-        clearSearchButton.addEventListener('click', () => {
-            searchInput.value = ''; // Clear input
-            clearSearchButton.classList.add('hidden'); // Hide clear button
-            
-            // Update URL to remove search parameter
-            const url = new URL(window.location.href);
-            const searchParams = new URLSearchParams(url.search);
-            searchParams.delete('search');
-            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
-            
-            fetchAttendances(); // Fetch data without search term
-        });
+        
+        // Initialize modal buttons
+        initializeModalButtons();
+        
+        // Fetch initial data if this is an initial page load (not a navigation)
+        if (performance.navigation.type === performance.navigation.TYPE_NAVIGATE) {
+            fetchAttendances();
+        }
     }
-
-    // Initialize the clear button visibility on page load
-    toggleClearButtonVisibility();
-});
 </script>
+
 @endsection

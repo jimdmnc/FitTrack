@@ -59,32 +59,32 @@
             </td>
 
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-            @if($attendance->user)
-            <!-- <button 
-                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
-                @click="openModal({
-                    user: {
-                        first_name: '{{ $attendance->user->first_name }}',
-                        last_name: '{{ $attendance->user->last_name }}',
-                        membership_type: '{{ $attendance->user->getMembershipType() }}',
-                        attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
-                            return [
-                                'time_in' => $a->time_in->toISOString(),
-                                'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
-                                'formatted_duration' => $a->formatted_duration ?? 'N/A'
-                            ];
-                        })) }}
-                    },
-                    time_in: '{{ $attendance->time_in->toISOString() }}',
-                    time_out: {{ $attendance->time_out ? "'".$attendance->time_out->toISOString()."'" : 'null' }}',
-                    formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
-                })"
-            >
-                Details
-            </button> -->
-            @else
-            <span class="text-gray-400">N/A</span>
-            @endif
+                @if($attendance->user)
+                <button 
+                    class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
+                    @click="openModal({
+                        user: {
+                            first_name: '{{ $attendance->user->first_name }}',
+                            last_name: '{{ $attendance->user->last_name }}',
+                            membership_type: '{{ $attendance->user->getMembershipType() }}',
+                            attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
+                                return [
+                                    'time_in' => $a->time_in->toISOString(),
+                                    'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
+                                    'formatted_duration' => $a->formatted_duration ?? 'N/A'
+                                ];
+                            })) }}
+                        },
+                        time_in: '{{ $attendance->time_in->toISOString() }}',
+                        time_out: '{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}',
+                        formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
+                    })"
+                >
+                    Details
+                </button>
+                @else
+                <span class="text-gray-400">N/A</span>
+                @endif
             </td>
         </tr>
         @empty
