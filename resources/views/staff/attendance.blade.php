@@ -4,10 +4,6 @@
 <style>
     [x-cloak] { display: none !important; }
 </style>
-<!-- Loading Indicator -->
-<!-- <div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
-    <div class="h-full bg-[#e64a19] animate-pulse"></div>
-</div> -->
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
     selectedAttendance: null,
@@ -143,24 +139,24 @@
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             @if($attendance->user)
                             <button 
-                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
-                                @click="openModal({
-                                    user: {
-                                        first_name: '{{ $attendance->user->first_name }}',
-                                        last_name: '{{ $attendance->user->last_name }}',
-                                        membership_type: '{{ $attendance->user->getMembershipType() }}',
-                                        attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
+                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150 detail-button"
+                                data-attendance='{
+                                    "user": {
+                                        "first_name": "{{ $attendance->user->first_name }}",
+                                        "last_name": "{{ $attendance->user->last_name }}",
+                                        "membership_type": "{{ $attendance->user->getMembershipType() }}",
+                                        "attendances": {{ json_encode($attendance->user->attendances->map(function($a) {
                                             return [
-                                                'time_in' => $a->time_in->toISOString(),
-                                                'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
-                                                'formatted_duration' => $a->formatted_duration ?? 'N/A'
+                                                "time_in" => $a->time_in->toISOString(),
+                                                "time_out" => $a->time_out ? $a->time_out->toISOString() : null,
+                                                "formatted_duration" => $a->formatted_duration ?? "N/A"
                                             ];
                                         })) }}
                                     },
-                                    time_in: '{{ $attendance->time_in->toISOString() }}',
-                                    time_out: '{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}',
-                                    formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
-                                })"
+                                    "time_in": "{{ $attendance->time_in->toISOString() }}",
+                                    "time_out": "{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}",
+                                    "formatted_duration": "{{ $attendance->formatted_duration ?? 'N/A' }}"
+                                }'
                             >
                                 Details
                             </button>
@@ -189,218 +185,221 @@
         </div>
 
         <!-- Calendar Modal -->
-        <div x-show="showModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" @click.away="showModal = false">
-            <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-6 w-full max-w-md" @click.stop>
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
-                    <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-                
-                <div class="mb-6">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
-                            <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-200" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
-                            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
-                        </div>
-                    </div>
+        <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+        <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-6 w-full max-w-md" @click.stop>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
+                <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
 
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-400">Date</p>
-                            <p class="text-gray-200" x-text="selectedDayDate || (selectedAttendance ? new Date(selectedAttendance.time_in).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) : '')"></p>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-400">Duration</p>
-                            <p class="text-gray-200" x-text="selectedDayDuration || (selectedAttendance ? selectedAttendance.formatted_duration : 'N/A')"></p>
-                        </div>
+            <!-- Modal Details -->
+            <div class="mb-6">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
+                        <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
                     </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <p class="text-sm text-gray-400">Check-in</p>
-                            <p class="text-gray-200" x-text="selectedDayCheckIn || (selectedAttendance ? new Date(selectedAttendance.time_in).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A')"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Check-out</p>
-                            <p class="text-gray-200" x-text="selectedDayCheckOut || (selectedAttendance && selectedAttendance.time_out ? new Date(selectedAttendance.time_out).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'N/A')"></p>
-                        </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-200" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
+                        <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
                     </div>
-                    
-                    
                 </div>
 
-                <!-- Enhanced Calendar Section -->
-                <div class="mt-4" x-data="{
-                    currentMonth: new Date().getMonth(),
-                    currentYear: new Date().getFullYear(),
-                    today: new Date().getDate(),
-                    selectedDay: null,
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-400">Date</p>
+                        <p class="text-gray-200" x-text="selectedDayDate"></p>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-400">Duration</p>
+                        <p class="text-gray-200" x-text="selectedDayDuration"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-400">Check-in</p>
+                        <p class="text-gray-200" x-text="selectedDayCheckIn"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">Check-out</p>
+                        <p class="text-gray-200" x-text="selectedDayCheckOut"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div x-data="{
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear(),
+                today: new Date().getDate(),
+                selectedDay: null,
+
+                // Get the number of days in the current month
+                getDaysInMonth() {
+                    return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+                },
+
+                // Get the first day of the current month (used for layout)
+                getFirstDayOfMonth() {
+                    return new Date(this.currentYear, this.currentMonth, 1).getDay();
+                },
+
+                // Navigate to the previous month
+                prevMonth() {
+                    if (this.currentMonth === 0) {
+                        this.currentMonth = 11;
+                        this.currentYear--;
+                    } else {
+                        this.currentMonth--;
+                    }
+                    this.selectedDay = null;
+                },
+
+                // Navigate to the next month
+                nextMonth() {
+                    if (this.currentMonth === 11) {
+                        this.currentMonth = 0;
+                        this.currentYear++;
+                    } else {
+                        this.currentMonth++;
+                    }
+                    this.selectedDay = null;
+                },
+
+                // Get the name of the current month
+                monthName() {
+                    return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
+                },
+
+                // Check if the given day has attendance records
+                isAttendanceDay(day) {
+                    // Make sure we have the right context
+                    const mainData = Alpine.$data(this.$root);
+                    if (!mainData.selectedAttendance || !mainData.selectedAttendance.user || !mainData.selectedAttendance.user.attendances) {
+                        return false;
+                    }
                     
-                    getDaysInMonth() {
-                        return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-                    },
+                    const currentDate = new Date(this.currentYear, this.currentMonth, day);
+                    return mainData.selectedAttendance.user.attendances.some(attendance => {
+                        const attendanceDate = new Date(attendance.time_in);
+                        return attendanceDate.getFullYear() === currentDate.getFullYear() &&
+                            attendanceDate.getMonth() === currentDate.getMonth() &&
+                            attendanceDate.getDate() === currentDate.getDate();
+                    });
+                },
+
+                // Check if the given day is today
+                isToday(day) {
+                    const today = new Date();
+                    return day === today.getDate() &&
+                        this.currentMonth === today.getMonth() &&
+                        this.currentYear === today.getFullYear();
+                },
+
+                // Select a day and load its attendance data
+                selectDay(day) {
+                    this.selectedDay = day;
+                    this.loadDayAttendance(day);
+                },
+
+                // Load attendance data for the selected day
+                loadDayAttendance(day) {
+                    const selectedDate = new Date(this.currentYear, this.currentMonth, day);
+                    const formattedDate = selectedDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
                     
-                    getFirstDayOfMonth() {
-                        return new Date(this.currentYear, this.currentMonth, 1).getDay();
-                    },
+                    // Access the parent component's data
+                    const mainData = Alpine.$data(this.$root);
                     
-                    prevMonth() {
-                        if (this.currentMonth === 0) {
-                            this.currentMonth = 11;
-                            this.currentYear--;
-                        } else {
-                            this.currentMonth--;
-                        }
-                        this.selectedDay = null;
-                        $data.selectedDayCheckIn = null;
-                        $data.selectedDayCheckOut = null;
-                        $data.selectedDayDate = null;
-                        $data.selectedDayDuration = null;
-                    },
+                    // Default values
+                    let checkIn = 'N/A';
+                    let checkOut = 'N/A';
+                    let duration = 'N/A';
                     
-                    nextMonth() {
-                        if (this.currentMonth === 11) {
-                            this.currentMonth = 0;
-                            this.currentYear++;
-                        } else {
-                            this.currentMonth++;
-                        }
-                        this.selectedDay = null;
-                        $data.selectedDayCheckIn = null;
-                        $data.selectedDayCheckOut = null;
-                        $data.selectedDayDate = null;
-                        $data.selectedDayDuration = null;
-                    },
-                    
-                    monthName() {
-                        return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
-                    },
-                    
-                    isAttendanceDay(day) {
-                        if (!$data.selectedAttendance?.user?.attendances) return false;
-                        
-                        const currentDate = new Date(this.currentYear, this.currentMonth, day);
-                        
-                        return $data.selectedAttendance.user.attendances.some(attendance => {
-                            const attendanceDate = new Date(attendance.time_in);
-                            return attendanceDate.getFullYear() === currentDate.getFullYear() &&
-                                attendanceDate.getMonth() === currentDate.getMonth() &&
-                                attendanceDate.getDate() === currentDate.getDate();
-                        });
-                    },
-                    
-                    isToday(day) {
-                        const today = new Date();
-                        return day === today.getDate() && 
-                            this.currentMonth === today.getMonth() && 
-                            this.currentYear === today.getFullYear();
-                    },
-                    
-                    selectDay(day) {
-                        this.selectedDay = day;
-                        this.loadDayAttendance(day);
-                    },
-                    
-                    loadDayAttendance(day) {
-                        const selectedDate = new Date(this.currentYear, this.currentMonth, day);
-                        $data.selectedDayDate = selectedDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                        
-                        // Reset values
-                        $data.selectedDayCheckIn = 'N/A';
-                        $data.selectedDayCheckOut = 'N/A';
-                        $data.selectedDayDuration = 'N/A';
-                        
-                        if (!$data.selectedAttendance?.user?.attendances) {
-                            return;
-                        }
-                        
-                        const attendanceForDay = $data.selectedAttendance.user.attendances.find(attendance => {
+                    // Only proceed if we have valid data
+                    if (mainData.selectedAttendance && mainData.selectedAttendance.user && mainData.selectedAttendance.user.attendances) {
+                        const attendanceForDay = mainData.selectedAttendance.user.attendances.find(attendance => {
                             const attendanceDate = new Date(attendance.time_in);
                             return attendanceDate.getFullYear() === selectedDate.getFullYear() &&
                                 attendanceDate.getMonth() === selectedDate.getMonth() &&
                                 attendanceDate.getDate() === selectedDate.getDate();
                         });
-                        
+
                         if (attendanceForDay) {
-                            $data.selectedDayCheckIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                            $data.selectedDayCheckOut = attendanceForDay.time_out ? 
+                            checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            checkOut = attendanceForDay.time_out ?
                                 new Date(attendanceForDay.time_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                            $data.selectedDayDuration = attendanceForDay.formatted_duration || 'N/A';
+                            duration = attendanceForDay.formatted_duration || 'N/A';
                         }
-                    },
-                    
-                    isSelectedDay(day) {
-                        return this.selectedDay === day;
                     }
-                }" x-init="
-                    $nextTick(() => {
-                    console.log('Modal initialized', $data.selectedAttendance);
-                        if ($data.selectedAttendance?.time_in) {
-                            const date = new Date($data.selectedAttendance.time_in);
-                            currentMonth = date.getMonth();
-                            currentYear = date.getFullYear();
-                            selectedDay = date.getDate();
-                            loadDayAttendance(selectedDay);
-                        }
-                    })
-                ">
-                    <!-- Month Navigation -->
-                    <div class="flex justify-between items-center mb-2">
-                        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
-                        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
+                    
+                    // Update parent component state
+                    mainData.selectedDayDate = formattedDate;
+                    mainData.selectedDayCheckIn = checkIn;
+                    mainData.selectedDayCheckOut = checkOut;
+                    mainData.selectedDayDuration = duration;
+                },
 
-                    <!-- Calendar Grid -->
-                    <div class="grid grid-cols-7 gap-1 text-center">
-                        <!-- Day headers -->
-                        <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
-                            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
-                        </template>
-
-                        <!-- Empty days from previous month -->
-                        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
-                            <div class="p-1 text-sm text-gray-600"></div>
-                        </template>
-
-                        <!-- Days of current month -->
-                        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
-                            <div class="relative flex flex-col items-center p-1">
-                                <button 
-                                    @click="selectDay(day)" 
-                                    class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors focus:outline-none"
-                                    :class="{
-                                        'text-gray-300 hover:bg-gray-700': !isSelectedDay(day),
-                                        'text-white bg-[#ff5722]': isSelectedDay(day),
-                                        'font-extrabold': isToday(day)
-                                    }"
-                                    x-text="day"
-                                >
-                                </button>
-                                <!-- Dot indicator for attendance days -->
-                                <div x-show="isAttendanceDay(day) && !isSelectedDay(day)" 
-                                    class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
-                            </div>
-                        </template>
-                    </div>
+                // Check if the given day is selected
+                isSelectedDay(day) {
+                    return this.selectedDay === day;
+                }
+            }" 
+            x-init="$nextTick(() => { 
+                // Initialize with today's day selected by default
+                selectDay(today);
+            })">
+                <!-- Calendar Navigation -->
+                <div class="flex justify-between items-center mb-2">
+                    <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
+                    <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
                 </div>
-            </div>
+
+                <!-- Calendar Grid -->
+                <div class="grid grid-cols-7 gap-1 text-center">
+                    <!-- Day headers -->
+                    <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
+                        <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+                    </template>
+
+                    <!-- Empty days from previous month -->
+                    <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+                        <div class="p-1 text-sm text-gray-600"></div>
+                    </template>
+
+                    <!-- Days of current month -->
+                    <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+                        <div class="relative flex flex-col items-center p-1">
+                            <button 
+                                @click="selectDay(day)" 
+                                class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors focus:outline-none"
+                                :class="{
+                                    'text-gray-300 hover:bg-gray-700': !isSelectedDay(day),
+                                    'text-white bg-[#ff5722]': isSelectedDay(day),
+                                    'font-extrabold': isToday(day)
+                                }"
+                                x-text="day"
+                            ></button>
+                            <!-- Attendance indicator dot -->
+                            <div x-show="isAttendanceDay(day) && !isSelectedDay(day)" class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>                
         </div>
+    </div>
         <div class="mt-4">
             {{ $attendances->appends(['search' => request('search'), 'filter' => request('filter')])->links('vendor.pagination.default') }}
         </div>
@@ -546,7 +545,7 @@
                     const pageUrl = this.getAttribute('href');
                     const page = new URL(pageUrl).searchParams.get('page');  // Get page number from URL
 
-                    // Update browser URL without page reload
+                    // Update the URL in the address bar without reloading
                     const url = new URL(window.location.href);
                     const searchParams = new URLSearchParams(url.search);
                     searchParams.set('page', page);  // Update page number in URL
@@ -560,17 +559,37 @@
 
         // Function to initialize modal open buttons
         function initializeModalButtons() {
-            const detailButtons = document.querySelectorAll('[x-on\\:click="openModal"]');
+            const detailButtons = document.querySelectorAll('[x-on\\:click], [\\@click]');
             detailButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    // This will trigger Alpine.js openModal function
-                    const attendanceData = JSON.parse(this.getAttribute('x-data'));
-                    // Use Alpine.js to open the modal
-                    const component = Alpine.getRoot(this);
-                    if (component && component.$data) {
-                        component.$data.openModal(attendanceData);
-                    }
-                });
+                const clickAttr = button.getAttribute('x-on:click') || button.getAttribute('@click');
+                if (clickAttr && clickAttr.includes('openModal')) {
+                    button.addEventListener('click', function() {
+                        try {
+                            // This will get the Alpine.js instance
+                            const alpineInstance = this.$root; // Use this.$root instead of Alpine.getRoot(this)
+                            if (alpineInstance && alpineInstance.$data) {
+                                // If this is a DOM element with the openModal attribute
+                                const attendanceString = this.getAttribute('x-on:click') || this.getAttribute('@click');
+                                if (attendanceString && attendanceString.includes('openModal')) {
+                                    // Extract the attendance data from the attribute
+                                    // This is a safer approach than evaluating the string
+                                    const match = attendanceString.match(/openModal\((.*)\)/);
+                                    if (match && match[1]) {
+                                        // Parse the JSON data
+                                        try {
+                                            const attendanceData = JSON.parse(match[1].replace(/'/g, '"'));
+                                            alpineInstance.$data.openModal(attendanceData);
+                                        } catch (jsonError) {
+                                            console.error("Error parsing attendance data:", jsonError);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error("Error opening modal:", error);
+                        }
+                    });
+                }
             });
         }
 
@@ -622,6 +641,6 @@
             fetchAttendances();
         }
     }
-</script>
 
+</script>
 @endsection
