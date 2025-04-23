@@ -213,125 +213,122 @@
             </div>
             
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          
-          
-          
-          
-            <div>
-    <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
-    <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
-        <option value="" selected disabled>Select Membership Type</option>
-        <option value="custom">Custom Days</option>
-        <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
-        <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
-        <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
-    </select>
+    <!-- Column 1, Row 1: Membership Type -->
+    <div>
+        <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
+        <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
+            <option value="" selected disabled>Select Membership Type</option>
+            <option value="custom">Custom Days</option>
+            <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
+            <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
+            <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
+        </select>
+        
+        @error('membership_type')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
+    </div>
     
-    <div id="customDaysContainer" class="mt-2 hidden">
+    <!-- Column 2, Row 1: Payment Amount -->
+    <div>
+        <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount</label>
+        <input 
+            type="text" 
+            id="payment_amount" 
+            name="payment_amount" 
+            class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" 
+            readonly
+            style="box-shadow: none;"
+        >
+    </div>
+    
+    <!-- Column 1, Row 2: Custom Days (conditionally displayed) -->
+    <div id="customDaysContainer" class="hidden">
         <label for="customDays" class="block text-gray-200 font-medium mb-2">Number of Days <span class="text-red-500">*</span></label>
         <input type="number" id="customDays" name="custom_days" min="1" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent">
+        
+        @error('custom_days')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
     </div>
     
-    @error('membership_type')
-        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-    @enderror
-    @error('custom_days')
-        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-    @enderror
-</div>
-
-
-                
-                <div>
-                    <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount</label>
-                    <input 
-                        type="text" 
-                        id="payment_amount" 
-                        name="payment_amount" 
-                        class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" 
-                        readonly
-                        style="box-shadow: none;"
-                    >
-                </div>
-
-                <div>
-                    <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input 
-                            type="date" 
-                            id="startDate" 
-                            name="start_date" 
-                            class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
-                            value="{{ old('start_date') ?? date('Y-m-d') }}" 
-                            required
-                        >
-                    </div>
-
-                    @error('start_date')
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
-                    <div class="relative">
-                        <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                        </div>
-                    </div>
-                    <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
-                </div>
-
-
-
-            <div>
-                    <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
-                      <!-- Input with improved visual cues -->
-    <div class="relative">
-
-        
-        <input 
-            id="uid" 
-            name="uid" 
-            class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all"
-            placeholder="Waiting for card tap..." 
-            readonly 
-        />
-        
-        <!-- Loading indicator -->
-        <div class="absolute inset-y-0 right-3 flex items-center">
-            <div id="rfid-loading" class="animate-pulse flex items-center">
-                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
-            </div>
-            
-            <!-- Clear button - Initially hidden -->
-            <button 
-                id="clearRfidBtn" 
-                type="button" 
-                onclick="clearRfid()" 
-                class="ml-2 bg-gray-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden"
-                aria-label="Clear RFID input"
+    <!-- Column 1, Row 2/3: Start Date (position changes based on custom days visibility) -->
+    <div class="start-date-container">
+        <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
+        <div class="relative">
+            <input 
+                type="date" 
+                id="startDate" 
+                name="start_date" 
+                class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                value="{{ old('start_date') ?? date('Y-m-d') }}" 
+                required
             >
-                &times;
-            </button>
         </div>
+
+        @error('start_date')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
     </div>
-                    <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Please Tap Your Card...
-                    </div>
-                    @error('rfid_uid')[]
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
+
+    <!-- Column 2, Row 2/3: Expiration Date (position changes based on custom days visibility) -->
+    <div class="end-date-container">
+        <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
+        <div class="relative">
+            <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
             </div>
+        </div>
+        <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
+    </div>
+
+    <!-- Spans full width when Custom Days is visible, otherwise follows normal flow -->
+    <div class="rfid-container">
+        <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+        <!-- Input with improved visual cues -->
+        <div class="relative">
+            <input 
+                id="uid" 
+                name="uid" 
+                class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all"
+                placeholder="Waiting for card tap..." 
+                readonly 
+            />
+        
+            <!-- Loading indicator -->
+            <div class="absolute inset-y-0 right-3 flex items-center">
+                <div id="rfid-loading" class="animate-pulse flex items-center">
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                </div>
+                
+                <!-- Clear button - Initially hidden -->
+                <button 
+                    id="clearRfidBtn" 
+                    type="button" 
+                    onclick="clearRfid()" 
+                    class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden"
+                    aria-label="Clear RFID input"
+                >
+                    &times;
+                </button>
+            </div>
+        </div>
+        <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Please Tap Your Card...
+        </div>
+        @error('rfid_uid')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
 
             <!-- Account Section -->
             <div class="p-6 border-t border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
