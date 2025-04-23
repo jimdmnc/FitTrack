@@ -119,7 +119,7 @@ public function checkApproval()
 
             Auth::login($user);
 
-            return redirect()->route('self.landing')->with('success', 'Registration successful! Welcome to our gym.');
+            return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
         } catch (\Exception $e) {
             logger()->error('Session Membership Registration Error: ' . $e->getMessage());
             return redirect()->route('self.registration')

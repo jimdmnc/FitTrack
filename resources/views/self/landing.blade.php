@@ -391,7 +391,7 @@
                 <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
                 <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
                 <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                <a href="http://192.168.1.14/session-registration" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+                <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
                 <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
             </div>
             
