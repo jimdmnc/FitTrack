@@ -214,11 +214,10 @@
             </div>
                 
             <!-- Pagination Links -->
-            @if($members->hasPages())
             <div class="mt-4">
                 {{ $members->appends(request()->except('page'))->links('vendor.pagination.default') }}
             </div>
-            @endif
+
 </section>
 
 

@@ -266,25 +266,19 @@
                         </tr>
                     </tbody>
                 </table>
-                
-                <!-- Pagination for Payments Report -->
-                @if($payments->count() > 0)
-                    <tfoot class="bg-[#1e1e1e]">
-                        <tr>
-                            <td colspan="7" class="px-6 py-4">
-                                {{ $payments->appends([
-                                    'type' => request('type', 'members'),
-                                    'filter' => request('filter'),
-                                    'start_date' => request('start_date'),
-                                    'end_date' => request('end_date'),
-                                    'per_page' => request('per_page', 10)
-                                ])->links('vendor.pagination.default') }}
-                            </td>
-                        </tr>
-                    </tfoot>
-                @endif
             </div>
-            
+            <!-- Pagination for Payments Report -->
+                @if($payments->count() > 0)
+                    <div class="pagination-container">
+                            {{ $payments->appends([
+                                'type' => request('type', 'members'),
+                                'filter' => request('filter'),
+                                'start_date' => request('start_date'),
+                                'end_date' => request('end_date'),
+                                'per_page' => request('per_page', 10)
+                            ])->links('vendor.pagination.default') }}
+                    </div>
+                @endif
         </div>
     </div>
 
