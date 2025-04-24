@@ -474,24 +474,12 @@
             }
         });
 
-        // Function to fetch attendances based on search and filter
         window.fetchAttendances = function() {
-            const params = new URLSearchParams();
-
-            // Append search if present
-            if (searchInput.value.trim()) {
-                params.append('search', searchInput.value);
-            }
-
-            // Append filter from dropdown (only if not 'all')
-            const filterValue = new URLSearchParams(window.location.search).get('filter') || 'all';
-            if (filterValue !== 'all') {
-                params.append('filter', filterValue);
-            }
+            const params = new URLSearchParams(window.location.search);
 
             // Get current page number from the URL or default to 1
-            const page = new URLSearchParams(window.location.search).get('page') || 1;
-            params.append('page', page);  // Add the current page to the request
+            const page = params.get('page') || 1;
+            params.set('page', page);  // Add the current page to the request
 
             // Build URL for AJAX request
             const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
@@ -523,7 +511,7 @@
 
                 // Reinitialize event listeners for the new content
                 initializeModalButtons();
-                attachPaginationListeners(); // Reattach pagination listeners after the new data
+                attachPaginationListeners();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -542,14 +530,13 @@
                     e.preventDefault();
 
                     // Get the page URL from pagination link
-                    const pageUrl = this.getAttribute('href');
-                    const page = new URL(pageUrl).searchParams.get('page');  // Get page number from URL
+                    const pageUrl = new URL(this.href);
+                    const page = pageUrl.searchParams.get('page');
 
                     // Update the URL in the address bar without reloading
                     const url = new URL(window.location.href);
-                    const searchParams = new URLSearchParams(url.search);
-                    searchParams.set('page', page);  // Update page number in URL
-                    window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+                    url.searchParams.set('page', page);
+                    window.history.pushState({}, '', url.toString());
 
                     // Fetch attendance data for the new page
                     fetchAttendances();
