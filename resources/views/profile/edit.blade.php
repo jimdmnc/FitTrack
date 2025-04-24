@@ -37,7 +37,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                     <div class="flex items-center space-x-4">
                         <!-- User Avatar with improved styling -->
-                        <div class="h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        <div class="h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-gray-200 text-2xl font-bold shadow-lg">
                             {{ substr($user->first_name ?? 'U', 0, 1) }}
                         </div>
                         <div>
@@ -183,72 +183,75 @@
 
         <!-- Edit Profile Modal with improved styling -->
         <x-modal name="edit-profile" :show="$errors->updateProfile->isNotEmpty()" focusable>
-            <form 
-                method="post" 
-                action="{{ route('profile.update') }}" 
-                class="bg-[#121212] rounded-2xl p-8 md:p-12 max-w-xl mx-auto shadow-2xl"
-            >
-                @csrf
-                @method('patch')
+            <div class="flex items-center justify-center min-h-full p-4">
+                <form 
+                    method="post" 
+                    action="{{ route('profile.update') }}" 
+                    class="bg-[#121212] rounded-2xl p-8 w-full md:p-12 max-w-xl shadow-2xl"
+                >
+                    @csrf
+                    @method('patch')
 
-                <h2 class="text-3xl font-bold text-gray-200 mb-2">Edit Profile</h2>
-                <p class="text-gray-400 mb-6">Update your personal information</p>
+                    <h2 class="text-3xl font-bold text-gray-200 mb-2">Edit Profile</h2>
+                    <p class="text-gray-400 mb-6">Update your personal information</p>
 
-                <div class="space-y-6">
-                    <div>
-                        <x-input-label for="name" :value="__('Full Name')" class="text-gray-400 mb-2" />
-                        <x-text-input
-                            id="name"
-                            name="name"
-                            type="text"
-                            class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            :value="old('name', $user->name)"
-                            required
-                            autofocus
-                            placeholder="Enter your full name"
-                        />
-                        <x-input-error :messages="$errors->updateProfile->get('name')" class="mt-2" />
+                    <div class="space-y-6">
+                        <div>
+                            <x-input-label for="name" :value="__('Full Name')" class="text-gray-200 mb-2" />
+                            <x-text-input
+                                id="name"
+                                name="name"
+                                type="text"
+                                class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                :value="old('name', $user->name)"
+                                required
+                                autofocus
+                                placeholder="Enter your full name"
+                            />
+                            <x-input-error :messages="$errors->updateProfile->get('name')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="email" :value="__('Email Address')" class="text-gray-200 mb-2" />
+                            <x-text-input
+                                id="email"
+                                name="email"
+                                type="email"
+                                class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                :value="old('email', $user->email)"
+                                required
+                                placeholder="your.email@example.com"
+                            />
+                            <x-input-error :messages="$errors->updateProfile->get('email')" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <x-input-label for="phone" :value="__('Phone Number')" class="text-gray-200 mb-2" />
+                            <x-text-input
+                                id="phone"
+                                name="phone"
+                                type="tel"
+                                class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                :value="old('phone', $user->phone)"
+                                placeholder="09** **** *** (Optional)"
+                            />
+                            <x-input-error :messages="$errors->updateProfile->get('phone')" class="mt-2" />
+                        </div>
                     </div>
 
-                    <div>
-                        <x-input-label for="email" :value="__('Email Address')" class="text-gray-400 mb-2" />
-                        <x-text-input
-                            id="email"
-                            name="email"
-                            type="email"
-                            class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            :value="old('email', $user->email)"
-                            required
-                            placeholder="your.email@example.com"
-                        />
-                        <x-input-error :messages="$errors->updateProfile->get('email')" class="mt-2" />
+                    <div class="mt-8 flex justify-end space-x-4">
+                        <x-secondary-button x-on:click="$dispatch('close')" class="bg-gray-800 text-gray-00 hover:bg-[#2c2c2c] border-gray-700">
+                            {{ __('Cancel') }}
+                        </x-secondary-button>
+
+                        <x-primary-button class="bg-orange-600 hover:bg-orange-700 text-white border-none">
+                            {{ __('Save Changes') }}
+                        </x-primary-button>
                     </div>
-
-                    <div>
-                        <x-input-label for="phone" :value="__('Phone Number')" class="text-gray-400 mb-2" />
-                        <x-text-input
-                            id="phone"
-                            name="phone"
-                            type="tel"
-                            class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                            :value="old('phone', $user->phone)"
-                            placeholder="09** **** *** (Optional)"
-                        />
-                        <x-input-error :messages="$errors->updateProfile->get('phone')" class="mt-2" />
-                    </div>
-                </div>
-
-                <div class="mt-8 flex justify-end space-x-4">
-                    <x-secondary-button x-on:click="$dispatch('close')" class="bg-[#1e1e1e] text-gray-400 hover:bg-[#2c2c2c] border-gray-700">
-                        {{ __('Cancel') }}
-                    </x-secondary-button>
-
-                    <x-primary-button class="bg-orange-600 hover:bg-orange-700 text-white border-none">
-                        {{ __('Save Changes') }}
-                    </x-primary-button>
-                </div>
-            </form>
+                </form>
+            </div>
         </x-modal>
+
 
         <!-- Change Password Modal with improved styling -->
         <x-modal name="change-password" :show="$errors->updatePassword->isNotEmpty()" focusable>
@@ -321,7 +324,7 @@
                         {{ __('Cancel') }}
                     </x-secondary-button>
 
-                    <x-primary-button class="bg-orange-600 hover:bg-orange-700 text-white border-none">
+                    <x-primary-button class="bg-orange-600 hover:bg-orange-700 text-gray-200 border-none">
                         {{ __('Change Password') }}
                     </x-primary-button>
                 </div>
