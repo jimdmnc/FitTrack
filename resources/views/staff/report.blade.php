@@ -206,9 +206,9 @@
             
 
             <!-- Payments Report Table -->
-            <div id="paymentsReport" class="hidden overflow-hidden rounded-lg bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+            <div id="paymentsReport" class="hidden overflow-hidden rounded-lg">
                 <table class="min-w-full divide-y divide-black">
-                    <thead>
+                    <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
@@ -266,8 +266,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </div>
-            <!-- Pagination for Payments Report -->
+                <!-- Pagination for Payments Report -->
                 @if($payments->count() > 0)
                     <div class="pagination-container">
                             {{ $payments->appends([
@@ -279,6 +278,8 @@
                             ])->links('vendor.pagination.default') }}
                     </div>
                 @endif
+            </div>
+            
         </div>
     </div>
 
