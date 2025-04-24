@@ -64,6 +64,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
 
+
+    Route::put('/user/weight', [UserDetailController::class, 'updateWeight']);
+
+
 });
 
 
