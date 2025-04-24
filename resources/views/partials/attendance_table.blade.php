@@ -1,6 +1,7 @@
 <table class="min-w-full divide-y divide-black">
     <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
         <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">#</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Member</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Membership</th>
             <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Check-in</th>
@@ -12,6 +13,11 @@
     <tbody class="divide-y divide-black">
         @forelse($attendances as $attendance)
         <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
+
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                {{ $loop->iteration }}
+            </td>
+
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                     <div class="ml-4">

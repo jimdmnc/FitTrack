@@ -79,6 +79,7 @@
             <table class="min-w-full divide-y divide-black">
                 <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">#</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Member</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Membership</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Check-in</th>
@@ -90,6 +91,13 @@
                 <tbody class="divide-y divide-black">
                     @forelse($attendances as $attendance)
                     <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
+
+                        <!-- # Column with Iteration Number -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        <!-- Member Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="ml-4">
@@ -98,6 +106,7 @@
                             </div>
                         </td>
                         
+                        <!-- Membership Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->user)
                             <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -115,11 +124,13 @@
                             @endif
                         </td>
                         
+                        <!-- Check-in Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-200">{{ $attendance->time_in->format('h:i A') }}</div>
                             <div class="text-xs text-gray-400">{{ $attendance->time_in->format('M d, Y') }}</div>
                         </td>
                         
+                        <!-- Check-out Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->time_out)
                                 <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
@@ -132,31 +143,33 @@
                             @endif
                         </td>
                         
+                        <!-- Duration Column -->
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                             {{ $attendance->formatted_duration ?? 'N/A' }}
                         </td>
                         
+                        <!-- Actions Column -->
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             @if($attendance->user)
                             <button 
-                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150 detail-button"
-                                data-attendance='{
-                                    "user": {
-                                        "first_name": "{{ $attendance->user->first_name }}",
-                                        "last_name": "{{ $attendance->user->last_name }}",
-                                        "membership_type": "{{ $attendance->user->getMembershipType() }}",
-                                        "attendances": {{ json_encode($attendance->user->attendances->map(function($a) {
+                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
+                                @click="openModal({
+                                    user: {
+                                        first_name: '{{ $attendance->user->first_name }}',
+                                        last_name: '{{ $attendance->user->last_name }}',
+                                        membership_type: '{{ $attendance->user->getMembershipType() }}',
+                                        attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
                                             return [
-                                                "time_in" => $a->time_in->toISOString(),
-                                                "time_out" => $a->time_out ? $a->time_out->toISOString() : null,
-                                                "formatted_duration" => $a->formatted_duration ?? "N/A"
+                                                'time_in' => $a->time_in->toISOString(),
+                                                'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
+                                                'formatted_duration' => $a->formatted_duration ?? 'N/A'
                                             ];
                                         })) }}
                                     },
-                                    "time_in": "{{ $attendance->time_in->toISOString() }}",
-                                    "time_out": "{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}",
-                                    "formatted_duration": "{{ $attendance->formatted_duration ?? 'N/A' }}"
-                                }'
+                                    time_in: '{{ $attendance->time_in->toISOString() }}',
+                                    time_out: '{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}',
+                                    formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
+                                })"
                             >
                                 Details
                             </button>
