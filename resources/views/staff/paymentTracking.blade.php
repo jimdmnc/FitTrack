@@ -142,6 +142,9 @@
                         @endif
                     </tbody>
                 </table>
+                <div class="mt-4">
+                    {{ $payments->appends(['search' => request('search'), 'payment_method' => request('payment_method'), 'time_filter' => request('time_filter')])->links('vendor.pagination.default') }}
+                </div>
             </div>
         </div>
     </div>
@@ -149,7 +152,6 @@
 
 <script>
 $(document).ready(function () {
-    // Define the input and select elements
     const paymentMethodFilter = $('#paymentMethodFilter');
     const timeFilter = $('#timeFilter');
     const searchInput = $('input[type="search"]');
@@ -174,20 +176,20 @@ $(document).ready(function () {
     });
 
     // Function to fetch payments based on search and filters
-    function fetchPayments() {
+    function fetchPayments(url = '') {
         const search = searchInput.val();
         const paymentMethod = paymentMethodFilter.val();
         const time = timeFilter.val();
 
         // Show loading indicator
-        loadingIndicator.removeClass('hidden')
+        loadingIndicator.removeClass('hidden');
 
         // Show loading state in table
         $('tbody').html('<tr><td colspan="7" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
         
         // Send an AJAX request
         $.ajax({
-            url: '{{ route("staff.paymentTracking") }}',
+            url: url || '{{ route("staff.paymentTracking") }}',
             type: 'GET',
             data: {
                 search: search,
@@ -224,6 +226,13 @@ $(document).ready(function () {
         toggleClearButtonVisibility();  // Hide the clear button
     });
 
+    // Handle pagination links with AJAX
+    $(document).on('click', '.pagination a', function (e) {
+        e.preventDefault();
+        const url = $(this).attr('href');
+        fetchPayments(url);
+    });
+
     // Set initial filter values from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("payment_method")) {
@@ -232,33 +241,9 @@ $(document).ready(function () {
     if (urlParams.has("time_filter")) {
         timeFilter.val(urlParams.get("time_filter"));
     }
+
+    toggleClearButtonVisibility();
 });
-// Handle pagination links with AJAX
-$(document).on('click', '.pagination a', function(e) {
-    e.preventDefault();
-    let url = $(this).attr('href');
-
-    // Show loading indicator
-    loadingIndicator.removeClass('hidden');
-
-    $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
-                // Update URL without reload
-                window.history.pushState({}, '', url);
-                // Hide loading indicator
-                loadingIndicator.addClass('hidden');
-            },
-            error: function() {
-                // Hide loading indicator even on error
-                loadingIndicator.addClass('hidden');
-            }
-    });
-});
-
-toggleClearButtonVisibility();
 
 </script>
 @endsection

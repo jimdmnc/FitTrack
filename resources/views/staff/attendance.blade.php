@@ -79,6 +79,7 @@
             <table class="min-w-full divide-y divide-black">
                 <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">#</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Member</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Membership</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">Check-in</th>
@@ -90,6 +91,13 @@
                 <tbody class="divide-y divide-black">
                     @forelse($attendances as $attendance)
                     <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
+
+                        <!-- # Column with Iteration Number -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                            {{ $loop->iteration }}
+                        </td>
+
+                        <!-- Member Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
                                 <div class="ml-4">
@@ -98,6 +106,7 @@
                             </div>
                         </td>
                         
+                        <!-- Membership Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->user)
                             <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
@@ -115,11 +124,13 @@
                             @endif
                         </td>
                         
+                        <!-- Check-in Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-200">{{ $attendance->time_in->format('h:i A') }}</div>
                             <div class="text-xs text-gray-400">{{ $attendance->time_in->format('M d, Y') }}</div>
                         </td>
                         
+                        <!-- Check-out Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->time_out)
                                 <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
@@ -132,31 +143,33 @@
                             @endif
                         </td>
                         
+                        <!-- Duration Column -->
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                             {{ $attendance->formatted_duration ?? 'N/A' }}
                         </td>
                         
+                        <!-- Actions Column -->
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             @if($attendance->user)
                             <button 
-                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150 detail-button"
-                                data-attendance='{
-                                    "user": {
-                                        "first_name": "{{ $attendance->user->first_name }}",
-                                        "last_name": "{{ $attendance->user->last_name }}",
-                                        "membership_type": "{{ $attendance->user->getMembershipType() }}",
-                                        "attendances": {{ json_encode($attendance->user->attendances->map(function($a) {
+                                class="text-gray-200 hover:text-gray-200 hover:translate-y-[-2px] bg-transparent border border-[#ff5722] hover:bg-[#ff5722] px-3 py-1 rounded-md transition-colors duration-150"
+                                @click="openModal({
+                                    user: {
+                                        first_name: '{{ $attendance->user->first_name }}',
+                                        last_name: '{{ $attendance->user->last_name }}',
+                                        membership_type: '{{ $attendance->user->getMembershipType() }}',
+                                        attendances: {{ json_encode($attendance->user->attendances->map(function($a) {
                                             return [
-                                                "time_in" => $a->time_in->toISOString(),
-                                                "time_out" => $a->time_out ? $a->time_out->toISOString() : null,
-                                                "formatted_duration" => $a->formatted_duration ?? "N/A"
+                                                'time_in' => $a->time_in->toISOString(),
+                                                'time_out' => $a->time_out ? $a->time_out->toISOString() : null,
+                                                'formatted_duration' => $a->formatted_duration ?? 'N/A'
                                             ];
                                         })) }}
                                     },
-                                    "time_in": "{{ $attendance->time_in->toISOString() }}",
-                                    "time_out": "{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}",
-                                    "formatted_duration": "{{ $attendance->formatted_duration ?? 'N/A' }}"
-                                }'
+                                    time_in: '{{ $attendance->time_in->toISOString() }}',
+                                    time_out: '{{ $attendance->time_out ? $attendance->time_out->toISOString() : 'null' }}',
+                                    formatted_duration: '{{ $attendance->formatted_duration ?? 'N/A' }}'
+                                })"
                             >
                                 Details
                             </button>
@@ -474,24 +487,12 @@
             }
         });
 
-        // Function to fetch attendances based on search and filter
         window.fetchAttendances = function() {
-            const params = new URLSearchParams();
-
-            // Append search if present
-            if (searchInput.value.trim()) {
-                params.append('search', searchInput.value);
-            }
-
-            // Append filter from dropdown (only if not 'all')
-            const filterValue = new URLSearchParams(window.location.search).get('filter') || 'all';
-            if (filterValue !== 'all') {
-                params.append('filter', filterValue);
-            }
+            const params = new URLSearchParams(window.location.search);
 
             // Get current page number from the URL or default to 1
-            const page = new URLSearchParams(window.location.search).get('page') || 1;
-            params.append('page', page);  // Add the current page to the request
+            const page = params.get('page') || 1;
+            params.set('page', page);  // Add the current page to the request
 
             // Build URL for AJAX request
             const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
@@ -523,7 +524,7 @@
 
                 // Reinitialize event listeners for the new content
                 initializeModalButtons();
-                attachPaginationListeners(); // Reattach pagination listeners after the new data
+                attachPaginationListeners();
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -542,14 +543,13 @@
                     e.preventDefault();
 
                     // Get the page URL from pagination link
-                    const pageUrl = this.getAttribute('href');
-                    const page = new URL(pageUrl).searchParams.get('page');  // Get page number from URL
+                    const pageUrl = new URL(this.href);
+                    const page = pageUrl.searchParams.get('page');
 
                     // Update the URL in the address bar without reloading
                     const url = new URL(window.location.href);
-                    const searchParams = new URLSearchParams(url.search);
-                    searchParams.set('page', page);  // Update page number in URL
-                    window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+                    url.searchParams.set('page', page);
+                    window.history.pushState({}, '', url.toString());
 
                     // Fetch attendance data for the new page
                     fetchAttendances();

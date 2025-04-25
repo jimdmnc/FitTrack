@@ -206,9 +206,9 @@
             
 
             <!-- Payments Report Table -->
-            <div id="paymentsReport" class="hidden overflow-hidden rounded-lg bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+            <div id="paymentsReport" class="hidden overflow-hidden rounded-lg">
                 <table class="min-w-full divide-y divide-black">
-                    <thead>
+                    <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
@@ -266,22 +266,17 @@
                         </tr>
                     </tbody>
                 </table>
-                
                 <!-- Pagination for Payments Report -->
                 @if($payments->count() > 0)
-                    <tfoot class="bg-[#1e1e1e]">
-                        <tr>
-                            <td colspan="7" class="px-6 py-4">
-                                {{ $payments->appends([
-                                    'type' => request('type', 'members'),
-                                    'filter' => request('filter'),
-                                    'start_date' => request('start_date'),
-                                    'end_date' => request('end_date'),
-                                    'per_page' => request('per_page', 10)
-                                ])->links('vendor.pagination.default') }}
-                            </td>
-                        </tr>
-                    </tfoot>
+                    <div class="pagination-container">
+                            {{ $payments->appends([
+                                'type' => request('type', 'members'),
+                                'filter' => request('filter'),
+                                'start_date' => request('start_date'),
+                                'end_date' => request('end_date'),
+                                'per_page' => request('per_page', 10)
+                            ])->links('vendor.pagination.default') }}
+                    </div>
                 @endif
             </div>
             

@@ -1,10 +1,9 @@
-@if ($paginator->hasPages())
+@if (true)  {{-- Always show pagination regardless of page count --}}
     <nav class="flex my-6" aria-label="Pagination">
-        <!-- Main Pagination Container with Flex Layout -->
         <div class="w-full flex items-center justify-between">
             <!-- Page X of Y info - Left Side -->
             <div class="ml-4 text-sm text-gray-200 font-semibold">
-                Page <span class="font-medium text-[#ff5722]">{{ $paginator->currentPage() }}</span> of {{ $paginator->lastPage() }}
+                Page <span class="font-medium text-[#ff5722]">{{ $paginator->currentPage() }}</span> of {{ $paginator->lastPage() > 0 ? $paginator->lastPage() : 1 }}
             </div>
             
             <!-- Pagination Pill - Center -->
@@ -26,8 +25,9 @@
 
                 <!-- Pagination Links (Page Numbers) -->
                 @php
+                    $lastPage = $paginator->lastPage() > 0 ? $paginator->lastPage() : 1;
                     $start = max($paginator->currentPage() - 2, 1);
-                    $end = min($start + 4, $paginator->lastPage());
+                    $end = min($start + 4, $lastPage);
                     if ($end - $start < 4) {
                         $start = max($end - 4, 1);
                     }
