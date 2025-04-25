@@ -3,141 +3,109 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\UserDetail;
+use App\Models\WeightLog;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class UserDetailController extends Controller
 {
-    // Store or update user details
-    public function store(Request $request)
-    {
-        // Validation rules
-        $validator = Validator::make($request->all(), [
-            'gender' => 'required|in:Male,Female,Other',  // Enum values should match case exactly
-            'activity_level' => 'required|in:Beginner,Intermediate,Advanced',  // Enum values case-sensitive
-            'age' => 'required|integer|min:10|max:100',
-            'height' => 'required|numeric|min:100|max:250',
-            'weight' => 'required|numeric|min:30|max:300',
-            'target_muscle' => 'nullable|string|max:255',  // target_muscle is nullable
-            'goal' => 'required|in:Gain Muscle,Lose Weight,Maintain',
-        ]);
+   // Common validation rules
+   protected $userDetailRules = [
+    'gender' => 'required|in:Male,Female,Other',
+    'activity_level' => 'required|in:Beginner,Intermediate,Advanced',
+    'age' => 'required|integer|min:10|max:100',
+    'height' => 'required|numeric|min:100|max:250',
+    'weight' => 'required|numeric|min:30|max:300',
+    'target_muscle' => 'nullable|string|max:255',
+    'goal' => 'required|in:Gain Muscle,Lose Weight,Maintain',
+];
 
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Validation failed',
-                'errors' => $validator->errors()
-            ], 422);
-        }
+/**
+ * Store or update user details
+ */
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), $this->userDetailRules);
 
-        $user = Auth::user(); // Get authenticated user
-
-        // Check if user has rfid_uid
-        if (!$user->rfid_uid) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'RFID UID not found for the user'
-            ], 400);
-        }
-
-        try {
-            // Prepare data from validated request
-            $data = $validator->validated();
-
-            // Ensure 'target_muscle' is set to null if not provided
-            $data['target_muscle'] = $data['target_muscle'] ?? null;
-
-            // Store or update the user details based on the rfid_uid
-            $userDetail = UserDetail::updateOrCreate(
-                ['rfid_uid' => $user->rfid_uid],  // Match RFID UID from authenticated user
-                $data
-            );
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'User details saved successfully',
-                'data' => $userDetail
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'Failed to save user details',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+    if ($validator->fails()) {
+        return $this->errorResponse('Validation failed', $validator->errors(), 422);
     }
 
-    // Update user details (reuse store logic)
-    public function update(Request $request)
-    {
-        return $this->store($request);
+    $user = Auth::user();
+    if (!$user->rfid_uid) {
+        return $this->errorResponse('RFID UID not found for the user', null, 400);
     }
 
-    // Get user details
-    public function show()
-    {
-        $user = Auth::user(); // Get authenticated user
+    try {
+        $data = $validator->validated();
+        $data['target_muscle'] = $data['target_muscle'] ?? null;
 
-        // Check if user has rfid_uid
-        if (!$user->rfid_uid) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'RFID UID not found for the user'
-            ], 400);
-        }
+        $userDetail = UserDetail::updateOrCreate(
+            ['rfid_uid' => $user->rfid_uid],
+            $data
+        );
 
-        // Retrieve user details based on RFID UID
-        $userDetail = UserDetail::where('rfid_uid', $user->rfid_uid)->first();
-
-        // Check if user details exist
-        if (!$userDetail) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'User details not found'
-            ], 404);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $userDetail
-        ]);
+        return $this->successResponse(
+            'User details saved successfully',
+            $userDetail,
+            201
+        );
+    } catch (\Exception $e) {
+        return $this->errorResponse('Failed to save user details', $e->getMessage(), 500);
     }
+}
+
+/**
+ * Update user details (alias for store)
+ */
+public function update(Request $request)
+{
+    return $this->store($request);
+}
+
+/**
+ * Get authenticated user's details
+ */
+public function show()
+{
+    $user = Auth::user();
+    if (!$user->rfid_uid) {
+        return $this->errorResponse('RFID UID not found for the user', null, 400);
+    }
+
+    $userDetail = UserDetail::where('rfid_uid', $user->rfid_uid)->first();
+    if (!$userDetail) {
+        return $this->errorResponse('User details not found', null, 404);
+    }
+
+    return $this->successResponse(null, $userDetail);
+}
 
      /**
      * Get user details by RFID UID
      */
     public function getDetailsByRfid($rfid)
     {
-        // First validate the RFID format if needed
         if (empty($rfid)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'RFID UID is required'
-            ], 400);
+            return $this->errorResponse('RFID UID is required', null, 400);
         }
 
         $details = UserDetail::where('rfid_uid', $rfid)->first();
-
         if (!$details) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User details not found'
-            ], 404);
+            return $this->errorResponse('User details not found', null, 404);
         }
 
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'age' => $details->age,
-                'gender' => $details->gender,
-                'weight' => $details->weight,
-                'height' => $details->height,
-                'activity_level' => $details->activity_level,
-                'goal' => $details->goal,
-                'target_muscle' => $details->target_muscle
-            ]
+        return $this->successResponse(null, [
+            'age' => $details->age,
+            'gender' => $details->gender,
+            'weight' => $details->weight,
+            'height' => $details->height,
+            'activity_level' => $details->activity_level,
+            'goal' => $details->goal,
+            'target_muscle' => $details->target_muscle
         ]);
     }
 
@@ -194,6 +162,84 @@ class UserDetailController extends Controller
     
     
 
+/**
+     * Update user weight
+     */
+    public function updateWeight(Request $request, $rfid)
+    {
+        $validator = Validator::make($request->all(), [
+            'weight' => 'required|numeric|min:20|max:300'
+        ]);
+    
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation failed', $validator->errors(), 422);
+        }
+    
+        $user = UserDetail::where('rfid_uid', $rfid)->first();
+        if (!$user) {
+            return $this->errorResponse('User not found', null, 404);
+        }
+    
+        try {
+            DB::transaction(function () use ($rfid, $validator) {
+                $validated = $validator->validated();
+                UserDetail::where('rfid_uid', $rfid)
+                    ->update(['weight' => $validated['weight']]);
+    
+                WeightLog::create([
+                    'rfid_uid' => $rfid,
+                    'weight' => $validated['weight'],
+                    'log_date' => now()->format('Y-m-d')
+                ]);
+            });
+    
+            return $this->successResponse('Weight updated successfully', [
+                'new_weight' => $validator->validated()['weight'],
+                'updated_at' => now()->toDateTimeString()
+            ]);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to update weight', $e->getMessage(), 500);
+        }
+    }
+    
+    /**
+     * Get weight history
+     */
+    public function getWeightHistory($rfid_uid)
+    {
+        if (empty($rfid_uid)) {
+            return $this->errorResponse('RFID UID is required', null, 400);
+        }
 
+        $history = WeightLog::where('rfid_uid', $rfid_uid)
+            ->orderBy('log_date', 'desc')
+            ->get(['weight', 'log_date']);
+    
+            return response()->json($history);
+        }
+
+    /**
+     * Standard success response
+     */
+    protected function successResponse($message = null, $data = null, $code = 200)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => $data
+        ], $code);
+    }
+
+    /**
+     * Standard error response
+     */
+    protected function errorResponse($message, $error = null, $code = 400)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message,
+            'error' => $error
+        ], $code);
+    }
 
 }

@@ -17,15 +17,15 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/user/details/{rfid_uid}', [UserDetailController::class, 'getDetailsByRfid']);
+    Route::post('/saveWalkthroughData', [UserDetailController::class, 'store']);
+    Route::get('/daily-calories', [UserDetailController::class, 'getDailyCalories']);
 
 
 
 
 
     Route::post('/logout', [AuthController::class, 'logout']);
-    Route::post('/saveWalkthroughData', [UserDetailController::class, 'store']);
     Route::get('/calories', [UserCalorieController::class, 'getCalories']);
-    Route::get('/daily-calories', [UserDetailController::class, 'getDailyCalories']);
 
     Route::get('/foods', [FoodController::class, 'index']);
 
@@ -64,8 +64,9 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     
 
+    Route::post('/update-weight/{rfid}', [UserDetailController::class, 'updateWeight']);
 
-    Route::put('/user/weight', [UserDetailController::class, 'updateWeight']);
+    Route::get('/weight-history/{rfid_uid}', [UserDetailController::class, 'getWeightHistory']);
 
 
 });
