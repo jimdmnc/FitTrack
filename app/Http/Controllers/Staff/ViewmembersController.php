@@ -105,6 +105,54 @@ class ViewmembersController extends Controller
             ->with('success', 'Member renewal successfully!');    
         
         }
+
+
+
+
+
+
+        public function renewMembershipApp(Request $request)
+        {
+            $request->validate([
+                'rfid_uid' => 'required|exists:users,rfid_uid',
+                'membership_type' => 'required',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date|after:start_date',
+            ]);
+        
+            $user = User::where('rfid_uid', $request->rfid_uid)->first();
+        
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User not found'], 404);
+            }
+        
+            $updated = $user->update([
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'member_status' => 'active',
+            ]);
+        
+            if (!$updated) {
+                return response()->json(['success' => false, 'message' => 'User update failed'], 500);
+            }
+        
+            Renewal::create([
+                'rfid_uid' => $user->rfid_uid,
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date
+            ]);
+        
+            return response()->json([
+                'success' => true,
+                'message' => 'Member renewed successfully',
+                'user' => $user
+            ]);
+        }
+
+
+
     
     
 }

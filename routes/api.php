@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Staff\AttendanceController;
+use App\Http\Controllers\Staff\ViewMembersController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
@@ -68,6 +69,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/weight-history/{rfid_uid}', [UserDetailController::class, 'getWeightHistory']);
 
+
+
+    Route::post('/renew-membership', [ViewMembersController::class, 'renewMembershipApp']);
 
 });
 
