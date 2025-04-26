@@ -36,7 +36,7 @@
     <div class="mb-20">
         <div class="py-8">
             <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h1>
-            <p class="text-gray-300">View and analyze your data with ease</p>
+            <p class="text-gray-300">View and analyze your data</p>
         </div>
         <div x-data="reportFilter()" class="max-w-8xl mb-20 space-y-6">
             <!-- Header -->
