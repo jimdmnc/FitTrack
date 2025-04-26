@@ -1,25 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
-<!-- <div id="loadingIndicator" class="hidden fixed top-0 left-0 w-full h-1 bg-[#ff5722] z-50">
-    <div class="h-full bg-[#e64a19] animate-pulse"></div>
-</div> -->
 <div class="bg-[#121212] p-2">
     <!-- Header Section with Gradient Card -->
     <div class="py-8">
         <div class="mb-6">
             <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">
-                        Payment Tracking
-                        </h1>
+                Payment Tracking
+            </h1>
         </div>
-
 
         <!-- Payment Table Card -->
         <div class="p-4">
             <!-- Table Header with Search and Filter -->
             <div class="p-5">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full md:w-80 -ml-4">
+                    <div class="relative w-full md:w-80">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg class="w-4 h-4 text-[#ff5722]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
@@ -83,8 +79,8 @@
                         @else
                             @foreach ($payments as $payment)
                             <tr class="bg-[#1e1e1e]">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{{ $loop->iteration }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="text-sm font-medium text-gray-200">
                                             {{ optional($payment->user)->first_name . ' ' . optional($payment->user)->last_name ?? 'Unknown User' }}
@@ -142,16 +138,16 @@
                         @endif
                     </tbody>
                 </table>
-                <div class="mt-4">
-                    {{ $payments->appends(['search' => request('search'), 'payment_method' => request('payment_method'), 'time_filter' => request('time_filter')])->links('vendor.pagination.default') }}
-                </div>
+            </div>
+            <div class="mt-4">
+                {{ $payments->appends(['search' => request('search'), 'payment_method' => request('payment_method'), 'time_filter' => request('time_filter')])->links('vendor.pagination.default') }}
             </div>
         </div>
     </div>
 </div>
-
 <script>
 $(document).ready(function () {
+    // Define the input and select elements
     const paymentMethodFilter = $('#paymentMethodFilter');
     const timeFilter = $('#timeFilter');
     const searchInput = $('input[type="search"]');
@@ -176,20 +172,20 @@ $(document).ready(function () {
     });
 
     // Function to fetch payments based on search and filters
-    function fetchPayments(url = '') {
+    function fetchPayments() {
         const search = searchInput.val();
         const paymentMethod = paymentMethodFilter.val();
         const time = timeFilter.val();
 
         // Show loading indicator
-        loadingIndicator.removeClass('hidden');
+        loadingIndicator.removeClass('hidden')
 
         // Show loading state in table
         $('tbody').html('<tr><td colspan="7" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
         
         // Send an AJAX request
         $.ajax({
-            url: url || '{{ route("staff.paymentTracking") }}',
+            url: '{{ route("staff.paymentTracking") }}',
             type: 'GET',
             data: {
                 search: search,
@@ -226,13 +222,6 @@ $(document).ready(function () {
         toggleClearButtonVisibility();  // Hide the clear button
     });
 
-    // Handle pagination links with AJAX
-    $(document).on('click', '.pagination a', function (e) {
-        e.preventDefault();
-        const url = $(this).attr('href');
-        fetchPayments(url);
-    });
-
     // Set initial filter values from URL
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has("payment_method")) {
@@ -241,9 +230,33 @@ $(document).ready(function () {
     if (urlParams.has("time_filter")) {
         timeFilter.val(urlParams.get("time_filter"));
     }
-
-    toggleClearButtonVisibility();
 });
+// Handle pagination links with AJAX
+$(document).on('click', '.pagination a', function(e) {
+    e.preventDefault();
+    let url = $(this).attr('href');
+
+    // Show loading indicator
+    loadingIndicator.removeClass('hidden');
+
+    $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
+                // Update URL without reload
+                window.history.pushState({}, '', url);
+                // Hide loading indicator
+                loadingIndicator.addClass('hidden');
+            },
+            error: function() {
+                // Hide loading indicator even on error
+                loadingIndicator.addClass('hidden');
+            }
+    });
+});
+
+toggleClearButtonVisibility();
 
 </script>
 @endsection

@@ -31,21 +31,54 @@
         .hidden {
             display: none;
         }
+        
+        /* Responsive table container */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Custom scrollbar for tables */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #ff5722;
+            border-radius: 20px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-full-width {
+                width: 100%;
+            }
+            
+            .pagination-container {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .pagination {
+                display: flex;
+                white-space: nowrap;
+            }
+        }
     </style>
 
-    <div class="mb-20">
-        <div class="py-8">
-            <h1 class="text-3xl pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h1>
-            <p class="text-red-200">View and analyze your data with ease</p>
+    <div class="mb-20 px-4 sm:px-6 md:px-8">
+        <div class="py-6 md:py-8">
+            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h1>
+            <p class="text-red-200 text-sm sm:text-base">View and analyze your data with ease</p>
         </div>
         <div x-data="reportFilter()" class="max-w-8xl mb-20 space-y-6">
             <!-- Header -->
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-6 ml-8">            
+            <div class="flex flex-col space-y-4 sm:space-y-6 md:ml-0">            
                 <!-- Enhanced Filter Section -->
-                <div>
-                    <div class="flex flex-col sm:flex-row gap-4 items-end">
-                        <!-- Export Button -->
-                        
+                <div class="w-full">
+                    <div class="flex flex-col sm:flex-row gap-4 flex-wrap">
                         <!-- Date Filter -->
                         <div class="w-full sm:w-auto">
                             <label class="block mb-1.5 text-sm font-medium text-gray-200">Time Period</label>
@@ -63,26 +96,7 @@
                             </div>
                         </div>
                         
-                        <!-- Custom Date Range Picker -->
-                        <div id="customRange" class="hidden flex items-center space-x-4">
-                            <!-- Start Date -->
-                            <div>
-                                <label for="startDate" class="block text-sm font-medium text-gray-200">Start Date</label>
-                                <input type="date" id="startDate" 
-                                    class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
-                                    max="<?= date('Y-m-d') ?>"
-                                    onchange="updateEndDatePicker()">
-                            </div>
-
-                            <!-- End Date -->
-                            <div>
-                                <label for="endDate" class="block text-sm font-medium text-gray-200">End Date</label>
-                                <input type="date" id="endDate" 
-                                    class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
-                                    max="<?= date('Y-m-d') ?>">
-                            </div>
-                        </div>
-
+                        <!-- Report Type -->
                         <div class="w-full sm:w-auto">
                             <label class="block mb-1.5 text-sm font-medium text-gray-200">Report Type</label>
                             <div class="relative">
@@ -94,8 +108,10 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <button type="button" id="exportButton" class="bg-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-opacity-80 hover:translate-y-[-2px] transition flex items-center gap-2">
+                        
+                        <!-- Export Button -->
+                        <div class="w-full sm:w-auto sm:self-end">
+                            <button type="button" id="exportButton" class="w-full sm:w-auto bg-[#ff5722] text-gray-200 px-4 py-2 rounded-md shadow hover:bg-opacity-80 hover:translate-y-[-2px] transition flex items-center justify-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7m-9 0H6a2 2 0 00-2 2v5h16v-5a2 2 0 00-2-2h-3m-9 0v5m0 0v4h12v-4m-3 4v1m-6-1v1" />
                                 </svg>
@@ -103,96 +119,118 @@
                             </button>
                         </div>
                     </div>
+                    
+                    <!-- Custom Date Range Picker -->
+                    <div id="customRange" class="hidden mt-4 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                        <!-- Start Date -->
+                        <div class="w-full sm:w-auto">
+                            <label for="startDate" class="block text-sm font-medium text-gray-200">Start Date</label>
+                            <input type="date" id="startDate" 
+                                class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
+                                max="<?= date('Y-m-d') ?>"
+                                onchange="updateEndDatePicker()">
+                        </div>
+
+                        <!-- End Date -->
+                        <div class="w-full sm:w-auto">
+                            <label for="endDate" class="block text-sm font-medium text-gray-200">End Date</label>
+                            <input type="date" id="endDate" 
+                                class="mt-1 block w-full px-4 py-2 bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md text-gray-200 focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
+                                max="<?= date('Y-m-d') ?>">
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- Members Report Table -->
             <div id="membersReport" class="overflow-hidden rounded-lg">
-                <table class="min-w-full divide-y divide-black">
-                    <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Date</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time In</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time Out</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Contact</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-[#1e1e1e] divide-y divide-black" id="membersTableBody">
-                        @if($attendances->count() > 0)
-                            @foreach($attendances as $attendance)
-                                <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif" data-date="{{ $attendance->time_in ? $attendance->time_in->format('Y-m-d') : '' }}">
-                                    <!-- # -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{{ $loop->iteration }}</td>
+                <div class="table-responsive">
+                    <table class="min-w-full divide-y divide-black">
+                        <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+                            <tr>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Date</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time In</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Time Out</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Contact</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-[#1e1e1e] divide-y divide-black" id="membersTableBody">
+                            @if($attendances->count() > 0)
+                                @foreach($attendances as $attendance)
+                                    <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif" data-date="{{ $attendance->time_in ? $attendance->time_in->format('Y-m-d') : '' }}">
+                                        <!-- # -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">{{ $loop->iteration }}</td>
 
-                                    <!-- Member -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="ml-4">
-                                            <div class="text-sm font-medium text-gray-200">{{ $attendance->user->first_name }} {{ $attendance->user->last_name }}</div>
-                                        </div>
-                                    </td>
+                                        <!-- Member -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <div class="ml-2 sm:ml-4">
+                                                <div class="text-xs sm:text-sm font-medium text-gray-200">{{ $attendance->user->first_name }} {{ $attendance->user->last_name }}</div>
+                                            </div>
+                                        </td>
 
-                                    <!-- Membership -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                        {{ $attendance->user->membership_type_name }}
-                                    </td>
+                                        <!-- Membership -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">
+                                            {{ $attendance->user->membership_type_name }}
+                                        </td>
 
-                                    <!-- Date -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                        {{ $attendance->time_in ? $attendance->time_in->format('M d, Y') : 'N/A' }}
-                                    </td>
+                                        <!-- Date -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">
+                                            {{ $attendance->time_in ? $attendance->time_in->format('M d, Y') : 'N/A' }}
+                                        </td>
 
-                                    <!-- Time In -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-200">{{ $attendance->time_in ? $attendance->time_in->format('h:i A') : 'N/A' }}</div>
-                                    </td>
+                                        <!-- Time In -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <div class="text-xs sm:text-sm text-gray-200">{{ $attendance->time_in ? $attendance->time_in->format('h:i A') : 'N/A' }}</div>
+                                        </td>
 
-                                    <!-- Time Out -->
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($attendance->time_out)
-                                            <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
-                                        @else
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                                <span class="h-1.5 w-1.5 mr-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                                                In Session
-                                            </span>
-                                        @endif
-                                    </td>
+                                        <!-- Time Out -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            @if($attendance->time_out)
+                                                <div class="text-xs sm:text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
+                                            @else
+                                                <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                    <span class="h-1.5 w-1.5 mr-1 sm:mr-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                                    <span class="text-xs">In Session</span>
+                                                </span>
+                                            @endif
+                                        </td>
 
-                                    <!-- Contact -->
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
-                                        <div class="text-sm text-gray-200">{{ $attendance->user->phone_number ?? 'N/A' }}</div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        @else
-                        <tr>
-                            <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
-                                <div class="flex flex-col items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                                    </svg>
-                                    <p class="text-gray-200 text-lg font-medium">No attendance records found</p>
-                                    <p class="text-gray-400 text-sm mt-1">There are no records matching your criteria.</p>
-                                </div>
-                            </td>
-                        </tr>
-                        @endif
-                        <!-- No results row for filtered results (hidden by default) -->
-                        <tr id="membersNoResults" class="hidden">
-                            <td colspan="7" class="px-6 py-12 text-center">
-                                <p class="text-gray-200 text-lg">No records match your filter criteria</p>
-                                <button onclick="resetFilters('members')" class="mt-2 text-[#ff5722] hover:text-white">Reset filters</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                                        <!-- Contact -->
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">
+                                            <div class="text-xs sm:text-sm text-gray-200">{{ $attendance->user->phone_number ?? 'N/A' }}</div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            @else
+                            <tr>
+                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center bg-[#1e1e1e]">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 sm:h-12 w-8 sm:w-12 text-gray-500 mb-3 sm:mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                                        </svg>
+                                        <p class="text-gray-200 text-base sm:text-lg font-medium">No attendance records found</p>
+                                        <p class="text-gray-400 text-xs sm:text-sm mt-1">There are no records matching your criteria.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endif
+                            <!-- No results row for filtered results (hidden by default) -->
+                            <tr id="membersNoResults" class="hidden">
+                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center">
+                                    <p class="text-gray-200 text-base sm:text-lg">No records match your filter criteria</p>
+                                    <button onclick="resetFilters('members')" class="mt-2 text-[#ff5722] hover:text-white">Reset filters</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 
                 <!-- Pagination for Members Report -->
                 @if($attendances->count() > 0)
-                    <div class="pagination-container">
+                    <div class="pagination-container mt-4 w-full flex justify-center">
                         {{ $attendances->appends([
                             'type' => request('type', 'members'),
                             'filter' => request('filter'),
@@ -207,75 +245,77 @@
 
             <!-- Payments Report Table -->
             <div id="paymentsReport" class="hidden overflow-hidden rounded-lg">
-                <table class="min-w-full divide-y divide-black">
-                    <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
-                        <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Payment Date</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Amount</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Method</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Activation Date</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Expiry Date</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-[#1e1e1e] divide-y divide-black" id="paymentsTableBody">
-                        @if($payments->count() > 0)
-                            @foreach ($payments as $index => $payment)
-                                <tr class="" data-date="{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}">
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">{{ $index + 1 }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex items-center">
-                                            <div class="text-sm font-medium text-gray-200">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->payment_date)->format('m/d/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-300">₱{{ number_format($payment->amount, 2) }}</div>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                            @if($payment->payment_method == 'cash') bg-green-900 text-green-200 
-                                            @elseif($payment->payment_method == 'card') bg-blue-900 text-blue-200 
-                                            @elseif($payment->payment_method == 'bank') bg-purple-900 text-purple-200 
-                                            @else bg-gray-900 text-gray-200 @endif">
-                                            {{ $payment->payment_method }}
-                                        </span>
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->start_date)->format('m/d/Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->end_date)->format('m/d/Y') }}</td>
-                                </tr>
-                            @endforeach
-                        @else
-                        <tr>
-                            <td colspan="7" class="px-6 py-12 text-center bg-[#1e1e1e]">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                </svg>
-                                <h3 class="mt-2 text-lg font-medium text-gray-300">No payment records found</h3>
-                                <p class="mt-1 text-sm text-gray-400">There are no payment records matching your criteria.</p>
-                            </td>
-                        </tr>
-                        @endif
-                        <!-- No results row for filtered results (hidden by default) -->
-                        <tr id="paymentsNoResults" class="hidden">
-                            <td colspan="7" class="px-6 py-12 text-center">
-                                <p class="text-gray-200 text-lg">No records match your filter criteria</p>
-                                <button onclick="resetFilters('payments')" class="mt-2 text-[#ff5722] hover:text-gray-200">Reset filters</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div class="table-responsive">
+                    <table class="min-w-full divide-y divide-black">
+                        <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+                            <tr>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Payment Date</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Amount</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Method</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Activation Date</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Expiry Date</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-[#1e1e1e] divide-y divide-black" id="paymentsTableBody">
+                            @if($payments->count() > 0)
+                                @foreach ($payments as $index => $payment)
+                                    <tr class="" data-date="{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}">
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">{{ $index + 1 }}</td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <div class="flex items-center">
+                                                <div class="text-xs sm:text-sm font-medium text-gray-200">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
+                                            </div>
+                                        </td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->payment_date)->format('m/d/Y') }}</td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <div class="text-xs sm:text-sm font-medium text-gray-300">₱{{ number_format($payment->amount, 2) }}</div>
+                                        </td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <span class="px-1.5 sm:px-2.5 py-0.5 sm:py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                @if($payment->payment_method == 'cash') bg-green-900 text-green-200 
+                                                @elseif($payment->payment_method == 'card') bg-blue-900 text-blue-200 
+                                                @elseif($payment->payment_method == 'bank') bg-purple-900 text-purple-200 
+                                                @else bg-gray-900 text-gray-200 @endif">
+                                                {{ $payment->payment_method }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->start_date)->format('m/d/Y') }}</td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->user->end_date)->format('m/d/Y') }}</td>
+                                    </tr>
+                                @endforeach
+                            @else
+                            <tr>
+                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center bg-[#1e1e1e]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 sm:h-12 w-8 sm:w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                    <h3 class="mt-2 text-base sm:text-lg font-medium text-gray-300">No payment records found</h3>
+                                    <p class="mt-1 text-xs sm:text-sm text-gray-400">There are no payment records matching your criteria.</p>
+                                </td>
+                            </tr>
+                            @endif
+                            <!-- No results row for filtered results (hidden by default) -->
+                            <tr id="paymentsNoResults" class="hidden">
+                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center">
+                                    <p class="text-gray-200 text-base sm:text-lg">No records match your filter criteria</p>
+                                    <button onclick="resetFilters('payments')" class="mt-2 text-[#ff5722] hover:text-gray-200">Reset filters</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- Pagination for Payments Report -->
                 @if($payments->count() > 0)
-                    <div class="pagination-container">
-                            {{ $payments->appends([
-                                'type' => request('type', 'members'),
-                                'filter' => request('filter'),
-                                'start_date' => request('start_date'),
-                                'end_date' => request('end_date'),
-                                'per_page' => request('per_page', 10)
-                            ])->links('vendor.pagination.default') }}
+                    <div class="pagination-container mt-4 w-full flex justify-center">
+                        {{ $payments->appends([
+                            'type' => request('type', 'members'),
+                            'filter' => request('filter'),
+                            'start_date' => request('start_date'),
+                            'end_date' => request('end_date'),
+                            'per_page' => request('per_page', 10)
+                        ])->links('vendor.pagination.default') }}
                     </div>
                 @endif
             </div>

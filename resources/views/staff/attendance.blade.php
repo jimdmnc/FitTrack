@@ -24,7 +24,7 @@
     </div>
 
     <div class="p-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-gray-800 gap-4">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-6 py-4 border-b border-gray-800 gap-4">
             <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
                 <div class="relative flex items-center -ml-4 mb-2">
                     <!-- Search Input -->
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto sm:rounded-lg">
             <table class="min-w-full divide-y divide-black">
                 <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>
@@ -198,8 +198,8 @@
         </div>
 
         <!-- Calendar Modal -->
-        <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-        <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-6 w-full max-w-md" @click.stop>
+        <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
+        <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
                 <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
@@ -381,7 +381,7 @@
                 </div>
 
                 <!-- Calendar Grid -->
-                <div class="grid grid-cols-7 gap-1 text-center">
+                <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
                     <!-- Day headers -->
                     <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
                         <div class="text-xs text-gray-400 font-medium" x-text="day"></div>

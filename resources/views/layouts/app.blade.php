@@ -14,13 +14,12 @@
     <!-- Tailwind CSS -->
     @vite('resources/css/app.css')
 
-    
     <!-- Alpine.js for interactions -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    
+
     <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -49,7 +48,7 @@
     <!-- Main Content -->
     <div id="main-content" 
          class="w-full transition-all duration-300"
-         :class="{'md:ml-64': sidebarOpen, 'md:ml-0': !sidebarOpen}">
+         :class="{'md:ml-64': sidebarOpen, 'ml-0': !sidebarOpen}">
         <div class="sticky top-0 z-10 bg-[#121212]">
             @include('layouts.navigation')
         </div>

@@ -1,14 +1,18 @@
+
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-800 sticky top-0 z-50">
     <header class="flex justify-between items-center w-full px-10 py-3 shadow-md bg-[#121212] transition-all duration-300">
         <!-- Left Section: Brand and Hamburger Menu -->
         <div class="flex items-center space-x-4">
             <!-- Hamburger Menu Button with Animation -->
-            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative">
+            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative" @click="open = !open">
                 <div class="w-6 h-6 relative flex flex-col justify-center items-center">
                     <!-- Hamburger lines with transition effects -->
-                    <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out -translate-y-1.5 group-hover:bg-gray-200"></span>
-                    <span id="line2" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out group-hover:bg-gray-200"></span>
-                    <span id="line3" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out translate-y-1.5 group-hover:bg-gray-200"></span>
+                    <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
+                          :class="{'rotate-45': open, '-translate-y-1.5': !open}"></span>
+                    <span id="line2" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
+                          :class="{'opacity-0': open, 'opacity-100': !open}"></span>
+                    <span id="line3" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
+                          :class="{'-rotate-45 translate-y-0': open, 'translate-y-1.5': !open}"></span>
                 </div>
                 <span class="sr-only">Toggle menu</span>
             </button>
@@ -51,15 +55,7 @@
 
         </div>
     </header>
-    
-    <!-- Mobile Menu (Hidden by Default) -->
-    <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200 shadow-lg">
-        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Dashboard</a>
-        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Members</a>
-        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Reports</a>
-        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Settings</a>
-
-    </div>
+        
 </nav>
 <script>
 function updateTime() {
