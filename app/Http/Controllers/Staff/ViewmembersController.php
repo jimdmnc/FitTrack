@@ -74,12 +74,14 @@ class ViewmembersController extends Controller
             'end_date' => 'required|date|after:start_date',
         ]);
     
+        // Find user by RFID
         $user = User::where('rfid_uid', $request->rfid_uid)->first();
     
         if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+            return redirect()->back()->with('error', 'User not found!');
         }
     
+        // Update user table
         $updated = $user->update([
             'membership_type' => $request->membership_type,
             'start_date' => $request->start_date,
@@ -88,9 +90,10 @@ class ViewmembersController extends Controller
         ]);
     
         if (!$updated) {
-            return response()->json(['success' => false, 'message' => 'User update failed'], 500);
+            return redirect()->back()->with('error', 'User update failed!');
         }
     
+        // Save renewal history
         Renewal::create([
             'rfid_uid' => $user->rfid_uid,
             'membership_type' => $request->membership_type,
@@ -98,12 +101,10 @@ class ViewmembersController extends Controller
             'end_date' => $request->end_date
         ]);
     
-        return response()->json([
-            'success' => true,
-            'message' => 'Member renewed successfully',
-            'user' => $user
-        ]);
-    }
+        return redirect()->route('staff.viewmembers')
+            ->with('success', 'Member renewal successfully!');    
+        
+        }
     
     
 }
