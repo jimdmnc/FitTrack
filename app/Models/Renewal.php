@@ -15,7 +15,11 @@ class Renewal extends Model
         'rfid_uid',  // ✅ Add this line
         'membership_type',
         'start_date',
-        'end_date'
+        'end_date',
+        'payment_method', // ✅ Added payment_method here
+        'session_status', // Add this
+
+
     ];
     public function user()
     {

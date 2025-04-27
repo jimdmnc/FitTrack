@@ -41,62 +41,70 @@
             </div>
         </div>
 
-            <div class="overflow-x-auto">
-                <table class="w-full border-collapse">
-                    <thead> 
-                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                            <th class="border-gray-700 p-3 text-left">Full Name</th>
-                            <th class="p-3 text-left">Gender</th>
-                            <th class="p-3 text-left">Registration Date</th>
-                            <th class="p-3 text-center">Actions</th>
-                        </tr>   
-                    </thead>
-                    <tbody class="divide-y divide-black">
-                    @forelse($pendingUsers as $user)
-                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                            <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
-                            <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
-                            <td class="p-3 font-medium">
-                                <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
-                                <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
-                            </td>
-                            <td class="p-3 text-center">
-                                <div class="flex justify-center gap-2">
-                                    <form action="{{ route('staff.approveUser', $user->id) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('PUT')
-                                        <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-green-600 transition-colors flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                            </svg>
-                                            Approve
-                                        </button>
-                                    </form>
+        <div class="overflow-x-auto">
+            <table class="w-full border-collapse">
+                <thead> 
+                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                        <th class="border-gray-700 p-3 text-left">Full Name</th>
+                        <th class="p-3 text-left">Gender</th>
+                        <th class="p-3 text-left">Type</th>
+                        <th class="p-3 text-left">Registration Date</th>
+                        <th class="p-3 text-center">Actions</th>
+                    </tr>   
+                </thead>
 
-                                    <button onclick="rejectUser({{ $user->id }})" class="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-600 transition-colors flex items-center">
+                <tbody class="divide-y divide-black">
+                    @forelse($pendingUsers as $user)
+                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                        <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
+                        <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
+                        <td class="p-3 font-medium text-gray-200">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold 
+                                {{ $user->approval_type == 'Registration' ? 'bg-blue-500 text-white' : 'bg-yellow-500 text-black' }}">
+                                {{ $user->approval_type }}
+                            </span>
+                        </td> 
+                        <td class="p-3 font-medium">
+                            <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
+                            <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
+                        </td>
+                        <td class="p-3 text-center">
+                            <div class="flex justify-center gap-2">
+                                <form action="{{route('staff.approveUser', $user->id)}}" method="POST" class="inline-block">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-green-600 transition-colors flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                         </svg>
-                                        Reject
+                                        Approve
                                     </button>
-                                </div>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="4" class="py-10 text-center">
-                                <div class="flex flex-col items-center justify-center text-gray-400">
+                                </form>
+
+                                <button onclick="rejectUser({{ $user->id }})" class="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-600 transition-colors flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Reject
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="5" class="py-10 text-center">
+                            <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
                                 <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
                                 <p class="text-gray-300 mt-1">All membership requests have been processed</p>
-                                </div>
-                            </td>
-                        </tr>
-
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
+
             </div>
 
         </table>
@@ -133,16 +141,15 @@
                     Cancel
                 </button>
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    Confirm Rejection
+                    Reject
                 </button>
             </div>
         </form>
     </div>
 </div>
-
 
 <script>
     function closeModal() {
