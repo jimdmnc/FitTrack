@@ -24,7 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
-<body class="font-sans bg-[#121212] overflow-x-hidden" x-data="{ sidebarOpen: window.innerWidth >= 768 }" x-init="() => {
+<body class="font-sans overflow-x-hidden" x-data="{ sidebarOpen: window.innerWidth >= 768 }" x-init="() => {
     // Initialize sidebar state based on screen size
     window.addEventListener('resize', () => {
         sidebarOpen = window.innerWidth >= 768;
@@ -34,20 +34,20 @@
 <div class="flex flex-col md:flex-row min-h-screen w-full">
     <!-- Sidebar -->
     <div id="sidebar" 
-         class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out overflow-y-auto"
+         class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-400 text-white transition-transform duration-300 ease-in-out overflow-y-auto"
          :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
         @include('components.sidebar')
     </div>
 
     <!-- Mobile overlay -->
     <div id="sidebar-overlay" 
-         class="fixed inset-0 bg-black opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
+         class="fixed inset-0 bg-[#121212] opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
          :class="{'block': sidebarOpen, 'hidden': !sidebarOpen}"
          @click="sidebarOpen = false"></div>
 
     <!-- Main Content -->
     <div id="main-content" 
-         class="w-full transition-all duration-300"
+         class="w-full transition-all duration-300 bg-[#121212]"
          :class="{'md:ml-64': sidebarOpen, 'ml-0': !sidebarOpen}">
         <div class="sticky top-0 z-10 bg-[#121212]">
             @include('layouts.navigation')

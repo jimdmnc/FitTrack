@@ -1,6 +1,6 @@
 <!-- resources/views/components/sidebar.blade.php -->
 
-<div class="flex flex-col w-full h-full overflow-y-auto bg-[#0A0A0A]">
+<div class="flex flex-col w-full h-full overflow-y-auto bg-[#121212]">
     <!-- Logo and Brand Header -->
     <div class="flex items-center p-4 md:p-6">
         <a href="{{ route('staff.dashboard') }}" class="flex items-center">
