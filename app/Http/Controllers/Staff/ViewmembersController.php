@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Renewal;
+use App\Models\MembersPayment;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -118,38 +120,67 @@ class ViewmembersController extends Controller
                 'membership_type' => 'required',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after:start_date',
+                'payment_method' => 'required|in:cash,gcash',
+                'amount' => 'required|numeric|min:0',
             ]);
-        
+
             $user = User::where('rfid_uid', $request->rfid_uid)->first();
-        
+
             if (!$user) {
                 return response()->json(['success' => false, 'message' => 'User not found'], 404);
             }
-        
-            $updated = $user->update([
-                'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'member_status' => 'active',
-            ]);
-        
-            if (!$updated) {
-                return response()->json(['success' => false, 'message' => 'User update failed'], 500);
+
+            $isCash = $request->payment_method === 'cash';
+            $sessionStatus = $isCash ? 'pending' : 'approved';
+            $needsApproval = $isCash ? 1 : 0;
+
+            if (!$isCash) {
+                // GCash payment → direct update membership dates
+                $user->update([
+                    'membership_type' => $request->membership_type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'member_status' => 'active',
+                    'session_status' => $sessionStatus,
+                    'needs_approval' => $needsApproval,
+                ]);
+            } else {
+                // Cash payment → no start_date and end_date update yet
+                $user->update([
+                    'membership_type' => $request->membership_type,
+                    'member_status' => 'expired',
+                    'session_status' => $sessionStatus,
+                    'needs_approval' => $needsApproval,
+                ]);
             }
-        
+
             Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
-                'end_date' => $request->end_date
+                'end_date' => $request->end_date,
+                'payment_method' => $request->payment_method,
+                'status' => $sessionStatus,
             ]);
-        
+
+            MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'payment_date' => now(),
+            ]);
+
             return response()->json([
                 'success' => true,
-                'message' => 'Member renewed successfully',
-                'user' => $user
+                'message' => $isCash
+                    ? 'Renewal request submitted. Waiting for staff approvalsdsdsdsdss.'
+                    : 'Membership renewed successfullysdsdsdsd!',
+                'user' => $user,
             ]);
         }
+
+        
+        
 
 
 
