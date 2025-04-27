@@ -1,5 +1,6 @@
-<div x-data="{ sidebarOpen: false }" class="fixed inset-y-0 left-0 z-30 flex flex-col w-64 h-full overflow-y-auto bg-[#0A0A0A] transition-transform duration-300 ease-in-out"
-    :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen, 'md:translate-x-0': true}">
+<!-- resources/views/components/sidebar.blade.php -->
+
+<div class="flex flex-col w-full h-full overflow-y-auto bg-[#0A0A0A]">
     <!-- Logo and Brand Header -->
     <div class="flex items-center p-4 md:p-6">
         <a href="{{ route('staff.dashboard') }}" class="flex items-center">
@@ -14,7 +15,7 @@
     </div>  
 
     <!-- Navigation Links -->
-    <div class="flex flex-col flex-grow px-3 md:px-4 mt-3 md:mt-5">
+    <div class="flex flex-col flex-grow px-3 md:px-4 mt-3 md:mt-5" :class="{'block': open, 'hidden': !open}">
         <nav class="flex-1 space-y-1">
             <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-3 md:px-4 py-2 block">Main</span>
 
@@ -33,7 +34,7 @@
                 </svg>
                 <span>Register Member</span>
             </a>
-
+ 
             <!-- Members Attendance Link -->
             <a href="{{ route('staff.attendance') }}" class="flex items-center px-3 md:px-4 py-2 text-sm font-medium rounded-md group {{ Request::routeIs('staff.attendance') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 md:w-6 md:h-6 mr-2 md:mr-3 {{ Request::routeIs('staff.attendance') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">

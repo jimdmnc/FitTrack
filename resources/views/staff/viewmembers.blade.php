@@ -1,7 +1,42 @@
 @extends('layouts.app') <!-- Assuming you have a main layout file -->
 
 @section('content')
-
+<style>
+    /* Responsive table container */
+    .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Custom scrollbar for tables */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #ff5722;
+            border-radius: 20px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-full-width {
+                width: 100%;
+            }
+            
+            .pagination-container {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .pagination {
+                display: flex;
+                white-space: nowrap;
+            }
+        }
+</style>
 
 <div class="py-8 sm:px-6 lg:px-4 h-screen">
     <div class="mb-6">
@@ -67,7 +102,7 @@
         </div>
 
         <div class="glass-card mt-5 ">
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-responsive">
                 <!-- Success Message -->
                 @if(session('success'))
                     <div class="max-w-4xl mx-auto bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6 flex justify-between items-center" role="alert">
@@ -222,45 +257,45 @@
 
 
 <!-- Renew Member Modal -->
-<div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300">
+<div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
     <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-            <h2 class="text-lg font-bold text-gray-200 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                Renew Membership
+                <span class="truncate">Renew Membership</span>
             </h2>
-            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200" aria-label="Close modal">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
 
         <!-- Renew Form -->
-        <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-6">
+        <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
             @csrf
             <input type="hidden" name="user_id" id="editUserId">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                 <!-- Member ID -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
-                    <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
+                    <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                 </div>
                 
                 <!-- Member Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
-                    <input type="text" id="editMemberName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
+                    <input type="text" id="editMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                 </div>
                 
                 <!-- Membership Type -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type</label>
-                    <select id="membershipType" name="membership_type" required class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-sm">
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type</label>
+                    <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                         <option value="" selected disabled>Select Membership Type</option>
                         <option value="1">Session (1 day)</option>
                         <option value="7">Weekly (7 days)</option>
@@ -270,41 +305,41 @@
                 </div>
                 
                 <!-- Renewal Date -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date</label>
-                    <input type="date" id="startDate" name="start_date" required class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-sm">
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date</label>
+                    <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                 </div>
                 
                 <!-- Expiration Date -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
-                    <input type="text" id="endDate" name="end_date" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
+                    <input type="text" id="endDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                 </div>
 
                 <!-- Membership Fee -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1" for="membershipFee">Base Fee</label>
-                    <input type="text" id="membershipFee" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                <div class="w-full">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Base Fee</label>
+                    <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                 </div>
             </div>
             
             <!-- Summary Box -->
-            <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-4 rounded-lg flex items-start border border-[#ff5722] border-opacity-30">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-3 sm:p-4 rounded-lg flex items-start border border-[#ff5722] border-opacity-30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <div class="ml-3 text-sm text-gray-300">
+                <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
                     <span class="font-medium">Membership Summary:</span> <span id="membershipSummaryText">Select membership type to see details.</span>
                 </div>
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="closeRenewModal()" class="px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+            <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                <button type="button" onclick="closeRenewModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="px-5 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
                     Complete Renewal
@@ -317,14 +352,14 @@
  
 <!-- View Member Modal -->
 <div id="viewMemberModal" class="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center hidden z-50 transition-opacity duration-300">
-    <div class="bg-[#1e1e1e] rounded-2xl shadow-2xl w-full max-w-3xl p-8 transform transition-all duration-300 scale-95 opacity-0" id="viewModalContent">
+    <div class="bg-[#1e1e1e] rounded-2xl shadow-2xl w-full max-w-3xl p-4 sm:p-6 md:p-8 m-3 transform transition-all duration-300 scale-95 opacity-0 overflow-y-auto max-h-[90vh]" id="viewModalContent">
         <!-- Modal Header -->
-        <div class="flex justify-between items-center mb-6">
-            <h2 class="text-2xl font-bold text-white flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 mr-3 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="flex justify-between items-center mb-4 md:mb-6">
+            <h2 class="text-xl sm:text-2xl font-bold text-white flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 sm:h-7 sm:w-7 mr-2 sm:mr-3 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                Member Profile
+                <span class="truncate">Member Profile</span>
             </h2>
             <button onclick="closeViewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] hover:scale-95 rounded-full p-2 transition-colors duration-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -336,102 +371,102 @@
         <!-- Modern Card Design -->
         <div class="bg-[#2c2c2c] rounded-xl overflow-hidden">
             <!-- Card Header -->
-            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] py-4 px-6 rounded-t-xl shadow-lg">
+            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] py-3 px-4 sm:py-4 sm:px-6 rounded-t-xl shadow-lg">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-white text-lg tracking-wider">MEMBER IDENTIFICATION</h3>
-                    <div class="px-3 py-1 rounded-full">
-                        <span id="viewStatus" class="text-sm font-semibold text-gray-200">Active</span>
+                    <h3 class="font-bold text-white text-base sm:text-lg tracking-wider truncate">MEMBER IDENTIFICATION</h3>
+                    <div class="px-2 sm:px-3 py-1 rounded-full">
+                        <span id="viewStatus" class="text-xs sm:text-sm font-semibold text-gray-200">Active</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Modern Horizontal Layout -->
-            <div class="flex flex-col md:flex-row">
+            <!-- Responsive Layout -->
+            <div class="flex flex-col lg:flex-row">
                 
-                <div class="w-full md:w-1/4 p-6 flex flex-col items-center justify-center bg-[#2c2c2c] mx-4 border-transparent">
-                    <div class="w-32 h-32 bg-[#444444] rounded-full flex items-center justify-center border-2 border-orange-500 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <!-- Avatar Section -->
+                <div class="w-full lg:w-1/4 p-4 sm:p-6 flex flex-col items-center justify-center bg-[#2c2c2c] mx-auto lg:mx-4 border-transparent">
+                    <div class="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 bg-[#444444] rounded-full flex items-center justify-center border-2 border-orange-500 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <!-- Optional: Add space for additional elements below the avatar -->
-                    <div class="w-full text-center mt-4">
+                    <div class="w-full text-center mt-3 sm:mt-4">
                         <p class="text-xs text-gray-400">Profile Image</p>
                     </div>
                 </div>
                 
-                <!-- Middle Column - Primary Info -->
-                <div class="w-full md:w-2/5 p-6 bg-[#1e1e1e] flex flex-col justify-between">
+                <!-- Primary Info Section -->
+                <div class="w-full lg:w-2/5 p-4 sm:p-6 bg-[#1e1e1e] flex flex-col justify-between border-t border-[#333333] lg:border-t-0 lg:border-l">
                     <!-- Name -->
-                    <div class="mb-5">
+                    <div class="mb-4 sm:mb-5">
                         <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Name</p>
-                        <p class="font-bold text-white text-xl" id="viewMemberName">John Doe</p>
+                        <p class="font-bold text-white text-lg sm:text-xl" id="viewMemberName">John Doe</p>
                     </div>
                     
                     <!-- Membership Type -->
-                    <div class="mb-5">
+                    <div class="mb-4 sm:mb-5">
                         <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Membership Type</p>
-                        <div class="bg-orange-600 text-gray-200 inline-block px-3 py-1 rounded-lg text-sm">
+                        <div class="bg-orange-600 text-gray-200 inline-block px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm">
                             <p class="font-medium" id="viewMembershipType">Monthly</p>
                         </div>
                     </div>
                     
-                    <!-- registration date -->
-                    <div class="mb-5">
+                    <!-- Registration Date -->
+                    <div class="mb-4 sm:mb-5">
                         <p class="text-xs text-gray-400 uppercase tracking-wider">Issued Date</p>
                         <div class="flex items-center mt-2">
-                            <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="bg-orange-500 bg-opacity-20 p-1 sm:p-2 rounded-lg mr-2 sm:mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-medium text-gray-200" id="viewStartDate">Jan 1, 2025</p>
+                                <p class="font-medium text-gray-200 text-sm sm:text-base" id="viewStartDate">Jan 1, 2025</p>
                             </div>                           
                         </div>                      
                     </div>
                 </div>
                 
-                <!-- Right Column - RFID Card -->
-                <div class="w-full md:w-1/3 p-6 bg-[#2c2c2c] flex flex-col justify-between">
+                <!-- RFID Card Section -->
+                <div class="w-full lg:w-1/3 p-4 sm:p-6 bg-[#2c2c2c] flex flex-col justify-between border-t border-[#333333] lg:border-t-0 lg:border-l">
                     <!-- RFID Card Area -->
-                    <div class="mb-5">
+                    <div class="mb-4 sm:mb-5">
                         <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">RFID Card</p>
-                        <div class="bg-[#1e1e1e] rounded-lg p-3 shadow-inner">
+                        <div class="bg-[#1e1e1e] rounded-lg p-2 sm:p-3 shadow-inner">
                             <div class="flex items-center mb-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 text-orange-400 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <rect x="3" y="5" width="18" height="14" rx="2" ry="2" stroke-width="1.5" />
                                     <path d="M7 15a4 4 0 010-6" stroke-width="1.5" />
                                     <path d="M11 13a2 2 0 010-2" stroke-width="1.5" />
                                     <line x1="17" y1="9" x2="17" y2="9" stroke-width="2" stroke-linecap="round" />
                                     <line x1="17" y1="15" x2="17" y2="15" stroke-width="2" stroke-linecap="round" />
                                 </svg>
-                                <span class="text-sm font-medium text-gray-300">RFID UID</span>
+                                <span class="text-xs sm:text-sm font-medium text-gray-300">RFID UID</span>
                             </div>
                             <div class="bg-[#121212] bg-opacity-50 p-2 rounded flex items-center justify-between">
-                                <span id="viewRfid" class="text-sm font-medium text-gray-300">ID: 123456789</span>
+                                <span id="viewRfid" class="text-xs sm:text-sm font-medium text-gray-300 truncate mr-1">ID: 123456789</span>
                                 <div class="flex space-x-1">
-                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
-                                    <div class="w-1 h-8 bg-[#555555] rounded"></div>
-                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
-                                    <div class="w-1 h-8 bg-[#555555] rounded"></div>
-                                    <div class="w-1 h-8 bg-[#444444] rounded"></div>
+                                    <div class="w-1 h-6 sm:h-8 bg-[#444444] rounded"></div>
+                                    <div class="w-1 h-6 sm:h-8 bg-[#555555] rounded"></div>
+                                    <div class="w-1 h-6 sm:h-8 bg-[#444444] rounded"></div>
+                                    <div class="w-1 h-6 sm:h-8 bg-[#555555] rounded"></div>
+                                    <div class="w-1 h-6 sm:h-8 bg-[#444444] rounded"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- expiration date -->
-                    <div class="mb-5">
+                    <!-- Expiration Date -->
+                    <div class="mb-4 sm:mb-5">
                         <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
                         <div class="flex items-center mt-2">                           
-                            <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div class="bg-orange-500 bg-opacity-20 p-1 sm:p-2 rounded-lg mr-2 sm:mr-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <div>
-                                <p class="font-medium text-white" id="viewEndDate">Jan 15, 2025</p>
+                                <p class="font-medium text-white text-sm sm:text-base" id="viewEndDate">Jan 15, 2025</p>
                             </div>
                         </div>
                     </div>
@@ -439,7 +474,7 @@
             </div>
             
             <!-- Footer -->
-            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] text-gray-400 border-t border-[#333333] py-3 px-6 flex justify-between items-center">
+            <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] text-gray-400 border-t border-[#333333] py-2 sm:py-3 px-4 sm:px-6 flex justify-between items-center">
                 <p class="text-xs text-gray-300 mx-auto">Valid only with photo identification</p>
             </div>
         </div>

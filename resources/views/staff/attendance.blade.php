@@ -3,6 +3,41 @@
 @section('content')
 <style>
     [x-cloak] { display: none !important; }
+    <>
+    /* Responsive table container */
+    .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Custom scrollbar for tables */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #ff5722;
+            border-radius: 20px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-full-width {
+                width: 100%;
+            }
+            
+            .pagination-container {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .pagination {
+                display: flex;
+                white-space: nowrap;
+            }
+        }
 </style>
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
@@ -75,7 +110,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto sm:rounded-lg">
+        <div class="overflow-x-auto sm:rounded-lg table-responsive">
             <table class="min-w-full divide-y divide-black">
                 <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>

@@ -1,6 +1,44 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    [x-cloak] { display: none !important; }
+    <>
+    /* Responsive table container */
+    .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Custom scrollbar for tables */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #ff5722;
+            border-radius: 20px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-full-width {
+                width: 100%;
+            }
+            
+            .pagination-container {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .pagination {
+                display: flex;
+                white-space: nowrap;
+            }
+        }
+</style>
 <div class="p-6">
     <div class="mb-6">
         <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Member Approval Dashboard</h2>
@@ -41,7 +79,7 @@
             </div>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto table-responsive">
             <table class="w-full border-collapse">
                 <thead> 
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">

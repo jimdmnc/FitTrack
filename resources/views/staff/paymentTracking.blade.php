@@ -1,6 +1,42 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    /* Responsive table container */
+    .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Custom scrollbar for tables */
+        .table-responsive::-webkit-scrollbar {
+            height: 8px;
+        }
+        .table-responsive::-webkit-scrollbar-track {
+            background: #2d2d2d;
+        }
+        .table-responsive::-webkit-scrollbar-thumb {
+            background-color: #ff5722;
+            border-radius: 20px;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 640px) {
+            .mobile-full-width {
+                width: 100%;
+            }
+            
+            .pagination-container {
+                overflow-x: auto;
+                padding-bottom: 1rem;
+            }
+            
+            .pagination {
+                display: flex;
+                white-space: nowrap;
+            }
+        }
+</style>
 <div class="bg-[#121212] p-2">
     <!-- Header Section with Gradient Card -->
     <div class="py-8">
@@ -52,7 +88,7 @@
             </div>
 
             <!-- Responsive Table -->
-            <div class="overflow-x-auto">
+            <div class="overflow-x-auto table-responsive">
                 <table class="w-full table-auto">
                     <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-xs font-medium text-gray-200 uppercase tracking-wider border border-black divide-y divide-black">
                         <tr>
