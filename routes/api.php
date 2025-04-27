@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-    Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
+    Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
 
 });
 
