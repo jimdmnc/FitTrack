@@ -109,7 +109,6 @@ Route::middleware('auth')->group(function () {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('status', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
-    Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
 
     // Member routes
     Route::prefix('member')->group(function () {
