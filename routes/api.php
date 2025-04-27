@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-    Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
+    Route::post('/renew-membershipApp/{rfid_uid}', [ViewMembersController::class, 'renewMembershipApp']);
 
 });
 

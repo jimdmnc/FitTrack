@@ -95,10 +95,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // **📩 Email Verification Routes**
-    Route::get('/email/verify', function () {
-        return view('auth.verify-email');
-    })->middleware('auth')->name('verification.notice');
+    // // **📩 Email Verification Routes**
+    // Route::get('/email/verify', function () {
+    //     return view('auth.verify-email');
+    // })->middleware('auth')->name('verification.notice');
 
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
@@ -109,6 +109,7 @@ Route::middleware('auth')->group(function () {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('status', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+    Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
 
     // Member routes
     Route::prefix('member')->group(function () {
