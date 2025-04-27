@@ -243,13 +243,19 @@ $(document).ready(function () {
     }
 
     // Show/hide the clear search button based on input value
-    const toggleClearButtonVisibility = () => {
+    function toggleClearButtonVisibility() {
         if (searchInput.val().trim() !== '') {
             clearSearchButton.removeClass('hidden');  // Show button
         } else {
             clearSearchButton.addClass('hidden');    // Hide button
         }
-    };
+    }
+
+     // Listen for input to show/hide clear button
+     searchInput.on('input', function() {
+        toggleClearButtonVisibility();
+        debounce(fetchPayments);
+    });
 
     // Clear search functionality
     clearSearchButton.on('click', function() {
@@ -260,39 +266,41 @@ $(document).ready(function () {
 
     // Set initial filter values from URL
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has("payment_method")) {
-        paymentMethodFilter.val(urlParams.get("payment_method"));
-    }
-    if (urlParams.has("time_filter")) {
-        timeFilter.val(urlParams.get("time_filter"));
-    }
-});
-// Handle pagination links with AJAX
-$(document).on('click', '.pagination a', function(e) {
-    e.preventDefault();
-    let url = $(this).attr('href');
-
-    // Show loading indicator
-    loadingIndicator.removeClass('hidden');
-
-    $.ajax({
-            url: url,
-            type: 'GET',
-            success: function(data) {
-                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
-                // Update URL without reload
-                window.history.pushState({}, '', url);
-                // Hide loading indicator
-                loadingIndicator.addClass('hidden');
-            },
-            error: function() {
-                // Hide loading indicator even on error
-                loadingIndicator.addClass('hidden');
-            }
+        if (urlParams.has("payment_method")) {
+            paymentMethodFilter.val(urlParams.get("payment_method"));
+        }
+        if (urlParams.has("time_filter")) {
+            timeFilter.val(urlParams.get("time_filter"));
+        }
     });
-});
 
-toggleClearButtonVisibility();
+    // Handle pagination links with AJAX
+    $(document).on('click', '.pagination a', function(e) {
+        e.preventDefault();
+        let url = $(this).attr('href');
+
+        // Show loading indicator
+        loadingIndicator.removeClass('hidden');
+
+        $.ajax({
+                url: url,
+                type: 'GET',
+                success: function(data) {
+                    $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
+                    // Update URL without reload
+                    window.history.pushState({}, '', url);
+                    // Hide loading indicator
+                    loadingIndicator.addClass('hidden');
+                },
+                error: function() {
+                    // Hide loading indicator even on error
+                    loadingIndicator.addClass('hidden');
+                }
+        });
+
+    // Initial visibility check for clear button
+    toggleClearButtonVisibility();
+});
 
 </script>
 @endsection
