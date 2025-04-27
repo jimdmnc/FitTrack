@@ -4,7 +4,7 @@
 <div class="p-6">
     <div class="mb-6">
         <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Member Approval Dashboard</h2>
-        <p class="text-gray-500 text-md ml-1">Review and process new membership requests</p>
+        <p class="text-gray-900 text-md ml-1">Review and process new membership requests</p>
     </div>
     
 
