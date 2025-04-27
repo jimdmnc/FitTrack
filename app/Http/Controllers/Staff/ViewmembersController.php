@@ -115,6 +115,7 @@ class ViewmembersController extends Controller
 
         public function renewMembershipApp(Request $request)
         {
+            // Validate request
             $request->validate([
                 'rfid_uid' => 'required|exists:users,rfid_uid',
                 'membership_type' => 'required',
@@ -123,17 +124,22 @@ class ViewmembersController extends Controller
                 'payment_method' => 'required|in:cash,gcash',
                 'amount' => 'required|numeric|min:0',
             ]);
-
+        
+            // Find user by RFID
             $user = User::where('rfid_uid', $request->rfid_uid)->first();
-
+        
             if (!$user) {
-                return response()->json(['success' => false, 'message' => 'User not found'], 404);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found'
+                ], 404);
             }
-
+        
             $isCash = $request->payment_method === 'cash';
             $sessionStatus = $isCash ? 'pending' : 'approved';
             $needsApproval = $isCash ? 1 : 0;
-
+        
+            // Update user membership
             if (!$isCash) {
                 // GCash payment → direct update membership dates
                 $user->update([
@@ -153,7 +159,8 @@ class ViewmembersController extends Controller
                     'needs_approval' => $needsApproval,
                 ]);
             }
-
+        
+            // Create Renewal and Payment records
             Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
@@ -162,23 +169,23 @@ class ViewmembersController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => $sessionStatus,
             ]);
-
+        
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
             ]);
-
+        
             return response()->json([
                 'success' => true,
-                'message' => $isCash
-                    ? 'Renewal request submitted. Waiting for staff approvalsdsdsdsdss.'
-                    : 'Membership renewed successfullysdsdsdsd!',
+                'message' => $isCash 
+                    ? 'Renewal request submitted. Waiting for staff approval.'
+                    : 'Membership renewed successfully!',
                 'user' => $user,
             ]);
         }
-
+        
         
         
 
