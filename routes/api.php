@@ -71,14 +71,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-    // Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
-
-});
-
-// In your api.php
-Route::middleware('auth:api')->group(function() {
     Route::post('/renew-membershipApp', [ViewMembersController::class, 'renewMembershipApp']);
+
 });
+
+
 
 
 Route::post('/attendance', [RFIDController::class, 'handleAttendance']);
