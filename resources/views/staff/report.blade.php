@@ -71,7 +71,7 @@
     <div class="mb-20 px-4 sm:px-6 md:px-8">
         <div class="py-6 md:py-8">
             <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600" id="reportTitle">Members Report</h1>
-            <p class="text-red-200 text-sm sm:text-base">View and analyze your data with ease</p>
+            <p class="text-gray-200 text-sm sm:text-base">View and analyze your data with ease</p>
         </div>
         <div x-data="reportFilter()" class="max-w-8xl mb-20 space-y-6">
             <!-- Header -->
