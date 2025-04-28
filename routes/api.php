@@ -69,9 +69,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/weight-history/{rfid_uid}', [UserDetailController::class, 'getWeightHistory']);
 
-
-
     Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
+
+
+    Route::post('/change-password', [AuthController::class, 'changePassword']);
 
 });
 

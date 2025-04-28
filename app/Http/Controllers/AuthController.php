@@ -86,5 +86,71 @@ public function user(Request $request)
         $request->user()->tokens()->delete(); // Delete all tokens for the user
         return response()->json(['message' => 'Logged out successfully']);
     }
+
+
+
+    public function changePassword(Request $request)
+    {
+        try {
+            // Validate the request
+            $validated = $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8|confirmed',
+                'new_password_confirmation' => 'required|string|same:new_password',
+            ]);
+    
+            // Get the authenticated user
+            $user = $request->user();
+            
+            // Check if user has a password set (since password field is nullable)
+            if (empty($user->password)) {
+                return response()->json([
+                    'message' => 'No password set for this account',
+                    'errors' => [
+                        'current_password' => ['This account has no password set']
+                    ]
+                ], 422);
+            }
+    
+            // Verify current password
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'current_password' => ['The provided password does not match our records']
+                ]);
+            }
+    
+            // Update password and clear remember token (security best practice)
+            $user->update([
+                'password' => Hash::make($validated['new_password']),
+                'remember_token' => null,
+            ]);
+    
+            // Revoke all other tokens (security measure)
+            $user->tokens()->delete();
+    
+            return response()->json([
+                'message' => 'Password changed successfully',
+                'status' => 'success',
+                'data' => [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'updated_at' => $user->updated_at
+                ]
+            ], 200);
+    
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors(),
+                'status' => 'error'
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Password change failed',
+                'error' => $e->getMessage(),
+                'status' => 'error'
+            ], 500);
+        }
+    }
 }
 
