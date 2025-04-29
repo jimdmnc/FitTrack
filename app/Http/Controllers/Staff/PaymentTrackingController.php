@@ -130,7 +130,7 @@ class PaymentTrackingController extends Controller
        }
 
        // Get payments from members_payment table
-       $payments = Payment::with('member')
+       $payments = MembersPayment::with('user')
            ->where('rfid_uid', $request->rfid_uid)
            ->orderBy('payment_date', 'desc')
            ->get()
