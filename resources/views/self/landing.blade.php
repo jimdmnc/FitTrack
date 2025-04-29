@@ -470,7 +470,6 @@
                         <div class="flex space-x-4">
                             <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
                             <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-instagram text-xl"></i></a>
-                            <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-twitter text-xl"></i></a>
                         </div>
                     </div>
                 </div>
