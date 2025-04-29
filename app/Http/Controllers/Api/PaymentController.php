@@ -21,26 +21,33 @@ class PaymentController extends Controller
      */
     public function createGcashPayment(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1',
-            'description' => 'required|string',
-            'rfid_uid' => 'required|string',
-            'membership_type' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'description' => 'required|string|max:255',
+            'rfid_uid' => 'required|string|exists:members,rfid_uid',
+            'membership_type' => 'required|in:7,30,365',
+            'start_date' => 'required|date_format:Y-m-d',
+            'end_date' => 'required|date_format:Y-m-d|after:start_date',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         DB::beginTransaction();
-        
         try {
-            // Create payment record first with 'pending' status
+            // Create payment record
             $payment = MembersPayment::create([
                 'rfid_uid' => $request->rfid_uid,
                 'amount' => $request->amount,
                 'payment_method' => 'gcash',
-                'payment_date' => now(),
+                'status' => 'pending',
             ]);
 
+            // Create GCash source
             $source = $this->paymongoService->createGcashSource(
                 $request->amount,
                 $request->description,
@@ -53,9 +60,9 @@ class PaymentController extends Controller
                 ]
             );
 
-            // Update payment with source ID
+            // Update payment with reference
             $payment->update([
-                'payment_reference' => $source['id'], // You might want to add this column
+                'payment_reference' => $source['id'],
             ]);
 
             DB::commit();
@@ -66,66 +73,67 @@ class PaymentController extends Controller
                 'source_id' => $source['id'],
                 'payment_id' => $payment->id,
             ]);
-            
+
         } catch (\Exception $e) {
             DB::rollBack();
+            report($e); // Log the error
+            
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Payment processing failed',
+                'debug' => config('app.debug') ? $e->getMessage() : null,
             ], 500);
         }
     }
 
     /**
-     * Check payment status and update database
+     * @bodyParam source_id string required PayMongo source ID
+     * @bodyParam payment_id integer required Local payment ID
      */
     public function checkPaymentStatus(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'source_id' => 'required|string',
-            'payment_id' => 'required|integer',
+            'payment_id' => 'required|integer|exists:members_payment,id',
         ]);
 
-        DB::beginTransaction();
-        
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         try {
             $source = $this->paymongoService->verifyPayment($request->source_id);
-            $isPaid = $source['attributes']['status'] === 'chargeable';
-            
             $payment = MembersPayment::findOrFail($request->payment_id);
-            
+
+            $status = $source['attributes']['status'];
+            $isPaid = ($status === 'chargeable');
+
             if ($isPaid) {
-                // Update payment record
                 $payment->update([
+                    'status' => 'completed',
                     'amount' => $source['attributes']['amount'] / 100,
-                    'status' => 'completed', // You might want to add this column
                 ]);
                 
-                // Process membership renewal
-                $metadata = $source['attributes']['metadata'];
-                
-                // TODO: Add your membership renewal logic here
-                // This would update the member's expiration date
-                // Example:
-                // Member::where('rfid_uid', $metadata['rfid_uid'])
-                //     ->update(['expiration_date' => $metadata['end_date']]);
+                // TODO: Add membership renewal logic here
             }
-            
-            DB::commit();
-            
+
             return response()->json([
                 'success' => true,
                 'paid' => $isPaid,
-                'status' => $source['attributes']['status'],
+                'status' => $status,
                 'amount' => $source['attributes']['amount'] / 100,
             ]);
-            
+
         } catch (\Exception $e) {
-            DB::rollBack();
+            report($e);
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
+                'message' => 'Status check failed'
             ], 500);
         }
     }
+
 }
