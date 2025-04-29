@@ -76,11 +76,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
 
+    Route::get('/payment-history/{rfid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
 });
 
-Route::get('/payment-history/{rfid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
 
