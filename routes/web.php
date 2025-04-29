@@ -114,6 +114,16 @@ Route::middleware('auth')->group(function () {
     Route::prefix('member')->group(function () {
         Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
     });
+
+
+    Route::get('/payment/success', function () {
+        return view('payment.success');
+    })->name('payment.success');
+    
+    Route::get('/payment/failed', function () {
+        return view('payment.failed');
+    })->name('payment.failed');
+
 });
 
 // Authentication routes (login, register, etc.)

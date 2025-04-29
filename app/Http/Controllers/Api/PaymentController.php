@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Models\MembersPayment;
+use App\Services\PayMongoService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use App\Models\MembershipRenewal;
-use App\Models\Payment;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
-
-
     protected $paymongoService;
 
     public function __construct(PayMongoService $paymongoService)
@@ -26,28 +24,51 @@ class PaymentController extends Controller
         $request->validate([
             'amount' => 'required|numeric|min:1',
             'description' => 'required|string',
-            'user_id' => 'required',
-            'membership_type' => 'required',
+            'rfid_uid' => 'required|string',
+            'membership_type' => 'required|string',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
         ]);
 
+        DB::beginTransaction();
+        
         try {
+            // Create payment record first with 'pending' status
+            $payment = MembersPayment::create([
+                'rfid_uid' => $request->rfid_uid,
+                'amount' => $request->amount,
+                'payment_method' => 'gcash',
+                'payment_date' => now(),
+            ]);
+
             $source = $this->paymongoService->createGcashSource(
                 $request->amount,
                 $request->description,
                 [
-                    'user_id' => $request->user_id,
+                    'payment_id' => $payment->id,
+                    'rfid_uid' => $request->rfid_uid,
                     'membership_type' => $request->membership_type,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
                 ]
             );
 
+            // Update payment with source ID
+            $payment->update([
+                'payment_reference' => $source['id'], // You might want to add this column
+            ]);
+
+            DB::commit();
+
             return response()->json([
                 'success' => true,
                 'redirect_url' => $source['attributes']['redirect']['checkout_url'],
                 'source_id' => $source['id'],
+                'payment_id' => $payment->id,
             ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
@@ -56,72 +77,55 @@ class PaymentController extends Controller
     }
 
     /**
-     * Check payment status
+     * Check payment status and update database
      */
     public function checkPaymentStatus(Request $request)
     {
         $request->validate([
             'source_id' => 'required|string',
+            'payment_id' => 'required|integer',
         ]);
 
+        DB::beginTransaction();
+        
         try {
             $source = $this->paymongoService->verifyPayment($request->source_id);
+            $isPaid = $source['attributes']['status'] === 'chargeable';
+            
+            $payment = MembersPayment::findOrFail($request->payment_id);
+            
+            if ($isPaid) {
+                // Update payment record
+                $payment->update([
+                    'amount' => $source['attributes']['amount'] / 100,
+                    'status' => 'completed', // You might want to add this column
+                ]);
+                
+                // Process membership renewal
+                $metadata = $source['attributes']['metadata'];
+                
+                // TODO: Add your membership renewal logic here
+                // This would update the member's expiration date
+                // Example:
+                // Member::where('rfid_uid', $metadata['rfid_uid'])
+                //     ->update(['expiration_date' => $metadata['end_date']]);
+            }
+            
+            DB::commit();
             
             return response()->json([
                 'success' => true,
-                'paid' => $source['attributes']['status'] === 'chargeable',
+                'paid' => $isPaid,
                 'status' => $source['attributes']['status'],
                 'amount' => $source['attributes']['amount'] / 100,
             ]);
+            
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
             ], 500);
         }
     }
-
-    /**
-     * Handle PayMongo webhook
-     */
-    public function handleWebhook(Request $request)
-    {
-        // Verify webhook signature
-        $signature = $request->header('Paymongo-Signature');
-        $payload = $request->getContent();
-        
-        // In production, you should verify the webhook signature
-        // For testing, we'll skip verification
-        
-        $event = json_decode($payload, true);
-        
-        if ($event['data']['attributes']['type'] === 'source.chargeable') {
-            $sourceId = $event['data']['attributes']['data']['id'];
-            $source = $this->paymongoService->verifyPayment($sourceId);
-            
-            if ($source['attributes']['status'] === 'chargeable') {
-                // Process the payment and update your database
-                $metadata = $source['attributes']['metadata'];
-                
-                // TODO: Update your membership record here
-                // Example:
-                // Membership::create([
-                //     'user_id' => $metadata['user_id'],
-                //     'type' => $metadata['membership_type'],
-                //     'start_date' => $metadata['start_date'],
-                //     'end_date' => $metadata['end_date'],
-                //     'status' => 'active',
-                //     'payment_method' => 'gcash',
-                //     'amount' => $source['attributes']['amount'] / 100,
-                // ]);
-                
-                return response()->json(['success' => true]);
-            }
-        }
-        
-        return response()->json(['success' => false, 'message' => 'Event not handled']);
-    }
-
-
-    
 }
