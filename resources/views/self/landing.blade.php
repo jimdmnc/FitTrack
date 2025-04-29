@@ -316,13 +316,13 @@
                         <div class="min-w-full relative">
                             <div class="absolute inset-0 flex">
                                 <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/before2.png" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                    <img src="/images/before22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
                                     <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                         <span class="font-bold">BEFORE</span>
                                     </div>
                                 </div>
                                 <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/after2.png" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                    <img src="/images/after22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
                                     <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                         <span class="font-bold">AFTER</span>
                                     </div>
