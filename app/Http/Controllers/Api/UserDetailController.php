@@ -378,74 +378,116 @@ public function show()
 
 
 
-        // Display payments for specific RFID UID
-public function getPaymentHistory(Request $request)
-{
-    $query = MembersPayment::with('user')->orderBy('payment_date', 'desc');
-
-    // Filter by RFID UID (always required)
-    if ($request->filled('rfid_uid')) {
-        $rfid_uid = $request->rfid_uid;
-        $query->whereHas('user', function($q) use ($rfid_uid) {
-            $q->where('rfid_uid', $rfid_uid);
-        });
-    } else {
-        // If no RFID UID provided, return empty result set or redirect
-        // Option 1: Return empty result
-        $payments = collect([]);
-        if ($request->ajax()) {
-            return view('staff.paymentTracking', compact('payments'))->render();
+        public function getPaymentHistory(Request $request)
+        {
+            $validator = Validator::make($request->all(), [
+                'rfid_uid' => 'required|string|exists:users,rfid_uid',
+                'payment_method' => 'nullable|string',
+                'time_filter' => 'nullable|string|in:today,week,month',
+                'search' => 'nullable|string',
+                'per_page' => 'nullable|integer|min:1|max:100',
+            ]);
+        
+            if ($validator->fails()) {
+                return $this->errorResponse('Validation failed', $validator->errors(), 422);
+            }
+            
+            // Check if user has access to this RFID UID (either admin or own RFID)
+            $user = Auth::user();
+            if ($user->rfid_uid !== $request->rfid_uid && !$user->hasRole('admin')) {
+                return $this->errorResponse('Unauthorized access to member data', null, 403);
+            }
+        
+            try {
+                // Start building the query
+                $query = MembersPayment::where('rfid_uid', $request->rfid_uid)
+                    ->orderBy('payment_date', 'desc');
+                
+                // Search functionality
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->where(function($q) use ($search) {
+                        $q->where('amount', 'like', "%$search%")
+                          ->orWhere('payment_method', 'like', "%$search%")
+                          ->orWhere('payment_date', 'like', "%$search%");
+                    });
+                }
+                
+                // Filter by payment method
+                if ($request->filled('payment_method')) {
+                    $query->where('payment_method', $request->payment_method);
+                }
+                
+                // Filter by time range
+                if ($request->filled('time_filter')) {
+                    $today = Carbon::today();
+                    switch ($request->time_filter) {
+                        case 'today':
+                            $query->whereDate('payment_date', $today);
+                            break;
+                        case 'week':
+                            $query->whereBetween('payment_date', [
+                                $today->copy()->startOfWeek(),
+                                $today->copy()->endOfWeek()
+                            ]);
+                            break;
+                        case 'month':
+                            $query->whereBetween('payment_date', [
+                                $today->copy()->startOfMonth(),
+                                $today->copy()->endOfMonth()
+                            ]);
+                            break;
+                    }
+                }
+        
+                // Implement pagination if requested
+                $perPage = $request->input('per_page', null);
+                
+                if ($perPage) {
+                    $paymentsData = $query->paginate($perPage);
+                    $payments = $paymentsData->items();
+                    $pagination = [
+                        'total' => $paymentsData->total(),
+                        'current_page' => $paymentsData->currentPage(),
+                        'per_page' => $paymentsData->perPage(),
+                        'last_page' => $paymentsData->lastPage()
+                    ];
+                } else {
+                    // Get all results if no pagination requested
+                    $payments = $query->get();
+                }
+                
+                // Map the payment data
+                $mappedPayments = collect($payments)->map(function ($payment) {
+                    return [
+                        'id' => $payment->id,
+                        'rfid_uid' => $payment->rfid_uid,
+                        'amount' => (float) $payment->amount,
+                        'payment_method' => $payment->payment_method,                            
+                        'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
+                        'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
+                        'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
+                    ];
+                });
+            
+                // Prepare response data
+                $responseData = [
+                    'data' => $mappedPayments,
+                    'total_amount' => $mappedPayments->sum('amount'),
+                    'count' => $mappedPayments->count()
+                ];
+                
+                // Add pagination info if pagination was used
+                if (isset($pagination)) {
+                    $responseData['pagination'] = $pagination;
+                }
+                
+                return $this->successResponse(null, $responseData);
+                
+            } catch (\Exception $e) {
+                return $this->errorResponse('Failed to retrieve payment history', $e->getMessage(), 500);
+            }
         }
-        return view('staff.paymentTracking', compact('payments'));
-    }
-
-    // Search functionality (optional, now scoped to the specific RFID)
-    if ($request->filled('search')) {
-        $search = $request->search;
-        $query->where(function($q) use ($search) {
-            $q->where('payment_amount', 'like', "%$search%")
-              ->orWhere('payment_method', 'like', "%$search%")
-              ->orWhere('payment_date', 'like', "%$search%");
-        });
-    }
-
-    // Filter by payment method (optional)
-    if ($request->filled('payment_method')) {
-        $query->where('payment_method', $request->payment_method);
-    }
-
-    // Filter by time range (optional)
-    if ($request->filled('time_filter')) {
-        $today = Carbon::today();
-        switch ($request->time_filter) {
-            case 'today':
-                $query->whereDate('payment_date', $today);
-                break;
-            case 'week':
-                $query->whereBetween('payment_date', [
-                    $today->copy()->startOfWeek(),
-                    $today->copy()->endOfWeek()
-                ]);
-                break;
-            case 'month':
-                $query->whereBetween('payment_date', [
-                    $today->copy()->startOfMonth(),
-                    $today->copy()->endOfMonth()
-                ]);
-                break;
-        }
-    }
-
-    // Fetch the filtered results with pagination
-    $payments = $query->paginate(10);
-
-    // If it's an AJAX request, return the entire table section
-    if ($request->ajax()) {
-        return view('staff.paymentTracking', compact('payments'))->render();
-    }
-
-    return view('staff.paymentTracking', compact('payments'));
-}
 
         
 }
