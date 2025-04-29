@@ -49,6 +49,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
                 </svg>
                 <span>Manage Approval</span>
+                
+                @if(isset($pendingApprovalCount) && $pendingApprovalCount > 0)
+                    <span class="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 flex items-center justify-center min-w-5 h-5">
+                        {{ $pendingApprovalCount }}
+                    </span>
+                @endif
             </a>
 
             <!-- Member Status Link -->
