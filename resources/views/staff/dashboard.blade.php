@@ -317,120 +317,110 @@
     </div>
 
 
-    <!-- Rearranged and Resized Dashboard Grid Charts Section -->
-    <div class="dashboard-grid gap-4">
+    <!-- Dashboard Grid Charts Section -->
+    <div class="dashboard-grid grid md:grid-cols-12 gap-4">
         <!-- Enhanced Check-ins Chart Card -->
-        <div class="glass-card p-4 grid-col-span-8 chart-card space-y-4 rounded-xl" id="checkinsChartCard">
-            <div class="flex justify-between items-center mb-2">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-200" id="h3">Daily Check-ins</h3>
-                        <p class="text-xs text-gray-200">Number of members visiting the gym</p>
-                    </div>
-                    <div class="flex space-x-2">
-                        <!-- <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50" title="Download CSV">
-                            <i class="fas fa-download text-sm "></i>
-                        </button> -->
-                        <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 expand-checkins-btn" 
-                            title="Expand">
-                            <i class="fas fa-expand-alt text-sm"></i>
-                        </button>
-
-                    </div>
+        <div class="glass-card p-4 col-span-12 md:col-span-8 chart-card space-y-4 rounded-xl" id="checkinsChartCard">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
+                <div class="mb-2 sm:mb-0">
+                    <h3 class="text-lg font-semibold text-gray-200" id="h3">Daily Check-ins</h3>
+                    <p class="text-xs text-gray-200">Number of members visiting the gym</p>
                 </div>
-                
-                <!-- Improved period selector -->
-                <div class="period-selector flex p-1 rounded-lg w-fit">
-                    <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all " data-period="daily">Daily</button>
-                    <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
-                    <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
-                    <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
-                </div>
-                
-                <!-- Summary stats above chart -->
-                <div class="stats-summary grid grid-cols-3 gap-4 mb-2">
-                    <div class="stat-card bg-[#1e1e1e] p-3">
-                        <p class="text-xs text-gray-200">Total Check-ins</p>
-                        <h4 class="text-xl font-bold text-gray-200" id="total-checkins">0</h4>
-                    </div>
-                    <div class="stat-card bg-[#1e1e1e] p-3 ">
-                        <p class="text-xs text-gray-200">Average</p>
-                        <h4 class="text-xl font-bold text-gray-200" id="avg-checkins">0</h4>
-                    </div>
-                    <div class="stat-card bg-[#1e1e1e] p-3">
-                        <p class="text-xs text-gray-200">Peak Day</p>
-                        <h4 class="text-xl font-bold text-gray-200" id="peak-checkins">0</h4>
-                    </div>
-                </div>
-                
-                <!-- Chart Container with loading indicator -->
-                <div class="chart-container relative bg-[#1e1e1e] p-4 rounded-lg shadow-sm" id="checkinsChartContainer" style="height: 300px;">
-                    <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10 hidden">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF5722]"></div>
-                    </div>
-                    <canvas id="checkins-chart"></canvas>
-                </div>
-                
-                <!-- Legend -->
-                <div class="flex items-center justify-center space-x-6 text-xs text-gray-200">
-                    <div class="flex items-center">
-                        <span class="inline-block w-3 h-3 mr-1 bg-orange-400 rounded-sm"></span>
-                        <span>Check-ins</span>
-                    </div>
-                    <div class="flex items-center">
-                        <span class="inline-block w-3 h-3 mr-1 border border-dashed border-gray-200 rounded-sm"></span>
-                        <span>Previous Period</span>
-                    </div>
+                <div class="flex space-x-2">
+                    <button class="chart-action-button bg-white p-2 rounded-full shadow-sm hover:bg-gray-50 expand-checkins-btn" 
+                        title="Expand">
+                        <i class="fas fa-expand-alt text-sm"></i>
+                    </button>
                 </div>
             </div>
             
-            <!-- Right panels - resized and vertical -->
-            <div class="grid-col-span-4 flex flex-col gap-4 space-y-5">
-                <!-- Top right panel -->
-                <div class="glass-card p-2 chart-card relative" id="chartCard">
-                    <div class="flex justify-between items-center mb-3">
-                        <div>
-                            <h3 class="text-base font-semibold text-gray-200">Peak hours</h3>
-                            <p class="text-xs text-gray-200">Average Time by Hour</p>
-                        </div>
-                        <div class="chart-action-buttons space-x-1">
-                            <!-- <div class="chart-action-button" title="Download CSV">
-                                <i class="hover:text-gray-200 fas fa-download text-sm"></i>
-                            </div> -->
-                            <div class="chart-action-button expand-peak-btn" title="Expand">
-                                <i class="fas fa-expand-alt text-sm"></i>
-                            </div>
-                        </div>
+            <!-- Improved period selector -->
+            <div class="period-selector flex flex-wrap p-1 rounded-lg w-fit">
+                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
+            </div>
+            
+            <!-- Summary stats above chart -->
+            <div class="stats-summary grid grid-cols-1 sm:grid-cols-3 gap-4 mb-2">
+                <div class="stat-card bg-[#1e1e1e] p-3">
+                    <p class="text-xs text-gray-200">Total Check-ins</p>
+                    <h4 class="text-xl font-bold text-gray-200" id="total-checkins">0</h4>
+                </div>
+                <div class="stat-card bg-[#1e1e1e] p-3">
+                    <p class="text-xs text-gray-200">Average</p>
+                    <h4 class="text-xl font-bold text-gray-200" id="avg-checkins">0</h4>
+                </div>
+                <div class="stat-card bg-[#1e1e1e] p-3">
+                    <p class="text-xs text-gray-200">Peak Day</p>
+                    <h4 class="text-xl font-bold text-gray-200" id="peak-checkins">0</h4>
+                </div>
+            </div>
+            
+            <!-- Chart Container with loading indicator -->
+            <div class="chart-container relative bg-[#1e1e1e] p-4 rounded-lg shadow-sm" id="checkinsChartContainer" style="height: 300px;">
+                <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white bg-opacity-80 z-10 hidden">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#FF5722]"></div>
+                </div>
+                <canvas id="checkins-chart"></canvas>
+            </div>
+            
+            <!-- Legend -->
+            <div class="flex items-center justify-center flex-wrap space-x-6 text-xs text-gray-200">
+                <div class="flex items-center mt-2">
+                    <span class="inline-block w-3 h-3 mr-1 bg-orange-400 rounded-sm"></span>
+                    <span>Check-ins</span>
+                </div>
+                <div class="flex items-center mt-2">
+                    <span class="inline-block w-3 h-3 mr-1 border border-dashed border-gray-200 rounded-sm"></span>
+                    <span>Previous Period</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right side panels container -->
+        <div class="col-span-12 md:col-span-4 flex flex-col justify-between gap-4">
+            <!-- Top right panel -->
+            <div class="glass-card p-2 chart-card relative" id="chartCard">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-200">Peak hours</h3>
+                        <p class="text-xs text-gray-200">Average Time by Hour</p>
                     </div>
-
-                    <div class="chart-container transition-all duration-300 ease-in-out" id="chartContainer" style="height: 180px;">
-                        <canvas id="time-of-day-chart"></canvas>
+                    <div class="chart-action-buttons space-x-1">
+                        <div class="chart-action-button expand-peak-btn" title="Expand">
+                            <i class="fas fa-expand-alt text-sm"></i>
+                        </div>
                     </div>
                 </div>
-                
-                <!-- Bottom right panel (Subscribers Chart) -->
-                <div class="glass-card p-3 chart-card bg-white shadow-md rounded-lg relative" id="subscribersChartCard">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <h3 class="text-base font-semibold text-gray-200">Subscribers</h3>
-                            <p class="text-sm text-gray-200">Ongoing Memberships</p>
-                        </div>
-                        <div class="chart-action-buttons space-x-2 flex items-center">
-                            <!-- <div class="chart-action-button cursor-pointer" title="Download CSV">
-                                <i class="fas fa-download text-sm"></i>
-                            </div> -->
-                            <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
-                                <i class="fas fa-expand-alt text-sm "></i>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 190px;">
-                        <canvas id="membershipChart"></canvas>
-                    </div>
+                <div class="chart-container transition-all duration-300 ease-in-out" id="chartContainer" style="height: 180px;">
+                    <canvas id="time-of-day-chart"></canvas>
+                </div>
             </div>
+            
+            <!-- Bottom right panel (Subscribers Chart) -->
+            <div class="glass-card p-3 chart-card bg-white shadow-md rounded-lg relative" id="subscribersChartCard">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="text-base font-semibold text-gray-200">Subscribers</h3>
+                        <p class="text-sm text-gray-200">Ongoing Memberships</p>
+                    </div>
+                    <div class="chart-action-buttons space-x-2 flex items-center">
+                        <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
+                            <i class="fas fa-expand-alt text-sm"></i>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 190px;">
+                    <canvas id="membershipChart"></canvas>
+                </div>
+            </div>
         </div>
     </div>
+
 
 
 <!-- Members Table with Modern Design - now placed below session distribution and wider -->

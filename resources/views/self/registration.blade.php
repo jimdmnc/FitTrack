@@ -144,8 +144,7 @@
                            autocomplete="tel"
                            maxlength="11"
                            minlength="11"
-                           pattern="^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$"
-                           inputmode="tel" 
+                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                            required>
                     <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
                 </div>
@@ -156,10 +155,10 @@
                         Membership Type
                     </label>
                     <select 
-                        class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-200 orange-focus" 
+                        class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-400 orange-focus appearance-none" 
                         id="membership_type" 
                         name="membership_type" 
-                        style="pointer-events: none;"
+                        style="pointer-events: none; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: '';"
                         required>
                         <option value="1" selected>Session</option>
                     </select>
@@ -171,10 +170,11 @@
                         Amount
                     </label>
                     <input type="text" 
-                           class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-200 orange-focus" 
+                           class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-400 orange-focus" 
                            id="amount" 
                            name="amount" 
-                           value="60" 
+                           value="60"
+                           style="pointer-events: none"
                            readonly>
                 </div>
                 
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function validateForm() {
         let isValid = true;
-        const inputs = form.querySelectorAll('input, select');
+        const inputs = form.querySelectorAll('input:not([readonly]), select:not([style*="pointer-events: none"])');
         
         inputs.forEach(input => {
             if (!validateField(input)) {
@@ -237,35 +237,62 @@ document.addEventListener('DOMContentLoaded', function() {
     
     function validateField(field) {
         const errorElement = document.getElementById(`${field.id}_error`);
+        if (!errorElement) return true; // Skip if no error element found
         
+        // Check if required field is empty
         if (field.required && !field.value.trim()) {
-            showError(field, errorElement, `${field.labels[0].textContent.trim()} is required`);
+            showError(field, errorElement, `Please enter your ${field.labels[0].textContent.replace('*', '').trim().toLowerCase()}`);
             return false;
         }
         
-        if (field.type === 'email' && !isValidEmail(field.value)) {
-            showError(field, errorElement, 'Please enter a valid email address');
-            return false;
-        }
-        
-        if (field.id === 'phone_number' && !isValidPhone(field.value)) {
-            showError(field, errorElement, 'Please enter a valid phone number');
-            return false;
-        }
-        
-        if (field.hasAttribute('minlength') && field.value.length < field.minLength) {
-            showError(field, errorElement, `Must be at least ${field.minLength} characters`);
-            return false;
-        }
-        
-        if (field.hasAttribute('maxlength') && field.value.length > field.maxLength) {
-            showError(field, errorElement, `Cannot exceed ${field.maxLength} characters`);
-            return false;
-        }
-        
-        if (field.hasAttribute('pattern') && !new RegExp(field.pattern).test(field.value)) {
-            showError(field, errorElement, 'Invalid format');
-            return false;
+        // Validate specific fields
+        switch(field.id) {
+            case 'first_name':
+            case 'last_name':
+                if (field.value.trim()) {
+                    // Check for length
+                    if (field.value.length < 2 || field.value.length > 50) {
+                        showError(field, errorElement, `Must be between 2-50 characters`);
+                        return false;
+                    }
+                    
+                    // Check for numbers
+                    if (/\d/.test(field.value)) {
+                        showError(field, errorElement, `Cannot contain numbers`);
+                        return false;
+                    }
+                }
+                break;
+                
+            case 'email':
+                if (field.value.trim() && !isValidEmail(field.value)) {
+                    showError(field, errorElement, 'Please enter a valid email address');
+                    return false;
+                }
+                break;
+                
+            case 'phone_number':
+                if (field.value.trim()) {
+                    // Check for non-numeric characters
+                    if (/[^0-9]/.test(field.value)) {
+                        showError(field, errorElement, 'Phone number can only contain digits');
+                        return false;
+                    }
+                    
+                    // Check for correct format (11 digits starting with 09)
+                    if (!isValidPhone(field.value)) {
+                        showError(field, errorElement, 'Please enter a valid 11-digit phone number starting with 09');
+                        return false;
+                    }
+                }
+                break;
+                
+            case 'gender':
+                if (!field.value) {
+                    showError(field, errorElement, 'Please select your gender');
+                    return false;
+                }
+                break;
         }
         
         hideError(field, errorElement);
@@ -284,11 +311,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function isValidEmail(email) {
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailPattern.test(email);
     }
     
     function isValidPhone(phone) {
-        return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/.test(phone);
+        // Match 11-digit phone numbers starting with 09
+        const phonePattern = /^09\d{9}$/;
+        return phonePattern.test(phone);
     }
 });
 </script>
