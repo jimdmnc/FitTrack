@@ -95,7 +95,7 @@
         </div>
         <h1>Payment Successful!</h1>
         <p>Thank you for your payment via GCash. Your transaction has been completed successfully.</p>
-        <a href="/" class="btn">Back to Home</a>
+        <a href="/landing" class="btn">Back to Home</a>
     </div>
 </body>
 </html>
