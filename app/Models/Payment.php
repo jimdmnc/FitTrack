@@ -13,9 +13,17 @@ class Payment extends Model
 
     protected $fillable = ['rfid_uid', 'amount', 'payment_method', 'payment_date'];
 
+    protected $casts = [
+        'payment_date' => 'datetime',
+        'amount' => 'float'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'rfid_uid', 'rfid_uid');
     }
-    
+    public function payments()
+{
+    return $this->hasMany(Payment::class, 'rfid_uid', 'rfid_uid');
+}
 }

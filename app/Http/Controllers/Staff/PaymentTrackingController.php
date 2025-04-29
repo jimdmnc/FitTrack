@@ -109,4 +109,50 @@ class PaymentTrackingController extends Controller
        MembersPayment::findOrFail($id)->delete();
        return redirect()->route('staff.paymentTracking')->with('success', 'Payment deleted successfully.');
    }
+
+
+
+   public function getPaymentHistory(Request $request)
+   {
+       $request->validate([
+           'rfid_uid' => 'required|string|exists:members,rfid_uid'
+       ]);
+
+       // Get authenticated user
+       $user = Auth::user();
+       
+       // Verify the member belongs to the user
+       if (!$user->members()->where('rfid_uid', $request->rfid_uid)->exists()) {
+           return response()->json([
+               'success' => false,
+               'message' => 'Unauthorized access to member data'
+           ], 403);
+       }
+
+       // Get payments from members_payment table
+       $payments = Payment::with('member')
+           ->where('rfid_uid', $request->rfid_uid)
+           ->orderBy('payment_date', 'desc')
+           ->get()
+           ->map(function ($payment) {
+               return [
+                   'id' => $payment->id,
+                   'amount' => (float) $payment->amount,
+                   'payment_method' => $payment->payment_method,
+                   'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
+                   'member' => [
+                       'rfid_uid' => $payment->rfid_uid,
+                       'name' => $payment->member->name ?? null
+                   ]
+               ];
+           });
+
+       return response()->json([
+           'success' => true,
+           'data' => $payments
+       ]);
+   }
+
+
+
 }
