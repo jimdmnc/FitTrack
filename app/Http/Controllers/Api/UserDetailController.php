@@ -331,48 +331,121 @@ public function show()
 
 
 
-        public function getPaymentHistory(Request $request)
-        {
-            $validator = Validator::make($request->all(), [
-                'rfid_uid' => 'required|string|exists:users,rfid_uid'
-            ]);
+        // public function getPaymentHistory(Request $request)
+        // {
+        //     $validator = Validator::make($request->all(), [
+        //         'rfid_uid' => 'required|string|exists:users,rfid_uid'
+        //     ]);
     
-            if ($validator->fails()) {
-                return $this->errorResponse('Validation failed', $validator->errors(), 422);
-            }
+        //     if ($validator->fails()) {
+        //         return $this->errorResponse('Validation failed', $validator->errors(), 422);
+        //     }
             
-            // Check if user has access to this RFID UID (either admin or own RFID)
-            $user = Auth::user();
-            if ($user->rfid_uid !== $request->rfid_uid && !$user->hasRole('admin')) {
-                return $this->errorResponse('Unauthorized access to member data', null, 403);
-            }
+        //     // Check if user has access to this RFID UID (either admin or own RFID)
+        //     $user = Auth::user();
+        //     if ($user->rfid_uid !== $request->rfid_uid && !$user->hasRole('admin')) {
+        //         return $this->errorResponse('Unauthorized access to member data', null, 403);
+        //     }
         
-            try {
-                $payments = MembersPayment::where('rfid_uid', $request->rfid_uid)
-                    ->orderBy('payment_date', 'desc')
-                    ->get()
-                    ->map(function ($payment) {
-                        return [
-                            'id' => $payment->id,
-                            'rfid_uid' => $payment->rfid_uid,
-                            'amount' => (float) $payment->amount,
-                            'payment_method' => $payment->payment_method,                            
-                            'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
-                            'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
-                            'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
-                        ];
-                    });
+        //     try {
+        //         $payments = MembersPayment::where('rfid_uid', $request->rfid_uid)
+        //             ->orderBy('payment_date', 'desc')
+        //             ->get()
+        //             ->map(function ($payment) {
+        //                 return [
+        //                     'id' => $payment->id,
+        //                     'rfid_uid' => $payment->rfid_uid,
+        //                     'amount' => (float) $payment->amount,
+        //                     'payment_method' => $payment->payment_method,                            
+        //                     'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
+        //                     'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
+        //                     'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
+        //                 ];
+        //             });
             
-                return $this->successResponse(null, [
-                    'data' => $payments,
-                    'total_amount' => $payments->sum('amount'),
-                    'count' => $payments->count()
-                ]);
+        //         return $this->successResponse(null, [
+        //             'data' => $payments,
+        //             'total_amount' => $payments->sum('amount'),
+        //             'count' => $payments->count()
+        //         ]);
                 
-            } catch (\Exception $e) {
-                return $this->errorResponse('Failed to retrieve payment history', $e->getMessage(), 500);
-            }
+        //     } catch (\Exception $e) {
+        //         return $this->errorResponse('Failed to retrieve payment history', $e->getMessage(), 500);
+        //     }
+        // }
+
+
+
+
+
+        // Display payments for specific RFID UID
+public function getPaymentHistory(Request $request)
+{
+    $query = MembersPayment::with('user')->orderBy('payment_date', 'desc');
+
+    // Filter by RFID UID (always required)
+    if ($request->filled('rfid_uid')) {
+        $rfid_uid = $request->rfid_uid;
+        $query->whereHas('user', function($q) use ($rfid_uid) {
+            $q->where('rfid_uid', $rfid_uid);
+        });
+    } else {
+        // If no RFID UID provided, return empty result set or redirect
+        // Option 1: Return empty result
+        $payments = collect([]);
+        if ($request->ajax()) {
+            return view('staff.paymentTracking', compact('payments'))->render();
         }
+        return view('staff.paymentTracking', compact('payments'));
+    }
+
+    // Search functionality (optional, now scoped to the specific RFID)
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('payment_amount', 'like', "%$search%")
+              ->orWhere('payment_method', 'like', "%$search%")
+              ->orWhere('payment_date', 'like', "%$search%");
+        });
+    }
+
+    // Filter by payment method (optional)
+    if ($request->filled('payment_method')) {
+        $query->where('payment_method', $request->payment_method);
+    }
+
+    // Filter by time range (optional)
+    if ($request->filled('time_filter')) {
+        $today = Carbon::today();
+        switch ($request->time_filter) {
+            case 'today':
+                $query->whereDate('payment_date', $today);
+                break;
+            case 'week':
+                $query->whereBetween('payment_date', [
+                    $today->copy()->startOfWeek(),
+                    $today->copy()->endOfWeek()
+                ]);
+                break;
+            case 'month':
+                $query->whereBetween('payment_date', [
+                    $today->copy()->startOfMonth(),
+                    $today->copy()->endOfMonth()
+                ]);
+                break;
+        }
+    }
+
+    // Fetch the filtered results with pagination
+    $payments = $query->paginate(10);
+
+    // If it's an AJAX request, return the entire table section
+    if ($request->ajax()) {
+        return view('staff.paymentTracking', compact('payments'))->render();
+    }
+
+    return view('staff.paymentTracking', compact('payments'));
+}
 
         
 }
