@@ -115,43 +115,40 @@ class PaymentTrackingController extends Controller
    public function getPaymentHistory(Request $request)
    {
        $request->validate([
-           'rfid_uid' => 'required|string|exists:members,rfid_uid'
+           'rfid_uid' => 'required|string|exists:users,rfid_uid'
        ]);
    
        $user = Auth::user();
        
+       // Verify user has access to this RFID UID
        if (!$user->members()->where('rfid_uid', $request->rfid_uid)->exists()) {
            return response()->json([
                'success' => false,
-               'message' => 'Unauthorized'
+               'message' => 'Unauthorized access to member data'
            ], 403);
        }
    
-       $payments = MembersPayment::with('member')
-           ->where('rfid_uid', $request->rfid_uid)
+       $payments = MembersPayment::where('rfid_uid', $request->rfid_uid)
            ->orderBy('payment_date', 'desc')
            ->get()
            ->map(function ($payment) {
                return [
                    'id' => $payment->id,
+                   'rfid_uid' => $payment->rfid_uid,
                    'amount' => (float) $payment->amount,
                    'payment_method' => $payment->payment_method,
                    'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
-                   'description' => $payment->description ?? '', // Ensure description exists
-                   'member' => [
-                       'rfid_uid' => $payment->rfid_uid,
-                       'name' => $payment->member->name ?? ''
-                   ]
+                   'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
+                   'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
                ];
            });
    
        return response()->json([
            'success' => true,
-           'payments' => $payments,
-           'total' => $payments->sum('amount'),
+           'data' => $payments,
+           'total_amount' => $payments->sum('amount'),
            'count' => $payments->count()
        ]);
    }
-
 
 }
