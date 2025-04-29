@@ -378,33 +378,28 @@ public function show()
 
 
 
-        public function getPaymentHistory(Request $request)
+        public function getPaymentHistory($rfid_uid = null, Request $request)
         {
-            $validator = Validator::make($request->all(), [
-                'rfid_uid' => 'required|string|exists:users,rfid_uid',
-                'payment_method' => 'nullable|string',
-                'time_filter' => 'nullable|string|in:today,week,month',
-                'search' => 'nullable|string',
-                'per_page' => 'nullable|integer|min:1|max:100',
-            ]);
-        
-            if ($validator->fails()) {
-                return $this->errorResponse('Validation failed', $validator->errors(), 422);
+            // Check if rfid_uid is provided either in route parameter or request
+            if (empty($rfid_uid)) {
+                $rfid_uid = $request->input('rfid_uid');
+                if (empty($rfid_uid)) {
+                    return $this->errorResponse('RFID UID is required', null, 400);
+                }
             }
             
-            // Check if user has access to this RFID UID (either admin or own RFID)
-            $user = Auth::user();
-            if (!$user->rfid_uid) {
-                return $this->errorResponse('RFID UID not found for the user', null, 400);
+            // Validate RFID exists in database
+            $userExists = \App\Models\User::where('rfid_uid', $rfid_uid)->exists();
+            if (!$userExists) {
+                return $this->errorResponse('RFID UID not found', null, 404);
             }
-        
         
             try {
                 // Start building the query
-                $query = MembersPayment::where('rfid_uid', $request->rfid_uid)
+                $query = MembersPayment::where('rfid_uid', $rfid_uid)
                     ->orderBy('payment_date', 'desc');
                 
-                // Search functionality
+                // Search functionality (optional)
                 if ($request->filled('search')) {
                     $search = $request->search;
                     $query->where(function($q) use ($search) {
@@ -414,12 +409,12 @@ public function show()
                     });
                 }
                 
-                // Filter by payment method
+                // Filter by payment method (optional)
                 if ($request->filled('payment_method')) {
                     $query->where('payment_method', $request->payment_method);
                 }
                 
-                // Filter by time range
+                // Filter by time range (optional)
                 if ($request->filled('time_filter')) {
                     $today = Carbon::today();
                     switch ($request->time_filter) {
@@ -441,49 +436,26 @@ public function show()
                     }
                 }
         
-                // // Implement pagination if requested
-                // $perPage = $request->input('per_page', null);
+                // Get the results
+                $payments = $query->get();
                 
-                // if ($perPage) {
-                //     $paymentsData = $query->paginate($perPage);
-                //     $payments = $paymentsData->items();
-                //     $pagination = [
-                //         'total' => $paymentsData->total(),
-                //         'current_page' => $paymentsData->currentPage(),
-                //         'per_page' => $paymentsData->perPage(),
-                //         'last_page' => $paymentsData->lastPage()
-                //     ];
-                // } else {
-                //     // Get all results if no pagination requested
-                //     $payments = $query->get();
-                // }
-                
-                // Map the payment data
-                $mappedPayments = collect($payments)->map(function ($payment) {
+                // Map the payment data similar to WeightHistory format
+                $formattedPayments = $payments->map(function ($payment) {
                     return [
                         'id' => $payment->id,
                         'rfid_uid' => $payment->rfid_uid,
                         'amount' => (float) $payment->amount,
                         'payment_method' => $payment->payment_method,                            
                         'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
-                        'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
-                        'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
                     ];
                 });
             
-                // Prepare response data
-                $responseData = [
-                    'data' => $mappedPayments,
-                    'total_amount' => $mappedPayments->sum('amount'),
-                    'count' => $mappedPayments->count()
-                ];
-                
-                // Add pagination info if pagination was used
-                if (isset($pagination)) {
-                    $responseData['pagination'] = $pagination;
-                }
-                
-                return $this->successResponse(null, $responseData);
+                // Return JSON response like WeightHistory
+                return response()->json([
+                    'data' => $formattedPayments,
+                    'total_amount' => $formattedPayments->sum('amount'),
+                    'count' => $formattedPayments->count()
+                ]);
                 
             } catch (\Exception $e) {
                 return $this->errorResponse('Failed to retrieve payment history', $e->getMessage(), 500);

@@ -80,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::get('/payment-history', [UserDetailController::class, 'getPaymentHistory']);
+Route::get('/payment-history/{rfid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
 
