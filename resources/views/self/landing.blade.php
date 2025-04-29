@@ -294,14 +294,14 @@
                             <div class="absolute inset-0 flex">
                                 <!-- Before Image (Left Half) -->
                                 <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/before1.png" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                    <img src="/images/before12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
                                     <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                         <span class="font-bold">BEFORE</span>
                                     </div>
                                 </div>
                                 <!-- After Image (Right Half) -->
                                 <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/after1.png" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                    <img src="/images/after12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
                                     <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                         <span class="font-bold">AFTER</span>
                                     </div>
