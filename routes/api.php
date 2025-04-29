@@ -83,14 +83,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     
-        Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
-        Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
+ 
 
 
 });
 
 
-
+Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
+Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
 
 Route::post('/attendance', [RFIDController::class, 'handleAttendance']);
 Route::post('/save_rfid', [RFIDController::class, 'saveRFID']);
