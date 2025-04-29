@@ -117,20 +117,17 @@ class PaymentTrackingController extends Controller
        $request->validate([
            'rfid_uid' => 'required|string|exists:members,rfid_uid'
        ]);
-
-       // Get authenticated user
+   
        $user = Auth::user();
        
-       // Verify the member belongs to the user
        if (!$user->members()->where('rfid_uid', $request->rfid_uid)->exists()) {
            return response()->json([
                'success' => false,
-               'message' => 'Unauthorized access to member data'
+               'message' => 'Unauthorized'
            ], 403);
        }
-
-       // Get payments from members_payment table
-       $payments = MembersPayment::with('user')
+   
+       $payments = MembersPayment::with('member')
            ->where('rfid_uid', $request->rfid_uid)
            ->orderBy('payment_date', 'desc')
            ->get()
@@ -140,19 +137,21 @@ class PaymentTrackingController extends Controller
                    'amount' => (float) $payment->amount,
                    'payment_method' => $payment->payment_method,
                    'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
+                   'description' => $payment->description ?? '', // Ensure description exists
                    'member' => [
                        'rfid_uid' => $payment->rfid_uid,
-                       'name' => $payment->member->name ?? null
+                       'name' => $payment->member->name ?? ''
                    ]
                ];
            });
-
+   
        return response()->json([
            'success' => true,
-           'data' => $payments
+           'payments' => $payments,
+           'total' => $payments->sum('amount'),
+           'count' => $payments->count()
        ]);
    }
-
 
 
 }
