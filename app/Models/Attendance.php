@@ -47,17 +47,32 @@ class Attendance extends Model
     
       // Optional: Accessor to format duration as "X hours Y minutes"
       public function getFormattedDurationAttribute()
-      {
-          // Ensure both time_in and time_out are not null
-          if ($this->time_in && $this->time_out) {
-              $timeIn = Carbon::parse($this->time_in);
-              $timeOut = Carbon::parse($this->time_out);
-              $diff = $timeOut->diff($timeIn);
-  
-              // Format duration as "X hours Y minutes"
-              return sprintf('%d hrs %d min', $diff->h, $diff->i);
-          }
-  
-          return 'N/A'; // Return 'N/A' if either time_in or time_out is missing
-      }
+    {
+        if (!$this->time_in) {
+            return 'N/A';
+        }
+
+        // For displaying in the view, handle past dates without checkout
+        if (!$this->time_out && $this->time_in->startOfDay()->lt(Carbon::today())) {
+            // For past days without checkout, assume checkout at 9 PM
+            $checkoutTime = Carbon::parse($this->time_in)->setTime(21, 0, 0);
+            $diffInSeconds = $this->time_in->diffInSeconds($checkoutTime);
+        } elseif (!$this->time_out) {
+            // For ongoing sessions, calculate duration up to now
+            $diffInSeconds = $this->time_in->diffInSeconds(Carbon::now());
+        } else {
+            // Normal case with checkout time
+            $diffInSeconds = $this->time_in->diffInSeconds($this->time_out);
+        }
+
+        // Format duration
+        $hours = floor($diffInSeconds / 3600);
+        $minutes = floor(($diffInSeconds % 3600) / 60);
+
+        if ($hours > 0) {
+            return $hours . 'h ' . $minutes . 'm';
+        } else {
+            return $minutes . ' minutes';
+        }
+    }
 }

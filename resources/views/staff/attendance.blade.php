@@ -111,7 +111,7 @@
         </div>
 
         <div class="overflow-x-auto sm:rounded-lg table-responsive">
-            <table class="min-w-full divide-y divide-black">
+            <table class="w-full border-collapse divide-y divide-black">
                 <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-b border-black">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-gray-200 uppercase tracking-wider">#</th>
@@ -166,10 +166,17 @@
                         </td>
                         
                         <!-- Check-out Column -->
-                        <td class="px-6 py-4 whitespace-nowrap">
+                        <td class="px-3 sm:px-6 py-4 whitespace-nowrap" data-label="Check-out">
                             @if($attendance->time_out)
                                 <div class="text-sm text-gray-200">{{ $attendance->time_out->format('h:i A') }}</div>
                                 <div class="text-xs text-gray-400">{{ $attendance->time_out->format('M d, Y') }}</div>
+                            @elseif($attendance->time_in->startOfDay()->lt(\Carbon\Carbon::today()))
+                                <!-- Past dates should show estimated checkout time -->
+                                <div class="text-sm text-gray-200">9:00 PM</div>
+                                <div class="text-xs text-gray-400">{{ $attendance->time_in->format('M d, Y') }}</div>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                    Auto Checkout
+                                </span>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                     <span class="h-1.5 w-1.5 mr-1.5 rounded-full bg-green-400 animate-pulse"></span>

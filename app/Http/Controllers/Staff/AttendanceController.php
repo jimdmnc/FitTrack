@@ -13,6 +13,9 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
+        // Automatically checkout sessions from previous days
+        $this->checkoutPastSessions();
+        
         $query = Attendance::with('user');
 
         // Search filter
@@ -78,8 +81,60 @@ class AttendanceController extends Controller
 
         return view('staff.attendance', compact('attendances', 'filter', 'search'));
     }
+    
+    /**
+     * Check out all sessions from previous days
+     */
+    private function checkoutPastSessions()
+    {
+        $yesterday = Carbon::yesterday()->endOfDay();
+        $today9PM = Carbon::today()->setTime(21, 0, 0); // 9 PM today
+        
+        // Check out yesterday's sessions
+        $pastSessions = Attendance::whereNull('time_out')
+            ->where('time_in', '<', $yesterday)
+            ->with('user')
+            ->get();
+            
+        foreach ($pastSessions as $session) {
+            $checkoutTime = Carbon::parse($session->time_in)->setTime(21, 0, 0);
+            $session->time_out = $checkoutTime;
+            $session->save();
+            
+            if ($session->user) {
+                $session->user->update([
+                    'session_status' => 'pending',
+                    'member_status' => 'expired',
+                ]);
+            }
+        }
+        
+        // Check out today's sessions if it's after 9 PM
+        if (Carbon::now()->gte($today9PM)) {
+            $todaysSessions = Attendance::whereNull('time_out')
+                ->whereDate('time_in', Carbon::today())
+                ->with('user')
+                ->get();
+                
+            foreach ($todaysSessions as $session) {
+                $session->time_out = $today9PM;
+                $session->save();
+                
+                if ($session->user) {
+                    $session->user->update([
+                        'session_status' => 'pending',
+                        'member_status' => 'expired',
+                    ]);
+                }
+            }
+        }
+        
+        Log::info("Fixed past sessions without checkout");
+    }
 
-
+    /**
+     * Process user checkout
+     */
     public function timeOut(Request $request)
     {
         try {
@@ -114,7 +169,7 @@ class AttendanceController extends Controller
             // Set the time_out
             $attendance->update(['time_out' => Carbon::now()]);
     
-            // ✅ Update session_status and member_status
+            // Update session_status and member_status
             $user->update([
                 'session_status' => 'pending',
                 'member_status' => 'expired',
@@ -130,4 +185,62 @@ class AttendanceController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+    public function timeIn(Request $request)
+{
+    try {
+        // Validate input
+        $request->validate([
+            'rfid_uid' => 'required|string',
+        ]);
+
+        $rfid_uid = $request->input('rfid_uid');
+
+        // Find the user with RFID
+        $user = User::where('rfid_uid', $rfid_uid)->first();
+
+        if (!$user) {
+            return back()->with('error', "User not found with RFID: $rfid_uid.");
+        }
+
+        // Check if user already has an active session
+        $activeSession = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereNull('time_out')
+            ->exists();
+
+        if ($activeSession) {
+            return back()->with('error', "User {$user->first_name} already has an active session. Please check out first.");
+        }
+
+        // Check if user already checked in today
+        $todaySession = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereDate('time_in', Carbon::today())
+            ->exists();
+
+        if ($todaySession) {
+            return back()->with('error', "User {$user->first_name} has already checked in today. Only one check-in per day is allowed.");
+        }
+
+        // Create new attendance record
+        $attendance = Attendance::create([
+            'user_id' => $user->id,
+            'rfid_uid' => $rfid_uid,
+            'time_in' => Carbon::now(),
+        ]);
+
+        // Update user status
+        $user->update([
+            'session_status' => 'approved',
+            'member_status' => 'active',
+        ]);
+
+        \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Check-in recorded at " . now());
+
+        return back()
+            ->with('success', "✅ Check-in recorded successfully for {$user->first_name}.")
+            ->with('checked_in', true);
+    } catch (\Exception $e) {
+        \Log::error("❌ Check-in error: " . $e->getMessage());
+        return back()->with('error', 'Error: ' . $e->getMessage());
+    }
+}
 }
