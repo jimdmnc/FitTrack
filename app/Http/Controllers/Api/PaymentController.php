@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MembersPayment;
-use App\Models\User; // Make sure to import your User model
 use App\Services\PayMongoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +18,7 @@ class PaymentController extends Controller
         $this->paymongoService = $paymongoService;
     }
 
-    public function createPayment(Request $request)
+    public function createGcashPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1',
@@ -28,7 +27,6 @@ class PaymentController extends Controller
             'membership_type' => 'required|in:7,30,365',
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d|after:start_date',
-            'payment_method' => 'required|in:gcash,cash', // Add payment method validation
         ]);
 
         if ($validator->fails()) {
@@ -43,40 +41,28 @@ class PaymentController extends Controller
             $payment = MembersPayment::create([
                 'rfid_uid' => $request->rfid_uid,
                 'amount' => $request->amount,
-                'payment_method' => $request->payment_method,
-                'status' => $request->payment_method === 'cash' ? 'completed' : 'pending',
+                'payment_method' => 'gcash',
+                'status' => 'pending',
             ]);
 
-            if ($request->payment_method === 'gcash') {
-                $source = $this->paymongoService->createGcashSource(
-                    $request->amount,
-                    $request->description,
-                    $this->preparePaymentMetadata($request, $payment->id)
-                );
+            $source = $this->paymongoService->createGcashSource(
+                $request->amount,
+                $request->description,
+                $this->preparePaymentMetadata($request, $payment->id)
+            );
 
-                $payment->update([
-                    'payment_reference' => $source['id'],
-                ]);
+            $payment->update([
+                'payment_reference' => $source['id'],
+            ]);
 
-                DB::commit();
+            DB::commit();
 
-                return response()->json([
-                    'success' => true,
-                    'redirect_url' => $source['attributes']['redirect']['checkout_url'],
-                    'source_id' => $source['id'],
-                    'payment_id' => $payment->id,
-                ]);
-            } else {
-                // For cash payments, immediately process the membership
-                $this->processMembershipRenewal($payment);
-                DB::commit();
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Cash payment recorded successfully',
-                    'payment_id' => $payment->id,
-                ]);
-            }
+            return response()->json([
+                'success' => true,
+                'redirect_url' => $source['attributes']['redirect']['checkout_url'],
+                'source_id' => $source['id'],
+                'payment_id' => $payment->id,
+            ]);
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -93,7 +79,7 @@ class PaymentController extends Controller
     public function checkPaymentStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'source_id' => 'required_without:payment_id|string',
+            'source_id' => 'required|string',
             'payment_id' => 'required|integer|exists:members_payment,id',
         ]);
 
@@ -105,20 +91,9 @@ class PaymentController extends Controller
         }
 
         try {
+            $source = $this->paymongoService->verifyPayment($request->source_id);
             $payment = MembersPayment::findOrFail($request->payment_id);
 
-            // For cash payments, return immediately
-            if ($payment->payment_method === 'cash') {
-                return response()->json([
-                    'success' => true,
-                    'paid' => true,
-                    'status' => 'completed',
-                    'amount' => $payment->amount,
-                ]);
-            }
-
-            // For GCash payments, verify with PayMongo
-            $source = $this->paymongoService->verifyPayment($request->source_id);
             $status = $source['attributes']['status'];
             $isPaid = ($status === 'chargeable');
 
@@ -128,6 +103,7 @@ class PaymentController extends Controller
                     'amount' => $source['attributes']['amount'] / 100,
                 ]);
                 
+                // Add membership renewal logic here
                 $this->processMembershipRenewal($payment);
             }
 
@@ -162,26 +138,9 @@ class PaymentController extends Controller
 
     private function processMembershipRenewal(MembersPayment $payment)
     {
-        // Update user's membership
-        $user = User::where('rfid_uid', $payment->rfid_uid)->firstOrFail();
-        
-        // Calculate end date based on membership type
-        $endDate = now();
-        switch ($payment->membership_type) {
-            case '7':
-                $endDate = $endDate->addDays(7);
-                break;
-            case '30':
-                $endDate = $endDate->addDays(30);
-                break;
-            case '365':
-                $endDate = $endDate->addDays(365);
-                break;
-        }
-
-        $user->update([
-            'membership_expiry' => $endDate,
-            'membership_type' => $payment->membership_type,
-        ]);
+        // Implement your membership renewal logic here
+        // Example:
+        // $user = User::where('rfid_uid', $payment->rfid_uid)->first();
+        // $user->update(['membership_expiry' => $payment->end_date]);
     }
 }
