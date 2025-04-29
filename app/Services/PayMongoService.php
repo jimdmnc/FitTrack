@@ -27,36 +27,35 @@ class PayMongoService
     {
         try {
             $response = $this->client->post('sources', [
-                'headers' => $this->getHeaders(),
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Basic ' . base64_encode($this->secretKey . ':'),
+                ],
                 'json' => [
                     'data' => [
                         'attributes' => [
-                            'amount' => $this->convertToCentavos($amount),
+                            'amount' => $amount * 100, // Convert to centavos
                             'redirect' => [
-                                'success' => $this->getRedirectUrl('success'),
-                                'failed' => $this->getRedirectUrl('failed'),
+                                'success' => config('app.url') . '/payment/success',
+                                'failed' => config('app.url') . '/payment/failed',
                             ],
                             'type' => 'gcash',
                             'currency' => 'PHP',
                             'description' => $description,
-                            'metadata' => $this->prepareMetadata($metadata),
+                            'metadata' => $metadata,
                         ],
                     ],
                 ],
             ]);
 
-            return $this->parseResponse($response);
+            $body = json_decode($response->getBody(), true);
+            return $body['data'];
         } catch (GuzzleException $e) {
-            $this->logError('GCash source creation failed', $e, [
-                'amount' => $amount,
-                'description' => $description,
-            ]);
-            throw new \Exception($this->isTestMode 
-                ? "Test payment error: " . $e->getMessage()
-                : "Payment processing failed");
+            Log::error('PayMongo GCash source creation failed: ' . $e->getMessage());
+            throw new \Exception('Payment gateway error');
         }
     }
-
     public function verifyPayment(string $sourceId, int $maxRetries = 2)
     {
         $retryCount = 0;
