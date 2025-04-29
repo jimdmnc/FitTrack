@@ -394,9 +394,10 @@ public function show()
             
             // Check if user has access to this RFID UID (either admin or own RFID)
             $user = Auth::user();
-            if ($user->rfid_uid !== $request->rfid_uid && !$user->hasRole('admin')) {
-                return $this->errorResponse('Unauthorized access to member data', null, 403);
+            if (!$user->rfid_uid) {
+                return $this->errorResponse('RFID UID not found for the user', null, 400);
             }
+        
         
             try {
                 // Start building the query
@@ -440,22 +441,22 @@ public function show()
                     }
                 }
         
-                // Implement pagination if requested
-                $perPage = $request->input('per_page', null);
+                // // Implement pagination if requested
+                // $perPage = $request->input('per_page', null);
                 
-                if ($perPage) {
-                    $paymentsData = $query->paginate($perPage);
-                    $payments = $paymentsData->items();
-                    $pagination = [
-                        'total' => $paymentsData->total(),
-                        'current_page' => $paymentsData->currentPage(),
-                        'per_page' => $paymentsData->perPage(),
-                        'last_page' => $paymentsData->lastPage()
-                    ];
-                } else {
-                    // Get all results if no pagination requested
-                    $payments = $query->get();
-                }
+                // if ($perPage) {
+                //     $paymentsData = $query->paginate($perPage);
+                //     $payments = $paymentsData->items();
+                //     $pagination = [
+                //         'total' => $paymentsData->total(),
+                //         'current_page' => $paymentsData->currentPage(),
+                //         'per_page' => $paymentsData->perPage(),
+                //         'last_page' => $paymentsData->lastPage()
+                //     ];
+                // } else {
+                //     // Get all results if no pagination requested
+                //     $payments = $query->get();
+                // }
                 
                 // Map the payment data
                 $mappedPayments = collect($payments)->map(function ($payment) {
