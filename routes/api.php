@@ -83,10 +83,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     
-    Route::prefix('payment')->group(function () {
         Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
         Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
-    });
 
 
 });
