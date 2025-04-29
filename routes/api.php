@@ -70,13 +70,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/weight-history/{rfid_uid}', [UserDetailController::class, 'getWeightHistory']);
 
+
+    Route::get('/payment-history/{rfid_uid}', [UserDetailController::class, 'getPaymentHistory']);
+
+
+
     Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
 
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
 
-    Route::get('/payment-history/{rfid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
 });
