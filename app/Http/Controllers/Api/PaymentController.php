@@ -8,7 +8,6 @@ use App\Services\PayMongoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User; // Make sure to import your User model
 
 class PaymentController extends Controller
 {
@@ -80,7 +79,7 @@ class PaymentController extends Controller
     public function checkPaymentStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'source_id' => 'required_without:payment_id|string',
+            'source_id' => 'required|string',
             'payment_id' => 'required|integer|exists:members_payment,id',
         ]);
 
@@ -92,20 +91,9 @@ class PaymentController extends Controller
         }
 
         try {
+            $source = $this->paymongoService->verifyPayment($request->source_id);
             $payment = MembersPayment::findOrFail($request->payment_id);
 
-            // For cash payments, return immediately
-            if ($payment->payment_method === 'cash') {
-                return response()->json([
-                    'success' => true,
-                    'paid' => true,
-                    'status' => 'completed',
-                    'amount' => $payment->amount,
-                ]);
-            }
-
-            // For GCash payments, verify with PayMongo
-            $source = $this->paymongoService->verifyPayment($request->source_id);
             $status = $source['attributes']['status'];
             $isPaid = ($status === 'chargeable');
 
@@ -115,6 +103,7 @@ class PaymentController extends Controller
                     'amount' => $source['attributes']['amount'] / 100,
                 ]);
                 
+                // Add membership renewal logic here
                 $this->processMembershipRenewal($payment);
             }
 
@@ -149,26 +138,9 @@ class PaymentController extends Controller
 
     private function processMembershipRenewal(MembersPayment $payment)
     {
-        // Update user's membership
-        $user = User::where('rfid_uid', $payment->rfid_uid)->firstOrFail();
-        
-        // Calculate end date based on membership type
-        $endDate = now();
-        switch ($payment->membership_type) {
-            case '7':
-                $endDate = $endDate->addDays(7);
-                break;
-            case '30':
-                $endDate = $endDate->addDays(30);
-                break;
-            case '365':
-                $endDate = $endDate->addDays(365);
-                break;
-        }
-
-        $user->update([
-            'membership_expiry' => $endDate,
-            'membership_type' => $payment->membership_type,
-        ]);
+        // Implement your membership renewal logic here
+        // Example:
+        // $user = User::where('rfid_uid', $payment->rfid_uid)->first();
+        // $user->update(['membership_expiry' => $payment->end_date]);
     }
 }
