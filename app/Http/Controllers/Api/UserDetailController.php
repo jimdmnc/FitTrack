@@ -378,7 +378,7 @@ public function show()
 
 
 
-        public function getPaymentHistory($rfid_uid = null, Request $request)
+        public function getPaymentHistory($rfid_uid)
         {
             // Check if rfid_uid is provided either in route parameter or request
             if (empty($rfid_uid)) {
