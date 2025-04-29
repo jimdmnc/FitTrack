@@ -18,7 +18,13 @@ class StaffApprovalController extends Controller
             ->where('role', 'user')
             ->get();
 
-        return view('staff.manageApproval', compact('pendingUsers'));
+        // Get the count of pending approvals
+        $pendingApprovalCount = $pendingUsers->count();
+        
+
+        // Pass the count to the view
+        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+        
     }
 
     // Approve New User Registration
