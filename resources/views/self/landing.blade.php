@@ -308,7 +308,8 @@
                                 </div>
                             </div>
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">John lost 30lbs in 3 months with our personal training program</p>
+                                <p class="text-white text-center font-semibold text-sm md:text-base">From chubby to muscular, Daniel transformed through dedication and hard work, now confident and strong.
+</p>
                             </div>
                         </div>
 
@@ -329,7 +330,7 @@
                                 </div>
                             </div>
                             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">Sarah gained strength and defined muscle in just 8 weeks</p>
+                                <p class="text-white text-center font-semibold text-sm md:text-base">Dan gained strength and defined muscle in just 8 months</p>
                             </div>
                         </div>
 
