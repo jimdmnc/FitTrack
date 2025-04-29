@@ -112,43 +112,6 @@ class PaymentTrackingController extends Controller
 
 
 
-   public function getPaymentHistory(Request $request)
-   {
-       $request->validate([
-           'rfid_uid' => 'required|string|exists:users,rfid_uid'
-       ]);
-   
-       $user = User::where('rfid_uid', $request->rfid_uid)->first();
-       
-       // Verify user has access to this RFID UID
-       if (!$user->user()->where('rfid_uid', $request->rfid_uid)->exists()) {
-           return response()->json([
-               'success' => false,
-               'message' => 'Unauthorized access to member data'
-           ], 403);
-       }
-   
-       $payments = MembersPayment::where('rfid_uid', $request->rfid_uid)
-           ->orderBy('payment_date', 'desc')
-           ->get()
-           ->map(function ($payment) {
-               return [
-                   'id' => $payment->id,
-                   'rfid_uid' => $payment->rfid_uid,
-                   'amount' => (float) $payment->amount,
-                   'payment_method' => $payment->payment_method,
-                   'payment_date' => $payment->payment_date->format('Y-m-d H:i:s'),
-                   'created_at' => $payment->created_at->format('Y-m-d H:i:s'),
-                   'updated_at' => $payment->updated_at->format('Y-m-d H:i:s')
-               ];
-           });
-   
-       return response()->json([
-           'success' => true,
-           'data' => $payments,
-           'total_amount' => $payments->sum('amount'),
-           'count' => $payments->count()
-       ]);
-   }
+
 
 }
