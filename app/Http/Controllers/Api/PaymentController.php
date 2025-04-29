@@ -26,7 +26,7 @@ class PaymentController extends Controller
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1',
             'description' => 'required|string|max:255',
-            'rfid_uid' => 'required|string|exists:members,rfid_uid',
+            'rfid_uid' => 'required|string|exists:users,rfid_uid',
             'membership_type' => 'required|in:7,30,365',
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d|after:start_date',
