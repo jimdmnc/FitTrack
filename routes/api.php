@@ -5,9 +5,12 @@ use App\Http\Controllers\Api\UserDetailController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserCalorieController;
+
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
+use App\Http\Controllers\Api\PaymentController;
+
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewMembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
@@ -79,7 +82,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
-
+    
+    Route::prefix('payment')->group(function () {
+        Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
+        Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
+        Route::post('/webhook', [PaymentController::class, 'handleWebhook']);
+    });
 
 
 });
