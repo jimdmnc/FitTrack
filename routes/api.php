@@ -75,7 +75,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
 
-    Route::get('/member/payment-history', [PaymentTrackingController::class, 'getPaymentHistory']);
+    Route::get('/payment-history', [PaymentTrackingController::class, 'getPaymentHistory']);
 
 
 });
