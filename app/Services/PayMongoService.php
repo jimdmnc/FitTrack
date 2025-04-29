@@ -16,7 +16,7 @@ class PayMongoService
     {
         $this->client = new Client([
             'base_uri' => 'https://api.paymongo.com/v1/',
-            'timeout' => 15, // Shorter timeout for tests
+            'timeout' => 15,
         ]);
         
         $this->secretKey = config('services.paymongo.secret_key');
@@ -29,6 +29,9 @@ class PayMongoService
     public function createGcashSource(float $amount, string $description, array $metadata = [])
     {
         try {
+            // Flatten metadata to prevent nesting
+            $flatMetadata = $this->flattenMetadata($metadata);
+
             $response = $this->client->post('sources', [
                 'headers' => $this->getHeaders(),
                 'json' => [
@@ -42,7 +45,7 @@ class PayMongoService
                             'type' => 'gcash',
                             'currency' => 'PHP',
                             'description' => $description,
-                            'metadata' => $this->enrichMetadata($metadata),
+                            'metadata' => $this->enrichMetadata($flatMetadata),
                         ],
                     ],
                 ],
@@ -63,7 +66,7 @@ class PayMongoService
     /**
      * Verify payment status with retry logic
      */
-    public function verifyPayment(string $sourceId, int $maxRetries = 2) // Fewer retries for tests
+    public function verifyPayment(string $sourceId, int $maxRetries = 2)
     {
         $retryCount = 0;
         
@@ -75,7 +78,6 @@ class PayMongoService
 
                 $data = $this->parseResponse($response);
                 
-                // Simulate immediate success in test mode if needed
                 if ($this->isTestMode && $data['attributes']['status'] === 'pending') {
                     $data['attributes']['status'] = 'chargeable';
                 }
@@ -90,59 +92,76 @@ class PayMongoService
                     ]);
                     throw new \Exception("Payment verification timeout");
                 }
-                usleep(500000); // 0.5s delay for tests
+                usleep(500000);
             }
         }
     }
 
+    // ===== Helper Methods =====
+    private function getHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Basic ' . base64_encode($this->secretKey . ':'),
+        ];
+    }
 
-     // ===== Helper Methods =====
-     private function getHeaders(): array
-     {
-         return [
-             'Accept' => 'application/json',
-             'Content-Type' => 'application/json',
-             'Authorization' => 'Basic ' . base64_encode($this->secretKey . ':'),
-         ];
-     }
- 
-     private function getRedirectUrl(string $type): string
-     {
-         return $this->isTestMode
-             ? 'https://rockiesfitnessph.com/payment/' . $type
-             : route('payment.' . $type);
-     }
- 
-     private function enrichMetadata(array $metadata): array
-     {
-         return array_merge($metadata, [
-             'system' => 'FitTrack',
-             'environment' => $this->isTestMode ? 'test' : 'production',
-             'timestamp' => now()->toISOString(),
-         ]);
-     }
- 
-     private function parseResponse($response): array
-     {
-         $body = json_decode($response->getBody(), true);
-         
-         if (!isset($body['data'])) {
-             throw new \Exception('Invalid API response structure');
-         }
- 
-         return $body['data'];
-     }
- 
-     private function logError(string $message, \Throwable $e, array $context = [])
-     {
-         Log::error($message, array_merge($context, [
-             'error' => $e->getMessage(),
-             'test_mode' => $this->isTestMode,
-         ]));
-     }
- 
-     private function convertToCentavos(float $amount): int
-     {
-         return (int) round($amount * 100);
-     }
+    private function getRedirectUrl(string $type): string
+    {
+        return $this->isTestMode
+            ? 'https://rockiesfitnessph.com/payment/' . $type
+            : route('payment.' . $type);
+    }
+
+    /**
+     * Flatten nested metadata arrays
+     */
+    private function flattenMetadata(array $metadata): array
+    {
+        $flat = [];
+        foreach ($metadata as $key => $value) {
+            if (is_array($value)) {
+                foreach ($value as $subKey => $subValue) {
+                    $flat["{$key}_{$subKey}"] = is_array($subValue) ? json_encode($subValue) : $subValue;
+                }
+            } else {
+                $flat[$key] = $value;
+            }
+        }
+        return $flat;
+    }
+
+    private function enrichMetadata(array $metadata): array
+    {
+        return array_merge($metadata, [
+            'system' => 'FitTrack',
+            'environment' => $this->isTestMode ? 'test' : 'production',
+            'timestamp' => now()->toISOString(),
+        ]);
+    }
+
+    private function parseResponse($response): array
+    {
+        $body = json_decode($response->getBody(), true);
+        
+        if (!isset($body['data'])) {
+            throw new \Exception('Invalid API response structure');
+        }
+
+        return $body['data'];
+    }
+
+    private function logError(string $message, \Throwable $e, array $context = [])
+    {
+        Log::error($message, array_merge($context, [
+            'error' => $e->getMessage(),
+            'test_mode' => $this->isTestMode,
+        ]));
+    }
+
+    private function convertToCentavos(float $amount): int
+    {
+        return (int) round($amount * 100);
+    }
 }

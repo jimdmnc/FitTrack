@@ -59,6 +59,7 @@ class PaymentController extends Controller
                     'membership_type' => $request->membership_type,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
+                    // Add other flat key-value pairs
                 ]
             );
 
