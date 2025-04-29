@@ -339,12 +339,13 @@ public function getPaymentHistory($rfid_uid)
     if (empty($rfid_uid)) {
         return $this->errorResponse('RFID UID is required', null, 400);
     }
-
-    $payments = MembersPayment::where('rfid_uid', $rfid_uid)
+    
+    $history = DB::table('members_payment')
+        ->where('rfid_uid', $rfid_uid)
         ->orderBy('payment_date', 'desc')
-        ->get(['amount', 'payment_method', 'payment_date']);
-
-    return response()->json($payments);
+        ->get(['id', 'rfid_uid', 'amount', 'payment_method', 'payment_date', 'created_at', 'updated_at']);
+        
+    return response()->json($history);
 }
 
 
