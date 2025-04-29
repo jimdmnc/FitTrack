@@ -10,6 +10,7 @@ use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewMembersController;
+use App\Http\Controllers\Staff\PaymentTrackingController;
 
 Route::post('/login', [AuthController::class, 'login']);
 
