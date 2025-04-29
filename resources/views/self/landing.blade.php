@@ -228,51 +228,56 @@
                 </div>
             </div>
         </dialog>
-    <!-- Hero Section -->
-    <section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
-        <!-- Background with subtle gradient overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-        
-        <div class="container mx-auto px-6 z-10">
-                    <div class="flex flex-col items-center">
-                        <!-- Hero Text Content -->
-                        <div class="text-center max-w-2xl mb-12">
-                <!-- Updated heading with more text -->
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
-                    WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
-                </h1>
-                
-                <!-- Updated subtitle -->
-                <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                    Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                </p>
-
-
-            <!-- Improved App Store Buttons -->
-            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                    Get Started
-                </a>
-                
-              
-            </div>
+<!-- Hero Section -->
+<section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
+    <!-- Background with subtle gradient overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+    
+    <div class="container mx-auto px-6 z-10">
+                <div class="flex flex-col items-center">
+                    <!-- Hero Text Content -->
+                    <div class="text-center max-w-2xl mb-12">
+            <!-- Updated heading with more text -->
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
+            </h1>
             
-        </div>
-                
-                        <!-- Two Phone Mockups -->
-        <!-- Two Phone Image Mockups -->
-        <div class="flex flex-row flex-wrap justify-center items-center">
-            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
-            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
-        </div>
+            <!-- Updated subtitle -->
+            <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+            </p>
 
-            </div>
-        </div>
-    </section>
 
+        <!-- Improved App Store Buttons -->
+        <div class="flex flex-wrap justify-center gap-4 mb-6">
+            <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+                Get Started
+            </a>
+            
+            <!-- Google Play Store Button -->
+            <a href="#" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                    <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                </svg>
+                Download App
+            </a>
+        </div>
+        
+    </div>
+            
+                    <!-- Two Phone Mockups -->
+    <!-- Two Phone Image Mockups -->
+    <div class="flex flex-row flex-wrap justify-center items-center">
+        <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
+        <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
+    </div>
+
+        </div>
+    </div>
+</section>
     <!-- Promotional Carousel -->
     <section class="py-16 bg-gray-900 text-white">
         <div class="container mx-auto px-6">
