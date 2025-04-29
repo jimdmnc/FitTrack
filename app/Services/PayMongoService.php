@@ -23,15 +23,9 @@ class PayMongoService
         $this->isTestMode = str_starts_with($this->secretKey, 'sk_test_');
     }
 
-    /**
-     * Create a GCash payment source
-     */
     public function createGcashSource(float $amount, string $description, array $metadata = [])
     {
         try {
-            // Flatten metadata to prevent nesting
-            $flatMetadata = $this->flattenMetadata($metadata);
-
             $response = $this->client->post('sources', [
                 'headers' => $this->getHeaders(),
                 'json' => [
@@ -45,7 +39,7 @@ class PayMongoService
                             'type' => 'gcash',
                             'currency' => 'PHP',
                             'description' => $description,
-                            'metadata' => $this->enrichMetadata($flatMetadata),
+                            'metadata' => $this->prepareMetadata($metadata),
                         ],
                     ],
                 ],
@@ -63,9 +57,6 @@ class PayMongoService
         }
     }
 
-    /**
-     * Verify payment status with retry logic
-     */
     public function verifyPayment(string $sourceId, int $maxRetries = 2)
     {
         $retryCount = 0;
@@ -97,7 +88,6 @@ class PayMongoService
         }
     }
 
-    // ===== Helper Methods =====
     private function getHeaders(): array
     {
         return [
@@ -114,27 +104,19 @@ class PayMongoService
             : route('payment.' . $type);
     }
 
-    /**
-     * Flatten nested metadata arrays
-     */
-    private function flattenMetadata(array $metadata): array
+    private function prepareMetadata(array $metadata): array
     {
-        $flat = [];
+        // Convert all values to strings and ensure no nesting
+        $prepared = [];
         foreach ($metadata as $key => $value) {
-            if (is_array($value)) {
-                foreach ($value as $subKey => $subValue) {
-                    $flat["{$key}_{$subKey}"] = is_array($subValue) ? json_encode($subValue) : $subValue;
-                }
+            if (is_array($value) || is_object($value)) {
+                $prepared[$key] = json_encode($value);
             } else {
-                $flat[$key] = $value;
+                $prepared[$key] = (string)$value;
             }
         }
-        return $flat;
-    }
 
-    private function enrichMetadata(array $metadata): array
-    {
-        return array_merge($metadata, [
+        return array_merge($prepared, [
             'system' => 'FitTrack',
             'environment' => $this->isTestMode ? 'test' : 'production',
             'timestamp' => now()->toISOString(),
