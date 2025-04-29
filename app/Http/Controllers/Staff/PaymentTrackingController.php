@@ -118,10 +118,10 @@ class PaymentTrackingController extends Controller
            'rfid_uid' => 'required|string|exists:users,rfid_uid'
        ]);
    
-       $user = Auth::user();
+       $user = User::where('rfid_uid', $request->rfid_uid)->first();
        
        // Verify user has access to this RFID UID
-       if (!$user->members()->where('rfid_uid', $request->rfid_uid)->exists()) {
+       if (!$user->user()->where('rfid_uid', $request->rfid_uid)->exists()) {
            return response()->json([
                'success' => false,
                'message' => 'Unauthorized access to member data'
