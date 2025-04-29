@@ -44,25 +44,25 @@
             </a>
 
             <!-- Replace just the Manage Approval link section with this: -->
-<a href="{{ route('staff.manageApproval') }}"
-   class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group
-   {{ Request::routeIs('staff.manageApproval') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }}
-   transition-all duration-200 ease-in-out transform hover:translate-x-1">
-   
-   <svg xmlns="http://www.w3.org/2000/svg"
-        class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2"
-        fill="none" viewBox="0 0 24 24" stroke="currentColor">
-       <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
-   </svg>
+            <a href="{{ route('staff.manageApproval') }}"
+                class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group
+                {{ Request::routeIs('staff.manageApproval') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }}
+                transition-all duration-200 ease-in-out transform hover:translate-x-1">
+                
+                <svg xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
+                </svg>
 
-   Manage Approval
+                Manage Approval
 
-   @if($pendingApprovalCount > 0)
-       <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-           {{ $pendingApprovalCount }}
-       </span>
-   @endif
-</a>
+                @if($pendingApprovalCount > 0)
+                    <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
+                        {{ $pendingApprovalCount }}
+                    </span>
+                @endif
+            </a>
 
             <!-- Member Status Link -->
             <a href="{{ route('staff.viewmembers') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.viewmembers') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
