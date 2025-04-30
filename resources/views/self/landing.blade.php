@@ -314,8 +314,8 @@
                         
                         <!-- Two Phone Image Mockups -->
                         <div class="flex flex-row flex-wrap justify-center items-center">
-                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500" id="phone1">
-                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500" id="phone2"> 
+                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
+                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500"> 
                         </div>
                     </div>
                 </div>
@@ -370,13 +370,13 @@
                             <!-- Before/After Transformation 2 -->
                             <div class="min-w-full relative">
                                 <div class="absolute inset-0 flex">
-                                    <div class="w-1/2 h-full overflow-hidden relative" id="before1">
+                                    <div class="w-1/2 h-full overflow-hidden relative">
                                         <img src="/images/before22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
                                         <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                             <span class="font-bold">BEFORE</span>
                                         </div>
                                     </div>
-                                    <div class="w-1/2 h-full overflow-hidden relative" id="before2">
+                                    <div class="w-1/2 h-full overflow-hidden relative">
                                         <img src="/images/after22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
                                         <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
                                             <span class="font-bold">AFTER</span>
@@ -735,8 +735,8 @@ function initScrollAnimations() {
     const animationMap = {
         'fade-in': 'opacity-0',
         'slide-up': 'opacity-0 translate-y-10',
-        'slide-right': 'opacity-0 -translate-x-40',
-        'slide-left': 'opacity-0 translate-x-40',
+        'slide-right': 'opacity-0 -translate-x-10',
+        'slide-left': 'opacity-0 translate-x-10',
         'zoom-in': 'opacity-0 scale-95',
         'rotate-in': 'opacity-0 rotate-12'
     };
@@ -769,12 +769,8 @@ function initScrollAnimations() {
     // Function to add initial animation classes based on data attributes
     function addAnimationClasses() {
         // Apply to major sections
-        // applyAnimation('#home .text-center', 'fade-in', '0.3s');
-        // applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
-        
-        applyAnimation('#home #phone1', 'slide-right', '0.6s', '0.3s');
-        applyAnimation('#home #phone2', 'slide-left', '0.6s', '0.3s');
-
+        applyAnimation('#home .text-center', 'fade-in', '0.3s');
+        applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         applyAnimation('#promotional h2', 'slide-up', '0.5s');
         applyAnimation('#gym-carousel', 'fade-in', '0.8s', '0.2s');
         applyAnimation('.carousel-dot', 'fade-in', '0.3s', '0.8s');
@@ -823,9 +819,6 @@ function initScrollAnimations() {
     }
 }
 
-
-
-
 // Add these CSS rules to your stylesheet
 const styleElement = document.createElement('style');
 styleElement.textContent = `
@@ -846,11 +839,6 @@ styleElement.textContent = `
     }
 `;
 document.head.appendChild(styleElement);
-
-
-
-
-
 
 
 
