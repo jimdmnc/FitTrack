@@ -139,7 +139,7 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-        <nav class="bg-black text-white py-2 px-6 fixed top-0 z-50">
+        <nav class="bg-black text-white py-2 px-6 sticky top-0 z-50">
             <div class="container mx-auto flex justify-between items-center">
                 <!-- Logo Image -->
                 <div class="flex items-center">
