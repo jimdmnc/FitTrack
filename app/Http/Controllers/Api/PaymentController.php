@@ -157,6 +157,7 @@ class PaymentController extends Controller
             'membership_type' => $payment->metadata['membership_type'] ?? $user->membership_type,
             'start_date' => $payment->metadata['start_date'] ?? now()->toDateString(),
             'end_date' => $payment->metadata['end_date'] ?? $this->calculateEndDate(
+                $payment->metadata['membership_type'] ?? '7',
                 $payment->metadata['start_date'] ?? now()->toDateString()
             )
         ];
