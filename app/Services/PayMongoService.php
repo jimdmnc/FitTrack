@@ -26,62 +26,37 @@ class PayMongoService
     public function createGcashSource(float $amount, string $description, array $metadata = [])
     {
         try {
-            $requestData = [
-                'data' => [
-                    'attributes' => [
-                        'amount' => $this->convertToCentavos($amount),
-                        'redirect' => [
-                            'success' => $this->getRedirectUrl('success'),
-                            'failed' => $this->getRedirectUrl('failed'),
-                        ],
-                        'type' => 'gcash',
-                        'currency' => 'PHP',
-                        'description' => $description,
-                        'metadata' => $this->prepareMetadata($metadata),
-                    ],
-                ],
-            ];
-    
-            // Add test mode specific modifications
-            if ($this->isTestMode) {
-                $requestData['data']['attributes']['metadata']['test_payment'] = true;
-                $requestData['data']['attributes']['metadata']['expected_status'] = 'chargeable';
-            }
-    
             $response = $this->client->post('sources', [
                 'headers' => $this->getHeaders(),
-                'json' => $requestData,
+                'json' => [
+                    'data' => [
+                        'attributes' => [
+                            'amount' => $this->convertToCentavos($amount),
+                            'redirect' => [
+                                'success' => $this->getRedirectUrl('success'),
+                                'failed' => $this->getRedirectUrl('failed'),
+                            ],
+                            'type' => 'gcash',
+                            'currency' => 'PHP',
+                            'description' => $description,
+                            'metadata' => $this->prepareMetadata($metadata),
+                        ],
+                    ],
+                ],
             ]);
-    
-            $responseData = $this->parseResponse($response);
-    
-            // For test mode, simulate immediate chargeable status
-            if ($this->isTestMode && $responseData['attributes']['status'] === 'pending') {
-                $responseData['attributes']['status'] = 'chargeable';
-            }
-    
-            return $responseData;
+
+            return $this->parseResponse($response);
         } catch (GuzzleException $e) {
             $this->logError('GCash source creation failed', $e, [
                 'amount' => $amount,
                 'description' => $description,
-                'test_mode' => $this->isTestMode,
             ]);
             throw new \Exception($this->isTestMode 
                 ? "Test payment error: " . $e->getMessage()
                 : "Payment processing failed");
         }
     }
-    private function logTestPayment(string $sourceId, array $paymentData)
-    {
-        Log::info('Test Payment Verified', [
-            'source_id' => $sourceId,
-            'amount' => $paymentData['attributes']['amount'] / 100,
-            'status' => $paymentData['attributes']['status'],
-            'verified_at' => now()->toISOString(),
-            'metadata' => $paymentData['attributes']['metadata'] ?? [],
-        ]);
-    }
+
     public function verifyPayment(string $sourceId, int $maxRetries = 2)
     {
         $retryCount = 0;
@@ -91,24 +66,13 @@ class PayMongoService
                 $response = $this->client->get("sources/{$sourceId}", [
                     'headers' => $this->getHeaders(),
                 ]);
-    
+
                 $data = $this->parseResponse($response);
                 
-                // Enhanced test mode handling
-                if ($this->isTestMode) {
-                    // Automatically approve test payments
-                    if ($data['attributes']['status'] === 'pending') {
-                        $data['attributes']['status'] = 'chargeable';
-                    }
-                    
-                    // Add test payment verification flag
-                    $data['attributes']['is_test_payment'] = true;
-                    $data['attributes']['verified_at'] = now()->toISOString();
-                    
-                    // Log test payment verification
-                    $this->logTestPayment($sourceId, $data);
+                if ($this->isTestMode && $data['attributes']['status'] === 'pending') {
+                    $data['attributes']['status'] = 'chargeable';
                 }
-    
+
                 return $data;
             } catch (GuzzleException $e) {
                 $retryCount++;
@@ -123,7 +87,6 @@ class PayMongoService
             }
         }
     }
-    
 
     private function getHeaders(): array
     {
