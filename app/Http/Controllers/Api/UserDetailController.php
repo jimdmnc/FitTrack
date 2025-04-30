@@ -259,7 +259,7 @@ public function update(Request $request)
     public function renewMembershipApp(Request $request)
     {
         // Log incoming request data
-        Log::info('Membership renewal request received', ['data' => $request->all()]);
+        // Log::info('Membership renewal request received', ['data' => $request->all()]);
     
         try {
             // Validate request
@@ -277,7 +277,7 @@ public function update(Request $request)
             $user = User::where('rfid_uid', $request->rfid_uid)->first();
             
             if (!$user) {
-                Log::error('Renewal failed - User not found', ['rfid_uid' => $request->rfid_uid]);
+                // Log::error('Renewal failed - User not found', ['rfid_uid' => $request->rfid_uid]);
                 return response()->json([
                     'success' => false,
                     'message' => 'User not found'
@@ -357,18 +357,18 @@ public function update(Request $request)
                 ]
             ];
             
-            Log::info('Membership renewal processed successfully', ['user_id' => $user->id, 'renewal_id' => $renewal->id]);
+            // Log::info('Membership renewal processed successfully', ['user_id' => $user->id, 'renewal_id' => $renewal->id]);
             return response()->json($response);
             
         } catch (ValidationException $e) {
-            Log::error('Renewal validation failed', ['errors' => $e->errors()]);
+            // Log::error('Renewal validation failed', ['errors' => $e->errors()]);
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
                 'errors' => $e->errors()
             ], 422);
         } catch (Exception $e) {
-            Log::error('Membership renewal failed', ['error' => $e->getMessage()]);
+            // Log::error('Membership renewal failed', ['error' => $e->getMessage()]);
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while processing your request',
