@@ -134,5 +134,5 @@ Route::get('/payment/thankyou', [App\Http\Controllers\PaymentController::class, 
 Route::post('/payment/check-status', [App\Http\Controllers\PaymentController::class, 'checkStatus'])
     ->name('payment.check-status');
 
-// Authentication routes (login, register, etc.)
+// Authentication routes (login, register, .)
 require __DIR__.'/auth.php';
