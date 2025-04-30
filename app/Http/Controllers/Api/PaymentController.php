@@ -180,7 +180,7 @@ class PaymentController extends Controller
      * @param MembersPayment $payment
      * @return void
      */
-    private function activateUserMembership(string $sourceId, MembersPayment $payment)
+    private function activateUserMembership(string $sourceId, array $metadat)
     {
         try {
             $user = User::where('rfid_uid', $payment->rfid_uid)->first();
