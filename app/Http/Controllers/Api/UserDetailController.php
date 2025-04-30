@@ -255,7 +255,6 @@ public function update(Request $request)
 
 
 
-    
     public function renewMembershipApp(Request $request)
     {
         // Validate request
@@ -284,7 +283,7 @@ public function update(Request $request)
     
         try {
             if (!$isCash) {
-                // Handle GCash payment
+                // Process GCash payment
                 $paymongoService = new PayMongoService();
                 
                 // Create GCash source
@@ -305,7 +304,7 @@ public function update(Request $request)
                     throw new \Exception('GCash payment not completed');
                 }
     
-                // Only update membership if payment is successful
+                // Payment successful - update user membership
                 $user->update([
                     'membership_type' => $request->membership_type,
                     'start_date' => $request->start_date,
@@ -315,7 +314,7 @@ public function update(Request $request)
                     'needs_approval' => $needsApproval,
                 ]);
             } else {
-                // Cash payment - no immediate update
+                // Cash payment - no immediate update to dates
                 $user->update([
                     'membership_type' => $request->membership_type,
                     'member_status' => 'expired',
@@ -334,7 +333,7 @@ public function update(Request $request)
                 'end_date' => $request->end_date,
                 'payment_method' => $request->payment_method,
                 'status' => $sessionStatus,
-                'payment_reference' => !$isCash ? $source['id'] : null,
+                'payment_reference' => !$isCash ? $verifiedSource['id'] : null,
             ]);
     
             MembersPayment::create([
@@ -342,7 +341,7 @@ public function update(Request $request)
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_reference' => !$isCash ? $source['id'] : null,
+                'payment_reference' => !$isCash ? $verifiedSource['id'] : null,
                 'status' => !$isCash ? 'completed' : 'pending',
             ]);
     
@@ -352,10 +351,8 @@ public function update(Request $request)
                     ? 'Renewal request submitted. Waiting for staff approval.'
                     : 'Membership renewed successfully!',
                 'user' => $user,
-                'payment_data' => !$isCash ? [
-                    'source_id' => $source['id'],
-                    'checkout_url' => $source['attributes']['redirect']['checkout_url'] ?? null,
-                ] : null,
+                // For GCash, include the checkout URL if needed
+                'checkout_url' => !$isCash ? $verifiedSource['attributes']['redirect']['checkout_url'] ?? null : null,
             ]);
     
         } catch (\Exception $e) {
@@ -365,7 +362,6 @@ public function update(Request $request)
             ], 400);
         }
     }
-
 
 /**
  * Get payment history
