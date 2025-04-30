@@ -1032,7 +1032,7 @@ document.head.appendChild(styleElement);
 
 function initTypedJSAnimation() {
     // Select the elements
-    const titleElement = document.querySelector('.text-4xl.font-extrabold');
+    const titleElement = document.querySelector('.text-3xl.font-extrabold');
     const subtitleElement = document.querySelector('.text-sm.md\\:text-2xl.text-gray-300');
     
     if (!titleElement || !subtitleElement || typeof Typed === 'undefined') return;
