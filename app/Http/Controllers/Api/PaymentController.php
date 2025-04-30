@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MembersPayment;
+use App\Models\User;
 use App\Services\PayMongoService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
@@ -57,6 +60,11 @@ class PaymentController extends Controller
 
             DB::commit();
 
+            // For test mode, automatically handle payment activation
+            if ($this->paymongoService->isTestMode()) {
+                $this->handleTestPaymentActivation($source['id'], $this->preparePaymentMetadata($request, $payment->id));
+            }
+
             return response()->json([
                 'success' => true,
                 'redirect_url' => $source['attributes']['redirect']['checkout_url'],
@@ -103,8 +111,8 @@ class PaymentController extends Controller
                     'amount' => $source['attributes']['amount'] / 100,
                 ]);
                 
-                // Add membership renewal logic here
-                $this->processMembershipRenewal($payment);
+                // Process the membership activation
+                $this->activateUserMembership($request->source_id, $payment);
             }
 
             return response()->json([
@@ -136,11 +144,97 @@ class PaymentController extends Controller
         ];
     }
 
-    private function processMembershipRenewal(MembersPayment $payment)
+    /**
+     * Handle test payment activation immediately after creation
+     * 
+     * @param string $sourceId
+     * @param array $metadata
+     * @return void
+     */
+    private function handleTestPaymentActivation(string $sourceId, array $metadata)
     {
-        // Implement your membership renewal logic here
-        // Example:
-        // $user = User::where('rfid_uid', $payment->rfid_uid)->first();
-        // $user->update(['membership_expiry' => $payment->end_date]);
+        try {
+            // Verify the test payment immediately
+            $verifiedData = $this->paymongoService->verifyPayment($sourceId, 1);
+            
+            if ($verifiedData['attributes']['status'] === 'chargeable') {
+                // Fetch the payment record
+                $payment = MembersPayment::where('payment_reference', $sourceId)->first();
+                if ($payment) {
+                    $this->activateUserMembership($sourceId, $payment);
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Test payment activation failed', [
+                'source_id' => $sourceId,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * Activate user membership based on payment data
+     * 
+     * @param string $sourceId
+     * @param MembersPayment $payment
+     * @return void
+     */
+    private function activateUserMembership(string $sourceId, MembersPayment $payment)
+    {
+        try {
+            $user = User::where('rfid_uid', $payment->rfid_uid)->first();
+            
+            if ($user) {
+                // Get membership details from payment or metadata
+                $membershipType = $payment->membership_type ?? '7'; // default 7 days
+                $startDate = $payment->start_date ?? now()->toDateString();
+                $endDate = $payment->end_date ?? $this->calculateEndDate($membershipType, $startDate);
+
+                $updateData = [
+                    'member_status' => 'active',
+                    'session_status' => 'approved',
+                    'needs_approval' => 0,
+                    'membership_type' => $membershipType,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate
+                ];
+
+                $user->update($updateData);
+
+                Log::info('Membership fully activated for user', [
+                    'user_id' => $user->id,
+                    'rfid_uid' => $user->rfid_uid,
+                    'source_id' => $sourceId,
+                    'payment_id' => $payment->id,
+                    'update_data' => $updateData,
+                    'test_mode' => $this->paymongoService->isTestMode()
+                ]);
+            } else {
+                Log::warning('User not found for membership activation', [
+                    'rfid_uid' => $payment->rfid_uid,
+                    'payment_id' => $payment->id
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Membership activation failed', [
+                'payment_id' => $payment->id,
+                'rfid_uid' => $payment->rfid_uid,
+                'error' => $e->getMessage()
+            ]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Calculate membership end date based on type and start date
+     * 
+     * @param string $membershipType
+     * @param string $startDate
+     * @return string
+     */
+    private function calculateEndDate(string $membershipType, string $startDate): string
+    {
+        $days = (int)$membershipType;
+        return Carbon::parse($startDate)->addDays($days)->toDateString();
     }
 }
