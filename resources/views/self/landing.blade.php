@@ -11,101 +11,93 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
-        
-        body {
-            font-family: 'Montserrat', sans-serif;
-        }
+            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+            
+            body {
+                font-family: 'Montserrat', sans-serif;
+            }
 
-        .hero-section {
-            background-image: url('/api/placeholder/1920/1080');
-            background-size: cover;
-            background-position: center;
-        }
+            .hero-section {
+                background-image: url('/api/placeholder/1920/1080');
+                background-size: cover;
+                background-position: center;
+            }
 
-        .in-here-section {
-            background-image: url('/api/placeholder/1920/1080');
-            background-size: cover;
-            background-position: center;
-        }
+            .in-here-section {
+                background-image: url('/api/placeholder/1920/1080');
+                background-size: cover;
+                background-position: center;
+            }
 
-        .carousel-item {
-            display: none;
-        }
-        
-        .carousel-item.active {
-            display: block;
-        }
-        
-        .nav-link {
-            position: relative;
-        }
-        
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #FF0000;
-            transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after {
-            width: 100%;
-        }
-/*         
-        .btn-primary {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        } */
+            .carousel-item {
+                display: none;
+            }
+            
+            .carousel-item.active {
+                display: block;
+            }
+            
+            .nav-link {
+                position: relative;
+            }
+            
+            .nav-link::after {
+                content: '';
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background-color: #FF0000;
+                transition: width 0.3s ease;
+            }
+            
+            .nav-link:hover::after {
+                width: 100%;
+            }
+
     </style>
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-black text-white py-2 px-6 sticky top-0 z-50">
-    <div class="container mx-auto flex justify-between items-center">
-        <!-- Logo Image -->
-        <div class="flex items-center">
-        <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
-        <!-- <div class="text-2xl font-bold">FitTrack</div> -->
-        </div>
-        
-        <!-- Navigation Links -->
-        <div class="hidden md:flex space-x-8">
-            <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
-            <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
-            <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-        </div>
+        <nav class="bg-black text-white py-2 px-6 sticky top-0 z-50">
+            <div class="container mx-auto flex justify-between items-center">
+                <!-- Logo Image -->
+                <div class="flex items-center">
+                <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
+                <!-- <div class="text-2xl font-bold">FitTrack</div> -->
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
+                    <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
+                    <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
+                </div>
 
-        <!-- Time Out Button -->
-        @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-        <button onclick="document.getElementById('timeout-modal').showModal()" 
-        class="bg-red-600 hover:bg-red-700 text-white ml-20 font-bold py-2 px-3 text-sm rounded-full transition duration-300 flex items-center"                id="timeout-button">
-            <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
-        </button>
-        @endif
+                <!-- Time Out Button -->
+                @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                <button onclick="document.getElementById('timeout-modal').showModal()" 
+                class="bg-red-600 hover:bg-red-700 text-white ml-20 font-bold py-2 px-3 text-sm rounded-full transition duration-300 flex items-center"                id="timeout-button">
+                    <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
+                </button>
+                @endif
 
-        <!-- Mobile Menu Button -->
-        <div class="md:hidden">
-            <button id="mobile-menu-button" class="text-white focus:outline-none">
-                <i class="fas fa-bars text-2xl"></i>
-            </button>
-        </div>
-    </div>
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-white focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
 
-    <!-- Mobile Menu -->
-    <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
-        <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
-        <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
-        <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-    </div>
-</nav>
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
+                <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
+                <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
+                <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
+            </div>
+        </nav>
 
         <!-- Success Alert Modal -->
             @if(session('success'))
@@ -157,53 +149,53 @@
             @endif
 
         <!-- Error Alert Modal -->
-        @if(session('error'))
-            <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="errorAlert">
-                <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('errorAlert').classList.add('hidden')"></div>
-                <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
-                    <!-- Header with colored bar -->
-                    <div class="bg-red-500 h-2"></div>
-                    
-                    <div class="p-5">
-                        <!-- Error Icon and Message -->
-                        <div class="flex items-start space-x-4">
-                            <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                </svg>
+            @if(session('error'))
+                <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="errorAlert">
+                    <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('errorAlert').classList.add('hidden')"></div>
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
+                        <!-- Header with colored bar -->
+                        <div class="bg-red-500 h-2"></div>
+                        
+                        <div class="p-5">
+                            <!-- Error Icon and Message -->
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1 pt-0.5">
+                                    <h3 class="text-lg font-medium text-gray-900">Error</h3>
+                                    <p class="mt-1 text-gray-600">{{ session('error') }}</p>
+                                </div>
+                                <!-- Close Button -->
+                                <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('errorAlert').classList.add('hidden')">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
                             </div>
-                            <div class="flex-1 pt-0.5">
-                                <h3 class="text-lg font-medium text-gray-900">Error</h3>
-                                <p class="mt-1 text-gray-600">{{ session('error') }}</p>
-                            </div>
-                            <!-- Close Button -->
-                            <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('errorAlert').classList.add('hidden')">
-                                <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                        </div>
+                        
+                        <!-- Action Button -->
+                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('errorAlert').classList.add('hidden')">
+                                Close
                             </button>
                         </div>
                     </div>
-                    
-                    <!-- Action Button -->
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('errorAlert').classList.add('hidden')">
-                            Close
-                        </button>
-                    </div>
                 </div>
-            </div>
-            
-            <!-- Auto-dismiss after 5 seconds -->
-            <script>
-                setTimeout(function() {
-                    const alert = document.getElementById('errorAlert');
-                    if (alert) {
-                        alert.classList.add('hidden');
-                    }
-                }, 5000);
-            </script>
-        @endif   
+                
+                <!-- Auto-dismiss after 5 seconds -->
+                <script>
+                    setTimeout(function() {
+                        const alert = document.getElementById('errorAlert');
+                        if (alert) {
+                            alert.classList.add('hidden');
+                        }
+                    }, 5000);
+                </script>
+            @endif   
         <!-- Time Out Confirmation Modal -->
         <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
             <div class="text-center">
@@ -228,56 +220,56 @@
                 </div>
             </div>
         </dialog>
-<!-- Hero Section -->
-<section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
-    <!-- Background with subtle gradient overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-    
-    <div class="container mx-auto px-6 z-10">
-                <div class="flex flex-col items-center">
-                    <!-- Hero Text Content -->
-                    <div class="text-center max-w-2xl mb-12">
-            <!-- Updated heading with more text -->
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
-                WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
-            </h1>
-            
-            <!-- Updated subtitle -->
-            <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-            </p>
-
-
-        <!-- Improved App Store Buttons -->
-        <div class="flex flex-wrap justify-center gap-4 mb-6">
-            <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-                Get Started
-            </a>
-            
-            <!-- Google Play Store Button -->
-            <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                    <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                </svg>
-                Download App
-            </a>
-        </div>
+    <!-- Hero Section -->
+    <section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
+        <!-- Background with subtle gradient overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
         
-    </div>
-            
-                    <!-- Two Phone Mockups -->
-    <!-- Two Phone Image Mockups -->
-    <div class="flex flex-row flex-wrap justify-center items-center">
-        <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
-        <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
-    </div>
+        <div class="container mx-auto px-6 z-10">
+                    <div class="flex flex-col items-center">
+                        <!-- Hero Text Content -->
+                        <div class="text-center max-w-2xl mb-12">
+                <!-- Updated heading with more text -->
+                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                    WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
+                </h1>
+                
+                <!-- Updated subtitle -->
+                <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                    Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                </p>
 
+
+            <!-- Improved App Store Buttons -->
+            <div class="flex flex-wrap justify-center gap-2 mb-6">
+                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                    Get Started
+                </a>
+                
+                <!-- Google Play Store Button -->
+                <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-black hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                    </svg>
+                    Download App
+                </a>
+            </div>
+            
         </div>
-    </div>
-</section>
+                
+                        <!-- Two Phone Mockups -->
+        <!-- Two Phone Image Mockups -->
+        <div class="flex flex-row flex-wrap justify-center items-center">
+            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
+            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
+        </div>
+
+            </div>
+        </div>
+    </section>
     <!-- Promotional Carousel -->
     <section class="py-16 bg-gray-900 text-white">
         <div class="container mx-auto px-6">
