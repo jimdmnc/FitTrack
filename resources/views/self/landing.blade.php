@@ -242,7 +242,7 @@
 
             <!-- Improved App Store Buttons -->
             <div class="flex flex-wrap justify-center gap-2 mb-6">
-                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
+                <a href="#tutorial" class="bg-red-600 hover:bg-orange-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-sm md:text-base transition duration-300 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
