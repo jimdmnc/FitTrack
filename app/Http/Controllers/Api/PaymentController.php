@@ -46,7 +46,7 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => 'gcash',
                 'status' => 'pending',
-                
+                'metadata' => $this->preparePaymentMetadata($request, $payment->id), // Add this line
             ]);
 
             $source = $this->paymongoService->createGcashSource(
@@ -186,10 +186,10 @@ class PaymentController extends Controller
             $user = User::where('rfid_uid', $payment->rfid_uid)->first();
             
             if ($user) {
-                // Get metadata from payment attributes or source verification
+                // Get metadata from payment or source verification
                 $metadata = $payment->metadata ?? [];
                 
-                // Get membership details from metadata
+                // Use metadata['membership_type'] instead of $payment->membership_type
                 $membershipType = $metadata['membership_type'] ?? '7'; // default 7 days
                 $startDate = $metadata['start_date'] ?? now()->toDateString();
                 $endDate = $metadata['end_date'] ?? $this->calculateEndDate($membershipType, $startDate);
@@ -198,7 +198,7 @@ class PaymentController extends Controller
                     'member_status' => 'active',
                     'session_status' => 'approved',
                     'needs_approval' => 0,
-                    'membership_type' => $membershipType,
+                    'membership_type' => $membershipType, // This now correctly reads from metadata
                     'start_date' => $startDate,
                     'end_date' => $endDate
                 ];
