@@ -7,8 +7,7 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
-
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
         
@@ -285,7 +284,7 @@
                         <!-- Hero Text Content -->
                         <div class="text-center max-w-2xl mb-12">
                             <!-- Heading -->
-                            <h1 class="text-3xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
                                 WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
                             </h1>
                             
@@ -821,188 +820,7 @@ function initScrollAnimations() {
 }
 
 
-// Additional options for more complex animations
-// Add this to enhance your animation system
 
-function initAdvancedAnimations() {
-    // Add counters animation for stats/numbers
-    initCounterAnimations();
-    
-    // Add reveal animations for images
-    initImageRevealAnimations();
-    
-    // Add interactive hover effects
-    initInteractiveEffects();
-}
-
-// Animate counters on scroll (for stats sections)
-function initCounterAnimations() {
-    const counters = document.querySelectorAll('[data-counter]');
-    
-    if (counters.length === 0) return;
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const target = entry.target;
-                const countTo = parseInt(target.getAttribute('data-counter'));
-                let count = 0;
-                const duration = 2000; // 2 seconds
-                const interval = duration / countTo;
-                
-                const counter = setInterval(() => {
-                    count++;
-                    target.textContent = count;
-                    
-                    if (count >= countTo) {
-                        clearInterval(counter);
-                    }
-                }, interval);
-                
-                observer.unobserve(target);
-            }
-        });
-    }, {
-        threshold: 0.5
-    });
-    
-    counters.forEach(counter => {
-        observer.observe(counter);
-    });
-}
-
-// Add reveal effect for images
-function initImageRevealAnimations() {
-    // Select images to animate
-    const revealImages = document.querySelectorAll('.image-reveal');
-    
-    // Create overlay for each image
-    revealImages.forEach(image => {
-        // Create container with relative positioning
-        const container = document.createElement('div');
-        container.style.position = 'relative';
-        container.style.overflow = 'hidden';
-        container.style.display = 'block';
-        container.style.width = '100%';
-        container.style.height = '100%';
-        
-        // Create overlay element
-        const overlay = document.createElement('div');
-        overlay.style.position = 'absolute';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = '#e53e3e'; // Tailwind red-600
-        overlay.style.transform = 'translateX(0)';
-        overlay.style.transition = 'transform 1s cubic-bezier(0.77, 0, 0.18, 1)';
-        overlay.style.zIndex = '2';
-        
-        // Insert wrapper before image
-        image.parentNode.insertBefore(container, image);
-        
-        // Move image into container
-        container.appendChild(image);
-        
-        // Add overlay after image
-        container.appendChild(overlay);
-        
-        // Set up intersection observer
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Animate overlay away
-                    overlay.style.transform = 'translateX(100%)';
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.3 });
-        
-        observer.observe(container);
-    });
-}
-
-// Add interactive hover effects
-function initInteractiveEffects() {
-    // Tilt effect for cards
-    const cards = document.querySelectorAll('.interactive-card');
-    
-    cards.forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const deltaX = (x - centerX) / centerX;
-            const deltaY = (y - centerY) / centerY;
-            
-            card.style.transform = `perspective(1000px) rotateX(${deltaY * -5}deg) rotateY(${deltaX * 5}deg) scale3d(1.02, 1.02, 1.02)`;
-            card.style.transition = 'transform 0.1s';
-        });
-        
-        card.addEventListener('mouseleave', () => {
-            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
-            card.style.transition = 'transform 0.5s';
-        });
-    });
-    
-    // Magnetic effect for buttons
-    const buttons = document.querySelectorAll('.magnetic-button');
-    
-    buttons.forEach(button => {
-        button.addEventListener('mousemove', e => {
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            const deltaX = (x - centerX) / 8;
-            const deltaY = (y - centerY) / 8;
-            
-            button.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
-        });
-        
-        button.addEventListener('mouseleave', () => {
-            button.style.transform = 'translate(0, 0)';
-            button.style.transition = 'transform 0.3s';
-        });
-    });
-}
-
-// Initialize advanced animations
-document.addEventListener('DOMContentLoaded', function() {
-    // Wait a bit for the page to settle
-    setTimeout(initAdvancedAnimations, 100);
-});
-
-// Utility function to add animation classes to elements
-function addAnimationClasses() {
-    // Find all tutorial step cards - add interactive effect
-    document.querySelectorAll('#tutorial .bg-gray-100').forEach(card => {
-        card.classList.add('interactive-card');
-        card.style.transition = 'transform 0.3s ease';
-    });
-    
-    // Add magnetic effect to call-to-action buttons
-    document.querySelectorAll('.bg-red-600').forEach(button => {
-        button.classList.add('magnetic-button');
-        button.style.transition = 'transform 0.3s ease';
-    });
-    
-    // Add image reveal effect to transformation photos
-    document.querySelectorAll('#promotional img').forEach(img => {
-        img.classList.add('image-reveal');
-    });
-    
-    // Example of adding counter animation
-    // You can add this HTML where needed:
-    // <span data-counter="250">0</span>
-}
 
 // Add these CSS rules to your stylesheet
 const styleElement = document.createElement('style');
@@ -1030,105 +848,7 @@ document.head.appendChild(styleElement);
 
 
 
-function initTypedJSAnimation() {
-    // Select the elements
-    const titleElement = document.querySelector('.text-3xl.font-extrabold');
-    const subtitleElement = document.querySelector('.text-sm.md\\:text-2xl.text-gray-300');
-    
-    if (!titleElement || !subtitleElement || typeof Typed === 'undefined') return;
-    
-    // Store original content and clear elements
-    const originalTitleHTML = titleElement.innerHTML;
-    const originalSubtitle = subtitleElement.textContent;
-    
-    // Clear elements and prepare for typing
-    titleElement.innerHTML = '';
-    subtitleElement.innerHTML = '';
-    
-    // Create wrapper elements for the typed instances
-    const titleWrapper = document.createElement('span');
-    const subtitleWrapper = document.createElement('span');
-    
-    titleElement.appendChild(titleWrapper);
-    subtitleElement.appendChild(subtitleWrapper);
-    
-    // Set up the Intersection Observer
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // Start title animation when visible
-                startTypingAnimation();
-                observer.unobserve(entry.target);
-            }
-        });
-    }, {
-        threshold: 0.5
-    });
-    
-    // Observe the title's parent element
-    observer.observe(titleElement.parentElement);
-    
-    function startTypingAnimation() {
-        // Create a hidden span with the red text styling to use in the title animation
-        const hiddenSpan = document.createElement('span');
-        hiddenSpan.classList.add('text-red-600');
-        hiddenSpan.style.display = 'none';
-        document.body.appendChild(hiddenSpan);
-        
-        // Get the computed styles
-        const redTextStyle = window.getComputedStyle(hiddenSpan);
-        const redTextColor = redTextStyle.color;
-        document.body.removeChild(hiddenSpan);
-        
-        // Initialize title typing with HTML support
-        const titleTyped = new Typed(titleWrapper, {
-            strings: [`WELCOME TO <span style="color:${redTextColor}">ROCKIES FITNESS</span>`],
-            typeSpeed: 40,
-            startDelay: 300,
-            showCursor: true,
-            cursorChar: '|',
-            onComplete: function() {
-                // When title is done, start subtitle
-                setTimeout(() => {
-                    subtitleTyped.start();
-                }, 500);
-            }
-        });
-        
-        // Initialize subtitle typing
-        const subtitleTyped = new Typed(subtitleWrapper, {
-            strings: [originalSubtitle],
-            typeSpeed: 20,
-            startDelay: 100,
-            showCursor: true,
-            cursorChar: '|',
-            autoStart: false,
-            onComplete: function(self) {
-                // Optional: fade out cursor when both are complete
-                setTimeout(() => {
-                    const cursor = subtitleWrapper.nextSibling;
-                    if (cursor) {
-                        cursor.style.transition = 'opacity 1s';
-                        cursor.style.opacity = '0';
-                    }
-                }, 2000);
-            }
-        });
-    }
-}
 
-// Call this function after DOM is loaded and if you've included Typed.js
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if Typed.js is available
-    if (typeof Typed !== 'undefined') {
-        // Initialize typed animation
-        setTimeout(initTypedJSAnimation, 500);
-    } else {
-        console.warn('Typed.js is not loaded. Using fallback animation.');
-        // Use the custom typing animation instead
-        setTimeout(initTypingAnimations, 500);
-    }
-});
 
 
 
