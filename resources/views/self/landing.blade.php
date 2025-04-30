@@ -266,448 +266,773 @@
         </dialog>
 
         
-<!-- Hero Section with Parallax Effect -->
-<section id="home" class="relative w-full h-screen overflow-hidden">
-    <!-- Fixed Background Layer - This creates the parallax effect -->
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-         id="parallax-bg">
-    </div>
-    
-    <!-- Gradient Overlay -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-    
-    <!-- Content Layer that scrolls normally -->
-    <div class="relative h-full flex items-center">
-        <div class="container mx-auto px-6 z-10">
-            <div class="flex flex-col items-center">
-                <!-- Hero Text Content -->
-                <div class="text-center max-w-2xl mb-12">
-                    <!-- Heading -->
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
-                        WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
-                    </h1>
-                    
-                    <!-- Subtitle -->
-                    <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                        Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                    </p>
+        <!-- Hero Section with Parallax Effect -->
+        <section id="home" class="relative w-full h-screen overflow-hidden">
+            <!-- Fixed Background Layer - This creates the parallax effect -->
+            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+                style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+                id="parallax-bg">
+            </div>
+            
+            <!-- Gradient Overlay -->
+            <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+            
+            <!-- Content Layer that scrolls normally -->
+            <div class="relative h-full flex items-center">
+                <div class="container mx-auto px-6 z-10">
+                    <div class="flex flex-col items-center">
+                        <!-- Hero Text Content -->
+                        <div class="text-center max-w-2xl mb-12">
+                            <!-- Heading -->
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                                WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
+                            </h1>
+                            
+                            <!-- Subtitle -->
+                            <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                            </p>
 
-                    <!-- App Store Buttons -->
-                    <div class="flex flex-wrap justify-center gap-4 mb-6">
-                        <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                            Get Started
-                        </a>
+                            <!-- App Store Buttons -->
+                            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    </svg>
+                                    Get Started
+                                </a>
+                                
+                                <!-- Google Play Store Button -->
+                                <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 hover:text-white text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                                    </svg>
+                                    Download App
+                                </a>
+                            </div>
+                        </div>
                         
-                        <!-- Google Play Store Button -->
-                        <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 hover:text-white text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                        <!-- Two Phone Image Mockups -->
+                        <div class="flex flex-row flex-wrap justify-center items-center">
+                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
+                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500"> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Scroll Indicator -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <a href="#promotional">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+                </a>
+            </div>
+        </section>
+
+
+        <!-- Promotional Carousel -->
+        <section class="py-16 bg-gray-900 text-white" id="promotional">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">TRANSFORMATION STORIES</h2>
+                
+                    <!-- Bottom Content: Carousel -->
+                    <div class="w-full max-w-5xl mx-auto mb-8">
+                    <!-- Image Carousel Showcase -->
+                    <div class="relative w-full overflow-hidden rounded-lg shadow-xl">
+                        <!-- Main Carousel Container -->
+                        <div id="gym-carousel" class="flex transition-transform duration-700 ease-in-out h-64 sm:h-80 md:h-96">
+                            <!-- Before/After Transformation 1 -->
+                            <div class="min-w-full relative">
+                                <div class="absolute inset-0 flex">
+                                    <!-- Before Image (Left Half) -->
+                                    <div class="w-1/2 h-full overflow-hidden relative">
+                                        <img src="/images/before12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                        <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                            <span class="font-bold">BEFORE</span>
+                                        </div>
+                                    </div>
+                                    <!-- After Image (Right Half) -->
+                                    <div class="w-1/2 h-full overflow-hidden relative">
+                                        <img src="/images/after12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                        <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                            <span class="font-bold">AFTER</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                    <p class="text-white text-center font-semibold text-sm md:text-base">From chubby to muscular, Daniel transformed through dedication and hard work, now confident and strong.
+            </p>
+                                </div>
+                            </div>
+
+                            <!-- Before/After Transformation 2 -->
+                            <div class="min-w-full relative">
+                                <div class="absolute inset-0 flex">
+                                    <div class="w-1/2 h-full overflow-hidden relative">
+                                        <img src="/images/before22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
+                                        <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                            <span class="font-bold">BEFORE</span>
+                                        </div>
+                                    </div>
+                                    <div class="w-1/2 h-full overflow-hidden relative">
+                                        <img src="/images/after22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
+                                        <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
+                                            <span class="font-bold">AFTER</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                    <p class="text-white text-center font-semibold text-sm md:text-base">Dan gained strength and defined muscle in just 8 months</p>
+                                </div>
+                            </div>
+
+                            <!-- Gym Facility Image 1 -->
+                            <div class="min-w-full relative">
+                                <img src="/images/welcomebggg.jpg" class="absolute inset-0 w-full h-full object-cover" alt="State-of-the-art gym equipment">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                    <p class="text-white text-center font-semibold text-sm md:text-base">Our state-of-the-art weight training section</p>
+                                </div>
+                            </div>
+
+                            <!-- Gym Facility Image 2 -->
+                            <div class="min-w-full relative">
+                                <img src="/images/cardio1.png" class="absolute inset-0 w-full h-full object-cover" alt="Modern cardio equipment">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                    <p class="text-white text-center font-semibold text-sm md:text-base">Spacious cardio area with premium equipment</p>
+                                </div>
+                            </div>
+
+                            <!-- Healthy Environment with Good People Around -->
+                            <div class="min-w-full relative">
+                                <img src="/images/environment.png" class="absolute inset-0 w-full h-full object-cover" alt="Healthy environment with good people around">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
+                                    <p class="text-white text-center font-semibold text-sm md:text-base">Surround yourself with good people and embrace a healthy environment</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Controls -->
+                        <button class="absolute left-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="prev-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                             </svg>
-                            Download App
-                        </a>
+                        </button>
+                        <button class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="next-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Navigation Dots -->
+                
                     </div>
                 </div>
                 
-                <!-- Two Phone Image Mockups -->
-                <div class="flex flex-row flex-wrap justify-center items-center">
-                    <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
-                    <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500"> 
+                <!-- Carousel Navigation -->
+                <div class="flex justify-center mt-8 space-x-2">
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot active" data-index="0" aria-label="Slide 1"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="1" aria-label="Slide 2"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="2" aria-label="Slide 3"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="3" aria-label="Slide 4"></button>
+                    <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="4" aria-label="Slide 5"></button>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Scroll Indicator -->
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <a href="#promotional">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-        </a>
-    </div>
-</section>
-    <!-- Promotional Carousel -->
-    <section class="py-16 bg-gray-900 text-white" id="promotional">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center mb-12">TRANSFORMATION STORIES</h2>
-            
-                <!-- Bottom Content: Carousel -->
-                <div class="w-full max-w-5xl mx-auto mb-8">
-                <!-- Image Carousel Showcase -->
-                <div class="relative w-full overflow-hidden rounded-lg shadow-xl">
-                    <!-- Main Carousel Container -->
-                    <div id="gym-carousel" class="flex transition-transform duration-700 ease-in-out h-64 sm:h-80 md:h-96">
-                        <!-- Before/After Transformation 1 -->
-                        <div class="min-w-full relative">
-                            <div class="absolute inset-0 flex">
-                                <!-- Before Image (Left Half) -->
-                                <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/before12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
-                                    <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
-                                        <span class="font-bold">BEFORE</span>
-                                    </div>
-                                </div>
-                                <!-- After Image (Right Half) -->
-                                <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/after12.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
-                                    <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
-                                        <span class="font-bold">AFTER</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">From chubby to muscular, Daniel transformed through dedication and hard work, now confident and strong.
-</p>
-                            </div>
-                        </div>
+        </section>
 
-                        <!-- Before/After Transformation 2 -->
-                        <div class="min-w-full relative">
-                            <div class="absolute inset-0 flex">
-                                <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/before22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Before transformation">
-                                    <div class="absolute bottom-0 left-0 bg-black bg-opacity-70 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
-                                        <span class="font-bold">BEFORE</span>
-                                    </div>
-                                </div>
-                                <div class="w-1/2 h-full overflow-hidden relative">
-                                    <img src="/images/after22.jpg" class="absolute inset-0 w-full h-full object-cover" alt="After transformation">
-                                    <div class="absolute bottom-0 right-0 bg-orange-600 bg-opacity-90 text-white px-2 py-1 text-sm md:px-4 md:py-2 md:text-base">
-                                        <span class="font-bold">AFTER</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">Dan gained strength and defined muscle in just 8 months</p>
-                            </div>
-                        </div>
-
-                        <!-- Gym Facility Image 1 -->
-                        <div class="min-w-full relative">
-                            <img src="/images/welcomebggg.jpg" class="absolute inset-0 w-full h-full object-cover" alt="State-of-the-art gym equipment">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">Our state-of-the-art weight training section</p>
-                            </div>
-                        </div>
-
-                        <!-- Gym Facility Image 2 -->
-                        <div class="min-w-full relative">
-                            <img src="/images/cardio1.png" class="absolute inset-0 w-full h-full object-cover" alt="Modern cardio equipment">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">Spacious cardio area with premium equipment</p>
-                            </div>
-                        </div>
-
-                        <!-- Healthy Environment with Good People Around -->
-                        <div class="min-w-full relative">
-                            <img src="/images/environment.png" class="absolute inset-0 w-full h-full object-cover" alt="Healthy environment with good people around">
-                            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                <p class="text-white text-center font-semibold text-sm md:text-base">Surround yourself with good people and embrace a healthy environment</p>
-                            </div>
-                        </div>
+        <!-- Tutorial Section -->
+        <section id="tutorial" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">HOW TO REGISTER FOR GYM SESSIONS</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Step 1 -->
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
+                        <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
+                        <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
+                        <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+                        <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
                     </div>
                     
-                    <!-- Navigation Controls -->
-                    <button class="absolute left-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="prev-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    <button class="absolute right-1 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-75 text-white p-1 md:p-2 rounded-full focus:outline-none transition" id="next-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+                    <!-- Step 2 -->
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
+                        <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
+                        <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
+                        <img src="/images/welcomebgg.jpg" alt="Gym Payment" class="rounded-lg mx-auto">
+                    </div>
                     
-                    <!-- Navigation Dots -->
-            
-                </div>
-            </div>
-            
-            <!-- Carousel Navigation -->
-            <div class="flex justify-center mt-8 space-x-2">
-                <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot active" data-index="0" aria-label="Slide 1"></button>
-                <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="1" aria-label="Slide 2"></button>
-                <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="2" aria-label="Slide 3"></button>
-                <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="3" aria-label="Slide 4"></button>
-                <button class="w-2 h-2 md:w-3 md:h-3 rounded-full bg-white opacity-50 hover:opacity-100 focus:opacity-100 transition-opacity duration-300 carousel-dot" data-index="4" aria-label="Slide 5"></button>
-            </div>
-    </section>
-
-    <!-- Tutorial Section -->
-    <section id="tutorial" class="py-16 bg-white">
-    <div class="container mx-auto px-6">
-        <h2 class="text-3xl font-bold text-center mb-12">HOW TO REGISTER FOR GYM SESSIONS</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <!-- Step 1 -->
-            <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
-                <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
-                <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
-                <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
-            </div>
-            
-            <!-- Step 2 -->
-            <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
-                <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
-                <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
-                <img src="/images/welcomebgg.jpg" alt="Gym Payment" class="rounded-lg mx-auto">
-            </div>
-            
-            <!-- Step 3 -->
-            <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
-                <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
-                <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
-                <img src="/images/welcomebg.jpg" alt="Time Out" class="rounded-lg mx-auto">
-            </div>
-        </div>
-        
-
-    </div>
-</section>
-
-
-    <!-- In Here Section -->
-    <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('images/welcomebgg.jpg'); background-size: cover; background-position: center;">
-        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-        <div class="container mx-auto px-6 z-10 text-center">
-            <h2 class="text-5xl font-extrabold text-white mb-6">WELCOME TO THE GYM HUB</h2>
-            <p class="text-xl text-white mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
-        </div>
-    </section>
-
-
-    <!-- Footer -->
-    <footer class="bg-black text-white py-12">
-        <div class="container mx-auto px-6">
-            <div class="flex flex-col md:flex-row justify-between mb-8">
-                <div class="mb-8 md:mb-0">
-                    <h3 class="text-2xl font-bold mb-4">FitTrack</h3>
-                    <p class="text-gray-400 max-w-md">The ultimate gym management system to help you achieve your fitness goals faster and smarter.</p>
+                    <!-- Step 3 -->
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-white text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
+                        <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
+                        <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
+                        <img src="/images/welcomebg.jpg" alt="Time Out" class="rounded-lg mx-auto">
+                    </div>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                    <div>
-                        <h4 class="text-lg font-bold mb-4">Quick Links</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
-                        </ul>
+
+            </div>
+        </section>
+
+
+        <!-- In Here Section -->
+        <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('images/welcomebgg.jpg'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+            <div class="container mx-auto px-6 z-10 text-center">
+                <h2 class="text-5xl font-extrabold text-white mb-6">WELCOME TO THE GYM HUB</h2>
+                <p class="text-xl text-white mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
+            </div>
+        </section>
+
+
+        <!-- Footer -->
+        <footer class="bg-black text-white py-12">
+            <div class="container mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between mb-8">
+                    <div class="mb-8 md:mb-0">
+                        <h3 class="text-2xl font-bold mb-4">FitTrack</h3>
+                        <p class="text-gray-400 max-w-md">The ultimate gym management system to help you achieve your fitness goals faster and smarter.</p>
                     </div>
                     
-                    <div>
-                        <h4 class="text-lg font-bold mb-4">Support</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Help Center</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Contact Us</a></li>
-                            <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">FAQ</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-lg font-bold mb-4">Connect</h4>
-                        <div class="flex space-x-4">
-                            <a href="https://www.facebook.com/rockies.fitness" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
-                            <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-instagram text-xl"></i></a>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                        <div>
+                            <h4 class="text-lg font-bold mb-4">Quick Links</h4>
+                            <ul class="space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-bold mb-4">Support</h4>
+                            <ul class="space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Help Center</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Contact Us</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">FAQ</a></li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-bold mb-4">Connect</h4>
+                            <div class="flex space-x-4">
+                                <a href="https://www.facebook.com/rockies.fitness" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
+                                <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-instagram text-xl"></i></a>
+                            </div>
                         </div>
                     </div>
                 </div>
+                
+                <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
+                    <p>&copy; 2025 FitTrack Gym Management System. All rights reserved.</p>
+                </div>
             </div>
-            
-            <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
-                <p>&copy; 2025 FitTrack Gym Management System. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+        </footer>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <!-- Add this script at the end of your body tag -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Parallax Background Effect
-    initParallaxEffect();
-    
-    // Mobile Menu Functionality
-    initMobileMenu();
-    
-    // Carousel Functionality
-    initCarousel();
-    
-    // Smooth scroll for navigation links
-    initSmoothScroll();
-    
-    // Timeout Modal Functionality
-    initTimeoutModal();
-});
-
-// Parallax Background Effect
-function initParallaxEffect() {
-    const parallaxBg = document.getElementById('parallax-bg');
-    
-    if (parallaxBg) {
-        // Check if device is mobile
-        const isMobile = 'ontouchstart' in window;
-        
-        // Set the parallax speed based on device type
-        const parallaxSpeed = isMobile ? 0.2 : 0.5;
-        
-        // Add scroll event listener
-        window.addEventListener('scroll', function() {
-            // Get the current scroll position
-            const scrolled = window.pageYOffset;
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Parallax Background Effect
+            initParallaxEffect();
             
-            // Apply the parallax effect
-            parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
+            // Mobile Menu Functionality
+            initMobileMenu();
+            
+            // Carousel Functionality
+            initCarousel();
+            
+            // Smooth scroll for navigation links
+            initSmoothScroll();
+            
+            // Timeout Modal Functionality
+            initTimeoutModal();
         });
-    }
-}
 
-// Mobile Menu Functionality
-function initMobileMenu() {
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    
-    if (mobileMenuButton) {
-        mobileMenuButton.addEventListener('click', function() {
-            const mobileMenu = document.getElementById('mobile-menu');
-            mobileMenu.classList.toggle('hidden');
-        });
-    }
-}
-
-// Carousel Functionality
-function initCarousel() {
-    const carousel = document.getElementById('gym-carousel');
-    
-    if (!carousel) return;
-    
-    const slides = carousel.children;
-    const dots = document.querySelectorAll('.carousel-dot');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    let currentIndex = 0;
-    let intervalId;
-    
-    // Set initial position
-    updateCarousel();
-    
-    // Auto-scroll every 5 seconds
-    startAutoSlide();
-    
-    // Previous button
-    if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-            updateCarousel();
-            resetAutoSlide();
-        });
-    }
-    
-    // Next button
-    if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-            nextSlide();
-            resetAutoSlide();
-        });
-    }
-    
-    // Dot navigation
-    dots.forEach(dot => {
-        dot.addEventListener('click', function() {
-            currentIndex = parseInt(this.getAttribute('data-index'));
-            updateCarousel();
-            resetAutoSlide();
-        });
-    });
-    
-    // Pause auto-scrolling when hovering over carousel
-    carousel.addEventListener('mouseenter', function() {
-        clearInterval(intervalId);
-    });
-    
-    // Resume auto-scrolling when mouse leaves carousel
-    carousel.addEventListener('mouseleave', function() {
-        startAutoSlide();
-    });
-    
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % slides.length;
-        updateCarousel();
-    }
-    
-    function updateCarousel() {
-        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-        
-        // Update active dot
-        dots.forEach((dot, index) => {
-            if (index === currentIndex) {
-                dot.classList.add('active', 'opacity-100');
-                dot.classList.remove('opacity-50');
-            } else {
-                dot.classList.remove('active', 'opacity-100');
-                dot.classList.add('opacity-50');
+        // Parallax Background Effect
+        function initParallaxEffect() {
+            const parallaxBg = document.getElementById('parallax-bg');
+            
+            if (parallaxBg) {
+                // Check if device is mobile
+                const isMobile = 'ontouchstart' in window;
+                
+                // Set the parallax speed based on device type
+                const parallaxSpeed = isMobile ? 0.2 : 0.5;
+                
+                // Add scroll event listener
+                window.addEventListener('scroll', function() {
+                    // Get the current scroll position
+                    const scrolled = window.pageYOffset;
+                    
+                    // Apply the parallax effect
+                    parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
+                });
             }
-        });
-    }
-    
-    function startAutoSlide() {
-        intervalId = setInterval(nextSlide, 5000);
-    }
-    
-    function resetAutoSlide() {
-        clearInterval(intervalId);
-        startAutoSlide();
-    }
-}
+        }
 
-// Smooth scroll for navigation links
-function initSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
+        // Mobile Menu Functionality
+        function initMobileMenu() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
             
-            const targetElement = document.querySelector(this.getAttribute('href'));
-            if (targetElement) {
-                targetElement.scrollIntoView({
-                    behavior: 'smooth'
+            if (mobileMenuButton) {
+                mobileMenuButton.addEventListener('click', function() {
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
+        }
+
+        // Carousel Functionality
+        function initCarousel() {
+            const carousel = document.getElementById('gym-carousel');
+            
+            if (!carousel) return;
+            
+            const slides = carousel.children;
+            const dots = document.querySelectorAll('.carousel-dot');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            let currentIndex = 0;
+            let intervalId;
+            
+            // Set initial position
+            updateCarousel();
+            
+            // Auto-scroll every 5 seconds
+            startAutoSlide();
+            
+            // Previous button
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                    updateCarousel();
+                    resetAutoSlide();
                 });
             }
             
-            // Close mobile menu if open
-            const mobileMenu = document.getElementById('mobile-menu');
-            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                mobileMenu.classList.add('hidden');
+            // Next button
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    nextSlide();
+                    resetAutoSlide();
+                });
             }
+            
+            // Dot navigation
+            dots.forEach(dot => {
+                dot.addEventListener('click', function() {
+                    currentIndex = parseInt(this.getAttribute('data-index'));
+                    updateCarousel();
+                    resetAutoSlide();
+                });
+            });
+            
+            // Pause auto-scrolling when hovering over carousel
+            carousel.addEventListener('mouseenter', function() {
+                clearInterval(intervalId);
+            });
+            
+            // Resume auto-scrolling when mouse leaves carousel
+            carousel.addEventListener('mouseleave', function() {
+                startAutoSlide();
+            });
+            
+            function nextSlide() {
+                currentIndex = (currentIndex + 1) % slides.length;
+                updateCarousel();
+            }
+            
+            function updateCarousel() {
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+                
+                // Update active dot
+                dots.forEach((dot, index) => {
+                    if (index === currentIndex) {
+                        dot.classList.add('active', 'opacity-100');
+                        dot.classList.remove('opacity-50');
+                    } else {
+                        dot.classList.remove('active', 'opacity-100');
+                        dot.classList.add('opacity-50');
+                    }
+                });
+            }
+            
+            function startAutoSlide() {
+                intervalId = setInterval(nextSlide, 5000);
+            }
+            
+            function resetAutoSlide() {
+                clearInterval(intervalId);
+                startAutoSlide();
+            }
+        }
+
+        // Smooth scroll for navigation links
+        function initSmoothScroll() {
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetElement = document.querySelector(this.getAttribute('href'));
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                    
+                    // Close mobile menu if open
+                    const mobileMenu = document.getElementById('mobile-menu');
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                        mobileMenu.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // Timeout Modal Functionality
+        function initTimeoutModal() {
+            // This was originally a PHP/Laravel snippet
+            // We convert it to plain JavaScript
+            const timeoutButton = document.getElementById('timeout-button');
+            const sessionHasTimedOut = false; // This should be set by your app logic
+            
+            if (sessionHasTimedOut && timeoutButton) {
+                timeoutButton.style.display = 'none';
+            }
+            
+            const timeoutForm = document.querySelector('#timeout-modal form');
+            if (timeoutForm) {
+                timeoutForm.addEventListener('submit', function() {
+                    if (timeoutButton) timeoutButton.style.display = 'none';
+                });
+            }
+        }
+
+
+
+
+
+// Add this to your existing cleaned JavaScript code
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all previously defined functions
+    initParallaxEffect();
+    initMobileMenu();
+    initCarousel();
+    initSmoothScroll();
+    initTimeoutModal();
+    
+    // Initialize scroll animations
+    initScrollAnimations();
+});
+
+// Scroll Animation System
+function initScrollAnimations() {
+    // Define animation classes to add when elements come into view
+    const animationMap = {
+        'fade-in': 'opacity-0',
+        'slide-up': 'opacity-0 translate-y-10',
+        'slide-right': 'opacity-0 -translate-x-10',
+        'slide-left': 'opacity-0 translate-x-10',
+        'zoom-in': 'opacity-0 scale-95',
+        'rotate-in': 'opacity-0 rotate-12'
+    };
+    
+    // Add animation classes to elements that should be animated
+    addAnimationClasses();
+    
+    // Create and configure Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            // When element enters viewport
+            if (entry.isIntersecting) {
+                // Add animation class
+                entry.target.classList.add('animate-in');
+                // Stop observing after animation is triggered
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        root: null, // Use viewport as root
+        threshold: 0.1, // Trigger when 10% of element is visible
+        rootMargin: '0px 0px -10% 0px' // Slightly adjust trigger point
+    });
+    
+    // Start observing elements with animation data attributes
+    document.querySelectorAll('[data-animation]').forEach(element => {
+        observer.observe(element);
+    });
+    
+    // Function to add initial animation classes based on data attributes
+    function addAnimationClasses() {
+        // Apply to major sections
+        applyAnimation('#home .text-center', 'fade-in', '0.3s');
+        applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
+        applyAnimation('#promotional h2', 'slide-up', '0.5s');
+        applyAnimation('#gym-carousel', 'fade-in', '0.8s', '0.2s');
+        applyAnimation('.carousel-dot', 'fade-in', '0.3s', '0.8s');
+        
+        // Tutorial section - staggered animations
+        applyAnimation('#tutorial h2', 'slide-up', '0.5s');
+        document.querySelectorAll('#tutorial .bg-gray-100').forEach((element, index) => {
+            applyAnimation(element, 'zoom-in', '0.6s', 0.2 + (index * 0.2) + 's');
+        });
+        
+        // In Here section
+        applyAnimation('#inhere h2', 'slide-up', '0.7s', '0.1s');
+        applyAnimation('#inhere p', 'slide-up', '0.7s', '0.4s');
+        
+        // Footer sections
+        const footerElements = document.querySelectorAll('footer > div > div > div');
+        footerElements.forEach((element, index) => {
+            applyAnimation(element, 'slide-up', '0.5s', 0.1 + (index * 0.1) + 's');
+        });
+    }
+    
+    // Helper function to apply animation classes to elements
+    function applyAnimation(selector, animationType, duration, delay = '0s') {
+        // Handle both element objects and selectors
+        const elements = typeof selector === 'string' 
+            ? document.querySelectorAll(selector)
+            : [selector];
+            
+        elements.forEach(element => {
+            // Skip if element doesn't exist
+            if (!element) return;
+            
+            // Add appropriate classes from animation map
+            if (animationMap[animationType]) {
+                element.classList.add(...animationMap[animationType].split(' '));
+            }
+            
+            // Set data attributes for animation
+            element.setAttribute('data-animation', animationType);
+            element.style.transitionDuration = duration;
+            element.style.transitionDelay = delay;
+            
+            // Add base transition classes
+            element.classList.add('transform', 'transition-all');
+        });
+    }
+}
+
+
+// Additional options for more complex animations
+// Add this to enhance your animation system
+
+function initAdvancedAnimations() {
+    // Add counters animation for stats/numbers
+    initCounterAnimations();
+    
+    // Add reveal animations for images
+    initImageRevealAnimations();
+    
+    // Add interactive hover effects
+    initInteractiveEffects();
+}
+
+// Animate counters on scroll (for stats sections)
+function initCounterAnimations() {
+    const counters = document.querySelectorAll('[data-counter]');
+    
+    if (counters.length === 0) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const countTo = parseInt(target.getAttribute('data-counter'));
+                let count = 0;
+                const duration = 2000; // 2 seconds
+                const interval = duration / countTo;
+                
+                const counter = setInterval(() => {
+                    count++;
+                    target.textContent = count;
+                    
+                    if (count >= countTo) {
+                        clearInterval(counter);
+                    }
+                }, interval);
+                
+                observer.unobserve(target);
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+    
+    counters.forEach(counter => {
+        observer.observe(counter);
+    });
+}
+
+// Add reveal effect for images
+function initImageRevealAnimations() {
+    // Select images to animate
+    const revealImages = document.querySelectorAll('.image-reveal');
+    
+    // Create overlay for each image
+    revealImages.forEach(image => {
+        // Create container with relative positioning
+        const container = document.createElement('div');
+        container.style.position = 'relative';
+        container.style.overflow = 'hidden';
+        container.style.display = 'block';
+        container.style.width = '100%';
+        container.style.height = '100%';
+        
+        // Create overlay element
+        const overlay = document.createElement('div');
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = '#e53e3e'; // Tailwind red-600
+        overlay.style.transform = 'translateX(0)';
+        overlay.style.transition = 'transform 1s cubic-bezier(0.77, 0, 0.18, 1)';
+        overlay.style.zIndex = '2';
+        
+        // Insert wrapper before image
+        image.parentNode.insertBefore(container, image);
+        
+        // Move image into container
+        container.appendChild(image);
+        
+        // Add overlay after image
+        container.appendChild(overlay);
+        
+        // Set up intersection observer
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Animate overlay away
+                    overlay.style.transform = 'translateX(100%)';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+        
+        observer.observe(container);
+    });
+}
+
+// Add interactive hover effects
+function initInteractiveEffects() {
+    // Tilt effect for cards
+    const cards = document.querySelectorAll('.interactive-card');
+    
+    cards.forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const deltaX = (x - centerX) / centerX;
+            const deltaY = (y - centerY) / centerY;
+            
+            card.style.transform = `perspective(1000px) rotateX(${deltaY * -5}deg) rotateY(${deltaX * 5}deg) scale3d(1.02, 1.02, 1.02)`;
+            card.style.transition = 'transform 0.1s';
+        });
+        
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            card.style.transition = 'transform 0.5s';
+        });
+    });
+    
+    // Magnetic effect for buttons
+    const buttons = document.querySelectorAll('.magnetic-button');
+    
+    buttons.forEach(button => {
+        button.addEventListener('mousemove', e => {
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const deltaX = (x - centerX) / 8;
+            const deltaY = (y - centerY) / 8;
+            
+            button.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            button.style.transform = 'translate(0, 0)';
+            button.style.transition = 'transform 0.3s';
         });
     });
 }
 
-// Timeout Modal Functionality
-function initTimeoutModal() {
-    // This was originally a PHP/Laravel snippet
-    // We convert it to plain JavaScript
-    const timeoutButton = document.getElementById('timeout-button');
-    const sessionHasTimedOut = false; // This should be set by your app logic
+// Initialize advanced animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Wait a bit for the page to settle
+    setTimeout(initAdvancedAnimations, 100);
+});
+
+// Utility function to add animation classes to elements
+function addAnimationClasses() {
+    // Find all tutorial step cards - add interactive effect
+    document.querySelectorAll('#tutorial .bg-gray-100').forEach(card => {
+        card.classList.add('interactive-card');
+        card.style.transition = 'transform 0.3s ease';
+    });
     
-    if (sessionHasTimedOut && timeoutButton) {
-        timeoutButton.style.display = 'none';
-    }
+    // Add magnetic effect to call-to-action buttons
+    document.querySelectorAll('.bg-red-600').forEach(button => {
+        button.classList.add('magnetic-button');
+        button.style.transition = 'transform 0.3s ease';
+    });
     
-    const timeoutForm = document.querySelector('#timeout-modal form');
-    if (timeoutForm) {
-        timeoutForm.addEventListener('submit', function() {
-            if (timeoutButton) timeoutButton.style.display = 'none';
-        });
-    }
+    // Add image reveal effect to transformation photos
+    document.querySelectorAll('#promotional img').forEach(img => {
+        img.classList.add('image-reveal');
+    });
+    
+    // Example of adding counter animation
+    // You can add this HTML where needed:
+    // <span data-counter="250">0</span>
 }
+
+// Add these CSS rules to your stylesheet
+const styleElement = document.createElement('style');
+styleElement.textContent = `
+    /* Base animation styles */
+    [data-animation] {
+        will-change: opacity, transform;
+    }
+    
+    /* Animation trigger class */
+    .animate-in {
+        opacity: 1 !important;
+        transform: translate(0, 0) scale(1) rotate(0deg) !important;
+    }
+    
+    /* Optional - add when debugging animations */
+    .debug-animation {
+        outline: 2px dashed red;
+    }
+`;
+document.head.appendChild(styleElement);
+
+
+
+
+
+
+
+
+
+
     </script>
 </body>
 </html>
