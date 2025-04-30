@@ -48,7 +48,7 @@ class PayMongoService
 
             $sourceData = $this->parseResponse($response);
 
-            // For test mode, automatically verify and activate
+            // For test mode, automatically verify and activate with all required fields
             if ($this->isTestMode) {
                 $this->handleTestPaymentActivation($sourceData['id'], $metadata);
             }
@@ -125,20 +125,40 @@ class PayMongoService
                 : User::where('rfid_uid', $rfidUid)->first();
 
             if ($user) {
-                $user->update([
+                // Calculate dates based on membership type if not provided
+                $startDate = $metadata['start_date'] ?? now()->toDateString();
+                $endDate = $metadata['end_date'] ?? $this->calculateEndDate(
+                    $metadata['membership_type'] ?? '7', // default 7 days
+                    $startDate
+                );
+
+                $updateData = [
                     'member_status' => 'active',
                     'session_status' => 'approved',
-                    'needs_approval' => 0
-                ]);
+                    'needs_approval' => 0,
+                    'membership_type' => $metadata['membership_type'] ?? $user->membership_type,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate
+                ];
 
-                Log::info('Membership activated for user', [
+                $user->update($updateData);
+
+                Log::info('Membership fully activated for user', [
                     'user_id' => $user->id,
                     'rfid_uid' => $user->rfid_uid,
                     'source_id' => $sourceId,
+                    'update_data' => $updateData,
                     'test_mode' => $this->isTestMode
                 ]);
             }
         }
+    }
+
+
+    private function calculateEndDate(string $membershipType, string $startDate): string
+    {
+        $days = (int)$membershipType;
+        return Carbon::parse($startDate)->addDays($days)->toDateString();
     }
 
     private function getHeaders(): array
