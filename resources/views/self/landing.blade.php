@@ -100,6 +100,48 @@
         .nav-link:hover::after {
             width: 100%;
         }
+
+
+
+
+
+
+        @keyframes slideFromRight {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideFromLeft {
+        0% {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    .slide-from-right {
+        animation: slideFromRight 1.5s ease-out forwards;
+    }
+    
+    .slide-from-left {
+        animation: slideFromLeft 1.5s ease-out forwards;
+    }
+    
+    .hide-images img {
+        opacity: 0;
+    }
+
+
+
     </style>
 </head>
 <body class="bg-gray-100">
@@ -313,9 +355,9 @@
                         </div>
                         
                         <!-- Two Phone Image Mockups -->
-                        <div class="flex flex-row flex-wrap justify-center items-center">
-                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
-                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500"> 
+                        <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
+                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 mx-2 transition-transform duration-500 hover:scale-105" id="phone1">
+                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 mx-2 transition-transform duration-500 hover:scale-105" id="phone2">
                         </div>
                     </div>
                 </div>
@@ -722,6 +764,35 @@
 
 
     </script>
+
+
+<script>
+    // Function to trigger the animation
+    function runAnimation() {
+        const phone1 = document.getElementById('phone1');
+        const phone2 = document.getElementById('phone2');
+        const container = document.getElementById('phone-container');
+        
+        // Reset animation state
+        container.classList.add('hide-images');
+        phone1.classList.remove('slide-from-right');
+        phone2.classList.remove('slide-from-left');
+        
+        // Force browser reflow to ensure animation can run again
+        void phone1.offsetWidth;
+        
+        // Start animation after a brief delay
+        setTimeout(() => {
+            container.classList.remove('hide-images');
+            phone1.classList.add('slide-from-right');
+            phone2.classList.add('slide-from-left');
+        }, 50);
+    }
+    
+    // Run animation when the page loads
+    document.addEventListener('DOMContentLoaded', runAnimation);
+</script>
+
 </body>
 </html>
 
