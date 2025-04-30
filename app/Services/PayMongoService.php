@@ -35,7 +35,7 @@ class PayMongoService
                         'attributes' => [
                             'amount' => $this->convertToCentavos($amount),
                             'redirect' => [
-                                'success' => $this->getRedirectUrl('successs'),
+                                'success' => $this->getRedirectUrl('success'),
                                 'failed' => $this->getRedirectUrl('failed'),
                             ],
                             'type' => 'gcash',
@@ -49,11 +49,7 @@ class PayMongoService
 
             $sourceData = $this->parseResponse($response);
 
-            // For test mode, automatically verify and activate with all required fields
-            if ($this->isTestMode) {
-                $this->handleTestPaymentActivation($sourceData['id'], $metadata);
-            }
-
+            // Remove the automatic test activation here
             return $sourceData;
         } catch (GuzzleException $e) {
             $this->logError('GCash source creation failed', $e, [
@@ -63,6 +59,22 @@ class PayMongoService
             throw new \Exception($this->isTestMode 
                 ? "Test payment error: " . $e->getMessage()
                 : "Payment processing failed");
+        }
+    }
+    public function handlePaymentSuccess(string $sourceId, array $metadata = [])
+    {
+        // Only process if this is a test payment
+        if (!$this->isTestMode) {
+            return;
+        }
+
+        try {
+            $this->activateUserMembership($sourceId, $metadata);
+        } catch (\Exception $e) {
+            Log::error('Failed to activate membership after successful test payment', [
+                'source_id' => $sourceId,
+                'error' => $e->getMessage()
+            ]);
         }
     }
 
@@ -126,10 +138,9 @@ class PayMongoService
                 : User::where('rfid_uid', $rfidUid)->first();
 
             if ($user) {
-                // Calculate dates based on membership type if not provided
                 $startDate = $metadata['start_date'] ?? now()->toDateString();
                 $endDate = $metadata['end_date'] ?? $this->calculateEndDate(
-                    $metadata['membership_type'] ?? '7', // default 7 days
+                    $metadata['membership_type'] ?? '7',
                     $startDate
                 );
 
@@ -144,12 +155,11 @@ class PayMongoService
 
                 $user->update($updateData);
 
-                Log::info('Membership fully activated for user', [
+                Log::info('Membership activated via successful test payment', [
                     'user_id' => $user->id,
                     'rfid_uid' => $user->rfid_uid,
                     'source_id' => $sourceId,
-                    'update_data' => $updateData,
-                    'test_mode' => $this->isTestMode
+                    'updated_fields' => $updateData
                 ]);
             }
         }
