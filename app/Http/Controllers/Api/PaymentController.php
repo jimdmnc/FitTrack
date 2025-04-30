@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\MembersPayment;
 use App\Services\PayMongoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
 {
@@ -16,15 +18,12 @@ class PaymentController extends Controller
         $this->paymongoService = $paymongoService;
     }
 
-    /**
-     * Create GCash payment source
-     */
     public function createGcashPayment(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:1',
             'description' => 'required|string|max:255',
-            'rfid_uid' => 'required|string|exists:members,rfid_uid',
+            'rfid_uid' => 'required|string|exists:users,rfid_uid',
             'membership_type' => 'required|in:7,30,365',
             'start_date' => 'required|date_format:Y-m-d',
             'end_date' => 'required|date_format:Y-m-d|after:start_date',
@@ -39,7 +38,6 @@ class PaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            // Create payment record
             $payment = MembersPayment::create([
                 'rfid_uid' => $request->rfid_uid,
                 'amount' => $request->amount,
@@ -47,20 +45,12 @@ class PaymentController extends Controller
                 'status' => 'pending',
             ]);
 
-            // Create GCash source
             $source = $this->paymongoService->createGcashSource(
                 $request->amount,
                 $request->description,
-                [
-                    'payment_id' => $payment->id,
-                    'rfid_uid' => $request->rfid_uid,
-                    'membership_type' => $request->membership_type,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                ]
+                $this->preparePaymentMetadata($request, $payment->id)
             );
 
-            // Update payment with reference
             $payment->update([
                 'payment_reference' => $source['id'],
             ]);
@@ -76,7 +66,7 @@ class PaymentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            report($e); // Log the error
+            report($e);
             
             return response()->json([
                 'success' => false,
@@ -86,10 +76,6 @@ class PaymentController extends Controller
         }
     }
 
-    /**
-     * @bodyParam source_id string required PayMongo source ID
-     * @bodyParam payment_id integer required Local payment ID
-     */
     public function checkPaymentStatus(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -117,7 +103,8 @@ class PaymentController extends Controller
                     'amount' => $source['attributes']['amount'] / 100,
                 ]);
                 
-                // TODO: Add membership renewal logic here
+                // Add membership renewal logic here
+                $this->processMembershipRenewal($payment);
             }
 
             return response()->json([
@@ -136,4 +123,24 @@ class PaymentController extends Controller
         }
     }
 
+    private function preparePaymentMetadata(Request $request, int $paymentId): array
+    {
+        return [
+            'payment_id' => $paymentId,
+            'rfid_uid' => $request->rfid_uid,
+            'membership_type' => $request->membership_type,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'amount' => $request->amount,
+            'description' => $request->description,
+        ];
+    }
+
+    private function processMembershipRenewal(MembersPayment $payment)
+    {
+        // Implement your membership renewal logic here
+        // Example:
+        // $user = User::where('rfid_uid', $payment->rfid_uid)->first();
+        // $user->update(['membership_expiry' => $payment->end_date]);
+    }
 }
