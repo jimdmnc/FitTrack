@@ -256,35 +256,56 @@ public function update(Request $request)
 
 
     
-        public function renewMembershipApp(Request $request)
-        {
-            // Validate request
-            $request->validate([
-                'rfid_uid' => 'required|exists:users,rfid_uid',
-                'membership_type' => 'required',
-                'start_date' => 'required|date',
-                'end_date' => 'required|date|after:start_date',
-                'payment_method' => 'required|in:cash,gcash',
-                'amount' => 'required|numeric|min:0',
-            ]);
-        
-            // Find user by RFID
-            $user = User::where('rfid_uid', $request->rfid_uid)->first();
-        
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found'
-                ], 404);
-            }
-        
-            $isCash = $request->payment_method === 'cash';
-            $sessionStatus = $isCash ? 'pending' : 'approved';
-            $needsApproval = $isCash ? 1 : 0;
-        
-            // Update user membership
+    public function renewMembershipApp(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+            'membership_type' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'payment_method' => 'required|in:cash,gcash',
+            'amount' => 'required|numeric|min:0',
+        ]);
+    
+        // Find user by RFID
+        $user = User::where('rfid_uid', $request->rfid_uid)->first();
+    
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
+        }
+    
+        $isCash = $request->payment_method === 'cash';
+        $sessionStatus = $isCash ? 'pending' : 'approved';
+        $needsApproval = $isCash ? 1 : 0;
+    
+        try {
             if (!$isCash) {
-                // GCash payment → direct update membership dates
+                // Handle GCash payment
+                $paymongoService = new PayMongoService();
+                
+                // Create GCash source
+                $source = $paymongoService->createGcashSource(
+                    $request->amount,
+                    "Membership renewal for {$user->name}",
+                    [
+                        'user_id' => $user->id,
+                        'rfid_uid' => $user->rfid_uid,
+                        'membership_type' => $request->membership_type,
+                    ]
+                );
+    
+                // Verify payment (this will wait for payment to be chargeable)
+                $verifiedSource = $paymongoService->verifyPayment($source['id']);
+    
+                if ($verifiedSource['attributes']['status'] !== 'chargeable') {
+                    throw new \Exception('GCash payment not completed');
+                }
+    
+                // Only update membership if payment is successful
                 $user->update([
                     'membership_type' => $request->membership_type,
                     'start_date' => $request->start_date,
@@ -294,7 +315,7 @@ public function update(Request $request)
                     'needs_approval' => $needsApproval,
                 ]);
             } else {
-                // Cash payment → no start_date and end_date update yet
+                // Cash payment - no immediate update
                 $user->update([
                     'membership_type' => $request->membership_type,
                     'member_status' => 'expired',
@@ -302,37 +323,48 @@ public function update(Request $request)
                     'needs_approval' => $needsApproval,
                     'start_date' => $request->start_date,
                     'end_date' => $request->end_date,
-
-
                 ]);
             }
-        
+    
             // Create Renewal and Payment records
-            Renewal::create([
+            $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'payment_method' => $request->payment_method,
                 'status' => $sessionStatus,
+                'payment_reference' => !$isCash ? $source['id'] : null,
             ]);
-        
+    
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
+                'payment_reference' => !$isCash ? $source['id'] : null,
+                'status' => !$isCash ? 'completed' : 'pending',
             ]);
-        
+    
             return response()->json([
                 'success' => true,
                 'message' => $isCash 
                     ? 'Renewal request submitted. Waiting for staff approval.'
                     : 'Membership renewed successfully!',
                 'user' => $user,
+                'payment_data' => !$isCash ? [
+                    'source_id' => $source['id'],
+                    'checkout_url' => $source['attributes']['redirect']['checkout_url'] ?? null,
+                ] : null,
             ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment failed: ' . $e->getMessage(),
+            ], 400);
         }
-
+    }
 
 
 /**
