@@ -266,84 +266,68 @@
         </dialog>
 
         
-    <!-- Hero Section with Parallax Effect -->
-    <section id="home" class="relative w-full h-screen overflow-hidden">
-        <!-- Fixed Background Layer - This creates the parallax effect -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-            style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-            x-data="{}" 
-            x-init="window.addEventListener('scroll', () => {
-                const scrolled = window.scrollY;
-                $el.style.transform = `translateY(${scrolled * 0.5}px) translateZ(0)`;
-            })">
-        </div>
-        
-        <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-        
-        <!-- Content Layer that scrolls normally -->
-        <div class="relative h-full flex items-center">
-            <div class="container mx-auto px-6 z-10">
-                <div class="flex flex-col items-center">
-                    <!-- Hero Text Content -->
-                    <div class="text-center max-w-2xl mb-12">
-                        <!-- Updated heading with more text -->
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2 transition-all duration-700 transform translate-y-0 opacity-100"
-                            x-data="{}"
-                            x-init="setTimeout(() => { $el.classList.add('translate-y-0', 'opacity-100'); }, 300)"
-                            style="opacity: 0; transform: translateY(20px);">
-                            WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
-                        </h1>
-                        
-                        <!-- Updated subtitle -->
-                        <p class="text-sm md:text-2xl text-gray-300 mb-8 transition-all duration-700 delay-300 transform translate-y-0 opacity-100"
-                        x-data="{}"
-                        x-init="setTimeout(() => { $el.classList.add('translate-y-0', 'opacity-100'); }, 600)"
-                        style="opacity: 0; transform: translateY(20px);">
-                            Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                        </p>
-
-                        <!-- Improved App Store Buttons -->
-                        <div class="flex flex-wrap justify-center gap-4 mb-6 transition-all duration-700 delay-500 transform translate-y-0 opacity-100"
-                            x-data="{}"
-                            x-init="setTimeout(() => { $el.classList.add('translate-y-0', 'opacity-100'); }, 900)"
-                            style="opacity: 0; transform: translateY(20px);">
-                            <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                                Get Started
-                            </a>
-                            
-                            <!-- Google Play Store Button -->
-                            <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 hover:text-white text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                    <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                                </svg>
-                                Download App
-                            </a>
-                        </div>
-                    </div>
+<!-- Hero Section with Parallax Effect -->
+<section id="home" class="relative w-full h-screen overflow-hidden">
+    <!-- Fixed Background Layer - This creates the parallax effect -->
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+         id="parallax-bg">
+    </div>
+    
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+    
+    <!-- Content Layer that scrolls normally -->
+    <div class="relative h-full flex items-center">
+        <div class="container mx-auto px-6 z-10">
+            <div class="flex flex-col items-center">
+                <!-- Hero Text Content -->
+                <div class="text-center max-w-2xl mb-12">
+                    <!-- Heading -->
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                        WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
+                    </h1>
                     
-                    <!-- Two Phone Image Mockups -->
-                    <div class="flex flex-row flex-wrap justify-center items-center transition-all duration-700 delay-700 transform translate-y-0 opacity-100"
-                        x-data="{}"
-                        x-init="setTimeout(() => { $el.classList.add('translate-y-0', 'opacity-100'); }, 1200)"
-                        style="opacity: 0; transform: translateY(20px);">
-                        <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
-                        <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
+                    <!-- Subtitle -->
+                    <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                        Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                    </p>
+
+                    <!-- App Store Buttons -->
+                    <div class="flex flex-wrap justify-center gap-4 mb-6">
+                        <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                            Get Started
+                        </a>
+                        
+                        <!-- Google Play Store Button -->
+                        <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 hover:text-white text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                            </svg>
+                            Download App
+                        </a>
                     </div>
+                </div>
+                
+                <!-- Two Phone Image Mockups -->
+                <div class="flex flex-row flex-wrap justify-center items-center">
+                    <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
+                    <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
         </div>
-        
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-        </div>
-    </section>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+        </svg>
+    </div>
+</section>
     <!-- Promotional Carousel -->
     <section class="py-16 bg-gray-900 text-white">
         <div class="container mx-auto px-6">
@@ -551,42 +535,27 @@
 <!-- Add this script at the end of your body tag -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Enhanced parallax effect that works on all devices
-        const parallaxBg = document.querySelector('#home > div:first-child');
+        // Get the parallax background element
+        const parallaxBg = document.getElementById('parallax-bg');
         
-        if (parallaxBg && 'ontouchstart' in window) {
-            // Mobile-specific optimization - reduced parallax effect
+        if (parallaxBg) {
+            // Check if device is mobile
+            const isMobile = 'ontouchstart' in window;
+            
+            // Set the parallax speed based on device type
+            const parallaxSpeed = isMobile ? 0.2 : 0.5;
+            
+            // Add scroll event listener
             window.addEventListener('scroll', function() {
+                // Get the current scroll position
                 const scrolled = window.pageYOffset;
-                const limit = parallaxBg.offsetTop + parallaxBg.offsetHeight;
                 
-                if (scrolled <= limit) {
-                    parallaxBg.style.transform = 'translateY(' + (scrolled * 0.3) + 'px) translateZ(0)';
-                }
-            });
-        } else if (parallaxBg) {
-            // Desktop parallax effect
-            window.addEventListener('scroll', function() {
-                const scrolled = window.pageYOffset;
-                const limit = parallaxBg.offsetTop + parallaxBg.offsetHeight;
-                
-                if (scrolled <= limit) {
-                    parallaxBg.style.transform = 'translateY(' + (scrolled * 0.5) + 'px) translateZ(0)';
-                }
+                // Apply the parallax effect
+                parallaxBg.style.transform = 'translateY(' + (scrolled * parallaxSpeed) + 'px) translateZ(0)';
             });
         }
-        
-        // Smooth reveal animation for content as user scrolls
-        const fadeInElements = document.querySelectorAll('.opacity-0');
-        fadeInElements.forEach(element => {
-            setTimeout(() => {
-                element.classList.remove('opacity-0', 'translate-y-8');
-                element.classList.add('opacity-100', 'translate-y-0');
-            }, 300);
-        });
     });
 </script>
-
     <script>
         // Mobile Menu Toggle
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
