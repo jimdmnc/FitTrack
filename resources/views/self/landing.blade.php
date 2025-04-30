@@ -314,8 +314,8 @@
                         
                         <!-- Two Phone Image Mockups -->
                         <div class="flex flex-row flex-wrap justify-center items-center">
-                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500">
-                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500"> 
+                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500" id="phone1">
+                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 hover:scale-105 transition-transform duration-500" id="phone2"> 
                         </div>
                     </div>
                 </div>
@@ -772,8 +772,8 @@ function initScrollAnimations() {
         applyAnimation('#home .text-center', 'fade-in', '0.3s');
         // applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         
-        applyAnimation('#before1', 'slide-left', '0.6s', '0.3s');
-        applyAnimation('#after1', 'slide-right', '0.6s', '0.3s');
+        applyAnimation('#home #phone1', 'slide-left', '0.6s', '0.5s');
+        applyAnimation('#home #phone2', 'slide-right', '0.6s', '0.5s');
 
         applyAnimation('#promotional h2', 'slide-up', '0.5s');
         applyAnimation('#gym-carousel', 'fade-in', '0.8s', '0.2s');
