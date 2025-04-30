@@ -5,6 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
+use App\Models\User; // Make sure to import your User model
 
 class PayMongoService
 {
@@ -45,7 +46,14 @@ class PayMongoService
                 ],
             ]);
 
-            return $this->parseResponse($response);
+            $sourceData = $this->parseResponse($response);
+
+            // For test mode, automatically verify and activate
+            if ($this->isTestMode) {
+                $this->handleTestPaymentActivation($sourceData['id'], $metadata);
+            }
+
+            return $sourceData;
         } catch (GuzzleException $e) {
             $this->logError('GCash source creation failed', $e, [
                 'amount' => $amount,
@@ -57,7 +65,7 @@ class PayMongoService
         }
     }
 
-    public function verifyPayment(string $sourceId, int $maxRetries = 2)
+    public function verifyPayment(string $sourceId, array $metadata = [], int $maxRetries = 2)
     {
         $retryCount = 0;
         
@@ -71,6 +79,7 @@ class PayMongoService
                 
                 if ($this->isTestMode && $data['attributes']['status'] === 'pending') {
                     $data['attributes']['status'] = 'chargeable';
+                    $this->activateUserMembership($sourceId, $metadata);
                 }
 
                 return $data;
@@ -84,6 +93,50 @@ class PayMongoService
                     throw new \Exception("Payment verification timeout");
                 }
                 usleep(500000);
+            }
+        }
+    }
+
+    private function handleTestPaymentActivation(string $sourceId, array $metadata)
+    {
+        try {
+            // Verify the test payment immediately
+            $verifiedData = $this->verifyPayment($sourceId, $metadata, 1);
+            
+            if ($verifiedData['attributes']['status'] === 'chargeable') {
+                $this->activateUserMembership($sourceId, $metadata);
+            }
+        } catch (\Exception $e) {
+            Log::error('Test payment activation failed', [
+                'source_id' => $sourceId,
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
+
+    private function activateUserMembership(string $sourceId, array $metadata)
+    {
+        if (isset($metadata['user_id']) || isset($metadata['rfid_uid'])) {
+            $userId = $metadata['user_id'] ?? null;
+            $rfidUid = $metadata['rfid_uid'] ?? null;
+            
+            $user = $userId 
+                ? User::find($userId)
+                : User::where('rfid_uid', $rfidUid)->first();
+
+            if ($user) {
+                $user->update([
+                    'member_status' => 'active',
+                    'session_status' => 'approved',
+                    'needs_approval' => 0
+                ]);
+
+                Log::info('Membership activated for user', [
+                    'user_id' => $user->id,
+                    'rfid_uid' => $user->rfid_uid,
+                    'source_id' => $sourceId,
+                    'test_mode' => $this->isTestMode
+                ]);
             }
         }
     }
