@@ -735,8 +735,8 @@ function initScrollAnimations() {
     const animationMap = {
         'fade-in': 'opacity-0',
         'slide-up': 'opacity-0 translate-y-10',
-        'slide-right': 'opacity-0 -translate-x-100',
-        'slide-left': 'opacity-0 translate-x-100',
+        'slide-right': 'opacity-0 -translate-x-20',
+        'slide-left': 'opacity-0 translate-x-20',
         'zoom-in': 'opacity-0 scale-95',
         'rotate-in': 'opacity-0 rotate-12'
     };
