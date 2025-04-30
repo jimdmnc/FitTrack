@@ -323,13 +323,15 @@
     
     <!-- Scroll Indicator -->
     <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#promotional">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
         </svg>
+        </a>
     </div>
 </section>
     <!-- Promotional Carousel -->
-    <section class="py-16 bg-gray-900 text-white">
+    <section class="py-16 bg-gray-900 text-white" id="promotional">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-12">TRANSFORMATION STORIES</h2>
             
