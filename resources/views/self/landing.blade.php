@@ -1,5 +1,4 @@
 
-</html>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,54 +7,99 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
+    
     <style>
-            @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
-            
-            body {
-                font-family: 'Montserrat', sans-serif;
-            }
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
 
-            .hero-section {
-                background-image: url('/api/placeholder/1920/1080');
-                background-size: cover;
-                background-position: center;
-            }
+        /* Parallax section styles */
+        .parallax-section {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-            .in-here-section {
-                background-image: url('/api/placeholder/1920/1080');
-                background-size: cover;
-                background-position: center;
-            }
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('images/welcomebgg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -1;
+        }
 
-            .carousel-item {
-                display: none;
+        /* Mobile optimization - disable fixed background on small screens */
+        @media (max-width: 768px) {
+            .parallax-bg {
+                background-attachment: scroll;
             }
-            
-            .carousel-item.active {
-                display: block;
-            }
-            
-            .nav-link {
-                position: relative;
-            }
-            
-            .nav-link::after {
-                content: '';
-                position: absolute;
-                bottom: -5px;
-                left: 0;
-                width: 0;
-                height: 2px;
-                background-color: #FF0000;
-                transition: width 0.3s ease;
-            }
-            
-            .nav-link:hover::after {
-                width: 100%;
-            }
+        }
 
+        /* Custom content animation */
+        .fade-in-up {
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Existing styles from your site */
+        .hero-section {
+            background-image: url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .in-here-section {
+            background-image: url('/api/placeholder/1920/1080');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .carousel-item {
+            display: none;
+        }
+        
+        .carousel-item.active {
+            display: block;
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #FF0000;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -220,57 +264,125 @@
                 </div>
             </div>
         </dialog>
-    <!-- Hero Section -->
-    <section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
-        <!-- Background with subtle gradient overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+
+    <!-- Parallax Section -->
+    <section id="parallax" class="parallax-section">
+        <!-- Fixed Background -->
+        <div class="parallax-bg"></div>
         
-        <div class="container mx-auto px-6 z-10">
-                    <div class="flex flex-col items-center">
-                        <!-- Hero Text Content -->
-                        <div class="text-center max-w-2xl mb-12">
-                <!-- Updated heading with more text -->
-                <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
-                    WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
-                </h1>
-                
-                <!-- Updated subtitle -->
-                <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                    Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                </p>
-
-
-            <!-- Improved App Store Buttons -->
-            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                    Get Started
-                </a>
-                
-                <!-- Google Play Store Button -->
-                <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                    </svg>
-                    Download App
-                </a>
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        
+        <!-- Content Container -->
+        <div class="container mx-auto px-6 z-10 relative">
+            <div class="text-center max-w-3xl mx-auto">
+                <!-- Content with fade-in animation -->
+                <div class="space-y-6 fade-in-up">
+                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-4">
+                        TRANSFORM <span class="text-red-600">YOUR BODY</span>
+                    </h2>
+                    
+                    <p class="text-xl text-gray-200 mb-8">
+                        Scroll through your fitness journey. Start today and see the results tomorrow.
+                    </p>
+                    
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+                        <div class="bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm p-6 rounded-lg border border-gray-700">
+                            <div class="text-red-500 text-3xl font-bold mb-2">500+</div>
+                            <div class="text-white font-medium">Active Members</div>
+                        </div>
+                        
+                        <div class="bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm p-6 rounded-lg border border-gray-700">
+                            <div class="text-red-500 text-3xl font-bold mb-2">98%</div>
+                            <div class="text-white font-medium">Success Rate</div>
+                        </div>
+                        
+                        <div class="bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm p-6 rounded-lg border border-gray-700">
+                            <div class="text-red-500 text-3xl font-bold mb-2">24/7</div>
+                            <div class="text-white font-medium">Support</div>
+                        </div>
+                    </div>
+                    
+                    <!-- CTA Button -->
+                    <div class="mt-10">
+                        <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg inline-flex items-center transition duration-300 shadow-lg transform hover:scale-105">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                            Start Your Journey
+                        </a>
+                    </div>
+                </div>
             </div>
-            
         </div>
-                
-                        <!-- Two Phone Mockups -->
-        <!-- Two Phone Image Mockups -->
-        <div class="flex flex-row flex-wrap justify-center items-center">
-            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
-            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
-        </div>
-
-            </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-10 left-0 right-0 flex justify-center animate-bounce">
+            <a href="#next-section" class="text-white opacity-70 hover:opacity-100 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+            </a>
         </div>
     </section>
-    <!-- Promotional Carousel -->
+
+        <!-- Hero Section -->
+        <section id="home" class="relative bg-white min-h-screen flex items-center" style="background-image: url('{{ asset('images/image1.png') }}');">
+            <!-- Background with subtle gradient overlay -->
+            <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+            
+            <div class="container mx-auto px-6 z-10">
+                        <div class="flex flex-col items-center">
+                            <!-- Hero Text Content -->
+                            <div class="text-center max-w-2xl mb-12">
+                    <!-- Updated heading with more text -->
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2">
+                        WELCOME TO <span class="text-red-600">ROCKIES FITNESS</span>
+                    </h1>
+                    
+                    <!-- Updated subtitle -->
+                    <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                        Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                    </p>
+
+
+                <!-- Improved App Store Buttons -->
+                <div class="flex flex-wrap justify-center gap-4 mb-6">
+                    <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                        Get Started
+                    </a>
+                    
+                    <!-- Google Play Store Button -->
+                    <a href="intent://details?id=com.FitTrack.fittrackapp#Intent;scheme=market;package=com.android.vending;end" class="bg-white hover:bg-gray-800 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                            <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                        </svg>
+                        Download App
+                    </a>
+                </div>
+                
+            </div>
+                    
+                            <!-- Two Phone Mockups -->
+            <!-- Two Phone Image Mockups -->
+            <div class="flex flex-row flex-wrap justify-center items-center">
+                <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64">
+                <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64">
+            </div>
+
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+        <!-- Promotional Carousel -->
     <section class="py-16 bg-gray-900 text-white">
         <div class="container mx-auto px-6">
             <h2 class="text-3xl font-bold text-center mb-12">TRANSFORMATION STORIES</h2>
@@ -472,7 +584,41 @@
             </div>
         </div>
     </footer>
-
+    <script>
+        // Add intersection observer for parallax effect optimization
+        document.addEventListener('DOMContentLoaded', function() {
+            const parallaxSection = document.querySelector('.parallax-section');
+            
+            // Only initialize parallax if the section exists
+            if (parallaxSection) {
+                // Check if device is not mobile
+                const isMobile = window.matchMedia("(max-width: 768px)").matches;
+                
+                if (!isMobile) {
+                    // Initialize parallax effect
+                    window.addEventListener('scroll', function() {
+                        const scrollPosition = window.pageYOffset;
+                        const parallaxBg = document.querySelector('.parallax-bg');
+                        const scrollFactor = 0.5; // Adjust for more/less parallax effect
+                        
+                        // Apply parallax effect
+                        parallaxBg.style.transform = `translateY(${scrollPosition * scrollFactor}px)`;
+                    });
+                }
+                
+                // Smooth scroll for navigation
+                document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                    anchor.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        document.querySelector(this.getAttribute('href')).scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    });
+                });
+            }
+        });
+    </script>
     <script>
         // Mobile Menu Toggle
         document.getElementById('mobile-menu-button').addEventListener('click', function() {
