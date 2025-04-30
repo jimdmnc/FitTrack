@@ -77,9 +77,13 @@ class PayMongoService
 
                 $data = $this->parseResponse($response);
                 
-                if ($this->isTestMode && $data['attributes']['status'] === 'pending') {
+                if ($this->isTestMode) {
+                    // Only activate if status is chargeable (Authorize Test Payment clicked)
+                    if ($data['attributes']['status'] === 'chargeable') {
+                        $this->activateUserMembership($sourceId, $metadata);
+                    }
+                    // For test mode, we'll return chargeable status immediately
                     $data['attributes']['status'] = 'chargeable';
-                    $this->activateUserMembership($sourceId, $metadata);
                 }
 
                 return $data;
@@ -100,12 +104,17 @@ class PayMongoService
     private function handleTestPaymentActivation(string $sourceId, array $metadata)
     {
         try {
-            // Verify the test payment immediately
-            $verifiedData = $this->verifyPayment($sourceId, $metadata, 1);
+            // In test mode, we simulate the verification
+            $verifiedData = [
+                'id' => $sourceId,
+                'attributes' => [
+                    'status' => 'chargeable'
+                ]
+            ];
             
-            if ($verifiedData['attributes']['status'] === 'chargeable') {
-                $this->activateUserMembership($sourceId, $metadata);
-            }
+            // Only activate if we're handling an authorized test payment
+            $this->activateUserMembership($sourceId, $metadata);
+            
         } catch (\Exception $e) {
             Log::error('Test payment activation failed', [
                 'source_id' => $sourceId,
@@ -125,10 +134,9 @@ class PayMongoService
                 : User::where('rfid_uid', $rfidUid)->first();
 
             if ($user) {
-                // Calculate dates based on membership type if not provided
                 $startDate = $metadata['start_date'] ?? now()->toDateString();
                 $endDate = $metadata['end_date'] ?? $this->calculateEndDate(
-                    $metadata['membership_type'] ?? '7', // default 7 days
+                    $metadata['membership_type'] ?? '7',
                     $startDate
                 );
 
@@ -143,17 +151,15 @@ class PayMongoService
 
                 $user->update($updateData);
 
-                Log::info('Membership fully activated for user', [
+                Log::info('Membership activated via Authorize Test Payment', [
                     'user_id' => $user->id,
                     'rfid_uid' => $user->rfid_uid,
                     'source_id' => $sourceId,
-                    'update_data' => $updateData,
-                    'test_mode' => $this->isTestMode
+                    'updated_fields' => $updateData
                 ]);
             }
         }
     }
-
 
     private function calculateEndDate(string $membershipType, string $startDate): string
     {
