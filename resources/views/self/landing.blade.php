@@ -735,8 +735,8 @@ function initScrollAnimations() {
     const animationMap = {
         'fade-in': 'opacity-0',
         'slide-up': 'opacity-0 translate-y-10',
-        'slide-right': 'opacity-0 -translate-x-10',
-        'slide-left': 'opacity-0 translate-x-10',
+        'slide-right': 'opacity-0 -translate-x-100',
+        'slide-left': 'opacity-0 translate-x-100',
         'zoom-in': 'opacity-0 scale-95',
         'rotate-in': 'opacity-0 rotate-12'
     };
@@ -772,8 +772,8 @@ function initScrollAnimations() {
         applyAnimation('#home .text-center', 'fade-in', '0.3s');
         // applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         
-        applyAnimation('#home #phone1', 'slide-left', '0.6s', '0.5s');
-        applyAnimation('#home #phone2', 'slide-right', '0.6s', '0.5s');
+        applyAnimation('#home #phone1', 'slide-right', '0.6s', '0.5s');
+        applyAnimation('#home #phone2', 'slide-left', '0.6s', '0.5s');
 
         applyAnimation('#promotional h2', 'slide-up', '0.5s');
         applyAnimation('#gym-carousel', 'fade-in', '0.8s', '0.2s');
