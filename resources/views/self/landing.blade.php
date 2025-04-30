@@ -770,7 +770,7 @@ function initScrollAnimations() {
     function addAnimationClasses() {
         // Apply to major sections
         applyAnimation('#home .text-center', 'fade-in', '0.3s');
-        applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
+        // applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         
         applyAnimation('#before1', 'slide-left', '0.6s', '0.3s');
         applyAnimation('#after1', 'slide-right', '0.6s', '0.3s');
