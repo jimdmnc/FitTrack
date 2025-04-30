@@ -64,7 +64,7 @@
             
             @keyframes pulse {
                 0% { transform: scale(1); }
-                50% { transform: scale(1.05); }
+                50% { transform: scale(1.15); }
                 100% { transform: scale(1); }
             }
         </style>
@@ -119,38 +119,10 @@
                             @endauth
                         @endif
                         </div>
-
-                        <!-- Auto-Redirect Message -->
-                        <div class="mt-8 text-sm text-gray-300 flex items-center">
-                            <span>Redirecting to login page in </span>
-                            <span id="countdown" class="font-medium mx-1">10</span>
-                            <span>seconds</span>
-                            <div class="ml-2 inline-block w-4 h-4 border-2 border-gray-300 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
                     </div>
                 </div>
             </div>
 
         </div>
-
-        <!-- JavaScript for Auto-Redirect -->
-        <script>
-        // Countdown timer for auto-redirect
-        let timeLeft = 10;
-        const countdownElement = document.getElementById('countdown');
-
-        // Determine the redirect URL based on authentication status
-        const redirectUrl = @json(auth()->check() ? url('/staff/dashboard') : route('login'));
-
-        const countdown = setInterval(() => {
-            timeLeft--;
-            countdownElement.textContent = timeLeft;
-
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                window.location.href = redirectUrl; // Redirect to the appropriate URL
-            }
-        }, 1000);
-        </script>   
     </body>
 </html>

@@ -95,6 +95,7 @@
                         <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
                         <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Members</option>
                         <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired Members</option>
+                        <option value="revoked" {{ request('status') == 'revoked' ? 'selected' : '' }}>Revoked Members</option>
                     </select>
                 </form>
             </div>
@@ -184,11 +185,14 @@
                             <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    {{ $member->member_status == 'active' ? ' text-green-400' : ' text-red-400' }}">
+                                    {{ $member->member_status == 'active' ? ' text-green-400' : 
+                                    ($member->member_status == 'expired' ? ' text-red-400' : 
+                                    ($member->member_status == 'revoked' ? ' text-gray-400' : '')) }}">
                                     {{ $member->member_status }}
                                 </span>
                             </td>
                         
+                            
                             <td class="px-4 py-4 text-right text-sm">
                                 @if($member->member_status == 'active')
                                     <button 
@@ -228,11 +232,48 @@
                                         </svg>
                                         View
                                     </button>
+                                @elseif($member->member_status == 'revoked')
+                                    <button 
+                                        onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
+                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                        aria-label="View reason for revocation"
+                                        title="View reason for revocation"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                        </svg>
+                                        View Reason
+                                    </button>
+                                    <button 
+                                        onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
+                                        class="inline-flex items-center px-3 py-1.5 ml-2 bg-transparent hover:bg-green-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm"
+                                        aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                        title="Restore revoked membership"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Restore
+                                    </button>
                                 @endif
-                            </td>
-                                        
+                                
+                                @if($member->member_status == 'active' || $member->member_status == 'expired')
+                                    <button 
+                                        onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                                        class="inline-flex items-center px-3 py-1.5 ml-2 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                        aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                        title="Revoke membership"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                        </svg>
+                                        Revoke
+                                    </button>
+                                @endif
+                            </td>        
                         </tr>
-                                    @endforeach
+
+                        @endforeach
                                     
                     </tbody>
                     
@@ -493,337 +534,620 @@
         </div>
     </div>
 </div>
-    
+
+
+<!-- Revoke Member Modal -->
+<div id="revokeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="revokeModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span class="truncate">Revoke Membership</span>
+            </h2>
+            <button onclick="closeRevokeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-red-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Form View -->
+        <div id="revokeFormView" class="block">
+            <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
+                @csrf
+                <input type="hidden" name="rfid_uid" id="revokeMemberID">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
+                    <input type="text" id="revokeConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation (Optional)</label>
+                    <textarea id="revokeReason" name="reason" rows="3" class="w-full px-3 py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors bg-[#2c2c2c] text-gray-200 text-sm" placeholder="Enter reason for revoking membership..."></textarea>
+                </div>
+
+                <!-- Warning Box -->
+                <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <div class="ml-3 text-sm text-gray-300">
+                        <span class="font-medium text-red-400">Warning:</span> Revoking a membership will prevent the member from accessing the gym. This action can be reversed later if needed.
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                    <button type="button" onclick="closeRevokeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="showConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Revoke Member
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Confirmation View -->
+        <div id="confirmationView" class="hidden p-4 sm:p-6">
+            <!-- Warning Icon -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 bg-opacity-20 p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Confirmation Message -->
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold text-red-400 mb-2">Confirm Membership Revocation</h3>
+                <p class="text-gray-300 mb-2">You are about to revoke membership for:</p>
+                <p class="text-lg font-medium text-gray-200 mb-4" id="confirmMemberName">Member Name</p>
+                <p class="text-sm text-gray-400">This action will immediately block gym access for this member.</p>
+            </div>
+            
+            <!-- Confirmation Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-3 sm:space-y-0">
+                <button type="button" onclick="backToForm()" class="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Go Back
+                </button>
+                <button type="button" onclick="confirmRevoke()" class="w-full sm:w-auto px-6 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirm Revocation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Revoke Member Modal -->
+
+<!-- View Reason Modal -->
+<div id="viewReasonModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="viewReasonModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                </svg>
+                <span class="truncate">Revocation Reason</span>
+            </h2>
+            <button onclick="closeReasonModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-4 sm:p-6">
+            <p class="text-sm text-gray-400">Reason for revocation:</p>
+            <p id="revocationReason" class="text-lg text-white font-medium mt-2">This member has been revoked for violating gym rules.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+            <button type="button" onclick="closeReasonModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+<!-- End View Reason Modal -->
+
+
+
+<!-- Restore Member Modal -->
+<div id="restoreMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="restoreModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span class="truncate">Restore Membership</span>
+            </h2>
+            <button onclick="closeRestoreModal()" class="text-gray-300 hover:text-gray-200 hover:bg-green-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Restore Form -->
+        <form id="restoreForm" action="{{ route('restore.membership') }}" method="POST" class="p-4 sm:p-6">
+            @csrf
+            <input type="hidden" name="rfid_uid" id="restoreMemberID">
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-300 mb-2" for="restoreConfirmName">Member Name</label>
+                <input type="text" id="restoreConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+            </div>
+
+            <!-- Info Box -->
+            <div class="mb-4 bg-green-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-green-600 border-opacity-30">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="ml-3 text-sm text-gray-300">
+                    <span class="font-medium text-green-400">Info:</span> Restoring this member will allow them to access the gym again. The member's status will be set to either 'active' or 'expired' based on their membership end date.
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                <button type="button" onclick="closeRestoreModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                    Cancel
+                </button>
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-green-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Restore Member
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- End Restore Member Modal -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-    // Initialize variables
-    let searchTimeout;
-    const searchInput = document.querySelector('input[name="search"]');
-    const statusSelect = document.querySelector('select[name="status"]');
-    const tableContainer = document.querySelector('.glass-card .overflow-x-auto');
-    const paginationContainer = document.querySelector('.pagination');
-    const clearSearchButton = document.querySelector('[aria-label="Clear search"]');
-    
-    // Debounce function to limit how often we make requests
-    const debounce = (func, delay) => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(func, delay);
-    };
-    
-    // Function to fetch members with current filters
-    const fetchMembers = (url = null) => {
-        const params = new URLSearchParams();
-        
-        // Add search query if exists
-        if (searchInput.value) {
-            params.append('search', searchInput.value);
+        // ======== CONSTANTS & DOM ELEMENTS ========
+        const ELEMENTS = {
+            searchInput: document.querySelector('input[name="search"]'),
+            statusSelect: document.querySelector('select[name="status"]'),
+            tableContainer: document.querySelector('.glass-card .overflow-x-auto'),
+            paginationContainer: document.querySelector('.pagination'),
+            clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
+            membershipTypeSelect: document.getElementById('membershipType'),
+            startDateInput: document.getElementById('startDate'),
+            endDateInput: document.getElementById('endDate'),
+            membershipFeeInput: document.getElementById('membershipFee'),
+            summaryText: document.getElementById('membershipSummaryText')
+        };
+
+        // Membership type data configuration
+        const MEMBERSHIP_DATA = {
+            '1': { fee: 70, name: 'Session (1 day)' },
+            '7': { fee: 300, name: 'Weekly (7 days)' },
+            '30': { fee: 1000, name: 'Monthly (30 days)' },
+            '365': { fee: 5000, name: 'Annual (365 days)' }
+        };
+
+        // Status badge style mapping
+        const STATUS_STYLES = {
+            active: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200",
+            revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
+        };
+
+        let searchTimeout;
+        const today = new Date();
+        const todayFormatted = formatDate(today);
+
+        // ======== INITIALIZATION ========
+        function initialize() {
+            initializeEventListeners();
+            initializeFormDefaults();
+            toggleClearButtonVisibility();
+            ensureRevokedStatusOption();
         }
-        
-        // Add status filter if not 'all'
-        if (statusSelect.value !== 'all') {
-            params.append('status', statusSelect.value);
-        }
-        
-        // If a specific URL is provided (for pagination), use that
-        const fetchUrl = url || '{{ route("staff.viewmembers") }}?' + params.toString();
-        
-        // Show loading state
-        tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
-        
-        fetch(fetchUrl, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+
+        function initializeFormDefaults() {
+            // Set today's date as default for start date
+            if (ELEMENTS.startDateInput) {
+                ELEMENTS.startDateInput.value = todayFormatted;
+                ELEMENTS.startDateInput.min = todayFormatted; // Prevent past dates
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Update table and pagination
-            tableContainer.innerHTML = data.table;
-            if (paginationContainer) {
-                paginationContainer.innerHTML = data.pagination || '';
+        }
+
+        function ensureRevokedStatusOption() {
+            if (!ELEMENTS.statusSelect) return;
+            
+            const currentOptions = Array.from(ELEMENTS.statusSelect.options).map(opt => opt.value);
+            if (!currentOptions.includes('revoked')) {
+                const option = document.createElement('option');
+                option.value = 'revoked';
+                option.textContent = 'Revoked Members';
+                
+                // Check URL parameters for preselection
+                const urlParams = new URLSearchParams(window.location.search);
+                option.selected = urlParams.get('status') === 'revoked';
+                
+                ELEMENTS.statusSelect.appendChild(option);
+            }
+        }
+
+        function initializeEventListeners() {
+            // Search input debounced event
+            if (ELEMENTS.searchInput) {
+                ELEMENTS.searchInput.addEventListener('input', () => {
+                    toggleClearButtonVisibility();
+                    debounce(fetchMembers, 500);
+                });
+            }
+
+            // Clear search button
+            if (ELEMENTS.clearSearchButton) {
+                ELEMENTS.clearSearchButton.addEventListener('click', () => {
+                    ELEMENTS.searchInput.value = '';
+                    fetchMembers();
+                    toggleClearButtonVisibility();
+                });
             }
             
-            // Reinitialize any event listeners that might have been lost
-            initializeEventListeners();
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
-        });
-    };
-    
-    // Initialize event listeners
-    const initializeEventListeners = () => {
-        // Search input event - triggers after typing stops for 500ms
-        searchInput.addEventListener('input', () => {
-            debounce(() => {
-                fetchMembers();
-            }, 500);
-        });
+            // Status filter change
+            if (ELEMENTS.statusSelect) {
+                ELEMENTS.statusSelect.addEventListener('change', fetchMembers);
+            }
+            
+            // Pagination links
+            document.querySelectorAll('.pagination a').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    fetchMembers(this.href);
+                });
+            });
 
-        // Clear search button event
-        if (clearSearchButton) {
-            clearSearchButton.addEventListener('click', () => {
-                // Clear the search input and fetch members without search query
-                searchInput.value = '';
-                fetchMembers();
-                toggleClearButtonVisibility(); // Hide the clear button
+            // Membership renewal events
+            if (ELEMENTS.membershipTypeSelect) {
+                ELEMENTS.membershipTypeSelect.addEventListener('change', updateAllDetails);
+            }
+            
+            if (ELEMENTS.startDateInput) {
+                ELEMENTS.startDateInput.addEventListener('change', function() {
+                    const selectedDate = new Date(this.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+            
+                    if (selectedDate < today) {
+                        this.value = todayFormatted;
+                    }
+                    updateAllDetails();
+                });
+            }
+        }
+
+        // ======== HELPER FUNCTIONS ========
+        function debounce(func, delay) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(func, delay);
+        }
+
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        function formatDisplayDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
             });
         }
-        
-        // Status select change event - triggers immediately
-        statusSelect.addEventListener('change', () => {
-            fetchMembers();
-        });
-        
-        // Pagination link clicks - prevent default and fetch via AJAX
-        document.querySelectorAll('.pagination a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                fetchMembers(this.href);
+
+        function toggleClearButtonVisibility() {
+            if (ELEMENTS.clearSearchButton) {
+                ELEMENTS.clearSearchButton.style.display = 
+                    ELEMENTS.searchInput.value.trim() !== '' ? 'flex' : 'none';
+            }
+        }
+
+        // ======== DATA OPERATIONS ========
+        function fetchMembers(url = null) {
+            const params = new URLSearchParams();
+            
+            // Add filters if they exist
+            if (ELEMENTS.searchInput.value) {
+                params.append('search', ELEMENTS.searchInput.value);
+            }
+            
+            if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+                params.append('status', ELEMENTS.statusSelect.value);
+            }
+            
+            // Use provided URL or construct one
+            const fetchUrl = url || `{{ route("staff.viewmembers") }}?${params.toString()}`;
+            
+            // Show loading state
+            ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+            
+            fetch(fetchUrl, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update table and pagination
+                ELEMENTS.tableContainer.innerHTML = data.table;
+                if (ELEMENTS.paginationContainer) {
+                    ELEMENTS.paginationContainer.innerHTML = data.pagination || '';
+                }
+                
+                // Reinitialize any event listeners that might have been lost
+                initializeEventListeners();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                ELEMENTS.tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
             });
-        });
-    };
-
-    // Function to toggle visibility of the "Clear" button based on search input
-    const toggleClearButtonVisibility = () => {
-        if (searchInput.value.trim() !== '') {
-            clearSearchButton.style.display = 'flex'; // Show the button
-        } else {
-            clearSearchButton.style.display = 'none'; // Hide the button
-        }
-    };
-
-    // Event listener for when the user types in the search field
-    searchInput.addEventListener('input', function() {
-            toggleClearButtonVisibility(); // Check visibility each time the user types
-        });
-
-        clearSearchBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Prevent the form from submitting
-            searchInput.value = ''; // Clear the search input
-            toggleClearButtonVisibility(); // Hide the clear button
-            // Optionally, you can also trigger an AJAX request to fetch the results without a search query
-        });
-    
-    // Initialize the event listeners
-    initializeEventListeners();
-    toggleClearButtonVisibility();
-    
-    // Membership renewal modal logic (keep your existing modal functions)
-    const membershipTypeSelect = document.getElementById('membershipType');
-    const startDateInput = document.getElementById('startDate');
-    const endDateInput = document.getElementById('endDate');
-    const membershipFeeInput = document.getElementById('membershipFee');
-    const summaryText = document.getElementById('membershipSummaryText');
-    
-    // Define membership fees and names
-    const membershipData = {
-        '1': { fee: 70, name: 'Session (1 day)' },
-        '7': { fee: 300, name: 'Weekly (7 days)' },
-        '30': { fee: 1000, name: 'Monthly (30 days)' },
-        '365': { fee: 5000, name: 'Annual (365 days)' }
-    };
-    
-    // Set today's date as default and max date
-    const today = new Date();
-    const todayFormatted = formatDate(today);
-    startDateInput.value = todayFormatted;
-    startDateInput.min = todayFormatted; // Prevent past dates
-    
-    // Event listeners for renewal modal
-    if (membershipTypeSelect) {
-        membershipTypeSelect.addEventListener('change', updateAllDetails);
-    }
-    if (startDateInput) {
-        startDateInput.addEventListener('change', function() {
-            const selectedDate = new Date(this.value);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-    
-            if (selectedDate < today) {
-                this.value = todayFormatted;
-            }
-            updateAllDetails();
-        });
-    }
-    
-    // Helper functions for date formatting
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
-    
-    function formatDisplayDate(date) {
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
-    }
-    
-    function updateAllDetails() {
-        updateMembershipFee();
-        updateExpirationDate();
-        updateSummaryText();
-    }
-    
-    function updateMembershipFee() {
-        const selectedType = membershipTypeSelect.value;
-        membershipFeeInput.value = selectedType ? membershipData[selectedType].fee.toFixed(2) : '0.00';
-    }
-    
-    function updateExpirationDate() {
-        const selectedType = parseInt(membershipTypeSelect.value);
-        const renewalDate = startDateInput.value;
-    
-        if (renewalDate && selectedType) {
-            try {
-                const renewal = new Date(renewalDate);
-                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-    
-                renewal.setDate(renewal.getDate() + selectedType);
-                endDateInput.value = formatDate(renewal);
-            } catch (error) {
-                console.error('Error calculating expiration date:', error);
-                endDateInput.value = '';
-            }
-        } else {
-            endDateInput.value = '';
-        }
-    }
-    
-    function updateSummaryText() {
-        const selectedType = membershipTypeSelect.value;
-        const renewalDate = startDateInput.value;
-        const endDate = endDateInput.value;
-    
-        if (!selectedType) {
-            summaryText.textContent = 'Select membership type to see details.';
-            return;
-        }
-    
-        const typeName = membershipData[selectedType].name;
-        const fee = membershipData[selectedType].fee.toFixed(2);
-    
-        if (renewalDate && endDate) {
-            const formattedStart = formatDisplayDate(new Date(renewalDate));
-            const formattedEnd = formatDisplayDate(new Date(endDate));
-            summaryText.textContent = `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
-        } else {
-            summaryText.textContent = `${typeName} membership. Total fee: ₱${fee}`;
-        }
-    }
-});
-
-// Modal functions (keep your existing modal functions)
-function openViewModal(memberID, name, membershipType, startDate, status) {
-        // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
-
-        // Calculate and set expiration date based on membership type
-        const start = new Date(startDate);
-        let endDate = new Date(start);
-
-        switch(membershipType.toLowerCase()) {
-            case 'session':
-                endDate.setDate(start.getDate() + 1);
-                break;
-            case 'week':
-                endDate.setDate(start.getDate() + 7);
-                break;
-            case 'month':
-                endDate.setMonth(start.getMonth() + 1);
-                break;
-            case 'annual':
-                endDate.setFullYear(start.getFullYear() + 1);
-                break;
-            default:
-                endDate = 'N/A';
         }
 
-        document.getElementById('viewEndDate').textContent = typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
-
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        statusBadge.textContent = status;
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200";
-        } else {
-            statusBadge.className = "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200";
+        // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
+        function updateAllDetails() {
+            updateMembershipFee();
+            updateExpirationDate();
+            updateSummaryText();
         }
-
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
-
-    function closeViewModal() {
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-
-        // Animate closing
-        modalContent.classList.remove('scale-100', 'opacity-100');
-        modalContent.classList.add('scale-95', 'opacity-0');
         
-        setTimeout(() => {
-            modal.classList.add('hidden'); // Hide after animation
-        }, 300);
-    }
-
-    function openRenewModal(memberID, name, membershipType, memberStatus) {
-        // Set form values
-        document.getElementById("editMemberID").value = memberID;
-        document.getElementById("editMemberName").value = name;
-        document.getElementById("membershipType").value = membershipType;
-
-        // Ensure status value is lowercase for comparison
-        let formattedStatus = memberStatus.trim().toLowerCase();
-
-        // Set radio button based on status
-        const radioButtons = document.getElementsByName('status');
-        for (const radioButton of radioButtons) {
-            if (radioButton.value.toLowerCase() === formattedStatus) {
-                radioButton.checked = true;
-                break;
+        function updateMembershipFee() {
+            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
+            
+            const selectedType = ELEMENTS.membershipTypeSelect.value;
+            ELEMENTS.membershipFeeInput.value = selectedType ? 
+                MEMBERSHIP_DATA[selectedType].fee.toFixed(2) : '0.00';
+        }
+        
+        function updateExpirationDate() {
+            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+            
+            const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
+            const renewalDate = ELEMENTS.startDateInput.value;
+        
+            if (renewalDate && selectedType) {
+                try {
+                    const renewal = new Date(renewalDate);
+                    if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+        
+                    renewal.setDate(renewal.getDate() + selectedType);
+                    ELEMENTS.endDateInput.value = formatDate(renewal);
+                } catch (error) {
+                    console.error('Error calculating expiration date:', error);
+                    ELEMENTS.endDateInput.value = '';
+                }
+            } else {
+                ELEMENTS.endDateInput.value = '';
+            }
+        }
+        
+        function updateSummaryText() {
+            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
+                !ELEMENTS.endDateInput || !ELEMENTS.summaryText) return;
+            
+            const selectedType = ELEMENTS.membershipTypeSelect.value;
+            const renewalDate = ELEMENTS.startDateInput.value;
+            const endDate = ELEMENTS.endDateInput.value;
+        
+            if (!selectedType) {
+                ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
+                return;
+            }
+        
+            const typeName = MEMBERSHIP_DATA[selectedType].name;
+            const fee = MEMBERSHIP_DATA[selectedType].fee.toFixed(2);
+        
+            if (renewalDate && endDate) {
+                const formattedStart = formatDisplayDate(new Date(renewalDate));
+                const formattedEnd = formatDisplayDate(new Date(endDate));
+                ELEMENTS.summaryText.textContent = 
+                    `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
+            } else {
+                ELEMENTS.summaryText.textContent = 
+                    `${typeName} membership. Total fee: ₱${fee}`;
             }
         }
 
-        // Show modal with animation
-        document.getElementById("renewMemberModal").classList.remove("hidden");
-        setTimeout(() => {
-            document.getElementById('editModalContent').classList.remove('scale-95', 'opacity-0');
-            document.getElementById('editModalContent').classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
+        // ======== MODAL FUNCTIONS ========
+        // View Member Modal
+        function openViewModal(memberID, name, membershipType, startDate, status) {
+            // Set modal data
+            document.getElementById('viewMemberName').textContent = name;
+            document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+            document.getElementById('viewMembershipType').textContent = membershipType;
+            document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-    function closeRenewModal() {
-        const modal = document.getElementById('editModalContent');
-        modal.classList.remove('scale-100', 'opacity-100');
-        modal.classList.add('scale-95', 'opacity-0');
+            // Calculate and set expiration date based on membership type
+            const start = new Date(startDate);
+            let endDate = new Date(start);
+
+            switch(membershipType.toLowerCase()) {
+                case 'session':
+                    endDate.setDate(start.getDate() + 1);
+                    break;
+                case 'week':
+                    endDate.setDate(start.getDate() + 7);
+                    break;
+                case 'month':
+                    endDate.setMonth(start.getMonth() + 1);
+                    break;
+                case 'annual':
+                    endDate.setFullYear(start.getFullYear() + 1);
+                    break;
+                default:
+                    endDate = 'N/A';
+            }
+
+            document.getElementById('viewEndDate').textContent = 
+                typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+            // Change status color based on status
+            const statusBadge = document.getElementById('viewStatus');
+            statusBadge.textContent = status;
+            statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+            // Show modal with animation
+            animateModalOpen('viewMemberModal', 'viewModalContent');
+        }
+
+        function closeViewModal() {
+            animateModalClose('viewMemberModal', 'viewModalContent');
+        }
+
+        // Renew Member Modal
+        function openRenewModal(memberID, name, membershipType, memberStatus) {
+            // Set form values
+            document.getElementById("editMemberID").value = memberID;
+            document.getElementById("editMemberName").value = name;
+            document.getElementById("membershipType").value = membershipType;
+
+            // Set radio button based on status
+            const formattedStatus = memberStatus.trim().toLowerCase();
+            document.querySelectorAll('input[name="status"]').forEach(radio => {
+                radio.checked = radio.value.toLowerCase() === formattedStatus;
+            });
+
+            // Show modal with animation
+            animateModalOpen('renewMemberModal', 'editModalContent');
+        }
+
+        function closeRenewModal() {
+            animateModalClose('renewMemberModal', 'editModalContent');
+        }
         
-        setTimeout(() => {
-            document.getElementById("renewMemberModal").classList.add("hidden");
-        }, 300);
-    }
+        // Revoke Member Modal
+        function openRevokeModal(memberID, memberName) {
+            // Set form values
+            document.getElementById("revokeMemberID").value = memberID;
+            document.getElementById("revokeConfirmName").value = memberName;
+            
+            // Clear reason field
+            document.getElementById("revokeReason").value = '';
 
-    function formatDisplayDate(date) {
-        return date.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
-        });
-    }
-    function formatDate(date) {
-        return date.toISOString().split('T')[0];
-    }
+            // Make sure we're showing the form view, not the confirmation view
+            document.getElementById('revokeFormView').classList.remove('hidden');
+            document.getElementById('confirmationView').classList.add('hidden');
+
+            // Show modal with animation
+            animateModalOpen('revokeMemberModal', 'revokeModalContent');
+        }
+
+        function closeRevokeModal() {
+            animateModalClose('revokeMemberModal', 'revokeModalContent');
+        }
+
+        // Restore Member Modal
+        function openRestoreModal(memberID, memberName) {
+            // Set form values
+            document.getElementById("restoreMemberID").value = memberID;
+            document.getElementById("restoreConfirmName").value = memberName;
+
+            // Show modal with animation
+            animateModalOpen('restoreMemberModal', 'restoreModalContent');
+        }
+
+        function closeRestoreModal() {
+            animateModalClose('restoreMemberModal', 'restoreModalContent');
+        }
+
+        // Revocation Reason Modal
+        function openRevokedReasonModal(memberId, reason) {
+            // Set the revocation reason inside the modal
+            document.getElementById('revocationReason').textContent = reason || 'No reason provided';
+
+            // Show modal with animation
+            animateModalOpen('viewReasonModal', 'viewReasonModalContent');
+        }
+
+        function closeReasonModal() {
+            animateModalClose('viewReasonModal', 'viewReasonModalContent');
+        }
+
+        // General modal animation helpers
+        function animateModalOpen(modalId, contentId) {
+            const modal = document.getElementById(modalId);
+            const modalContent = document.getElementById(contentId);
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function animateModalClose(modalId, contentId) {
+            const modal = document.getElementById(modalId);
+            const modalContent = document.getElementById(contentId);
+
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // ======== REVOCATION CONFIRMATION FUNCTIONS ========
+        function showConfirmation() {
+            // Get the member name and set it in the confirmation view
+            const memberName = document.getElementById('revokeConfirmName').value;
+            document.getElementById('confirmMemberName').textContent = memberName;
+            
+            // Hide the form view and show the confirmation view
+            document.getElementById('revokeFormView').classList.add('hidden');
+            document.getElementById('confirmationView').classList.remove('hidden');
+        }
+        
+        function backToForm() {
+            document.getElementById('confirmationView').classList.add('hidden');
+            document.getElementById('revokeFormView').classList.remove('hidden');
+        }
+
+        function confirmRevoke() {
+            // Submit the form
+            document.getElementById('revokeForm').submit();
+        }
+
+        // Export functions to global scope for HTML onclick handlers
+        window.openViewModal = openViewModal;
+        window.closeViewModal = closeViewModal;
+        window.openRenewModal = openRenewModal;
+        window.closeRenewModal = closeRenewModal;
+        window.openRevokeModal = openRevokeModal;
+        window.closeRevokeModal = closeRevokeModal;
+        window.openRestoreModal = openRestoreModal;
+        window.closeRestoreModal = closeRestoreModal;
+        window.openRevokedReasonModal = openRevokedReasonModal;
+        window.closeReasonModal = closeReasonModal;
+        window.showConfirmation = showConfirmation;
+        window.backToForm = backToForm;
+        window.confirmRevoke = confirmRevoke;
+
+        // Initialize everything
+        initialize();
+    });
 </script>
 @endsection

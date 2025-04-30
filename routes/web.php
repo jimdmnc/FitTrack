@@ -75,7 +75,8 @@ Route::middleware('auth')->group(function () {
             ->name('staff.record-attendance');
 
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-
+        Route::post('/staff/members/revoke', [ViewmembersController::class, 'revokeMember'])->name('revoke.membership');
+        Route::post('/staff/members/restore', [ViewmembersController::class, 'restoreMember'])->name('restore.membership');
         Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])
             ->name('staff.paymentTracking');
         Route::post('/staff/paymentTracking/store', [PaymentTrackingController::class, 'store'])
@@ -114,6 +115,7 @@ Route::middleware('auth')->group(function () {
     Route::prefix('member')->group(function () {
         Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
     });
+    
 
 
     Route::get('/payment/success', function () {
