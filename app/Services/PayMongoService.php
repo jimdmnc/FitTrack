@@ -6,7 +6,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
 use App\Models\User; // Make sure to import your User model
-use Carbon\Carbon;
 
 class PayMongoService
 {
@@ -156,7 +155,7 @@ class PayMongoService
     }
 
 
-    private function calculateEndDate(string $membershipType, string $startDate): string
+private function calculateEndDate(string $membershipType, string $startDate): string
     {
         $days = (int)$membershipType;
         return Carbon::parse($startDate)->addDays($days)->toDateString();
