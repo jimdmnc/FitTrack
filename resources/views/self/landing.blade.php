@@ -475,71 +475,15 @@
 </section>
 
 
-<!-- In Here Section with Enhanced Interactivity -->
-<section id="inhere" class="in-here-section min-h-screen flex items-center justify-center relative overflow-hidden" style="background-image: url('images/welcomebgg.jpg'); background-size: cover; background-position: center;">
-    <!-- Overlay -->
-    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-    
-    <!-- Floating shapes for visual interest - appear on scroll -->
-    <div class="absolute hidden sm:block animate-fade-in" id="shape1" style="top: 10%; left: 5%; opacity: 0;">
-        <div class="h-16 w-16 rounded-full bg-blue-500 bg-opacity-20 blur-md"></div>
-    </div>
-    <div class="absolute hidden sm:block animate-fade-in" id="shape2" style="bottom: 15%; right: 10%; opacity: 0;">
-        <div class="h-24 w-24 rounded-full bg-purple-500 bg-opacity-20 blur-md"></div>
-    </div>
-    <div class="absolute hidden sm:block animate-fade-in" id="shape3" style="top: 30%; right: 20%; opacity: 0;">
-        <div class="h-12 w-12 rounded-full bg-green-500 bg-opacity-20 blur-md"></div>
-    </div>
-    
-    <!-- Main content -->
-    <div class="container mx-auto px-6 z-10 text-center">
-        <h2 class="text-5xl font-extrabold text-white mb-6 animate-slide-up opacity-0" id="welcomeTitle">WELCOME TO THE ROCKIES FITNESS</h2>
-        
-        <p class="text-xl text-white mb-8 animate-slide-up opacity-0 delay-300" id="welcomeDesc">
-            Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.
-        </p>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12 opacity-0" id="featureCards">
-            <!-- Feature Card 1 -->
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 transform transition duration-300 hover:scale-105 hover:bg-opacity-20">
-                <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-blue-500 rounded-full text-white text-2xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Expert Trainers</h3>
-                <p class="text-gray-200">Our certified trainers create personalized plans to help you reach your goals faster.</p>
-            </div>
-            
-            <!-- Feature Card 2 -->
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 transform transition duration-300 hover:scale-105 hover:bg-opacity-20">
-                <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-green-500 rounded-full text-white text-2xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">24/7 Access</h3>
-                <p class="text-gray-200">Train whenever it fits your schedule with our round-the-clock facility access.</p>
-            </div>
-            
-            <!-- Feature Card 3 -->
-            <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-6 transform transition duration-300 hover:scale-105 hover:bg-opacity-20">
-                <div class="w-16 h-16 mx-auto mb-4 flex items-center justify-center bg-purple-500 rounded-full text-white text-2xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2">Supportive Community</h3>
-                <p class="text-gray-200">Join a family of fitness enthusiasts who motivate and inspire each other daily.</p>
-            </div>
+    <!-- In Here Section -->
+    <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('images/welcomebgg.jpg'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div class="container mx-auto px-6 z-10 text-center">
+            <h2 class="text-5xl font-extrabold text-white mb-6">WELCOME TO THE GYM HUB</h2>
+            <p class="text-xl text-white mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
         </div>
-        
-        <!-- CTA Button -->
-        <button class="mt-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full transform transition duration-300 hover:scale-105 animate-pulse-slow opacity-0" id="ctaButton">
-            START YOUR JOURNEY
-        </button>
-    </div>
-</section>
+    </section>
+
 
     <!-- Footer -->
     <footer class="bg-black text-white py-12">
@@ -732,132 +676,6 @@
     }
 });
     </script>
-
-
-
-
-
-
-
-<!-- Add JavaScript for scroll animations -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initial animations
-    setTimeout(() => {
-        document.getElementById('welcomeTitle').classList.remove('opacity-0');
-        document.getElementById('welcomeTitle').classList.add('opacity-100');
-    }, 300);
-    
-    setTimeout(() => {
-        document.getElementById('welcomeDesc').classList.remove('opacity-0');
-        document.getElementById('welcomeDesc').classList.add('opacity-100');
-    }, 600);
-    
-    // Scroll animations
-    const animateOnScroll = function() {
-        // Define elements to animate
-        const elements = [
-            document.getElementById('featureCards'),
-            document.getElementById('ctaButton'),
-            document.getElementById('shape1'),
-            document.getElementById('shape2'),
-            document.getElementById('shape3')
-        ];
-        
-        // Add scroll event listener
-        window.addEventListener('scroll', function() {
-            const scrollPosition = window.scrollY + window.innerHeight;
-            
-            // Check each element
-            elements.forEach(element => {
-                if(element) {
-                    const elementPosition = element.offsetTop;
-                    
-                    // If element is in view
-                    if(scrollPosition > elementPosition) {
-                        element.classList.remove('opacity-0');
-                        element.classList.add('opacity-100');
-                        
-                        // Add staggered animations for feature cards
-                        if(element.id === 'featureCards') {
-                            const cards = element.querySelectorAll('div');
-                            cards.forEach((card, index) => {
-                                setTimeout(() => {
-                                    card.classList.add('animate-fadeIn');
-                                }, index * 200);
-                            });
-                        }
-                    }
-                }
-            });
-        });
-        
-        // Trigger initial check
-        window.dispatchEvent(new Event('scroll'));
-    };
-    
-    // Run animations
-    animateOnScroll();
-    
-    // Add parallax effect on mouse move
-    const section = document.getElementById('inhere');
-    section.addEventListener('mousemove', function(e) {
-        const shapes = document.querySelectorAll('#shape1, #shape2, #shape3');
-        const x = e.clientX / window.innerWidth;
-        const y = e.clientY / window.innerHeight;
-        
-        shapes.forEach((shape, index) => {
-            const speed = (index + 1) * 20;
-            const xOffset = (x * speed) - (speed / 2);
-            const yOffset = (y * speed) - (speed / 2);
-            
-            shape.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-        });
-    });
-});
-</script>
-
-<style>
-/* Custom animations */
-.animate-slide-up {
-    transition: transform 0.8s ease-out, opacity 0.8s ease-out;
-}
-
-.animate-slide-up.opacity-0 {
-    transform: translateY(40px);
-}
-
-.animate-slide-up.opacity-100 {
-    transform: translateY(0);
-}
-
-.animate-pulse-slow {
-    animation: pulse 3s infinite;
-}
-
-.animate-fade-in {
-    transition: opacity 1s ease-out;
-}
-
-.animate-fadeIn {
-    animation: fadeIn 0.5s forwards;
-}
-
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-    70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-</style>
-
-
-
-
 </body>
 </html>
 
