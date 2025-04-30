@@ -349,8 +349,8 @@
                         
                         <!-- Two Phone Image Mockups -->
                         <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
-                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-64 transition-transform duration-500 hover:scale-105" id="phone2">
-                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-64 transition-transform duration-500 hover:scale-105" id="phone1">
+                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
+                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
                         </div>
 
                     </div>
