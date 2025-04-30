@@ -46,7 +46,12 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => 'gcash',
                 'status' => 'pending',
-                'metadata' => $this->preparePaymentMetadata($request, $payment->id), // Add this line
+                'payment_reference' => json_encode([ // Store metadata here
+                    'source_id' => $source['id'], // Keep the original reference
+                    'membership_type' => $request->membership_type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                ]),
             ]);
 
             $source = $this->paymongoService->createGcashSource(
@@ -107,12 +112,7 @@ class PaymentController extends Controller
             $isPaid = ($status === 'chargeable');
 
             if ($isPaid) {
-                $payment->update([
-                    'status' => 'completed',
-                    'amount' => $source['attributes']['amount'] / 100,
-                ]);
-                
-                // Process the membership activation
+                $metadata = json_decode($payment->payment_reference, true);
                 $this->activateUserMembership($request->source_id, $payment);
             }
 
@@ -180,52 +180,31 @@ class PaymentController extends Controller
      * @param MembersPayment $payment
      * @return void
      */
-    private function activateUserMembership(string $sourceId, array $metadat)
+    private function activateUserMembership(string $sourceId, MembersPayment $payment)
     {
         try {
             $user = User::where('rfid_uid', $payment->rfid_uid)->first();
             
             if ($user) {
-                // Get metadata from payment or source verification
-                $metadata = $payment->metadata ?? [];
+                // Decode the JSON metadata from payment_reference
+                $metadata = json_decode($payment->payment_reference, true);
                 
-                // Use metadata['membership_type'] instead of $payment->membership_type
-                $membershipType = $metadata['membership_type'] ?? '7'; // default 7 days
+                // Fallback to default 7 days if not found
+                $membershipType = $metadata['membership_type'] ?? '7';
                 $startDate = $metadata['start_date'] ?? now()->toDateString();
                 $endDate = $metadata['end_date'] ?? $this->calculateEndDate($membershipType, $startDate);
     
-                $updateData = [
+                $user->update([
                     'member_status' => 'active',
                     'session_status' => 'approved',
                     'needs_approval' => 0,
-                    'membership_type' => $membershipType, // This now correctly reads from metadata
+                    'membership_type' => $membershipType,
                     'start_date' => $startDate,
-                    'end_date' => $endDate
-                ];
-    
-                $user->update($updateData);
-    
-                Log::info('Membership fully activated for user', [
-                    'user_id' => $user->id,
-                    'rfid_uid' => $user->rfid_uid,
-                    'source_id' => $sourceId,
-                    'payment_id' => $payment->id,
-                    'update_data' => $updateData,
-                    'test_mode' => $this->paymongoService->isTestMode()
-                ]);
-            } else {
-                Log::warning('User not found for membership activation', [
-                    'rfid_uid' => $payment->rfid_uid,
-                    'payment_id' => $payment->id
+                    'end_date' => $endDate,
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('Membership activation failed', [
-                'payment_id' => $payment->id,
-                'rfid_uid' => $payment->rfid_uid,
-                'error' => $e->getMessage()
-            ]);
-            throw $e;
+            Log::error('Membership activation failed', ['error' => $e->getMessage()]);
         }
     }
     /**
