@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\MembersPayment;
+use App\Models\User;
 use App\Services\PayMongoService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentController extends Controller
@@ -103,7 +106,6 @@ class PaymentController extends Controller
                     'amount' => $source['attributes']['amount'] / 100,
                 ]);
                 
-                // Add membership renewal logic here
                 $this->processMembershipRenewal($payment);
             }
 
@@ -138,9 +140,41 @@ class PaymentController extends Controller
 
     private function processMembershipRenewal(MembersPayment $payment)
     {
-        // Implement your membership renewal logic here
-        // Example:
-        // $user = User::where('rfid_uid', $payment->rfid_uid)->first();
-        // $user->update(['membership_expiry' => $payment->end_date]);
+        $user = User::where('rfid_uid', $payment->rfid_uid)->first();
+        
+        if (!$user) {
+            Log::error('User not found for membership renewal', [
+                'payment_id' => $payment->id,
+                'rfid_uid' => $payment->rfid_uid
+            ]);
+            return;
+        }
+
+        $updateData = [
+            'member_status' => 'active',
+            'session_status' => 'approved',
+            'needs_approval' => 0,
+            'membership_type' => $payment->metadata['membership_type'] ?? $user->membership_type,
+            'start_date' => $payment->metadata['start_date'] ?? now()->toDateString(),
+            'end_date' => $payment->metadata['end_date'] ?? $this->calculateEndDate(
+                $payment->metadata['membership_type'] ?? '7',
+                $payment->metadata['start_date'] ?? now()->toDateString()
+            )
+        ];
+
+        $user->update($updateData);
+
+        Log::info('Membership activated for user', [
+            'user_id' => $user->id,
+            'rfid_uid' => $user->rfid_uid,
+            'payment_id' => $payment->id,
+            'update_data' => $updateData
+        ]);
+    }
+
+    private function calculateEndDate(string $membershipType, string $startDate): string
+    {
+        $days = (int)$membershipType;
+        return Carbon::parse($startDate)->addDays($days)->toDateString();
     }
 }
