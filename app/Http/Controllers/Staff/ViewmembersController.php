@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Renewal;
-use App\Models\MembersPayment;
-
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -104,21 +102,7 @@ class ViewmembersController extends Controller
         ]);
     
         return redirect()->route('staff.viewmembers')
-            ->with('success', 'Member renewal successfully!');    
-        
-        }
-
-
-
-
-
-
-
-        
-        
-
-
-
+            ->with('success', 'Member renewal successfully!');    }
     
     
 }
