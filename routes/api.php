@@ -83,7 +83,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     
- 
+    Route::apiResource('foods', FoodController::class);
+
 
 
 });

@@ -51,30 +51,29 @@ class AuthController extends Controller
     }
 
     // ✅ Get Authenticated User
-// AuthController.php
-public function user(Request $request)
-{
-    $user = $request->user(); // Get the authenticated user
-    
-    // Add null checks for dates using optional() helper
-    return response()->json([
-        'id' => $user->id,
-        'first_name' => $user->first_name,
-        'last_name' => $user->last_name,
-        // 'full_name' => $user->first_name . ' ' . $user->last_name,
-        'email' => $user->email,
-        'membership_type' => $user->membership_type,
-        'member_status' => $user->member_status,
-        'start_date' => $user->start_date, // Will output "2025-04-07" (MySQL format)
-        'end_date' => $user->end_date,
-        'rfid_uid' => $user->rfid_uid,
-        // Add any other fields you need from your users table
-        'gender' => $user->gender,
-        'phone_number' => $user->phone_number,
-        'birthdate' => optional($user->birthdate)->format('M d, Y'),
-        'session_status' => $user->session_status
-    ]);
-}
+    public function user(Request $request)
+    {
+        $user = $request->user(); // Get the authenticated user
+        
+        // Add null checks for dates using optional() helper
+        return response()->json([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            // 'full_name' => $user->first_name . ' ' . $user->last_name,
+            'email' => $user->email,
+            'membership_type' => $user->membership_type,
+            'member_status' => $user->member_status,
+            'start_date' => $user->start_date, // Will output "2025-04-07" (MySQL format)
+            'end_date' => $user->end_date,
+            'rfid_uid' => $user->rfid_uid,
+            // Add any other fields you need from your users table
+            'gender' => $user->gender,
+            'phone_number' => $user->phone_number,
+            'birthdate' => optional($user->birthdate)->format('M d, Y'),
+            'session_status' => $user->session_status
+        ]);
+    }
 
 
 
