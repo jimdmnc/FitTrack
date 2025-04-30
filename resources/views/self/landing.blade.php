@@ -532,149 +532,182 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 <!-- Add this script at the end of your body tag -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get the parallax background element
-        const parallaxBg = document.getElementById('parallax-bg');
+document.addEventListener('DOMContentLoaded', function() {
+    // Parallax Background Effect
+    initParallaxEffect();
+    
+    // Mobile Menu Functionality
+    initMobileMenu();
+    
+    // Carousel Functionality
+    initCarousel();
+    
+    // Smooth scroll for navigation links
+    initSmoothScroll();
+    
+    // Timeout Modal Functionality
+    initTimeoutModal();
+});
+
+// Parallax Background Effect
+function initParallaxEffect() {
+    const parallaxBg = document.getElementById('parallax-bg');
+    
+    if (parallaxBg) {
+        // Check if device is mobile
+        const isMobile = 'ontouchstart' in window;
         
-        if (parallaxBg) {
-            // Check if device is mobile
-            const isMobile = 'ontouchstart' in window;
+        // Set the parallax speed based on device type
+        const parallaxSpeed = isMobile ? 0.2 : 0.5;
+        
+        // Add scroll event listener
+        window.addEventListener('scroll', function() {
+            // Get the current scroll position
+            const scrolled = window.pageYOffset;
             
-            // Set the parallax speed based on device type
-            const parallaxSpeed = isMobile ? 0.2 : 0.5;
-            
-            // Add scroll event listener
-            window.addEventListener('scroll', function() {
-                // Get the current scroll position
-                const scrolled = window.pageYOffset;
-                
-                // Apply the parallax effect
-                parallaxBg.style.transform = 'translateY(' + (scrolled * parallaxSpeed) + 'px) translateZ(0)';
-            });
-        }
-    });
-</script>
-    <script>
-        // Mobile Menu Toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            // Apply the parallax effect
+            parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
+        });
+    }
+}
+
+// Mobile Menu Functionality
+function initMobileMenu() {
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', function() {
             const mobileMenu = document.getElementById('mobile-menu');
             mobileMenu.classList.toggle('hidden');
         });
-        
-        document.addEventListener('DOMContentLoaded', function() {
-        const carousel = document.getElementById('gym-carousel');
-        const slides = carousel.children;
-        const dots = document.querySelectorAll('.carousel-dot');
-        const prevBtn = document.getElementById('prev-btn');
-        const nextBtn = document.getElementById('next-btn');
-        let currentIndex = 0;
-        let intervalId;
-        
-        // Set initial position
-        updateCarousel();
-        
-        // Auto-scroll every 5 seconds
-        startAutoSlide();
-        
-        // Previous button
+    }
+}
+
+// Carousel Functionality
+function initCarousel() {
+    const carousel = document.getElementById('gym-carousel');
+    
+    if (!carousel) return;
+    
+    const slides = carousel.children;
+    const dots = document.querySelectorAll('.carousel-dot');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    let currentIndex = 0;
+    let intervalId;
+    
+    // Set initial position
+    updateCarousel();
+    
+    // Auto-scroll every 5 seconds
+    startAutoSlide();
+    
+    // Previous button
+    if (prevBtn) {
         prevBtn.addEventListener('click', function() {
             currentIndex = (currentIndex - 1 + slides.length) % slides.length;
             updateCarousel();
             resetAutoSlide();
         });
-        
-        // Next button
+    }
+    
+    // Next button
+    if (nextBtn) {
         nextBtn.addEventListener('click', function() {
             nextSlide();
             resetAutoSlide();
         });
-        
-        // Dot navigation
-        dots.forEach(dot => {
-            dot.addEventListener('click', function() {
-                currentIndex = parseInt(this.getAttribute('data-index'));
-                updateCarousel();
-                resetAutoSlide();
-            });
-        });
-        
-        // Pause auto-scrolling when hovering over carousel
-        carousel.addEventListener('mouseenter', function() {
-            clearInterval(intervalId);
-        });
-        
-        // Resume auto-scrolling when mouse leaves carousel
-        carousel.addEventListener('mouseleave', function() {
-            startAutoSlide();
-        });
-        
-        function nextSlide() {
-            currentIndex = (currentIndex + 1) % slides.length;
+    }
+    
+    // Dot navigation
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            currentIndex = parseInt(this.getAttribute('data-index'));
             updateCarousel();
-        }
-        
-        function updateCarousel() {
-            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-            
-            // Update active dot
-            dots.forEach((dot, index) => {
-                if (index === currentIndex) {
-                    dot.classList.add('active');
-                    dot.classList.add('opacity-100');
-                    dot.classList.remove('opacity-50');
-                } else {
-                    dot.classList.remove('active');
-                    dot.classList.remove('opacity-100');
-                    dot.classList.add('opacity-50');
-                }
-            });
-        }
-        
-        function startAutoSlide() {
-            intervalId = setInterval(nextSlide, 5000);
-        }
-        
-        function resetAutoSlide() {
-            clearInterval(intervalId);
-            startAutoSlide();
-        }
+            resetAutoSlide();
+        });
     });
+    
+    // Pause auto-scrolling when hovering over carousel
+    carousel.addEventListener('mouseenter', function() {
+        clearInterval(intervalId);
+    });
+    
+    // Resume auto-scrolling when mouse leaves carousel
+    carousel.addEventListener('mouseleave', function() {
+        startAutoSlide();
+    });
+    
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateCarousel();
+    }
+    
+    function updateCarousel() {
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
         
-        // Smooth scroll for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                
-                document.querySelector(this.getAttribute('href')).scrollIntoView({
+        // Update active dot
+        dots.forEach((dot, index) => {
+            if (index === currentIndex) {
+                dot.classList.add('active', 'opacity-100');
+                dot.classList.remove('opacity-50');
+            } else {
+                dot.classList.remove('active', 'opacity-100');
+                dot.classList.add('opacity-50');
+            }
+        });
+    }
+    
+    function startAutoSlide() {
+        intervalId = setInterval(nextSlide, 5000);
+    }
+    
+    function resetAutoSlide() {
+        clearInterval(intervalId);
+        startAutoSlide();
+    }
+}
+
+// Smooth scroll for navigation links
+function initSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const targetElement = document.querySelector(this.getAttribute('href'));
+            if (targetElement) {
+                targetElement.scrollIntoView({
                     behavior: 'smooth'
                 });
-                
-                // Close mobile menu if open
-                const mobileMenu = document.getElementById('mobile-menu');
-                if (!mobileMenu.classList.contains('hidden')) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
+            }
+            
+            // Close mobile menu if open
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
         });
+    });
+}
 
-
-
-        document.addEventListener('DOMContentLoaded', function() {
-    // Hide button if session says we've timed out
-    @if(session('timed_out'))
-        const timeoutButton = document.getElementById('timeout-button');
-        if (timeoutButton) timeoutButton.style.display = 'none';
-    @endif
-
-    // Handle form submission
+// Timeout Modal Functionality
+function initTimeoutModal() {
+    // This was originally a PHP/Laravel snippet
+    // We convert it to plain JavaScript
+    const timeoutButton = document.getElementById('timeout-button');
+    const sessionHasTimedOut = false; // This should be set by your app logic
+    
+    if (sessionHasTimedOut && timeoutButton) {
+        timeoutButton.style.display = 'none';
+    }
+    
     const timeoutForm = document.querySelector('#timeout-modal form');
     if (timeoutForm) {
         timeoutForm.addEventListener('submit', function() {
-            const timeoutButton = document.getElementById('timeout-button');
             if (timeoutButton) timeoutButton.style.display = 'none';
         });
     }
-});
+}
     </script>
 </body>
 </html>
