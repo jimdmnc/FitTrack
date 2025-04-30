@@ -46,8 +46,7 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => 'gcash',
                 'status' => 'pending',
-                'metadata' => $this->preparePaymentMetadata($request, $payment->id), // Add this line
-
+                
             ]);
 
             $source = $this->paymongoService->createGcashSource(
