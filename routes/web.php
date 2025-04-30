@@ -117,22 +117,16 @@ Route::middleware('auth')->group(function () {
     });
     
 
-    Route::post('/payment/create', [App\Http\Controllers\PaymentController::class, 'createPayment'])
-    ->name('payment.create');
-// Payment callback routes
-Route::get('/payment/success', [App\Http\Controllers\PaymentController::class, 'success'])
-    ->name('payment.success');
 
-Route::get('/payment/failed', [App\Http\Controllers\PaymentController::class, 'failed'])
-    ->name('payment.failed');
-
-Route::get('/payment/thankyou', [App\Http\Controllers\PaymentController::class, 'thankYou'])
-    ->name('payment.thankyou');
+    Route::get('/payment/success', function () {
+        return view('payment.success');
+    })->name('payment.success');
+    
+    Route::get('/payment/failed', function () {
+        return view('payment.failed');
+    })->name('payment.failed');
 
 });
-// AJAX route to check payment status
-Route::post('/payment/check-status', [App\Http\Controllers\PaymentController::class, 'checkStatus'])
-    ->name('payment.check-status');
 
-// Authentication routes (login, register, .)
+// Authentication routes (login, register, etc.)
 require __DIR__.'/auth.php';
