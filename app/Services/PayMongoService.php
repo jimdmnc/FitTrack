@@ -5,7 +5,7 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Log;
-use App\Models\User; // Make sure to import your User model
+use App\Models\User; 
 use Carbon\Carbon;
 
 class PayMongoService
@@ -25,6 +25,9 @@ class PayMongoService
         $this->isTestMode = str_starts_with($this->secretKey, 'sk_test_');
     }
 
+    /**
+     * Create a GCash payment source
+     */
     public function createGcashSource(float $amount, string $description, array $metadata = [])
     {
         try {
@@ -48,11 +51,12 @@ class PayMongoService
             ]);
 
             $sourceData = $this->parseResponse($response);
-
-            // For test mode, automatically verify and activate with all required fields
-            if ($this->isTestMode) {
-                $this->handleTestPaymentActivation($sourceData['id'], $metadata);
-            }
+            
+            Log::info('GCash source created', [
+                'source_id' => $sourceData['id'],
+                'checkout_url' => $sourceData['attributes']['redirect']['checkout_url'] ?? 'unknown',
+                'test_mode' => $this->isTestMode
+            ]);
 
             return $sourceData;
         } catch (GuzzleException $e) {
@@ -66,7 +70,60 @@ class PayMongoService
         }
     }
 
-    public function verifyPayment(string $sourceId, array $metadata = [], int $maxRetries = 2)
+    /**
+     * Create a payment using a chargeable source
+     */
+    public function createPayment(string $sourceId)
+    {
+        try {
+            // First verify the source is chargeable
+            $source = $this->verifyPayment($sourceId);
+            
+            if ($source['attributes']['status'] !== 'chargeable') {
+                throw new \Exception("Source is not in chargeable state: " . $source['attributes']['status']);
+            }
+
+            // Create the payment
+            $response = $this->client->post('payments', [
+                'headers' => $this->getHeaders(),
+                'json' => [
+                    'data' => [
+                        'attributes' => [
+                            'amount' => $source['attributes']['amount'],
+                            'currency' => $source['attributes']['currency'],
+                            'source' => [
+                                'id' => $sourceId,
+                                'type' => 'source'
+                            ],
+                            'description' => $source['attributes']['description'] ?? 'Payment for source: ' . $sourceId,
+                            'metadata' => $source['attributes']['metadata'] ?? [],
+                        ],
+                    ],
+                ],
+            ]);
+
+            $paymentData = $this->parseResponse($response);
+            
+            Log::info('Payment created successfully', [
+                'source_id' => $sourceId,
+                'payment_id' => $paymentData['id'],
+                'status' => $paymentData['attributes']['status'] ?? 'unknown',
+                'test_mode' => $this->isTestMode
+            ]);
+            
+            return $paymentData;
+        } catch (GuzzleException $e) {
+            $this->logError('Payment creation failed', $e, [
+                'source_id' => $sourceId,
+            ]);
+            throw new \Exception("Payment creation failed: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verify the payment source status
+     */
+    public function verifyPayment(string $sourceId, int $maxRetries = 2)
     {
         $retryCount = 0;
         
@@ -78,10 +135,11 @@ class PayMongoService
 
                 $data = $this->parseResponse($response);
                 
-                if ($this->isTestMode && $data['attributes']['status'] === 'pending') {
-                    $data['attributes']['status'] = 'chargeable';
-                    $this->activateUserMembership($sourceId, $metadata);
-                }
+                Log::info('Source verification', [
+                    'source_id' => $sourceId,
+                    'status' => $data['attributes']['status'] ?? 'unknown',
+                    'test_mode' => $this->isTestMode
+                ]);
 
                 return $data;
             } catch (GuzzleException $e) {
@@ -98,68 +156,23 @@ class PayMongoService
         }
     }
 
-    private function handleTestPaymentActivation(string $sourceId, array $metadata)
+    /**
+     * Retrieve payment details
+     */
+    public function retrievePayment(string $paymentId)
     {
         try {
-            // Verify the test payment immediately
-            $verifiedData = $this->verifyPayment($sourceId, $metadata, 1);
-            
-            if ($verifiedData['attributes']['status'] === 'chargeable') {
-                $this->activateUserMembership($sourceId, $metadata);
-            }
-        } catch (\Exception $e) {
-            Log::error('Test payment activation failed', [
-                'source_id' => $sourceId,
-                'error' => $e->getMessage()
+            $response = $this->client->get("payments/{$paymentId}", [
+                'headers' => $this->getHeaders(),
             ]);
+
+            return $this->parseResponse($response);
+        } catch (GuzzleException $e) {
+            $this->logError('Payment retrieval failed', $e, [
+                'payment_id' => $paymentId,
+            ]);
+            throw new \Exception("Payment retrieval failed: " . $e->getMessage());
         }
-    }
-
-    private function activateUserMembership(string $sourceId, array $metadata)
-    {
-        if (isset($metadata['user_id']) || isset($metadata['rfid_uid'])) {
-            $userId = $metadata['user_id'] ?? null;
-            $rfidUid = $metadata['rfid_uid'] ?? null;
-            
-            $user = $userId 
-                ? User::find($userId)
-                : User::where('rfid_uid', $rfidUid)->first();
-
-            if ($user) {
-                // Calculate dates based on membership type if not provided
-                $startDate = $metadata['start_date'] ?? now()->toDateString();
-                $endDate = $metadata['end_date'] ?? $this->calculateEndDate(
-                    $metadata['membership_type'] ?? '7', // default 7 days
-                    $startDate
-                );
-
-                $updateData = [
-                    'member_status' => 'active',
-                    'session_status' => 'approved',
-                    'needs_approval' => 0,
-                    'membership_type' => $metadata['membership_type'] ?? $user->membership_type,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate
-                ];
-
-                $user->update($updateData);
-
-                Log::info('Membership fully activated for user', [
-                    'user_id' => $user->id,
-                    'rfid_uid' => $user->rfid_uid,
-                    'source_id' => $sourceId,
-                    'update_data' => $updateData,
-                    'test_mode' => $this->isTestMode
-                ]);
-            }
-        }
-    }
-
-
-    private function calculateEndDate(string $membershipType, string $startDate): string
-    {
-        $days = (int)$membershipType;
-        return Carbon::parse($startDate)->addDays($days)->toDateString();
     }
 
     private function getHeaders(): array
@@ -173,9 +186,7 @@ class PayMongoService
 
     private function getRedirectUrl(string $type): string
     {
-        return $this->isTestMode
-            ? 'https://rockiesfitnessph.com/payment/' . $type
-            : route('payment.' . $type);
+        return route('payment.' . $type);
     }
 
     private function prepareMetadata(array $metadata): array
