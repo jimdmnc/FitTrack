@@ -772,8 +772,8 @@ function initScrollAnimations() {
         applyAnimation('#home .text-center', 'fade-in', '0.3s');
         applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         
-        applyAnimation('#home #before1', 'slide-left', '0.6s', '0.3s');
-        applyAnimation('#home #after1', 'slide-right', '0.6s', '0.3s');
+        applyAnimation('#before1', 'slide-left', '0.6s', '0.3s');
+        applyAnimation('#after1', 'slide-right', '0.6s', '0.3s');
 
         applyAnimation('#promotional h2', 'slide-up', '0.5s');
         applyAnimation('#gym-carousel', 'fade-in', '0.8s', '0.2s');
