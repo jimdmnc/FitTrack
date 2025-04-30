@@ -186,7 +186,7 @@ class PaymentController extends Controller
             
             if ($user) {
                 // Get membership details from payment or metadata
-                $membershipType = $payment->membership_type ?? '7'; // default 7 days
+                $membershipType = $payment->membership_type ?? '30'; // default 7 days
                 $startDate = $payment->start_date ?? now()->toDateString();
                 $endDate = $payment->end_date ?? $this->calculateEndDate($membershipType, $startDate);
 
