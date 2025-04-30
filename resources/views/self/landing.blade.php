@@ -7,7 +7,8 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
         
@@ -1029,7 +1030,105 @@ document.head.appendChild(styleElement);
 
 
 
+function initTypedJSAnimation() {
+    // Select the elements
+    const titleElement = document.querySelector('.text-4xl.font-extrabold');
+    const subtitleElement = document.querySelector('.text-sm.md\\:text-2xl.text-gray-300');
+    
+    if (!titleElement || !subtitleElement || typeof Typed === 'undefined') return;
+    
+    // Store original content and clear elements
+    const originalTitleHTML = titleElement.innerHTML;
+    const originalSubtitle = subtitleElement.textContent;
+    
+    // Clear elements and prepare for typing
+    titleElement.innerHTML = '';
+    subtitleElement.innerHTML = '';
+    
+    // Create wrapper elements for the typed instances
+    const titleWrapper = document.createElement('span');
+    const subtitleWrapper = document.createElement('span');
+    
+    titleElement.appendChild(titleWrapper);
+    subtitleElement.appendChild(subtitleWrapper);
+    
+    // Set up the Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Start title animation when visible
+                startTypingAnimation();
+                observer.unobserve(entry.target);
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+    
+    // Observe the title's parent element
+    observer.observe(titleElement.parentElement);
+    
+    function startTypingAnimation() {
+        // Create a hidden span with the red text styling to use in the title animation
+        const hiddenSpan = document.createElement('span');
+        hiddenSpan.classList.add('text-red-600');
+        hiddenSpan.style.display = 'none';
+        document.body.appendChild(hiddenSpan);
+        
+        // Get the computed styles
+        const redTextStyle = window.getComputedStyle(hiddenSpan);
+        const redTextColor = redTextStyle.color;
+        document.body.removeChild(hiddenSpan);
+        
+        // Initialize title typing with HTML support
+        const titleTyped = new Typed(titleWrapper, {
+            strings: [`WELCOME TO <span style="color:${redTextColor}">ROCKIES FITNESS</span>`],
+            typeSpeed: 40,
+            startDelay: 300,
+            showCursor: true,
+            cursorChar: '|',
+            onComplete: function() {
+                // When title is done, start subtitle
+                setTimeout(() => {
+                    subtitleTyped.start();
+                }, 500);
+            }
+        });
+        
+        // Initialize subtitle typing
+        const subtitleTyped = new Typed(subtitleWrapper, {
+            strings: [originalSubtitle],
+            typeSpeed: 20,
+            startDelay: 100,
+            showCursor: true,
+            cursorChar: '|',
+            autoStart: false,
+            onComplete: function(self) {
+                // Optional: fade out cursor when both are complete
+                setTimeout(() => {
+                    const cursor = subtitleWrapper.nextSibling;
+                    if (cursor) {
+                        cursor.style.transition = 'opacity 1s';
+                        cursor.style.opacity = '0';
+                    }
+                }, 2000);
+            }
+        });
+    }
+}
 
+// Call this function after DOM is loaded and if you've included Typed.js
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if Typed.js is available
+    if (typeof Typed !== 'undefined') {
+        // Initialize typed animation
+        setTimeout(initTypedJSAnimation, 500);
+    } else {
+        console.warn('Typed.js is not loaded. Using fallback animation.');
+        // Use the custom typing animation instead
+        setTimeout(initTypingAnimations, 500);
+    }
+});
 
 
 
