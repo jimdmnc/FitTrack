@@ -769,7 +769,7 @@ function initScrollAnimations() {
     // Function to add initial animation classes based on data attributes
     function addAnimationClasses() {
         // Apply to major sections
-        applyAnimation('#home .text-center', 'fade-in', '0.3s');
+        // applyAnimation('#home .text-center', 'fade-in', '0.3s');
         // applyAnimation('#home .flex-row', 'slide-up', '0.6s', '0.3s');
         
         applyAnimation('#home #phone1', 'slide-right', '0.6s', '0.3s');
