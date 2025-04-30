@@ -35,7 +35,7 @@ class PayMongoService
                         'attributes' => [
                             'amount' => $this->convertToCentavos($amount),
                             'redirect' => [
-                                'success' => $this->getRedirectUrl('success'),
+                                'success' => $this->getRedirectUrl('successs'),
                                 'failed' => $this->getRedirectUrl('failed'),
                             ],
                             'type' => 'gcash',
