@@ -46,6 +46,7 @@ class PaymentController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => 'gcash',
                 'status' => 'pending',
+                'metadata' => $this->preparePaymentMetadata($request, $payment->id), // Add this line
             ]);
 
             $source = $this->paymongoService->createGcashSource(
@@ -185,11 +186,14 @@ class PaymentController extends Controller
             $user = User::where('rfid_uid', $payment->rfid_uid)->first();
             
             if ($user) {
-                // Get membership details from payment or metadata
-                $membershipType = $payment->membership_type ?? '30'; // default 7 days
-                $startDate = $payment->start_date ?? now()->toDateString();
-                $endDate = $payment->end_date ?? $this->calculateEndDate($membershipType, $startDate);
-
+                // Get metadata from payment attributes or source verification
+                $metadata = $payment->metadata ?? [];
+                
+                // Get membership details from metadata
+                $membershipType = $metadata['membership_type'] ?? '7'; // default 7 days
+                $startDate = $metadata['start_date'] ?? now()->toDateString();
+                $endDate = $metadata['end_date'] ?? $this->calculateEndDate($membershipType, $startDate);
+    
                 $updateData = [
                     'member_status' => 'active',
                     'session_status' => 'approved',
@@ -198,9 +202,9 @@ class PaymentController extends Controller
                     'start_date' => $startDate,
                     'end_date' => $endDate
                 ];
-
+    
                 $user->update($updateData);
-
+    
                 Log::info('Membership fully activated for user', [
                     'user_id' => $user->id,
                     'rfid_uid' => $user->rfid_uid,
@@ -224,7 +228,6 @@ class PaymentController extends Controller
             throw $e;
         }
     }
-
     /**
      * Calculate membership end date based on type and start date
      * 
