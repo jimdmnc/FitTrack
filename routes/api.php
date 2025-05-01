@@ -85,7 +85,10 @@ Route::middleware('auth:sanctum')->group(function () {
     
     Route::apiResource('foods', FoodController::class);
 
-
+    Route::prefix('user')->group(function () {
+        Route::put('/profile', [AuthController::class, 'updateProfile']);
+        // Add other user-related routes here
+    });
 
 });
 
