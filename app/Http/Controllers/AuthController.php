@@ -167,7 +167,7 @@ class AuthController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id)
             ],
-            'phone_number' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:11',
             'birthdate' => 'nullable|date',
         ]);
     
