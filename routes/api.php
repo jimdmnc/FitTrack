@@ -87,19 +87,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 
-
-
-
-
-
-
-
-    Route::put('profile/by-rfid/{rfid_uid}', [AuthController::class, 'updateProfileByRfid']);
-    Route::post('profile/by-rfid/{rfid_uid}/change-password', [AuthController::class, 'changePasswordByRfid']);
-    Route::post('profile/by-rfid/{rfid_uid}/verify-email', [AuthController::class, 'sendVerificationEmailByRfid']);
-
-
-
 });
 
 Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
