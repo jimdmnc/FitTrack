@@ -7,7 +7,8 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 class AuthController extends Controller
 {
     // ✅ User Login
