@@ -168,6 +168,7 @@ class AuthController extends Controller
             ],
             'phone_number' => 'required|string|max:255',
             'birthdate' => 'nullable|date',
+            // Add validation for other fields if they can be updated
         ]);
 
         if ($validator->fails()) {
@@ -184,7 +185,19 @@ class AuthController extends Controller
             
             return response()->json([
                 'message' => 'Profile updated successfully',
-                'user' => $user
+                'user' => $user->only([
+                    'id',
+                    'first_name',
+                    'last_name',
+                    'email',
+                    'phone_number',
+                    'birthdate',
+                    'membership_type',
+                    'start_date',
+                    'end_date',
+                    'rfid_uid',
+                    'member_status'
+                ])
             ]);
         } catch (\Exception $e) {
             return response()->json([
