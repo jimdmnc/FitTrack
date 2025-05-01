@@ -151,5 +151,147 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+
+
+     /**
+     * Update user profile by RFID UID
+     */
+    public function updateProfileByRfid(Request $request, $rfid_uid)
+    {
+        try {
+            $user = User::where('rfid_uid', $rfid_uid)->firstOrFail();
+            
+            $validated = $request->validate([
+                'first_name' => 'sometimes|required|string|max:255',
+                'last_name' => 'sometimes|required|string|max:255',
+                'email' => 'sometimes|required|email|max:255|unique:users,email,'.$user->id,
+                'phone_number' => 'sometimes|required|string|max:20',
+                'birthdate' => 'sometimes|required|date',
+                'gender' => 'sometimes|required|in:male,female,other',
+                // Add validation for other fields as needed
+            ]);
+
+            // Handle email change verification
+            if ($request->has('email') && $request->email !== $user->email) {
+                $validated['email_verified_at'] = null;
+            }
+
+            $user->update($validated);
+
+            return response()->json([
+                'message' => 'Profile updated successfully',
+                'user' => $this->formatUserResponse($user)
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    /**
+     * Change password by RFID UID
+     */
+    public function changePasswordByRfid(Request $request, $rfid_uid)
+    {
+        try {
+            $user = User::where('rfid_uid', $rfid_uid)->firstOrFail();
+            
+            $validated = $request->validate([
+                'current_password' => 'required|string',
+                'new_password' => 'required|string|min:8',
+                'confirm_password' => 'required|string|same:new_password',
+            ]);
+
+            // Check if user has a password set
+            if (empty($user->password)) {
+                return response()->json([
+                    'message' => 'No password set for this account',
+                    'errors' => ['current_password' => ['This account has no password set']]
+                ], 422);
+            }
+
+            // Verify current password
+            if (!Hash::check($validated['current_password'], $user->password)) {
+                throw ValidationException::withMessages([
+                    'current_password' => ['The provided password does not match our records']
+                ]);
+            }
+
+            // Update password
+            $user->update([
+                'password' => Hash::make($validated['new_password']),
+                'remember_token' => null,
+            ]);
+
+            // Revoke all tokens
+            $user->tokens()->delete();
+
+            return response()->json([
+                'message' => 'Password changed successfully',
+                'status' => 'success'
+            ]);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        }
+    }
+
+    /**
+     * Send verification email by RFID UID
+     */
+    public function sendVerificationEmailByRfid(Request $request, $rfid_uid)
+    {
+        try {
+            $user = User::where('rfid_uid', $rfid_uid)->firstOrFail();
+            
+            if ($user->hasVerifiedEmail()) {
+                return response()->json(['message' => 'Email already verified']);
+            }
+
+            $user->sendEmailVerificationNotification();
+
+            return response()->json(['message' => 'Verification email sent']);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+    }
+
+    /**
+     * Format user response consistently
+     */
+    private function formatUserResponse(User $user)
+    {
+        return [
+            'id' => $user->id,
+            'rfid_uid' => $user->rfid_uid,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'email' => $user->email,
+            'phone_number' => $user->phone_number,
+            'gender' => $user->gender,
+            'birthdate' => $user->birthdate ? Carbon::parse($user->birthdate)->format('Y-m-d') : null,
+            'membership_type' => $user->membership_type,
+            'member_status' => $user->member_status,
+            'session_status' => $user->session_status,
+            'start_date' => $user->start_date,
+            'end_date' => $user->end_date,
+            'email_verified' => $user->hasVerifiedEmail(),
+            'needs_approval' => (bool)$user->needs_approval,
+            'created_at' => $user->created_at,
+            'updated_at' => $user->updated_at
+        ];
+    }
 }
 
