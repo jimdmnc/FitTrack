@@ -168,44 +168,49 @@ class AuthController extends Controller
             ],
             'phone_number' => 'required|string|max:255',
             'birthdate' => 'nullable|date',
-            // Add validation for other fields if they can be updated
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Validation failed',
+                'success' => false,
+                'message' => 'Validation errors',
                 'errors' => $validator->errors()
             ], 422);
         }
-
-        $validatedData = $validator->validated();
-        
+    
         try {
-            $user->update($validatedData);
+            $user->update($validator->validated());
+            
+            // Refresh the user model to get updated data
+            $user->refresh();
             
             return response()->json([
+                'success' => true,
                 'message' => 'Profile updated successfully',
-                'user' => $user->only([
-                    'id',
-                    'first_name',
-                    'last_name',
-                    'email',
-                    'phone_number',
-                    'birthdate',
-                    'membership_type',
-                    'start_date',
-                    'end_date',
-                    'rfid_uid',
-                    'member_status'
-                ])
+                'data' => [
+                    'user' => $user->only([
+                        'id',
+                        'first_name',
+                        'last_name',
+                        'email',
+                        'phone_number',
+                        'birthdate',
+                        'membership_type',
+                        'start_date',
+                        'end_date',
+                        'rfid_uid',
+                        'member_status'
+                    ])
+                ]
             ]);
+    
         } catch (\Exception $e) {
             return response()->json([
+                'success' => false,
                 'message' => 'Failed to update profile',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
-
 }
 
