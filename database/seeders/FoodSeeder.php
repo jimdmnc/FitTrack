@@ -1,9 +1,12 @@
 <?php
+namespace Database\Seeders;
 
-class FoodDatabase {
-    public static function getFoods() {
-        return array(
-            // Original foods with accurate nutrition per gram
+use Illuminate\Database\Seeder;
+use App\Models\Food;
+
+class FoodSeeder extends Seeder {
+    public function run(): void {
+        Food::insert([
             ['foodName' => 'Apple', 'calories' => 0.52, 'protein' => 0.003, 'fats' => 0.002, 'carbs' => 0.14, 'grams' => 1],
             ['foodName' => 'Banana', 'calories' => 0.89, 'protein' => 0.011, 'fats' => 0.003, 'carbs' => 0.23, 'grams' => 1],
             ['foodName' => 'Chicken Breast', 'calories' => 1.65, 'protein' => 0.31, 'fats' => 0.036, 'carbs' => 0, 'grams' => 1],
@@ -41,6 +44,7 @@ class FoodDatabase {
             ['foodName' => 'Creatine Monohydrate', 'calories' => 0, 'protein' => 0, 'fats' => 0, 'carbs' => 0, 'grams' => 1],
             ['foodName' => 'BCAA Powder', 'calories' => 4.1, 'protein' => 1.0, 'fats' => 0, 'carbs' => 0, 'grams' => 1],
             ['foodName' => 'Protein Bar', 'calories' => 3.33, 'protein' => 0.20, 'fats' => 0.09, 'carbs' => 0.40, 'grams' => 1]
-        );
+        
+        ]);
     }
 }
