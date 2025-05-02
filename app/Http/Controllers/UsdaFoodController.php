@@ -3,7 +3,7 @@
 // app/Http/Controllers/UsdaFoodController.php
 namespace App\Http\Controllers;
 
-use App\Models\FoodList; // Or your existing food model
+use App\Models\FoodLog; // Or your existing food model
 use Illuminate\Http\Request;
 
 class UsdaFoodController extends Controller
@@ -26,7 +26,7 @@ class UsdaFoodController extends Controller
             'grams' => 'required|numeric|min:0'
         ]);
 
-        $food = FoodList::create($validated);
+        $food = FoodLog::create($validated);
 
         return response()->json($food, 201);
     }

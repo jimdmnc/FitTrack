@@ -91,10 +91,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 // routes/api.php
-Route::group(['middleware' => 'auth:api'], function() {
     Route::get('/usda/search', [UsdaFoodController::class, 'search']);
     Route::post('/usda/save', [UsdaFoodController::class, 'save']);
-});
 
 
 });
