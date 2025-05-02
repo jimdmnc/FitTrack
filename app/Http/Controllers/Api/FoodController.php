@@ -36,28 +36,11 @@ class FoodController extends Controller
     }
     
 
-
     public function search(Request $request)
     {
-        try {
-            $request->validate([
-                'query' => 'required|string|min:3'
-            ]);
-    
-            $foods = Food::where('foodName', 'like', '%'.$request->input('query').'%')
-                            ->get();
-    
-            return response()->json([
-                'success' => true,
-                'data' => $foods
-            ]);
-            
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search failed',
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        $query = $request->input('query');
+        $food = Food::where('name', 'like', '%'.$query.'%')->first();
+        
+        return response()->json($food); // Returns single object or null
     }
 }
