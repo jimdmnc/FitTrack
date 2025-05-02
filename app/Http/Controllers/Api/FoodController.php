@@ -37,19 +37,27 @@ class FoodController extends Controller
     
 
 
-// In your Laravel controller
-    // Search foods by name
     public function search(Request $request)
     {
-        $request->validate([
-            'query' => 'required|string|min:3'
-        ]);
-
-        $foods = Food::where('foodName', 'like', '%'.$request->query.'%')
-                        ->limit(50) // Prevent too many results
-                        ->get();
-
-        return response()->json($foods);
+        try {
+            $request->validate([
+                'query' => 'required|string|min:3'
+            ]);
+    
+            $foods = FoodList::where('foodName', 'LIKE', '%'.$request->input('query').'%')
+                            ->get();
+    
+            return response()->json([
+                'success' => true,
+                'data' => $foods
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Search failed',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-
 }
