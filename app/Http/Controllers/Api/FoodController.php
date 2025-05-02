@@ -34,4 +34,18 @@ class FoodController extends Controller
 
         return response()->json($foods);
     }
+    
+
+
+// In your Laravel controller
+public function search(Request $request)
+{
+    $query = $request->input('query');
+    
+    $foods = FoodList::where('foodName', 'like', '%'.$query.'%')
+                    ->get();
+    
+    return response()->json($foods);
+}
+
 }

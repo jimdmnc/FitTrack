@@ -88,11 +88,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
+    Route::get('/foods/search', [FoodController::class, 'updateProfile']);
 
 
 // routes/api.php
-    Route::get('/usda/search', [UsdaFoodController::class, 'search']);
-    Route::post('/usda/save', [UsdaFoodController::class, 'save']);
+    // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
+    // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
 
 
 });
