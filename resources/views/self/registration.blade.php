@@ -40,20 +40,58 @@
         .error-border {
             border-color: #ef4444;
         }
+        /* Responsive form container */
+        .form-container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        @media (min-width: 640px) {
+            .form-container {
+                max-width: 540px;
+            }
+        }
+        @media (min-width: 768px) {
+            .form-container {
+                max-width: 640px;
+            }
+        }
+        @media (min-width: 1024px) {
+            .form-container {
+                max-width: 768px;
+            }
+        }
+        /* Improved input tap targets for mobile */
+        input, select, button {
+            min-height: 48px;
+        }
+        @media (min-width: 1024px) {
+            input, select, button {
+                min-height: 56px;
+            }
+        }
+        /* Better spacing for mobile */
+        @media (max-width: 640px) {
+            .p-5 {
+                padding: 1rem;
+            }
+            .p-3 {
+                padding: 0.75rem;
+            }
+        }
     </style>
 </head>
-<body class="body-bg">
-<div class="p-4">
-    <div class="my-4">
-        <h2 class="text-2xl md:text-4xl pb-1 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Session Registration</h2>
+<body class="body-bg min-h-screen flex flex-col">
+<div class="p-4 w-full max-w-md lg:max-w-lg mx-auto">
+    <div class="my-4 text-center">
+        <h2 class="text-2xl md:text-4xl lg:text-5xl pb-1 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Session Registration</h2>
     </div>
     <!-- Header with gradient -->
-    <div class="header-bg text-white p-5 rounded-t-lg shadow border-b border-black">
-        <h2 class="text-xl font-bold text-gray-100">Registration</h2>
+    <div class="header-bg text-white p-4 md:p-5 lg:p-6 rounded-t-lg shadow border-b border-black">
+        <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-100">Registration</h2>
     </div>
     
     <!-- Registration Form -->
-    <div class="regform-bg p-5 rounded-b-lg shadow">
+    <div class="regform-bg p-4 md:p-5 lg:p-6 rounded-b-lg shadow">
         <!-- Success and Error messages -->
         @if (session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4 text-sm">
@@ -68,47 +106,50 @@
         <form method="POST" action="{{ route('self.registration.store') }}" id="registrationForm" novalidate>
             @csrf
             <div class="space-y-4">
-                <!-- First Name -->
-                <div>
-                    <label for="first_name" class="block text-gray-200 font-medium text-sm mb-1">
-                        First Name <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           class="w-full p-3 rounded-lg text-base orange-focus text-gray-200" 
-                           id="first_name" 
-                           name="first_name" 
-                           placeholder="Your first name"
-                           autocomplete="given-name"
-                           required
-                           minlength="2"
-                           maxlength="50">
-                    <div id="first_name_error" class="error-message hidden">Please enter a valid first name (2-50 characters)</div>
-                </div>
-                
-                <!-- Last Name -->
-                <div>
-                    <label for="last_name" class="block text-gray-200 font-medium text-sm mb-1">
-                        Last Name <span class="text-red-500">*</span>
-                    </label>
-                    <input type="text" 
-                           class="w-full p-3 rounded-lg text-base orange-focus text-gray-200" 
-                           id="last_name" 
-                           name="last_name" 
-                           placeholder="Your last name"
-                           autocomplete="family-name"
-                           required
-                           minlength="2"
-                           maxlength="50">
-                    <div id="last_name_error" class="error-message hidden">Please enter a valid last name (2-50 characters)</div>
+                <!-- Form grid for larger screens -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- First Name -->
+                    <div>
+                        <label for="first_name" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            First Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               id="first_name" 
+                               name="first_name" 
+                               placeholder="Your first name"
+                               autocomplete="given-name"
+                               required
+                               minlength="2"
+                               maxlength="50">
+                        <div id="first_name_error" class="error-message hidden">Please enter a valid first name (2-50 characters)</div>
+                    </div>
+                    
+                    <!-- Last Name -->
+                    <div>
+                        <label for="last_name" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Last Name <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               id="last_name" 
+                               name="last_name" 
+                               placeholder="Your last name"
+                               autocomplete="family-name"
+                               required
+                               minlength="2"
+                               maxlength="50">
+                        <div id="last_name_error" class="error-message hidden">Please enter a valid last name (2-50 characters)</div>
+                    </div>
                 </div>
                 
                 <!-- Email -->
                 <div>
-                    <label for="email" class="block text-gray-200 font-medium text-sm mb-1">
+                    <label for="email" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                         Email Address <span class="text-red-500">*</span>
                     </label>
                     <input type="email" 
-                           class="w-full p-3 rounded-lg text-base orange-focus text-gray-200" 
+                           class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200" 
                            id="email" 
                            name="email" 
                            placeholder="Your email address"
@@ -117,84 +158,88 @@
                     <div id="email_error" class="error-message hidden">Please enter a valid email address</div>
                 </div>
 
-                <!-- Gender -->
-                <div>
-                    <label for="gender" class="block text-gray-200 font-medium text-sm mb-1">Gender <span class="text-red-500">*</span></label>
-                    <select name="gender" id="gender" 
-                            class="w-full p-3 rounded-lg text-base orange-focus text-gray-200"
-                            required>
-                        <option value="">Select Gender</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <div id="gender_error" class="error-message hidden">Please select a gender</div>
-                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Gender -->
+                    <div>
+                        <label for="gender" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">Gender <span class="text-red-500">*</span></label>
+                        <select name="gender" id="gender" 
+                                class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200"
+                                required>
+                            <option value="">Select Gender</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                        <div id="gender_error" class="error-message hidden">Please select a gender</div>
+                    </div>
 
-                <!-- Phone Number -->
-                <div>
-                    <label for="phone_number" class="block text-gray-200 font-medium text-sm mb-1">
-                        Phone Number <span class="text-red-500">*</span>
-                    </label>
-                    <input type="tel" 
-                           class="w-full p-3 rounded-lg text-base orange-focus text-gray-200" 
-                           id="phone_number" 
-                           name="phone_number" 
-                           placeholder="09*********"
-                           autocomplete="tel"
-                           maxlength="11"
-                           minlength="11"
-                           oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-                           required>
-                    <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
+                    <!-- Phone Number -->
+                    <div>
+                        <label for="phone_number" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Phone Number <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" 
+                               class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200" 
+                               id="phone_number" 
+                               name="phone_number" 
+                               placeholder="09*********"
+                               autocomplete="tel"
+                               maxlength="11"
+                               minlength="11"
+                               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                               required>
+                        <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
+                    </div>
                 </div>
                 
-                <!-- Membership Type (Read-Only) -->
-                <div>
-                    <label for="membership_type" class="block text-gray-200 font-medium text-sm mb-1">
-                        Membership Type
-                    </label>
-                    <select 
-                        class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-400 orange-focus appearance-none" 
-                        id="membership_type" 
-                        name="membership_type" 
-                        style="pointer-events: none; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: '';"
-                        required>
-                        <option value="1" selected>Session</option>
-                    </select>
-                </div>
-                
-                <!-- Amount (Read-Only) -->
-                <div>
-                    <label for="amount" class="block text-gray-200 font-medium text-sm mb-1">
-                        Amount
-                    </label>
-                    <input type="text" 
-                           class="w-full p-3 rounded-lg text-base bg-gray-200 text-gray-400 orange-focus" 
-                           id="amount" 
-                           name="amount" 
-                           value="60"
-                           style="pointer-events: none"
-                           readonly>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Membership Type (Read-Only) -->
+                    <div>
+                        <label for="membership_type" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Membership Type
+                        </label>
+                        <select 
+                            class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg bg-gray-200 text-gray-400 orange-focus appearance-none" 
+                            id="membership_type" 
+                            name="membership_type" 
+                            style="pointer-events: none; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: '';"
+                            required>
+                            <option value="1" selected>Session</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Amount (Read-Only) -->
+                    <div>
+                        <label for="amount" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Amount
+                        </label>
+                        <input type="text" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg bg-gray-200 text-gray-400 orange-focus" 
+                               id="amount" 
+                               name="amount" 
+                               value="60"
+                               style="pointer-events: none"
+                               readonly>
+                    </div>
                 </div>
                 
                 <!-- Submit Button -->
                 <button type="submit" 
-                        class="w-full orange-btn text-white p-2.5 rounded-lg font-medium text-lg mt-2 hover:bg-[#e64a19] focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:ring-offset-2 transition-colors">
+                        class="w-full orange-btn text-white p-2.5 lg:p-3 rounded-lg font-medium text-lg lg:text-xl mt-4 hover:bg-[#e64a19] focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:ring-offset-2 transition-colors">
                     Register Now
                 </button>
             </div>
         </form>
         
         <!-- Bottom messaging -->
-        <p class="text-center text-xs text-gray-400 mt-4">
+        <p class="text-center text-xs lg:text-sm text-gray-400 mt-4">
             By registering, you agree to our Terms
         </p>
     </div>
     
     <!-- Help link -->
     <div class="mt-4 text-center">
-        <a href="tel:+18005551234" class="text-sm font-medium flex items-center justify-center text-gray-200">
+        <a href="tel:+18005551234" class="text-sm lg:text-base font-medium flex items-center justify-center text-gray-200">
             <i class="orange-text fas fa-phone-alt mr-2"></i> Need help? Call us
         </a>
     </div>

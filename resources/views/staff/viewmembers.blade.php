@@ -2,40 +2,77 @@
 
 @section('content')
 <style>
-    /* Responsive table container */
+    /* Improved responsive styles */
     .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+    }
+    
+    /* Better table styling for mobile */
+    @media (max-width: 640px) {
+        table {
+            min-width: 600px; /* Forces horizontal scroll on small screens */
         }
         
-        /* Custom scrollbar for tables */
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
-        }
-        .table-responsive::-webkit-scrollbar-track {
-            background: #2d2d2d;
-        }
-        .table-responsive::-webkit-scrollbar-thumb {
-            background-color: #ff5722;
-            border-radius: 20px;
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
         
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .mobile-full-width {
-                width: 100%;
-            }
-            
-            .pagination-container {
-                overflow-x: auto;
-                padding-bottom: 1rem;
-            }
-            
-            .pagination {
-                display: flex;
-                white-space: nowrap;
-            }
+        .action-buttons button {
+            width: 100%;
+            margin-left: 0 !important;
         }
+        
+        /* Modal adjustments */
+        .modal-content {
+            width: 95% !important;
+            margin: 0.5rem !important;
+        }
+        
+        /* Filter and search layout */
+        .filter-container {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .search-form, .status-filter {
+            width: 100% !important;
+        }
+    }
+    
+    /* Custom scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #2d2d2d;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background-color: #ff5722;
+        border-radius: 20px;
+    }
+    
+    /* Better modal transitions */
+    .modal-transition {
+        transition: all 0.3s ease;
+    }
+    
+    /* Improved button spacing */
+    .button-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    /* Responsive table cell padding */
+    @media (max-width: 768px) {
+        td, th {
+            padding: 0.5rem !important;
+        }
+    }
 </style>
 
 <div class="py-8 sm:px-6 lg:px-4 h-screen">
@@ -146,7 +183,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Registration Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                     <tbody class="divide-y divide-black">
@@ -193,84 +230,112 @@
                             </td>
                         
                             
-                            <td class="px-4 py-4 text-right text-sm">
+                            <td class="px-4 py-4 text-center text-sm">
                                 @if($member->member_status == 'active')
-                                    <button 
-                                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
-                                        aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
-                                        title="View member details"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                        View
-                                    </button>
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button 
+                                            onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                            aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="View member details"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button 
+                                            onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Revoke membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            Revoke
+                                        </button>
+                                    </div>
                                 @elseif($member->member_status == 'expired' && $member->getMembershipType() != 'Session')
-                                    <button 
-                                        onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
-                                        aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                        title="Renew expired membership"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        Renew
-                                    </button>
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button 
+                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                            aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Renew expired membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Renew
+                                        </button>
+                                        <button 
+                                            onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Revoke membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            Revoke
+                                        </button>
+                                    </div>
                                 @elseif($member->member_status == 'expired' && $member->getMembershipType() == 'Session')
-                                    <button 
-                                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
-                                        aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
-                                        title="View member details"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
-                                        View
-                                    </button>
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button 
+                                            onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                            aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="View member details"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            View
+                                        </button>
+                                        <button 
+                                            onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Revoke membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            Revoke
+                                        </button>
+                                    </div>
                                 @elseif($member->member_status == 'revoked')
-                                    <button 
-                                        onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
-                                        class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
-                                        aria-label="View reason for revocation"
-                                        title="View reason for revocation"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                        </svg>
-                                        View Reason
-                                    </button>
-                                    <button 
-                                        onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
-                                        class="inline-flex items-center px-3 py-1.5 ml-2 bg-transparent hover:bg-green-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm"
-                                        aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                        title="Restore revoked membership"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                        </svg>
-                                        Restore
-                                    </button>
+                                    <div class="flex flex-wrap gap-2 justify-center">
+                                        <button 
+                                            onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent] hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm"
+                                            aria-label="View reason for revocation"
+                                            title="View reason for revocation"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                            </svg>
+                                            Reason
+                                        </button>
+                                        <button 
+                                            onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#38a169] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm"
+                                            aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Restore revoked membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Restore
+                                        </button>
+                                    </div>
                                 @endif
-                                
-                                @if($member->member_status == 'active' || $member->member_status == 'expired')
-                                    <button 
-                                        onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                        class="inline-flex items-center px-3 py-1.5 ml-2 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
-                                        aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                        title="Revoke membership"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                        </svg>
-                                        Revoke
-                                    </button>
-                                @endif
-                            </td>        
+                            </td> 
+                                  
                         </tr>
 
                         @endforeach
@@ -529,7 +594,7 @@
             
             <!-- Footer -->
             <div class="bg-gradient-to-r from-[#2c2c2c] to-[#1e1e1e] text-gray-400 border-t border-[#333333] py-2 sm:py-3 px-4 sm:px-6 flex justify-between items-center">
-                <p class="text-xs text-gray-300 mx-auto">Valid only with photo identification</p>
+                <p class="text-xs text-gray-300 mx-auto">Valid only upon registration</p>
             </div>
         </div>
     </div>

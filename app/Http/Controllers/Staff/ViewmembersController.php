@@ -86,7 +86,7 @@ class ViewmembersController extends Controller
         ]);
     }
 
-    /**
+   /**
      * Handle membership renewal.
      */
     public function renewMembership(Request $request)
@@ -126,9 +126,10 @@ class ViewmembersController extends Controller
         ]);
     
         return redirect()->route('staff.viewmembers')
-            ->with('success', 'Member renewed successfully!');    
+            ->with('success', 'Member renewal successfully!');    
+        
     }
-
+  
     /**
      * Revoke a member's access
      *
