@@ -147,7 +147,7 @@ public function foodLogs()
 }
 public function payment()
 {
-    return $this->hasOne(Payment::class)->latestOfMany();
+    return $this->hasOne(Payment::class, 'rfid_uid', 'rfid_uid');
 }
 
 
