@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\UserDetailController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserCalorieController;
+use App\Http\Controllers\UsdaFoodController;
 
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
@@ -83,7 +84,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
     
- 
+    // Route::apiResource('foods', FoodController::class);
+
+    Route::put('/user/profile', [AuthController::class, 'updateProfile']);
+
+    // Route::get('/foods/search', [FoodController::class, 'search']);
+    // In routes/api.php
+// routes/api.php
+    // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
+    // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
+    Route::get('/foods/search', [FoodController::class, 'search']);
 
 
 });

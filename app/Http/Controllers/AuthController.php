@@ -7,7 +7,8 @@ use App\Models\User;
 use App\Models\UserDetails;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 class AuthController extends Controller
 {
     // ✅ User Login
@@ -51,30 +52,29 @@ class AuthController extends Controller
     }
 
     // ✅ Get Authenticated User
-// AuthController.php
-public function user(Request $request)
-{
-    $user = $request->user(); // Get the authenticated user
-    
-    // Add null checks for dates using optional() helper
-    return response()->json([
-        'id' => $user->id,
-        'first_name' => $user->first_name,
-        'last_name' => $user->last_name,
-        // 'full_name' => $user->first_name . ' ' . $user->last_name,
-        'email' => $user->email,
-        'membership_type' => $user->membership_type,
-        'member_status' => $user->member_status,
-        'start_date' => $user->start_date, // Will output "2025-04-07" (MySQL format)
-        'end_date' => $user->end_date,
-        'rfid_uid' => $user->rfid_uid,
-        // Add any other fields you need from your users table
-        'gender' => $user->gender,
-        'phone_number' => $user->phone_number,
-        'birthdate' => optional($user->birthdate)->format('M d, Y'),
-        'session_status' => $user->session_status
-    ]);
-}
+    public function user(Request $request)
+    {
+        $user = $request->user(); // Get the authenticated user
+        
+        // Add null checks for dates using optional() helper
+        return response()->json([
+            'id' => $user->id,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            // 'full_name' => $user->first_name . ' ' . $user->last_name,
+            'email' => $user->email,
+            'membership_type' => $user->membership_type,
+            'member_status' => $user->member_status,
+            'start_date' => $user->start_date, // Will output "2025-04-07" (MySQL format)
+            'end_date' => $user->end_date,
+            'rfid_uid' => $user->rfid_uid,
+            // Add any other fields you need from your users table
+            'gender' => $user->gender,
+            'phone_number' => $user->phone_number,
+            'birthdate' => optional($user->birthdate)->format('M d, Y'),
+            'session_status' => $user->session_status
+        ]);
+    }
 
 
 
@@ -149,6 +149,67 @@ public function user(Request $request)
                 'message' => 'Password change failed',
                 'error' => $e->getMessage(),
                 'status' => 'error'
+            ], 500);
+        }
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = $request->user();
+        
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id)
+            ],
+            'phone_number' => 'nullable|string|max:11',
+            'birthdate' => 'nullable|date',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation errors',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+    
+        try {
+            $user->update($validator->validated());
+            
+            // Refresh the user model to get updated data
+            $user->refresh();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile updated successfully',
+                'data' => [
+                    'user' => $user->only([
+                        'id',
+                        'first_name',
+                        'last_name',
+                        'email',
+                        'phone_number',
+                        'birthdate',
+                        'membership_type',
+                        'start_date',
+                        'end_date',
+                        'rfid_uid',
+                        'member_status'
+                    ])
+                ]
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update profile',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
