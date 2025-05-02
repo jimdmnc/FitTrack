@@ -93,10 +93,10 @@ Route::middleware('auth:sanctum')->group(function () {
 // routes/api.php
     // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
     // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
+    Route::get('/foods/search', [FoodController::class, 'search']);
 
 
 });
-Route::get('/foods/search', [FoodController::class, 'search']);
 
 Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
 Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);

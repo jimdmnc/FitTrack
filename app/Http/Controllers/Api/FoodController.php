@@ -36,8 +36,12 @@ class FoodController extends Controller
     }
     
 
-    public function search(Request $request) {
-        $foods = Food::where('foodName', 'like', '%' . $request->query . '%')->get();
-        return response()->json($foods->toArray()); // Ensures array output
-    }
+ // In Laravel Controller
+public function search(Request $request) {
+    $foods = Food::where('foodName', 'like', '%' . $request->query . '%')->get();
+    return response()->json([
+        'success' => true,
+        'data' => $foods->toArray() // Ensures 'data' is always an array
+    ]);
+}
 }
