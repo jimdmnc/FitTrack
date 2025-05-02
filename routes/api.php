@@ -88,7 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
-    Route::get('/foods/search', [FoodController::class, 'updateProfile']);
+    Route::get('/foods/search', [FoodController::class, 'search']);
 
 
 // routes/api.php
