@@ -45,7 +45,7 @@ class FoodController extends Controller
             'query' => 'required|string|min:3'
         ]);
 
-        $foods = FoodList::where('foodName', 'like', '%'.$request->query.'%')
+        $foods = Food::where('foodName', 'like', '%'.$request->query.'%')
                         ->limit(50) // Prevent too many results
                         ->get();
 
