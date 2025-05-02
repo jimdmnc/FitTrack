@@ -126,7 +126,7 @@
                             GCash
                         </span>
                         @elseif($user->payment && $user->payment->payment_method == 'cash')
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold text-yellow-600">
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold text-yellow-200">
                             Cash
                         </span>
                     @else
