@@ -122,12 +122,12 @@
                         </td>
                 <td class="p-3 font-medium text-gray-200">
                 @if($user->payment && $user->payment->payment_method == 'gcash')
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold text-green-600">
-                            GCash
+                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
+                            GCASH
                         </span>
                         @elseif($user->payment && $user->payment->payment_method == 'cash')
                         <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                        Cash
+                            CASH
                         </span>
                     @else
                         <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
