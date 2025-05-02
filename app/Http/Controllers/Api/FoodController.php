@@ -44,7 +44,7 @@ class FoodController extends Controller
                 'query' => 'required|string|min:3'
             ]);
     
-            $foods = Food::where('foodName', 'LIKE', '%'.$request->input('query').'%')
+            $foods = Food::where('foodName', 'like', '%'.$request->input('query').'%')
                             ->get();
     
             return response()->json([
