@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\UserDetailController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserCalorieController;
+use App\Http\Controllers\UsdaFoodController;
 
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
@@ -86,6 +87,15 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::apiResource('foods', FoodController::class);
 
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
+
+
+
+// routes/api.php
+Route::group(['middleware' => 'auth:api'], function() {
+    Route::get('/usda/search', [UsdaFoodController::class, 'search']);
+    Route::post('/usda/save', [UsdaFoodController::class, 'save']);
+});
+
 
 });
 
