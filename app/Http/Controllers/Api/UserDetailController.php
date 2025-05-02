@@ -284,7 +284,7 @@ class UserDetailController extends Controller
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                // 'member_status' => 'expired', // Set to expired until approved
+                'member_status' => 'expired', // Set to expired until approved
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
