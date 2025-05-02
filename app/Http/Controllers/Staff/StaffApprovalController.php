@@ -13,7 +13,7 @@ class StaffApprovalController extends Controller
     // Show pending users
     public function index()
     {
-        // Retrieve users with session_status 'pending', needing approval, and with 'user' role
+        // Retrieve only users with session_status 'pending' and role 'user'
         $pendingUsers = User::where('session_status', 'pending')
             ->where('needs_approval', true)
             ->where('role', 'user')
@@ -21,8 +21,14 @@ class StaffApprovalController extends Controller
                 $query->latest(); // Assuming you want the latest payment
             }])
             ->get();
-    
-        return view('staff.pending-approvals', compact('pendingUsers'));
+
+        // Get the count of pending approvals
+        $pendingApprovalCount = $pendingUsers->count();
+        
+
+        // Pass the count to the view
+        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+        
     }
 
     // Approve New User Registration
