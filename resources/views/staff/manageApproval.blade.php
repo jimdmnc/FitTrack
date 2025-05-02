@@ -120,31 +120,34 @@
                                 </span>
                             @endif
                         </td>
-                <td class="p-3 font-medium text-gray-200">
-                @if($user->payment && $user->payment->payment_method == 'gcash')
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                            GCASH
-                        </span>
-                        @elseif($user->payment && $user->payment->payment_method == 'cash')
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                            CASH
-                        </span>
-                    @else
-                        <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
-                            Unknown
-                        </span>
-                    @endif
-                </td>
+
+                        <td class="p-3 font-medium text-gray-200">
+                            @if($user->payment && $user->payment->payment_method == 'gcash')
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
+                                    GCASH
+                                </span>
+                                @elseif($user->payment && $user->payment->payment_method == 'cash')
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
+                                    CASH
+                                </span>
+                            @else
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
+                                    Unknown
+                                </span>
+                            @endif
+                        </td>
+
                         <td class="p-3 font-medium">
                             <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
                             <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
                         </td>
+
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-2">
                                 <form action="{{route('staff.approveUser', $user->id)}}" method="POST" class="inline-block">
                                     @csrf
                                     @method('PUT')
-                                    <button type="submit" class="bg-green-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-green-600 transition-colors flex items-center">
+                                    <button type="submit" class="bg-green-200 text-green-900 px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-green-600 transition-colors flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                         </svg>
@@ -152,7 +155,7 @@
                                     </button>
                                 </form>
 
-                                <button onclick="rejectUser({{ $user->id }})" class="bg-red-500 text-white px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-600 transition-colors flex items-center">
+                                <button onclick="rejectUser({{ $user->id }})" class="bg-red-200 text-red-900 px-3 py-2 rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-600 transition-colors flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                     </svg>
