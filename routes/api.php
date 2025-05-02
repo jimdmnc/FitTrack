@@ -88,8 +88,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
-    Route::get('/foods/search', [FoodController::class, 'search']);
-
+    // Route::get('/foods/search', [FoodController::class, 'search']);
+    // In routes/api.php
+    Route::get('/foods/search', 'FoodController@search'); // Remove auth middleware temporarily
 
 // routes/api.php
     // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
