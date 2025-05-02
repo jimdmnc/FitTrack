@@ -32,45 +32,45 @@ class UserDetailController extends Controller
 /**
  * Store or update user details
  */
-public function store(Request $request)
-{
-    $validator = Validator::make($request->all(), $this->userDetailRules);
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), $this->userDetailRules);
 
-    if ($validator->fails()) {
-        return $this->errorResponse('Validation failed', $validator->errors(), 422);
+        if ($validator->fails()) {
+            return $this->errorResponse('Validation failed', $validator->errors(), 422);
+        }
+
+        $user = Auth::user();
+        if (!$user->rfid_uid) {
+            return $this->errorResponse('RFID UID not found for the user', null, 400);
+        }
+
+        try {
+            $data = $validator->validated();
+            $data['target_muscle'] = $data['target_muscle'] ?? null;
+
+            $userDetail = UserDetail::updateOrCreate(
+                ['rfid_uid' => $user->rfid_uid],
+                $data
+            );
+
+            return $this->successResponse(
+                'User details saved successfully',
+                $userDetail,
+                201
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to save user details', $e->getMessage(), 500);
+        }
     }
-
-    $user = Auth::user();
-    if (!$user->rfid_uid) {
-        return $this->errorResponse('RFID UID not found for the user', null, 400);
-    }
-
-    try {
-        $data = $validator->validated();
-        $data['target_muscle'] = $data['target_muscle'] ?? null;
-
-        $userDetail = UserDetail::updateOrCreate(
-            ['rfid_uid' => $user->rfid_uid],
-            $data
-        );
-
-        return $this->successResponse(
-            'User details saved successfully',
-            $userDetail,
-            201
-        );
-    } catch (\Exception $e) {
-        return $this->errorResponse('Failed to save user details', $e->getMessage(), 500);
-    }
-}
 
 /**
  * Update user details (alias for store)
  */
-public function update(Request $request)
-{
-    return $this->store($request);
-}
+    public function update(Request $request)
+    {
+        return $this->store($request);
+    }
 
 /**
  * Get authenticated user's details
@@ -114,6 +114,7 @@ public function update(Request $request)
             'target_muscle' => $details->target_muscle
         ]);
     }
+
 
     public function getDailyCalories(Request $request)
     {
@@ -168,7 +169,7 @@ public function update(Request $request)
     
     
 
-/**
+    /**
      * Update user weight
      */
     public function updateWeight(Request $request, $rfid)
@@ -212,7 +213,7 @@ public function update(Request $request)
      * Get weight history
      */
     public function getWeightHistory($rfid_uid)
-    {
+        {
         if (empty($rfid_uid)) {
             return $this->errorResponse('RFID UID is required', null, 400);
         }
@@ -277,53 +278,16 @@ public function update(Request $request)
             ], 404);
         }
     
-        $isCash = $request->payment_method === 'cash';
-        $sessionStatus = $isCash ? 'pending' : 'approved';
-        $needsApproval = $isCash ? 1 : 0;
-    
         try {
-            if (!$isCash) {
-                // Process GCash payment
-                $paymongoService = new PayMongoService();
-                
-                // Create GCash source
-                $source = $paymongoService->createGcashSource(
-                    $request->amount,
-                    "Membership renewal for {$user->name}",
-                    [
-                        'user_id' => $user->id,
-                        'rfid_uid' => $user->rfid_uid,
-                        'membership_type' => $request->membership_type,
-                    ]
-                );
-    
-                // Verify payment (this will wait for payment to be chargeable)
-                $verifiedSource = $paymongoService->verifyPayment($source['id']);
-    
-                if ($verifiedSource['attributes']['status'] !== 'chargeable') {
-                    throw new \Exception('GCash payment not completed');
-                }
-    
-                // Payment successful - update user membership
-                $user->update([
-                    'membership_type' => $request->membership_type,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'member_status' => 'active',
-                    'session_status' => $sessionStatus,
-                    'needs_approval' => $needsApproval,
-                ]);
-            } else {
-                // Cash payment - no immediate update to dates
-                $user->update([
-                    'membership_type' => $request->membership_type,
-                    'member_status' => 'expired',
-                    'session_status' => $sessionStatus,
-                    'needs_approval' => $needsApproval,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                ]);
-            }
+            // Update user membership - both payment methods will be pending approval
+            $user->update([
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'member_status' => 'expired', // Set to expired until approved
+                'session_status' => 'pending',
+                'needs_approval' => 1,
+            ]);
     
             // Create Renewal and Payment records
             $renewal = Renewal::create([
@@ -332,8 +296,8 @@ public function update(Request $request)
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'payment_method' => $request->payment_method,
-                'status' => $sessionStatus,
-                'payment_reference' => !$isCash ? $verifiedSource['id'] : null,
+                'status' => 'pending',
+                'payment_reference' => null,
             ]);
     
             MembersPayment::create([
@@ -341,28 +305,23 @@ public function update(Request $request)
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_reference' => !$isCash ? $verifiedSource['id'] : null,
-                'status' => !$isCash ? 'completed' : 'pending',
+                'payment_reference' => null,
+                'status' => 'pending',
             ]);
     
             return response()->json([
                 'success' => true,
-                'message' => $isCash 
-                    ? 'Renewal request submitted. Waiting for staff approval.'
-                    : 'Membership renewed successfully!',
+                'message' => 'Renewal request submitted. Waiting for staff approval.',
                 'user' => $user,
-                // For GCash, include the checkout URL if needed
-                'checkout_url' => !$isCash ? $verifiedSource['attributes']['redirect']['checkout_url'] ?? null : null,
             ]);
     
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Payment failed: ' . $e->getMessage(),
+                'message' => 'Renewal failed: ' . $e->getMessage(),
             ], 400);
         }
     }
-
 /**
  * Get payment history
  */
