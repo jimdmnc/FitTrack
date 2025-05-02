@@ -54,18 +54,7 @@ class StaffApprovalController extends Controller
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
 
-    // Approve Membership Renewal
-    // public function renewMembership($id)
-    // {
-    //     $user = User::findOrFail($id);
 
-    //     // Update only the member_status
-    //     $user->member_status = 'active';
-    //     $user->needs_approval = false;
-    //     $user->save();
-
-    //     return redirect()->route('staff.manageApproval')->with('success', 'Membership renewed successfully!');
-    // }
 
     // Reject User Request
     public function rejectUser(Request $request, $id)

@@ -85,7 +85,7 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Gender</th>
-                        <!-- <th class="p-3 text-left">Type</th> -->
+                        <th class="p-3 text-left">Membeship Type</th>
                         <th class="p-3 text-left">Registration Date</th>
                         <th class="p-3 text-center">Actions</th>
                     </tr>   
@@ -96,12 +96,25 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
                         <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
-                        <!-- <td class="p-3 font-medium text-gray-200">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold 
-                                {{ $user->approval_type == 'Registration' ? 'bg-blue-500 text-white' : 'bg-yellow-500 text-black' }}">
-                                {{ $user->approval_type }}
-                            </span>
-                        </td>  -->
+                        <td class="p-3 font-medium text-gray-200">
+                @if($user->membership_type == '7')
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-500 text-white">
+                        Weekly Membership
+                    </span>
+                @elseif($user->membership_type == '30')
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-500 text-white">
+                        Monthly Membership
+                    </span>
+                @elseif($user->membership_type == '365')
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
+                        Annual Membership
+                    </span>
+                @else
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
+                        {{ $user->membership_type ?? 'N/A' }}
+                    </span>
+                @endif
+            </td>
                         <td class="p-3 font-medium">
                             <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
                             <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
