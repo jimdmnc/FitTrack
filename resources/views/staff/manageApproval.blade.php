@@ -98,19 +98,19 @@
                         <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
                         <td class="p-3 font-medium text-gray-200">
                 @if($user->membership_type == '7')
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-500 text-white">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
                         Weekly Membership
                     </span>
                 @elseif($user->membership_type == '30')
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-500 text-white">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">
                         Monthly Membership
                     </span>
                 @elseif($user->membership_type == '365')
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-500 text-white">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold  bg-purple-900 text-purple-200">
                         Annual Membership
                     </span>
                 @else
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
                         {{ $user->membership_type ?? 'N/A' }}
                     </span>
                 @endif
