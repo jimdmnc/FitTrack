@@ -224,7 +224,7 @@
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-            <!-- New Members Card -->
+        <!-- New Members Card -->
             <div class="glass-card1 p-4">
                 <div class="flex justify-between items-start">
                     <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
@@ -1001,36 +1001,42 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateTrendLine(counts, period = 'daily') {
-    if (counts.length < 2) return counts.slice();
+    if (counts.length < 2) return counts.slice(); // Return a copy
     
-    // Determine window size based on period
-    let windowSize;
-    switch(period) {
-        case 'weekly':
-            windowSize = 4; // 4 weeks to see monthly pattern
-            break;
-        case 'monthly':
-            windowSize = 6; // 6 months to see half-year pattern
-            break;
-        case 'yearly':
-            windowSize = 3; // 3 years to see multi-year pattern
-            break;
-        default: // daily
-            windowSize = 7; // 7 days to see weekly pattern
+    // For very small datasets, use simple linear regression
+    if (counts.length <= 7) {
+        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+        const n = counts.length;
+        
+        for (let i = 0; i < n; i++) {
+            sumX += i;
+            sumY += counts[i];
+            sumXY += i * counts[i];
+            sumXX += i * i;
+        }
+        
+        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        const b = (sumY - m * sumX) / n;
+        
+        return counts.map((_, i) => m * i + b);
     }
     
-    // Ensure window isn't larger than dataset
-    windowSize = Math.min(windowSize, counts.length);
+    // Original windowed approach for larger datasets
+    let windowSize;
+    switch(period) {
+        case 'weekly': windowSize = 4; break;
+        case 'monthly': windowSize = 6; break;
+        case 'yearly': windowSize = 3; break;
+        default: windowSize = 7;
+    }
     
+    windowSize = Math.min(windowSize, counts.length);
     const trendLine = [];
     
     for (let i = 0; i < counts.length; i++) {
-        // Determine the window bounds
         const start = Math.max(0, i - windowSize + 1);
-        const end = i + 1;
-        const windowData = counts.slice(start, end);
+        const windowData = counts.slice(start, i + 1);
         
-        // Calculate linear regression for this window
         let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
         const n = windowData.length;
         
@@ -1043,12 +1049,10 @@ document.addEventListener("DOMContentLoaded", function () {
         
         const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
         const b = (sumY - m * sumX) / n;
-        
-        // Use the most recent trend value
         trendLine.push(m * (n-1) + b);
     }
     
-    return trendLine.length === counts.length ? trendLine : counts.slice();
+    return trendLine;
 }
 
     function updateSummaryStats(dataSet) {
@@ -1092,15 +1096,13 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     label: 'Trend',
-                    data: calculateTrendLine(dataCounts, 'daily'), // Make sure to pass the correct period
+                    data: calculateTrendLine(dataCounts),
                     type: 'line',
                     fill: false,
                     borderColor: '#FF5722',
                     borderDash: [5, 5],
                     pointBackgroundColor: '#FF5722',
-                    tension: 0.1,
-                    pointRadius: 3, // Ensure points are visible
-                    pointHoverRadius: 5
+                    tension: 0.1
                 }
             ]
         },
@@ -1196,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 myChart.data.labels = newData.labels;
                 myChart.data.datasets[0].data = newData.dataCounts;
-                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts, period); // Pass the period
+                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts);
                 myChart.update();
 
                 hideLoading();
