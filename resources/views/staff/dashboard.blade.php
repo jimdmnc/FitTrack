@@ -977,8 +977,10 @@
 </script>
 
 
-<!-- ============================================= Check INs data is correctly passed from PHP============================================= -->
-<script>
+<!-- ============================================= 
+     Check-ins Chart with Improved Trend Line and Enhanced Visualization
+     ============================================= -->
+     <script>
 document.addEventListener("DOMContentLoaded", function () {
     // Get check-in data from Laravel
     var dailyCheckIns = @json($dailyCheckIns);
@@ -986,13 +988,7 @@ document.addEventListener("DOMContentLoaded", function () {
     var monthlyCheckIns = @json($monthlyCheckIns);
     var yearlyCheckIns = @json($yearlyCheckIns);
 
-    // These variables are defined but not used for the trend line
-    // You can remove them if not needed elsewhere
-    // var previousDailyCheckIns = @json($previousDailyCheckIns);
-    // var previousWeeklyCheckIns = @json($previousWeeklyCheckIns);
-    // var previousMonthlyCheckIns = @json($previousMonthlyCheckIns);
-    // var previousYearlyCheckIns = @json($previousYearlyCheckIns);
-
+    // Format data for chart usage
     function getChartData(dataSet) {
         return {
             labels: dataSet.map(item => item.date),
@@ -1000,50 +996,59 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     }
 
+    /**
+     * Calculate trend line that follows the bar heights
+     * Uses a centered moving average for smoothing
+     */
     function calculateTrendLine(counts, period = 'daily') {
-    // If we have fewer than 2 data points, we can't calculate a trend
-    if (counts.length < 2) return counts;
-    
-    // For a smoothed line over the top of bars, we'll use moving average
-    // Determine window size based on period
-    let windowSize;
-    switch(period) {
-        case 'weekly':
-            windowSize = 3; // 3 weeks for weekly view
-            break;
-        case 'monthly':
-            windowSize = 3; // 3 months for monthly view
-            break;
-        case 'yearly':
-            windowSize = 2; // 2 years for yearly view
-            break;
-        default: // daily
-            windowSize = 5; // 5 days for daily view
-    }
-    
-    // Ensure window size doesn't exceed data length
-    windowSize = Math.min(windowSize, counts.length);
-    
-    // Simple moving average calculation
-    const movingAverage = [];
-    
-    for (let i = 0; i < counts.length; i++) {
-        // Calculate window boundaries
-        const start = Math.max(0, i - Math.floor(windowSize / 2));
-        const end = Math.min(counts.length, i + Math.floor(windowSize / 2) + 1);
+        // If we have too few data points, return original data
+        if (counts.length < 2) return counts;
         
-        // Calculate sum of values in window
-        let sum = 0;
-        for (let j = start; j < end; j++) {
-            sum += counts[j];
+        // Determine optimal window size based on period and data length
+        let windowSize;
+        switch(period) {
+            case 'weekly':
+                windowSize = Math.min(3, counts.length); // 3-week window
+                break;
+            case 'monthly':
+                windowSize = Math.min(3, counts.length); // 3-month window
+                break;
+            case 'yearly':
+                windowSize = Math.min(2, counts.length); // 2-year window
+                break;
+            default: // daily
+                windowSize = Math.min(5, counts.length); // 5-day window
         }
         
-        // Calculate average
-        movingAverage.push(sum / (end - start));
+        // Ensure window size is odd for proper centering
+        if (windowSize % 2 === 0) windowSize++;
+        
+        // Enhanced moving average with padding for smoothing edge points
+        const halfWindow = Math.floor(windowSize / 2);
+        const paddedCounts = [...counts];
+        const result = [];
+        
+        for (let i = 0; i < counts.length; i++) {
+            let sum = 0;
+            let weightSum = 0;
+            
+            for (let j = -halfWindow; j <= halfWindow; j++) {
+                const index = i + j;
+                if (index >= 0 && index < counts.length) {
+                    // Apply triangular weighting (more weight to center)
+                    const weight = 1 - Math.abs(j) / (halfWindow + 1);
+                    sum += counts[index] * weight;
+                    weightSum += weight;
+                }
+            }
+            
+            result.push(weightSum > 0 ? sum / weightSum : counts[i]);
+        }
+        
+        return result;
     }
-    
-    return movingAverage;
-}
+
+    // Update summary statistics
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
         const total = counts.reduce((sum, count) => sum + count, 0);
@@ -1053,9 +1058,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('total-checkins').textContent = total.toLocaleString();
         document.getElementById('avg-checkins').textContent = avg.toLocaleString();
-        document.getElementById('peak-checkins').textContent = `${peak} (${peakDay})`;
+        document.getElementById('peak-checkins').textContent = `${peak.toLocaleString()} (${peakDay})`;
     }
 
+    // Loading state functions
     function showLoading() {
         document.getElementById('chart-loading').classList.remove('hidden');
     }
@@ -1064,10 +1070,25 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('chart-loading').classList.add('hidden');
     }
 
-    // Initial dataset
+    // Get initial dataset
     var { labels, dataCounts } = getChartData(dailyCheckIns);
     updateSummaryStats(dailyCheckIns);
 
+    // Color configuration
+    const chartColors = {
+        bar: {
+            background: 'rgba(246, 174, 59, 0.8)',
+            border: '#FF5722'
+        },
+        trend: {
+            line: '#FF5722',
+            point: '#FF5722'
+        },
+        grid: '#E5E7EB',
+        text: '#6B7280'
+    };
+
+    // Initialize chart
     var myChart = new Chart(document.getElementById("checkins-chart").getContext("2d"), {
         type: 'bar',
         data: {
@@ -1076,8 +1097,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 {
                     label: 'Check-ins',
                     data: dataCounts,
-                    backgroundColor: 'rgba(246, 174, 59, 0.8)',
-                    borderColor: '#FF5722',
+                    backgroundColor: chartColors.bar.background,
+                    borderColor: chartColors.bar.border,
                     borderWidth: 2,
                     borderRadius: 4,
                     barThickness: 'flex',
@@ -1085,13 +1106,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     label: 'Trend',
-                    data: calculateTrendLine(dataCounts),
+                    data: calculateTrendLine(dataCounts, 'daily'),
                     type: 'line',
                     fill: false,
-                    borderColor: '#FF5722',
+                    borderColor: chartColors.trend.line,
                     borderDash: [5, 5],
-                    pointBackgroundColor: '#FF5722',
-                    tension: 0.1
+                    pointBackgroundColor: chartColors.trend.point,
+                    pointRadius: 3,
+                    tension: 0.4,
+                    order: 0 // Ensure trend line appears on top of bars
                 }
             ]
         },
@@ -1103,9 +1126,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 intersect: false
             },
             plugins: {
-                legend: { display: false },
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 15,
+                        color: chartColors.text,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
                 tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
                     titleColor: '#1F2937',
                     bodyColor: '#4B5563',
                     borderColor: '#E5E7EB',
@@ -1126,43 +1160,60 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             scales: {
                 x: {
-                    grid: { display: false },
+                    grid: { 
+                        display: false 
+                    },
                     ticks: {
                         maxRotation: 0,
-                        color: '#9CA3AF'
+                        color: chartColors.text,
+                        font: {
+                            size: 11
+                        }
                     }
                 },
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#FF5722' },
+                    grid: { 
+                        color: chartColors.grid,
+                        drawBorder: false
+                    },
                     ticks: {
-                        stepSize: 5,
-                        color: '#9CA3AF',
+                        color: chartColors.text,
+                        font: {
+                            size: 11
+                        },
                         callback: function (value) {
                             return value.toLocaleString();
                         }
                     }
                 }
             },
-            animation: { duration: 500 }
+            animation: { 
+                duration: 600,
+                easing: 'easeOutQuart'
+            }
         }
     });
 
     // Switch chart by period
     document.querySelectorAll(".period-button").forEach(button => {
         button.addEventListener("click", function () {
+            // Update active state
             document.querySelectorAll(".period-button").forEach(btn => {
                 btn.classList.remove("active", "bg-white", "text-orange-600");
             });
             this.classList.add("active", "bg-white", "text-orange-600");
+            
+            // Show loading state
             showLoading();
 
             const period = this.dataset.period;
 
+            // Update chart with slight delay for animation
             setTimeout(() => {
                 let newData;
                 
-
+                // Get data for selected period
                 switch (period) {
                     case "weekly":
                         newData = getChartData(weeklyCheckIns);
@@ -1185,16 +1236,24 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById('h3').textContent = 'Daily Check-ins';
                 }
 
+                // Update chart data
                 myChart.data.labels = newData.labels;
                 myChart.data.datasets[0].data = newData.dataCounts;
-                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts);
+                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts, period);
+                
+                // Adjust Y axis settings based on data
+                const maxValue = Math.max(...newData.dataCounts);
+                const step = maxValue > 100 ? 20 : (maxValue > 50 ? 10 : 5);
+                myChart.options.scales.y.ticks.stepSize = step;
+                
+                // Update chart and hide loading indicator
                 myChart.update();
-
                 hideLoading();
             }, 500);
         });
     });
 
+    // Button hover effects
     document.querySelectorAll('.chart-action-button').forEach(button => {
         button.addEventListener('mouseenter', function () {
             this.querySelector('i').classList.add('text-orange-600');
@@ -1203,6 +1262,16 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener('mouseleave', function () {
             this.querySelector('i').classList.remove('text-orange-600');
         });
+    });
+    
+    // Export chart as image function (if needed)
+    document.getElementById('export-chart')?.addEventListener('click', function() {
+        const canvas = document.getElementById('checkins-chart');
+        const image = canvas.toDataURL('image/png', 1.0);
+        const link = document.createElement('a');
+        link.download = 'check-ins-chart.png';
+        link.href = image;
+        link.click();
     });
 });
 </script>
