@@ -162,57 +162,6 @@ public function getAllFoodLogs(Request $request)
 
 
 
-// public function getAllFoodLogs(Request $request)
-// {
-//     try {
-//         $user = auth()->user();
-        
-//         // Validate user has RFID UID
-//         if (!$user->rfid_uid) {
-//             return response()->json([
-//                 'status' => 'error',
-//                 'message' => 'User RFID not found'
-//             ], 400);
-//         }
 
-//         // Get logs with pagination (optional)
-//         $logs = FoodLog::with('food')
-//             ->where('rfid_uid', $user->rfid_uid)
-//             ->orderBy('date', 'desc')
-//             ->orderBy('created_at', 'desc')
-//             ->get();
-
-//         $formattedLogs = $logs->map(function ($log) {
-//             return [
-//                 'id' => $log->id,
-//                 'food_id' => $log->food_id,
-//                 'foodName' => $log->food ? $log->food->foodName : 'Unknown Food',
-//                 'meal_type' => $log->meal_type,
-//                 'quantity' => (float)$log->quantity,
-//                 'total_calories' => (float)$log->total_calories,
-//                 'total_protein' => (float)$log->total_protein,
-//                 'total_fats' => (float)$log->total_fats,
-//                 'total_carbs' => (float)$log->total_carbs,
-//                 'date' => $log->date, // Already formatted in model (see note below)
-//                 'time' => optional($log->created_at)->format('H:i:s'), // Add time
-//             ];
-//         });
-
-//         return response()->json([
-//             'status' => 'success',
-//             'data' => [
-//                 'food_logs' => $formattedLogs,
-//                 'count' => $logs->count()
-//             ]
-//         ]);
-
-//     } catch (\Exception $e) {
-//         return response()->json([
-//             'status' => 'error',
-//             'message' => 'Server error',
-//             'error' => $e->getMessage()
-//         ], 500);
-//     }
-// }
 
 }
