@@ -1001,33 +1001,56 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateTrendLine(counts, period = 'daily') {
-    // If we have fewer than 2 data points, we can't calculate a trend
     if (counts.length < 2) return counts;
     
-    // Map indices to x values (0, 1, 2, ...) for regression calculation
-    const x = Array.from({ length: counts.length }, (_, i) => i);
-    const y = counts;
-    
-    // Calculate means
-    const meanX = x.reduce((sum, val) => sum + val, 0) / x.length;
-    const meanY = y.reduce((sum, val) => sum + val, 0) / y.length;
-    
-    // Calculate slope (m) and y-intercept (b) for line equation y = mx + b
-    let numerator = 0;
-    let denominator = 0;
-    
-    for (let i = 0; i < x.length; i++) {
-        numerator += (x[i] - meanX) * (y[i] - meanY);
-        denominator += Math.pow(x[i] - meanX, 2);
+    // Determine window size based on period
+    let windowSize;
+    switch(period) {
+        case 'weekly':
+            windowSize = 4; // 4 weeks to see monthly pattern
+            break;
+        case 'monthly':
+            windowSize = 6; // 6 months to see half-year pattern
+            break;
+        case 'yearly':
+            windowSize = 3; // 3 years to see multi-year pattern
+            break;
+        default: // daily
+            windowSize = 7; // 7 days to see weekly pattern
     }
     
-    // Avoid division by zero
-    const m = denominator !== 0 ? numerator / denominator : 0;
-    const b = meanY - m * meanX;
+    // Ensure window isn't larger than dataset
+    windowSize = Math.min(windowSize, counts.length);
     
-    // Generate trend line points using the line equation
-    return x.map(xi => m * xi + b);
+    const trendLine = [];
+    
+    for (let i = 0; i < counts.length; i++) {
+        // Determine the window bounds
+        const start = Math.max(0, i - windowSize + 1);
+        const end = i + 1;
+        const windowData = counts.slice(start, end);
+        
+        // Calculate linear regression for this window
+        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+        const n = windowData.length;
+        
+        for (let j = 0; j < n; j++) {
+            sumX += j;
+            sumY += windowData[j];
+            sumXY += j * windowData[j];
+            sumXX += j * j;
+        }
+        
+        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+        const b = (sumY - m * sumX) / n;
+        
+        // Use the most recent trend value
+        trendLine.push(m * (n-1) + b);
+    }
+    
+    return trendLine;
 }
+
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
         const total = counts.reduce((sum, count) => sum + count, 0);
@@ -1057,37 +1080,28 @@ document.addEventListener("DOMContentLoaded", function () {
         data: {
             labels: labels,
             datasets: [
-                // Bar graph (will appear behind)
-            {
-                label: 'Check-ins',
-                data: dataCounts,
-                backgroundColor: 'rgba(246, 174, 59, 0.8)',
-                borderColor: '#FF5722',
-                borderWidth: 2,
-                borderRadius: 4,
-                barThickness: 'flex',
-                maxBarThickness: 25,
-                order: 2 // Higher number means lower z-index (behind)
-            },
-            // Trend line (will appear on top)
-            {
-                label: 'Trend',
-                data: calculateTrendLine(dataCounts),
-                type: 'line',
-                fill: false,
-                borderColor: '#FF5722',
-                borderWidth: 2, // Thicker line
-                borderDash: [0, 0], // Solid line (removed dashes)
-                pointBackgroundColor: '#FF5722',
-                pointBorderColor: '#FFFFFF',
-                pointBorderWidth: 2,
-                pointRadius: 5, // Larger dots
-                pointHoverRadius: 7,
-                tension: 0.1,
-                order: 1 // Lower number means higher z-index (on top)
-            }
-        ]
-    },
+                {
+                    label: 'Check-ins',
+                    data: dataCounts,
+                    backgroundColor: 'rgba(246, 174, 59, 0.8)',
+                    borderColor: '#FF5722',
+                    borderWidth: 2,
+                    borderRadius: 4,
+                    barThickness: 'flex',
+                    maxBarThickness: 25
+                },
+                {
+                    label: 'Trend',
+                    data: calculateTrendLine(dataCounts),
+                    type: 'line',
+                    fill: false,
+                    borderColor: '#FF5722',
+                    borderDash: [5, 5],
+                    pointBackgroundColor: '#FF5722',
+                    tension: 0.1
+                }
+            ]
+        },
         options: {
             responsive: true,
             maintainAspectRatio: false,
