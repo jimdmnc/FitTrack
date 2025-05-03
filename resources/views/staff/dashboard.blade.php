@@ -1068,7 +1068,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     ticks: {
                         maxRotation: 0,
                         color: '#9CA3AF'
-                    }
+                    },  barPercentage: 0.6,  // Controls bar width (0.6 = 60% of available space)
+                    categoryPercentage: 0.8  // Controls space between categories (0.8 = 80% of available space)
                 },
                 y: {
                     beginAtZero: true,
