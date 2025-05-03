@@ -224,90 +224,91 @@
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
-  <!-- New Members Card -->
-        <div class="glass-card1 p-4">
-            <div class="flex justify-between items-start">
-                <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
-                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
-                        New <br>Members
-                    </h3>
-                    <div class="flex items-baseline">
-                        <div class="text-3xl font-bold text-gray-200 mr-2">
-                            {{ $newMembersData['currentWeekNewMembers'] }}
+            <!-- New Members Card -->
+            <div class="glass-card1 p-4">
+                <div class="flex justify-between items-start">
+                    <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
+                        <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
+                            New <br>Members
+                        </h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-200 mr-2">
+                                {{ $newMembersData['currentWeekNewMembers'] }}
+                            </div>
+                            <span class="text-lg text-gray-200">members</span>
                         </div>
-                        <span class="text-lg text-gray-200">members</span>
-                    </div>
 
-                    <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                    <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                        {{ $newMembersData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
-                        <i class="fas {{ $newMembersData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
-                        <span class="text-sm font-medium">
-                            {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Icon on the Right Side (Takes up 30% width) -->
-                <div class="w-1/3 flex items-center justify-center text-orange-500">
-                    <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Today's Check-ins Card -->
-        <div class="glass-card1 p-3">
-            <div class="flex justify-between items-start">
-                <div class="w-2/3">
-                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
-                        Today's <br>Check-ins
-                    </h3>
-                    <div class="flex items-baseline">
-                        <div class="text-3xl font-bold text-gray-200 mr-2">
-                            {{ $todaysCheckInsData['todaysCheckIns'] }}
+                        <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                            {{ $newMembersData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
+                            <i class="fas {{ $newMembersData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
+                            <span class="text-sm font-medium">
+                                {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
+                            </span>
                         </div>
-                        <span class="text-lg text-gray-200">members</span>
                     </div>
 
-                    <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                    <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                        {{ $todaysCheckInsData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
-                        <i class="fas {{ $todaysCheckInsData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
-                        <span class="text-sm font-medium">
-                            {{ str_replace(['▲', '▼'], '', $todaysCheckInsData['formattedPercentageChange']) }}
-                        </span>
+                    <!-- Icon on the Right Side (Takes up 30% width) -->
+                    <div class="w-1/3 flex items-center justify-center text-orange-500">
+                        <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
                     </div>
-                </div>
-
-                <!-- Icon on the Right Side (Takes up 30% width) -->
-                <div class="w-1/3 flex items-center justify-center mr-4">
-                    <i class="fas fa-check-circle text-5xl text-orange-500"></i>
                 </div>
             </div>
-        </div>
-        
-        <!-- Soon to Expire Card -->
-        <div class="glass-card1 p-3">
-            <div class="flex justify-between items-start">
-                <div class="w-2/3">
-                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
-                    <div class="flex items-baseline">
-                        <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
-                        <span class="text-lg text-gray-200">members</span>
+
+            <!-- Today's Check-ins Card -->
+            <div class="glass-card1 p-3">
+                <div class="flex justify-between items-start">
+                    <div class="w-2/3">
+                        <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">
+                            Today's <br>Check-ins
+                        </h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-200 mr-2">
+                                {{ $todaysCheckInsData['todaysCheckIns'] }}
+                            </div>
+                            <span class="text-lg text-gray-200">members</span>
+                        </div>
+
+                        <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                        <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                            {{ $todaysCheckInsData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
+                            <i class="fas {{ $todaysCheckInsData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
+                            <span class="text-sm font-medium">
+                                {{ str_replace(['▲', '▼'], '', $todaysCheckInsData['formattedPercentageChange']) }}
+                            </span>
+                        </div>
                     </div>
-                    <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover: hover:text-orange-400 hover:translate-y-[-2px]">
-                        <span class="text-sm font-medium">Manage Renewals</span>
-                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
-                    </a>
-                </div>
 
-                <!-- Icon on the Right Side (Takes up 30% width) -->
-                <div class="w-1/3 flex items-center justify-center ext-red-900">
-                    <i class="fas fa-calendar-times text-5xl text-orange-500"></i>
+                    <!-- Icon on the Right Side (Takes up 30% width) -->
+                    <div class="w-1/3 flex items-center justify-center mr-4">
+                        <i class="fas fa-check-circle text-5xl text-orange-500"></i>
+                    </div>
                 </div>
-
             </div>
-        </div>
+
+            <!-- Soon to Expire Card -->
+            <div class="glass-card1 p-3">
+                <div class="flex justify-between items-start">
+                    <div class="w-2/3">
+                        <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wide mb-2">Memberships <br> Expiring Soon</h3>
+                        <div class="flex items-baseline">
+                            <div class="text-3xl font-bold text-gray-200 mr-2">{{ $expiringMemberships }}</div>
+                            <span class="text-lg text-gray-200">members</span>
+                        </div>
+                        <a href="{{ route('staff.viewmembers') }}" class="mt-3 px-3 py-1.5 text-[#FF5722] rounded-md inline-flex items-center group transition-all duration-200 hover: hover:text-orange-400 hover:translate-y-[-2px]">
+                            <span class="text-sm font-medium">Manage Renewals</span>
+                            <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-200"></i>
+                        </a>
+                    </div>
+
+                    <!-- Icon on the Right Side (Takes up 30% width) -->
+                    <div class="w-1/3 flex items-center justify-center ext-red-900">
+                        <i class="fas fa-calendar-times text-5xl text-orange-500"></i>
+                    </div>
+
+                </div>
+            </div>
+
     </div>
 
 
@@ -1000,7 +1001,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateTrendLine(counts, period = 'daily') {
-    if (counts.length < 2) return counts;
+    if (counts.length < 2) return counts.slice();
     
     // Determine window size based on period
     let windowSize;
@@ -1047,7 +1048,7 @@ document.addEventListener("DOMContentLoaded", function () {
         trendLine.push(m * (n-1) + b);
     }
     
-    return trendLine;
+    return trendLine.length === counts.length ? trendLine : counts.slice();
 }
 
     function updateSummaryStats(dataSet) {
@@ -1091,13 +1092,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
                 {
                     label: 'Trend',
-                    data: calculateTrendLine(dataCounts),
+                    data: calculateTrendLine(dataCounts, 'daily'), // Make sure to pass the correct period
                     type: 'line',
                     fill: false,
                     borderColor: '#FF5722',
                     borderDash: [5, 5],
                     pointBackgroundColor: '#FF5722',
-                    tension: 0.1
+                    tension: 0.1,
+                    pointRadius: 3, // Ensure points are visible
+                    pointHoverRadius: 5
                 }
             ]
         },
@@ -1193,7 +1196,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 myChart.data.labels = newData.labels;
                 myChart.data.datasets[0].data = newData.dataCounts;
-                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts);
+                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts, period); // Pass the period
                 myChart.update();
 
                 hideLoading();
