@@ -1001,60 +1001,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateTrendLine(counts, period = 'daily') {
-    if (counts.length < 2) return counts.slice(); // Return a copy
+    // If we have fewer than 2 data points, we can't calculate a trend
+    if (counts.length < 2) return counts;
     
-    // For very small datasets, use simple linear regression
-    if (counts.length <= 7) {
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-        const n = counts.length;
-        
-        for (let i = 0; i < n; i++) {
-            sumX += i;
-            sumY += counts[i];
-            sumXY += i * counts[i];
-            sumXX += i * i;
-        }
-        
-        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-        const b = (sumY - m * sumX) / n;
-        
-        return counts.map((_, i) => m * i + b);
+    // Map indices to x values (0, 1, 2, ...) for regression calculation
+    const x = Array.from({ length: counts.length }, (_, i) => i);
+    const y = counts;
+    
+    // Calculate means
+    const meanX = x.reduce((sum, val) => sum + val, 0) / x.length;
+    const meanY = y.reduce((sum, val) => sum + val, 0) / y.length;
+    
+    // Calculate slope (m) and y-intercept (b) for line equation y = mx + b
+    let numerator = 0;
+    let denominator = 0;
+    
+    for (let i = 0; i < x.length; i++) {
+        numerator += (x[i] - meanX) * (y[i] - meanY);
+        denominator += Math.pow(x[i] - meanX, 2);
     }
     
-    // Original windowed approach for larger datasets
-    let windowSize;
-    switch(period) {
-        case 'weekly': windowSize = 4; break;
-        case 'monthly': windowSize = 6; break;
-        case 'yearly': windowSize = 3; break;
-        default: windowSize = 7;
-    }
+    // Avoid division by zero
+    const m = denominator !== 0 ? numerator / denominator : 0;
+    const b = meanY - m * meanX;
     
-    windowSize = Math.min(windowSize, counts.length);
-    const trendLine = [];
-    
-    for (let i = 0; i < counts.length; i++) {
-        const start = Math.max(0, i - windowSize + 1);
-        const windowData = counts.slice(start, i + 1);
-        
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-        const n = windowData.length;
-        
-        for (let j = 0; j < n; j++) {
-            sumX += j;
-            sumY += windowData[j];
-            sumXY += j * windowData[j];
-            sumXX += j * j;
-        }
-        
-        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-        const b = (sumY - m * sumX) / n;
-        trendLine.push(m * (n-1) + b);
-    }
-    
-    return trendLine;
+    // Generate trend line points using the line equation
+    return x.map(xi => m * xi + b);
 }
-
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
         const total = counts.reduce((sum, count) => sum + count, 0);
