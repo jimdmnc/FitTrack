@@ -225,35 +225,35 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
   <!-- New Members Card -->
-<div class="glass-card1 p-4">
-    <div class="flex justify-between items-start">
-        <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
-            <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
-                New <br>Members
-            </h3>
-            <div class="flex items-baseline">
-                <div class="text-3xl font-bold text-gray-200 mr-2">
-                    {{ $newMembersData['currentWeekNewMembers'] }}
+        <div class="glass-card1 p-4">
+            <div class="flex justify-between items-start">
+                <div class="w-2/3"> <!-- This sets the main content to take up 70% of the card -->
+                    <h3 class="text-gray-200 text-sm font-medium uppercase tracking-wider mb-2">
+                        New <br>Members
+                    </h3>
+                    <div class="flex items-baseline">
+                        <div class="text-3xl font-bold text-gray-200 mr-2">
+                            {{ $newMembersData['currentWeekNewMembers'] }}
+                        </div>
+                        <span class="text-lg text-gray-200">members</span>
+                    </div>
+
+                    <!-- Status Indicator (Green for Increase, Red for Decrease) -->
+                    <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
+                        {{ $newMembersData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
+                        <i class="fas {{ $newMembersData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
+                        <span class="text-sm font-medium">
+                            {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
+                        </span>
+                    </div>
                 </div>
-                <span class="text-lg text-gray-200">members</span>
-            </div>
 
-            <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-            <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                {{ $newMembersData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
-                <i class="fas {{ $newMembersData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
-                <span class="text-sm font-medium">
-                    {{ str_replace(['▲', '▼'], '', $newMembersData['formattedPercentageChange']) }}
-                </span>
+                <!-- Icon on the Right Side (Takes up 30% width) -->
+                <div class="w-1/3 flex items-center justify-center text-orange-500">
+                    <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
+                </div>
             </div>
         </div>
-
-        <!-- Icon on the Right Side (Takes up 30% width) -->
-        <div class="w-1/3 flex items-center justify-center text-orange-500">
-            <i class="fas fa-user-plus text-5xl"></i> <!-- Adjust icon size if necessary -->
-        </div>
-    </div>
-</div>
 
         <!-- Today's Check-ins Card -->
         <div class="glass-card1 p-3">
@@ -270,15 +270,11 @@
                     </div>
 
                     <!-- Status Indicator (Green for Increase, Red for Decrease) -->
-                    @php
-                        $isIncrease = strpos($todaysCheckInsData['formattedPercentageChange'], 'Increase') !== false;
-                    @endphp
                     <div class="mt-3 px-4 py-1 inline-flex items-center rounded-full 
-                        {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}">
-                        <i class="fas fa-{{ $isIncrease ? 'arrow-up' : 'arrow-down' }} w-4 h-4 mr-1 
-                            {{ $isIncrease ? 'text-green-400' : 'text-red-400' }}"></i>
+                        {{ $todaysCheckInsData['isIncrease'] ? 'text-green-400' : 'text-red-400' }}">
+                        <i class="fas {{ $todaysCheckInsData['isIncrease'] ? 'fa-arrow-up' : 'fa-arrow-down' }} w-4 h-4 mr-1"></i>
                         <span class="text-sm font-medium">
-                            {{ str_replace(['Increase', 'Decrease'], '', $todaysCheckInsData['formattedPercentageChange']) }}
+                            {{ str_replace(['▲', '▼'], '', $todaysCheckInsData['formattedPercentageChange']) }}
                         </span>
                     </div>
                 </div>
@@ -289,7 +285,7 @@
                 </div>
             </div>
         </div>
-
+        
         <!-- Soon to Expire Card -->
         <div class="glass-card1 p-3">
             <div class="flex justify-between items-start">

@@ -70,47 +70,47 @@ class DashboardController extends Controller
 
  
 // cards========================================================
-private function getNewMembersData()
-{
-    // Get the current date and the start and end of the current week
-    $now = Carbon::now();
-    $startOfCurrentWeek = $now->startOfWeek()->toDateTimeString();
-    $endOfCurrentWeek = $now->endOfWeek()->toDateTimeString();
-    
-    // Get the start and end of last week
-    $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
-    $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
-    
-    // Count new members registered **this week only**
-    $currentWeekNewMembers = User::where('role', 'user')
-        ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
-        ->count();
-    
-    // Count new members registered **last week only**
-    $lastWeekNewMembers = User::where('role', 'user')
-        ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
-        ->count();
-    
-    // Calculate percentage change (Max 100%)
-    $percentageChange = 0;
-    if ($lastWeekNewMembers > 0) {
-        $percentageChange = (($currentWeekNewMembers - $lastWeekNewMembers) / $lastWeekNewMembers) * 100;
-        $percentageChange = min($percentageChange, 100); // ✅ Limit to max 100%
+    private function getNewMembersData()
+    {
+        // Get the current date and the start and end of the current week
+        $now = Carbon::now();
+        $startOfCurrentWeek = $now->startOfWeek()->toDateTimeString();
+        $endOfCurrentWeek = $now->endOfWeek()->toDateTimeString();
+        
+        // Get the start and end of last week
+        $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
+        $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
+        
+        // Count new members registered **this week only**
+        $currentWeekNewMembers = User::where('role', 'user')
+            ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
+            ->count();
+        
+        // Count new members registered **last week only**
+        $lastWeekNewMembers = User::where('role', 'user')
+            ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
+            ->count();
+        
+        // Calculate percentage change (Max 100%)
+        $percentageChange = 0;
+        if ($lastWeekNewMembers > 0) {
+            $percentageChange = (($currentWeekNewMembers - $lastWeekNewMembers) / $lastWeekNewMembers) * 100;
+            $percentageChange = min($percentageChange, 100); // ✅ Limit to max 100%
+        }
+        
+        // Determine the arrow indicator
+        $isIncrease = $percentageChange >= 0;
+        $arrowIndicator = $isIncrease ? '▲' : '▼';
+        
+        // Format the percentage change
+        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week ' . $arrowIndicator;
+        
+        return [
+            'currentWeekNewMembers' => $currentWeekNewMembers,  // ✅ Only new members **this week**
+            'formattedPercentageChange' => $formattedPercentageChange,
+            'isIncrease' => $isIncrease,  // Add this new value to explicitly indicate increase/decrease
+        ];
     }
-    
-    // Determine the arrow indicator
-    $isIncrease = $percentageChange >= 0;
-    $arrowIndicator = $isIncrease ? '▲' : '▼';
-    
-    // Format the percentage change
-    $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week ' . $arrowIndicator;
-    
-    return [
-        'currentWeekNewMembers' => $currentWeekNewMembers,  // ✅ Only new members **this week**
-        'formattedPercentageChange' => $formattedPercentageChange,
-        'isIncrease' => $isIncrease,  // Add this new value to explicitly indicate increase/decrease
-    ];
-}
 
 
     private function getTodaysCheckInsData()
@@ -119,17 +119,17 @@ private function getNewMembersData()
         $now = Carbon::now();
         $startOfToday = $now->startOfDay()->toDateTimeString();
         $endOfToday = $now->endOfDay()->toDateTimeString();
-    
-        // Get yesterday’s date range
+        
+        // Get yesterday's date range
         $startOfYesterday = $now->copy()->subDay()->startOfDay()->toDateTimeString();
         $endOfYesterday = $now->copy()->subDay()->endOfDay()->toDateTimeString();
-    
+        
         // Count today's check-ins from attendances (time_in)
         $todaysCheckIns = Attendance::whereBetween('time_in', [$startOfToday, $endOfToday])->count();
-    
+        
         // Count yesterday's check-ins from attendances (time_in)
         $yesterdaysCheckIns = Attendance::whereBetween('time_in', [$startOfYesterday, $endOfYesterday])->count();
-    
+        
         // Calculate percentage change
         if ($yesterdaysCheckIns == 0) {
             $percentageChange = $todaysCheckIns > 0 ? 100 : 0; // If no check-ins yesterday, max is 100%
@@ -137,18 +137,19 @@ private function getNewMembersData()
             $percentageChange = (($todaysCheckIns - $yesterdaysCheckIns) / $yesterdaysCheckIns) * 100;
             $percentageChange = min($percentageChange, 100); // Limit max increase to 100%
         }
-    
-        // Determine the arrow indicator
-        $arrowIndicator = ($percentageChange >= 0) ? '▲' : '▼';
-    
-        // Format the percentage change
-        // Format the percentage change without the arrow
-        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% ' . ($percentageChange > 0 ? 'Increase' : 'Decrease');
         
-            return [
-                'todaysCheckIns' => $todaysCheckIns,
-                'formattedPercentageChange' => $formattedPercentageChange,
-            ];
+        // Determine the arrow indicator
+        $isIncrease = $percentageChange >= 0;
+        $arrowIndicator = $isIncrease ? '▲' : '▼';
+        
+        // Format the percentage change
+        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Yesterday ' . $arrowIndicator;
+        
+        return [
+            'todaysCheckIns' => $todaysCheckIns,
+            'formattedPercentageChange' => $formattedPercentageChange,
+            'isIncrease' => $isIncrease,  // Add this new value to explicitly indicate increase/decrease
+        ];
     }
 
 
