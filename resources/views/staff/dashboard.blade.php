@@ -1001,56 +1001,49 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function calculateTrendLine(counts, period = 'daily') {
+    // If we have fewer than 2 data points, we can't calculate a trend
     if (counts.length < 2) return counts;
     
+    // For a smoothed line over the top of bars, we'll use moving average
     // Determine window size based on period
     let windowSize;
     switch(period) {
         case 'weekly':
-            windowSize = 4; // 4 weeks to see monthly pattern
+            windowSize = 3; // 3 weeks for weekly view
             break;
         case 'monthly':
-            windowSize = 6; // 6 months to see half-year pattern
+            windowSize = 3; // 3 months for monthly view
             break;
         case 'yearly':
-            windowSize = 3; // 3 years to see multi-year pattern
+            windowSize = 2; // 2 years for yearly view
             break;
         default: // daily
-            windowSize = 7; // 7 days to see weekly pattern
+            windowSize = 5; // 5 days for daily view
     }
     
-    // Ensure window isn't larger than dataset
+    // Ensure window size doesn't exceed data length
     windowSize = Math.min(windowSize, counts.length);
     
-    const trendLine = [];
+    // Simple moving average calculation
+    const movingAverage = [];
     
     for (let i = 0; i < counts.length; i++) {
-        // Determine the window bounds
-        const start = Math.max(0, i - windowSize + 1);
-        const end = i + 1;
-        const windowData = counts.slice(start, end);
+        // Calculate window boundaries
+        const start = Math.max(0, i - Math.floor(windowSize / 2));
+        const end = Math.min(counts.length, i + Math.floor(windowSize / 2) + 1);
         
-        // Calculate linear regression for this window
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-        const n = windowData.length;
-        
-        for (let j = 0; j < n; j++) {
-            sumX += j;
-            sumY += windowData[j];
-            sumXY += j * windowData[j];
-            sumXX += j * j;
+        // Calculate sum of values in window
+        let sum = 0;
+        for (let j = start; j < end; j++) {
+            sum += counts[j];
         }
         
-        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-        const b = (sumY - m * sumX) / n;
-        
-        // Use the most recent trend value
-        trendLine.push(m * (n-1) + b);
+        // Calculate average
+        movingAverage.push(sum / (end - start));
     }
     
-    return trendLine;
+    return movingAverage;
 }
-
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
         const total = counts.reduce((sum, count) => sum + count, 0);
