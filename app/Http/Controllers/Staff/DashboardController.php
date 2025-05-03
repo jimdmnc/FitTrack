@@ -98,17 +98,17 @@ private function getNewMembersData()
         $percentageChange = min($percentageChange, 100); // ✅ Limit to max 100%
     }
     
-    // Determine the arrow indicator with color
+    // Determine the arrow indicator
     $isIncrease = $percentageChange >= 0;
     $arrowIndicator = $isIncrease ? '▲' : '▼';
-    $arrowColor = $isIncrease ? 'green' : 'red';
     
-    // Format the percentage change with colored arrow
-    $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week <span style="color: ' . $arrowColor . '">' . $arrowIndicator . '</span>';
+    // Format the percentage change
+    $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week ' . $arrowIndicator;
     
     return [
         'currentWeekNewMembers' => $currentWeekNewMembers,  // ✅ Only new members **this week**
         'formattedPercentageChange' => $formattedPercentageChange,
+        'isIncrease' => $isIncrease,  // Add this new value to explicitly indicate increase/decrease
     ];
 }
 
