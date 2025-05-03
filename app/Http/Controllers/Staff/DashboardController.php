@@ -70,47 +70,47 @@ class DashboardController extends Controller
 
  
 // cards========================================================
-    private function getNewMembersData()
-    {
-        // Get the current date and the start and end of the current week
-        $now = Carbon::now();
-        $startOfCurrentWeek = $now->startOfWeek()->toDateTimeString();
-        $endOfCurrentWeek = $now->endOfWeek()->toDateTimeString();
+private function getNewMembersData()
+{
+    // Get the current date and the start and end of the current week
+    $now = Carbon::now();
+    $startOfCurrentWeek = $now->startOfWeek()->toDateTimeString();
+    $endOfCurrentWeek = $now->endOfWeek()->toDateTimeString();
     
-        // Get the start and end of last week
-        $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
-        $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
+    // Get the start and end of last week
+    $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
+    $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
     
-        // Count new members registered **this week only**
-        $currentWeekNewMembers = User::where('role', 'user')
-            ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
-            ->count();
+    // Count new members registered **this week only**
+    $currentWeekNewMembers = User::where('role', 'user')
+        ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
+        ->count();
     
-        // Count new members registered **last week only**
-        $lastWeekNewMembers = User::where('role', 'user')
-            ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
-            ->count();
+    // Count new members registered **last week only**
+    $lastWeekNewMembers = User::where('role', 'user')
+        ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
+        ->count();
     
-        // Calculate percentage change (Max 100%)
-        $percentageChange = 0;
-        if ($lastWeekNewMembers > 0) {
-            $percentageChange = (($currentWeekNewMembers - $lastWeekNewMembers) / $lastWeekNewMembers) * 100;
-            $percentageChange = min($percentageChange, 100); // ✅ Limit to max 100%
-        }
-    
-        // Determine the arrow indicator
-        $isIncrease = $percentageChange >= 0;
-        $arrowIndicator = $isIncrease ? '▲' : '▼';
-    
-        // Format the percentage change
-        $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week ' . $arrowIndicator;
-    
-        return [
-            'currentWeekNewMembers' => $currentWeekNewMembers,  // ✅ Only new members **this week**
-            'formattedPercentageChange' => $formattedPercentageChange,
-        ];
+    // Calculate percentage change (Max 100%)
+    $percentageChange = 0;
+    if ($lastWeekNewMembers > 0) {
+        $percentageChange = (($currentWeekNewMembers - $lastWeekNewMembers) / $lastWeekNewMembers) * 100;
+        $percentageChange = min($percentageChange, 100); // ✅ Limit to max 100%
     }
     
+    // Determine the arrow indicator with color
+    $isIncrease = $percentageChange >= 0;
+    $arrowIndicator = $isIncrease ? '▲' : '▼';
+    $arrowColor = $isIncrease ? 'green' : 'red';
+    
+    // Format the percentage change with colored arrow
+    $formattedPercentageChange = abs(round($percentageChange, 2)) . '% vs Last Week <span style="color: ' . $arrowColor . '">' . $arrowIndicator . '</span>';
+    
+    return [
+        'currentWeekNewMembers' => $currentWeekNewMembers,  // ✅ Only new members **this week**
+        'formattedPercentageChange' => $formattedPercentageChange,
+    ];
+}
 
 
     private function getTodaysCheckInsData()

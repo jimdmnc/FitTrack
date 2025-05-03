@@ -223,6 +223,7 @@
         
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        
         <!-- New Members Card -->
         <div class="glass-card1 p-4">
             <div class="flex justify-between items-start">
@@ -373,7 +374,7 @@
                     <span>Check-ins</span>
                 </div>
                 <div class="flex items-center mt-2">
-                    <span class="inline-block w-3 h-3 mr-1 border border-dashed border-gray-200 rounded-sm"></span>
+                    <span class="inline-block w-3 h-3 mr-1 border border-dashed border-orange-200 rounded-sm"></span>
                     <span>Previous Period</span>
                 </div>
             </div>
