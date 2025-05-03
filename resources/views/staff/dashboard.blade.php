@@ -1057,28 +1057,37 @@ document.addEventListener("DOMContentLoaded", function () {
         data: {
             labels: labels,
             datasets: [
-                {
-                    label: 'Check-ins',
-                    data: dataCounts,
-                    backgroundColor: 'rgba(246, 174, 59, 0.8)',
-                    borderColor: '#FF5722',
-                    borderWidth: 2,
-                    borderRadius: 4,
-                    barThickness: 'flex',
-                    maxBarThickness: 25
-                },
-                {
-                    label: 'Trend',
-                    data: calculateTrendLine(dataCounts),
-                    type: 'line',
-                    fill: false,
-                    borderColor: '#FF5722',
-                    borderDash: [5, 5],
-                    pointBackgroundColor: '#FF5722',
-                    tension: 0.1
-                }
-            ]
-        },
+                // Bar graph (will appear behind)
+            {
+                label: 'Check-ins',
+                data: dataCounts,
+                backgroundColor: 'rgba(246, 174, 59, 0.8)',
+                borderColor: '#FF5722',
+                borderWidth: 2,
+                borderRadius: 4,
+                barThickness: 'flex',
+                maxBarThickness: 25,
+                order: 2 // Higher number means lower z-index (behind)
+            },
+            // Trend line (will appear on top)
+            {
+                label: 'Trend',
+                data: calculateTrendLine(dataCounts),
+                type: 'line',
+                fill: false,
+                borderColor: '#FF5722',
+                borderWidth: 2, // Thicker line
+                borderDash: [0, 0], // Solid line (removed dashes)
+                pointBackgroundColor: '#FF5722',
+                pointBorderColor: '#FFFFFF',
+                pointBorderWidth: 2,
+                pointRadius: 5, // Larger dots
+                pointHoverRadius: 7,
+                tension: 0.1,
+                order: 1 // Lower number means higher z-index (on top)
+            }
+        ]
+    },
         options: {
             responsive: true,
             maintainAspectRatio: false,
