@@ -95,7 +95,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
     Route::get('/foods/search', [FoodController::class, 'search']);
 
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
+    ->middleware('guest')
+    ->name('password.email');
 
+
+    
 });
 
 Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
