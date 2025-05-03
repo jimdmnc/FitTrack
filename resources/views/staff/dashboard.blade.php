@@ -1029,12 +1029,22 @@ document.addEventListener("DOMContentLoaded", function () {
                     borderColor: '#FF5722',
                     borderWidth: 2,
                     borderRadius: 4,
-                    barThickness: 'flex',
-                    maxBarThickness: 25
+                    barThickness: 30,  // Fixed width in pixels
+    // OR:
+    maxBarThickness: 40,  // Maximum width
+    minBarLength: 2  // Minimum length (for very small values)
                 }
             ]
         },
         options: {
+            layout: {
+        padding: {
+            left: 20,
+            right: 20,
+            top: 20,
+            bottom: 20
+        }
+    }
             responsive: true,
             maintainAspectRatio: false,
             interaction: {
