@@ -986,70 +986,12 @@ document.addEventListener("DOMContentLoaded", function () {
     var monthlyCheckIns = @json($monthlyCheckIns);
     var yearlyCheckIns = @json($yearlyCheckIns);
 
-    // These variables are defined but not used for the trend line
-    // You can remove them if not needed elsewhere
-    // var previousDailyCheckIns = @json($previousDailyCheckIns);
-    // var previousWeeklyCheckIns = @json($previousWeeklyCheckIns);
-    // var previousMonthlyCheckIns = @json($previousMonthlyCheckIns);
-    // var previousYearlyCheckIns = @json($previousYearlyCheckIns);
-
     function getChartData(dataSet) {
         return {
             labels: dataSet.map(item => item.date),
             dataCounts: dataSet.map(item => item.count)
         };
     }
-
-    function calculateTrendLine(counts, period = 'daily') {
-    if (counts.length < 2) return counts;
-    
-    // Determine window size based on period
-    let windowSize;
-    switch(period) {
-        case 'weekly':
-            windowSize = 4; // 4 weeks to see monthly pattern
-            break;
-        case 'monthly':
-            windowSize = 6; // 6 months to see half-year pattern
-            break;
-        case 'yearly':
-            windowSize = 3; // 3 years to see multi-year pattern
-            break;
-        default: // daily
-            windowSize = 7; // 7 days to see weekly pattern
-    }
-    
-    // Ensure window isn't larger than dataset
-    windowSize = Math.min(windowSize, counts.length);
-    
-    const trendLine = [];
-    
-    for (let i = 0; i < counts.length; i++) {
-        // Determine the window bounds
-        const start = Math.max(0, i - windowSize + 1);
-        const end = i + 1;
-        const windowData = counts.slice(start, end);
-        
-        // Calculate linear regression for this window
-        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
-        const n = windowData.length;
-        
-        for (let j = 0; j < n; j++) {
-            sumX += j;
-            sumY += windowData[j];
-            sumXY += j * windowData[j];
-            sumXX += j * j;
-        }
-        
-        const m = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
-        const b = (sumY - m * sumX) / n;
-        
-        // Use the most recent trend value
-        trendLine.push(m * (n-1) + b);
-    }
-    
-    return trendLine;
-}
 
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
@@ -1089,16 +1031,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     borderRadius: 4,
                     barThickness: 'flex',
                     maxBarThickness: 25
-                },
-                {
-                    label: 'Trend',
-                    data: calculateTrendLine(dataCounts),
-                    type: 'line',
-                    fill: false,
-                    borderColor: '#FF5722',
-                    borderDash: [5, 5],
-                    pointBackgroundColor: '#FF5722',
-                    tension: 0.1
                 }
             ]
         },
@@ -1122,11 +1054,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     usePointStyle: true,
                     callbacks: {
                         label: function (context) {
-                            if (context.datasetIndex === 0) {
-                                return 'Check-ins: ' + context.parsed.y.toLocaleString();
-                            } else {
-                                return 'Trend: ' + context.parsed.y.toFixed(1);
-                            }
+                            return 'Check-ins: ' + context.parsed.y.toLocaleString();
                         }
                     }
                 }
@@ -1169,7 +1097,6 @@ document.addEventListener("DOMContentLoaded", function () {
             setTimeout(() => {
                 let newData;
                 
-
                 switch (period) {
                     case "weekly":
                         newData = getChartData(weeklyCheckIns);
@@ -1194,7 +1121,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 myChart.data.labels = newData.labels;
                 myChart.data.datasets[0].data = newData.dataCounts;
-                myChart.data.datasets[1].data = calculateTrendLine(newData.dataCounts);
                 myChart.update();
 
                 hideLoading();
