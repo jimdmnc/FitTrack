@@ -6,6 +6,7 @@
     <title>Register for Session</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <style>
         .header-bg {
             background: linear-gradient(to right, #2c2c2c, #1e1e1e);
@@ -40,6 +41,7 @@
         .error-border {
             border-color: #ef4444;
         }
+
         /* Responsive form container */
         .form-container {
             max-width: 100%;
@@ -60,6 +62,30 @@
                 max-width: 768px;
             }
         }
+        
+        /* Read-only field styling */
+        .readonly-field {
+            background-color: #2d2319; /* Dark orange-tinted background */
+            color: #ff8a65; /* Lighter orange text */
+            border: 1px solid #3d2e22; /* Subtle border */
+            opacity: 0.9;
+            cursor: not-allowed;
+        }
+
+        /* Optional: add a small lock icon to further indicate read-only status */
+        .readonly-field-container {
+            position: relative;
+        }
+
+        .readonly-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ff8a65;
+            pointer-events: none;
+        }
+
         /* Improved input tap targets for mobile */
         input, select, button {
             min-height: 48px;
@@ -86,7 +112,7 @@
         <h2 class="text-2xl md:text-4xl lg:text-5xl pb-1 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Session Registration</h2>
     </div>
     <!-- Header with gradient -->
-    <div class="header-bg text-white p-4 md:p-5 lg:p-6 rounded-t-lg shadow border-b border-black">
+    <div class="header-bg text-gray-200 p-4 md:p-5 lg:p-6 rounded-t-lg shadow border-b border-black">
         <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-100">Registration</h2>
     </div>
     
@@ -122,7 +148,7 @@
                                required
                                minlength="2"
                                maxlength="50">
-                        <div id="first_name_error" class="error-message hidden">Please enter a valid first name (2-50 characters)</div>
+                        <div id="first_name_error" class="error-message hidden">First name must be between 2-50 characters and contain no numbers or special characters.</div>
                     </div>
                     
                     <!-- Last Name -->
@@ -193,39 +219,46 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    
                     <!-- Membership Type (Read-Only) -->
-                    <div>
+                    <div class="readonly-field-container">
                         <label for="membership_type" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Membership Type
                         </label>
-                        <select 
-                            class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg bg-gray-200 text-gray-400 orange-focus appearance-none" 
-                            id="membership_type" 
-                            name="membership_type" 
-                            style="pointer-events: none; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: '';"
-                            required>
-                            <option value="1" selected>Session</option>
-                        </select>
+                        <div class="relative">
+                            <select 
+                                class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg readonly-field" 
+                                id="membership_type" 
+                                name="membership_type" 
+                                style="pointer-events: none; -webkit-appearance: none; -moz-appearance: none; text-indent: 1px; text-overflow: '';"
+                                required>
+                                <option value="1" selected>Session</option>
+                            </select>
+                            <i class="fas fa-lock readonly-icon text-sm"></i>
+                        </div>
                     </div>
-                    
+
                     <!-- Amount (Read-Only) -->
-                    <div>
+                    <div class="readonly-field-container">
                         <label for="amount" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Amount
                         </label>
-                        <input type="text" 
-                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg bg-gray-200 text-gray-400 orange-focus" 
-                               id="amount" 
-                               name="amount" 
-                               value="60"
-                               style="pointer-events: none"
-                               readonly>
+                        <div class="relative">
+                            <input type="text" 
+                                class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg readonly-field" 
+                                id="amount" 
+                                name="amount" 
+                                value="60"
+                                style="pointer-events: none"
+                                readonly>
+                            <i class="fas fa-lock readonly-icon text-sm"></i>
+                        </div>
                     </div>
                 </div>
                 
                 <!-- Submit Button -->
                 <button type="submit" 
-                        class="w-full orange-btn text-white p-2.5 lg:p-3 rounded-lg font-medium text-lg lg:text-xl mt-4 hover:bg-[#e64a19] focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:ring-offset-2 transition-colors">
+                        class="w-full orange-btn text-gray-200 p-2.5 lg:p-3 rounded-lg font-medium text-lg lg:text-xl mt-4 hover:bg-[#e64a19] focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:ring-offset-2 transition-colors">
                     Register Now
                 </button>
             </div>
@@ -262,23 +295,30 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('input', function() {
             validateField(this);
         });
+        input.addEventListener('keyup', function() {
+            validateField(this);
+        });
         input.addEventListener('blur', function() {
             validateField(this);
         });
     });
+
     
     function validateForm() {
         let isValid = true;
         const inputs = form.querySelectorAll('input:not([readonly]), select:not([style*="pointer-events: none"])');
-        
         inputs.forEach(input => {
             if (!validateField(input)) {
                 isValid = false;
             }
         });
         
+        // Disable button if form is invalid
+        document.querySelector('button[type="submit"]').disabled = !isValid;
+
         return isValid;
     }
+
     
     function validateField(field) {
         const errorElement = document.getElementById(`${field.id}_error`);
@@ -300,10 +340,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         showError(field, errorElement, `Must be between 2-50 characters`);
                         return false;
                     }
-                    
+
                     // Check for numbers
                     if (/\d/.test(field.value)) {
-                        showError(field, errorElement, `Cannot contain numbers`);
+                        showError(field, errorElement, `Numbers are not allowed`);
+                        return false;
+                    }
+
+                    // Check for special characters (excluding spaces)
+                    if (/[^a-zA-Z\s]/.test(field.value)) {
+                        showError(field, errorElement, `Cannot contain special characters`);
                         return false;
                     }
                 }
@@ -356,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function isValidEmail(email) {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         return emailPattern.test(email);
     }
     
@@ -365,6 +411,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const phonePattern = /^09\d{9}$/;
         return phonePattern.test(phone);
     }
+
+    function focusFirstError() {
+    const firstError = document.querySelector('.error-border');
+    if (firstError) {
+        firstError.focus();
+    }
+}
 });
 </script>
 </body>
