@@ -247,7 +247,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -272,7 +272,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -298,7 +298,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#e53e3e] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -323,7 +323,7 @@
                                         </button>
                                         <button 
                                             onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#38a169] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm"
+                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-green-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm"
                                             aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Restore revoked membership"
                                         >
