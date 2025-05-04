@@ -14,9 +14,9 @@
         @forelse($attendances as $attendance)
         <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif">
 
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                {{ $loop->iteration }}
-            </td>
+        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+            {{ ($attendances->currentPage() - 1) * $attendances->perPage() + $loop->iteration }}
+        </td>
 
             <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">

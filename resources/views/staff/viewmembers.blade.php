@@ -73,6 +73,25 @@
             padding: 0.5rem !important;
         }
     }
+
+    /* Add to your existing styles */
+    th {
+        position: relative;
+        user-select: none;
+    }
+
+    th:hover {
+        background-color: rgba(255, 87, 34, 0.1);
+    }
+
+    [id^="sort-icon-"] {
+        display: inline-block;
+        transition: transform 0.2s;
+    }
+
+    th:hover [id^="sort-icon-"] {
+        opacity: 1;
+    }
 </style>
 
 <div class="py-8 sm:px-6 lg:px-4 h-screen">
@@ -175,24 +194,39 @@
                     </div>
                 @endif
                 <table class="min-w-full divide-y divide-black">
-                            <thead>
-                                <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th> <!-- Added this column -->
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Registration Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
+                    <thead>
+                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
+                            <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                # <span id="sort-icon-0" class="ml-1">↕</span>
+                            </th>
+                            <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                Name <span id="sort-icon-1" class="ml-1">↕</span>
+                            </th>
+                            <th id="sort-header-2" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                Member ID <span id="sort-icon-2" class="ml-1">↕</span>
+                            </th>
+                            <th id="sort-header-3" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                Membership Type <span id="sort-icon-3" class="ml-1">↕</span>
+                            </th>
+                            <th id="sort-header-4" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                Registration Date <span id="sort-icon-4" class="ml-1">↑</span>
+                            </th>
+                            <th id="sort-header-5" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                                Status <span id="sort-icon-5" class="ml-1">↕</span>
+                            </th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+
                     <tbody class="divide-y divide-black">
                         
                         @foreach ($members as $member)
                         
                         <tr class="bg-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
                             
-                            <td class="px-4 py-4 text-sm text-gray-200">{{ $loop->iteration }}</td> 
+                            <td class="px-4 py-4 text-sm text-gray-200">{{ ($members->currentPage() - 1) * $members->perPage() + $loop->iteration }}</td> 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0 mr-3">
@@ -791,186 +825,363 @@
 <!-- End Restore Member Modal -->
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // ======== CONSTANTS & DOM ELEMENTS ========
-        const ELEMENTS = {
-            searchInput: document.querySelector('input[name="search"]'),
-            statusSelect: document.querySelector('select[name="status"]'),
-            tableContainer: document.querySelector('.glass-card .overflow-x-auto'),
-            paginationContainer: document.querySelector('.pagination'),
-            clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
-            membershipTypeSelect: document.getElementById('membershipType'),
-            startDateInput: document.getElementById('startDate'),
-            endDateInput: document.getElementById('endDate'),
-            membershipFeeInput: document.getElementById('membershipFee'),
-            summaryText: document.getElementById('membershipSummaryText')
-        };
+    // ======== CONSTANTS & DOM ELEMENTS ========
+    const ELEMENTS = {
+        searchInput: document.querySelector('input[name="search"]'),
+        statusSelect: document.querySelector('select[name="status"]'),
+        tableContainer: document.querySelector('.glass-card .overflow-x-auto'),
+        paginationContainer: document.querySelector('.pagination'),
+        clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
+        membershipTypeSelect: document.getElementById('membershipType'),
+        startDateInput: document.getElementById('startDate'),
+        endDateInput: document.getElementById('endDate'),
+        membershipFeeInput: document.getElementById('membershipFee'),
+        summaryText: document.getElementById('membershipSummaryText')
+    };
 
-        // Membership type data configuration
-        const MEMBERSHIP_DATA = {
-            '1': { fee: 70, name: 'Session (1 day)' },
-            '7': { fee: 300, name: 'Weekly (7 days)' },
-            '30': { fee: 1000, name: 'Monthly (30 days)' },
-            '365': { fee: 5000, name: 'Annual (365 days)' }
-        };
+    // Global sorting variables - accessible throughout the script
+    let currentSortColumn = 4; // Default to Registration Date column
+    let sortDirection = -1;    // Default to descending (newest first)
 
-        // Status badge style mapping
-        const STATUS_STYLES = {
-            active: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200",
-            revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
-        };
+    // Membership type data configuration
+    const MEMBERSHIP_DATA = {
+        '1': { fee: 70, name: 'Session (1 day)' },
+        '7': { fee: 300, name: 'Weekly (7 days)' },
+        '30': { fee: 1000, name: 'Monthly (30 days)' },
+        '365': { fee: 5000, name: 'Annual (365 days)' }
+    };
 
-        let searchTimeout;
-        const today = new Date();
-        const todayFormatted = formatDate(today);
+    // Status badge style mapping
+    const STATUS_STYLES = {
+        active: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200",
+        revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
+    };
 
-        // ======== INITIALIZATION ========
-        function initialize() {
-            initializeEventListeners();
-            initializeFormDefaults();
-            toggleClearButtonVisibility();
-            ensureRevokedStatusOption();
-        }
+    let searchTimeout;
+    const today = new Date();
+    const todayFormatted = formatDate(today);
 
-        function initializeFormDefaults() {
-            // Set today's date as default for start date
-            if (ELEMENTS.startDateInput) {
-                ELEMENTS.startDateInput.value = todayFormatted;
-                ELEMENTS.startDateInput.min = todayFormatted; // Prevent past dates
-            }
-        }
+    // ======== INITIALIZATION ========
+    function initialize() {
+        initializeEventListeners();
+        initializeFormDefaults();
+        toggleClearButtonVisibility();
+        ensureRevokedStatusOption();
+        
+        // Initialize the default sort on page load
+        setTimeout(() => {
+            sortTable(currentSortColumn);
+        }, 100);
+    }
 
-        function ensureRevokedStatusOption() {
-            if (!ELEMENTS.statusSelect) return;
-            
-            const currentOptions = Array.from(ELEMENTS.statusSelect.options).map(opt => opt.value);
-            if (!currentOptions.includes('revoked')) {
-                const option = document.createElement('option');
-                option.value = 'revoked';
-                option.textContent = 'Revoked Members';
-                
-                // Check URL parameters for preselection
-                const urlParams = new URLSearchParams(window.location.search);
-                option.selected = urlParams.get('status') === 'revoked';
-                
-                ELEMENTS.statusSelect.appendChild(option);
-            }
-        }
-
-        function initializeEventListeners() {
-            // Search input debounced event
-            if (ELEMENTS.searchInput) {
-                ELEMENTS.searchInput.addEventListener('input', () => {
-                    toggleClearButtonVisibility();
-                    debounce(fetchMembers, 500);
-                });
-            }
-
-            // Clear search button
-            if (ELEMENTS.clearSearchButton) {
-                ELEMENTS.clearSearchButton.addEventListener('click', () => {
-                    ELEMENTS.searchInput.value = '';
-                    fetchMembers();
-                    toggleClearButtonVisibility();
-                });
-            }
-            
-            // Status filter change
-            if (ELEMENTS.statusSelect) {
-                ELEMENTS.statusSelect.addEventListener('change', fetchMembers);
-            }
-            
-            // Pagination links
-            document.querySelectorAll('.pagination a').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    fetchMembers(this.href);
-                });
-            });
-
-            // Membership renewal events
-            if (ELEMENTS.membershipTypeSelect) {
-                ELEMENTS.membershipTypeSelect.addEventListener('change', updateAllDetails);
-            }
-            
-            if (ELEMENTS.startDateInput) {
-                ELEMENTS.startDateInput.addEventListener('change', function() {
-                    const selectedDate = new Date(this.value);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-            
-                    if (selectedDate < today) {
-                        this.value = todayFormatted;
-                    }
-                    updateAllDetails();
-                });
-            }
-        }
-
-        // ======== HELPER FUNCTIONS ========
-        function debounce(func, delay) {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(func, delay);
-        }
-
-        function formatDate(date) {
-            return date.toISOString().split('T')[0];
+    // ======== SORTING FUNCTIONS ========
+    function sortTable(columnIndex) {
+        console.log(`Sorting by column ${columnIndex}`); // Debug logging
+        
+        const tableBody = document.querySelector('table tbody');
+        if (!tableBody) {
+            console.error('Table body not found'); // Debug logging
+            return;
         }
         
-        function formatDisplayDate(date) {
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'short', 
-                day: 'numeric' 
-            });
+        const rows = Array.from(tableBody.querySelectorAll('tr'));
+        if (rows.length === 0) {
+            console.error('No rows found in table'); // Debug logging
+            return;
         }
-
-        function toggleClearButtonVisibility() {
-            if (ELEMENTS.clearSearchButton) {
-                ELEMENTS.clearSearchButton.style.display = 
-                    ELEMENTS.searchInput.value.trim() !== '' ? 'flex' : 'none';
-            }
+        
+        // Reset all sort icons
+        const icons = document.querySelectorAll('[id^="sort-icon-"]');
+        icons.forEach(icon => {
+            icon.textContent = '↕';
+        });
+        
+        // If clicking the same column, reverse direction
+        if (currentSortColumn === columnIndex) {
+            sortDirection *= -1;
+        } else {
+            currentSortColumn = columnIndex;
+            sortDirection = 1;
         }
-
-        // ======== DATA OPERATIONS ========
-        function fetchMembers(url = null) {
-            const params = new URLSearchParams();
+        
+        console.log(`Sort direction: ${sortDirection}`); // Debug logging
+        
+        // Update the icon for the current column
+        const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
+        if (currentIcon) {
+            currentIcon.textContent = sortDirection === 1 ? '↑' : '↓';
+        }
+        
+        // Define status priority for sorting (column 5)
+        const statusPriority = {
+            'active': 1,
+            'expired': 2,
+            'revoked': 3
+        };
+        
+        // Sort the rows
+        rows.sort((a, b) => {
+            // Make sure the cells exist
+            if (!a.cells[columnIndex] || !b.cells[columnIndex]) return 0;
             
-            // Add filters if they exist
-            if (ELEMENTS.searchInput.value) {
-                params.append('search', ELEMENTS.searchInput.value);
-            }
+            let aValue = a.cells[columnIndex].textContent.trim();
+            let bValue = b.cells[columnIndex].textContent.trim();
             
-            if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
-                params.append('status', ELEMENTS.statusSelect.value);
-            }
+            console.log(`Comparing: "${aValue}" with "${bValue}"`); // Debug logging
             
-            // Use provided URL or construct one
-            const fetchUrl = url || `{{ route("staff.viewmembers") }}?${params.toString()}`;
-            
-            // Show loading state
-            ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
-            
-            fetch(fetchUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Update table and pagination
-                ELEMENTS.tableContainer.innerHTML = data.table;
-                if (ELEMENTS.paginationContainer) {
-                    ELEMENTS.paginationContainer.innerHTML = data.pagination || '';
-                }
+            // Special handling for dates (Registration Date column)
+            if (columnIndex === 4) {
+                // Try to parse dates in various formats
+                const aDate = parseDate(aValue);
+                const bDate = parseDate(bValue);
                 
-                // Reinitialize any event listeners that might have been lost
-                initializeEventListeners();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                ELEMENTS.tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+                if (aDate && bDate) {
+                    return (aDate - bDate) * sortDirection;
+                }
+            }
+            
+            // Special handling for status column
+            if (columnIndex === 5) {
+                // Extract just the status text from potentially complex HTML
+                const aStatus = aValue.toLowerCase().replace(/[^a-z]/g, '');
+                const bStatus = bValue.toLowerCase().replace(/[^a-z]/g, '');
+                
+                // Use the priority map for sorting
+                const aPriority = statusPriority[aStatus] || 999;
+                const bPriority = statusPriority[bStatus] || 999;
+                
+                return (aPriority - bPriority) * sortDirection;
+            }
+            
+            // Check if we're dealing with numbers
+            if (!isNaN(parseFloat(aValue)) && !isNaN(parseFloat(bValue))) {
+                return (parseFloat(aValue) - parseFloat(bValue)) * sortDirection;
+            }
+            
+            // Default string comparison
+            return aValue.localeCompare(bValue) * sortDirection;
+        });
+        
+        // Reattach sorted rows to maintain references and event handlers
+        rows.forEach(row => tableBody.appendChild(row));
+        console.log('Sorting complete'); // Debug logging
+    }
+
+    // Helper function to parse dates in various formats
+    function parseDate(dateStr) {
+        if (!dateStr) return null;
+        
+        // Try standard date parsing first
+        let date = new Date(dateStr);
+        if (!isNaN(date.getTime())) return date;
+        
+        // Try to handle common date formats
+        const formats = [
+            // MM/DD/YYYY
+            /(\d{1,2})\/(\d{1,2})\/(\d{4})/,
+            // DD/MM/YYYY
+            /(\d{1,2})\/(\d{1,2})\/(\d{4})/,
+            // YYYY-MM-DD
+            /(\d{4})-(\d{1,2})-(\d{1,2})/,
+            // Month DD, YYYY (e.g., January 1, 2023)
+            /([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})/
+        ];
+        
+        for (const format of formats) {
+            const match = dateStr.match(format);
+            if (match) {
+                // Different handling based on format
+                if (format === formats[0]) return new Date(match[3], match[1]-1, match[2]);
+                if (format === formats[1]) return new Date(match[3], match[2]-1, match[1]);
+                if (format === formats[2]) return new Date(match[1], match[2]-1, match[3]);
+                if (format === formats[3]) {
+                    const months = ["january","february","march","april","may","june","july",
+                                   "august","september","october","november","december"];
+                    const monthIndex = months.indexOf(match[1].toLowerCase());
+                    if (monthIndex !== -1) return new Date(match[3], monthIndex, match[2]);
+                }
+            }
+        }
+        
+        // Return null if no formats matched
+        console.log(`Failed to parse date: ${dateStr}`); // Debug logging
+        return null;
+    }
+
+    function initializeFormDefaults() {
+        // Set today's date as default for start date
+        if (ELEMENTS.startDateInput) {
+            ELEMENTS.startDateInput.value = todayFormatted;
+            ELEMENTS.startDateInput.min = todayFormatted; // Prevent past dates
+        }
+    }
+
+    function ensureRevokedStatusOption() {
+        if (!ELEMENTS.statusSelect) return;
+        
+        const currentOptions = Array.from(ELEMENTS.statusSelect.options).map(opt => opt.value);
+        if (!currentOptions.includes('revoked')) {
+            const option = document.createElement('option');
+            option.value = 'revoked';
+            option.textContent = 'Revoked Members';
+            
+            // Check URL parameters for preselection
+            const urlParams = new URLSearchParams(window.location.search);
+            option.selected = urlParams.get('status') === 'revoked';
+            
+            ELEMENTS.statusSelect.appendChild(option);
+        }
+    }
+
+    function initializeEventListeners() {
+        attachTableEventListeners();
+        
+        // Search input debounced event
+        if (ELEMENTS.searchInput) {
+            ELEMENTS.searchInput.addEventListener('input', () => {
+                toggleClearButtonVisibility();
+                debounce(fetchMembers, 500);
             });
         }
+
+        // Clear search button
+        if (ELEMENTS.clearSearchButton) {
+            ELEMENTS.clearSearchButton.addEventListener('click', () => {
+                ELEMENTS.searchInput.value = '';
+                fetchMembers();
+                toggleClearButtonVisibility();
+            });
+        }
+        
+        // Status filter change
+        if (ELEMENTS.statusSelect) {
+            ELEMENTS.statusSelect.addEventListener('change', fetchMembers);
+        }
+        
+        // Membership renewal events
+        if (ELEMENTS.membershipTypeSelect) {
+            ELEMENTS.membershipTypeSelect.addEventListener('change', updateAllDetails);
+        }
+        
+        if (ELEMENTS.startDateInput) {
+            ELEMENTS.startDateInput.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+        
+                if (selectedDate < today) {
+                    this.value = todayFormatted;
+                }
+                updateAllDetails();
+            });
+        }
+    }
+    
+    // This is a separate function so we can reattach listeners after AJAX loads
+    function attachTableEventListeners() {
+        // Pagination links
+        document.querySelectorAll('.pagination a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                fetchMembers(this.href);
+            });
+        });
+        
+        // Attach sort handlers to table headers
+        document.querySelectorAll('[id^="sort-header-"]').forEach((header, index) => {
+            header.addEventListener('click', () => {
+                console.log(`Header ${index} clicked`); // Debug logging
+                sortTable(index);
+            });
+        });
+    }
+
+    // ======== HELPER FUNCTIONS ========
+    function debounce(func, delay) {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(func, delay);
+    }
+
+    function formatDate(date) {
+        return date.toISOString().split('T')[0];
+    }
+    
+    function formatDisplayDate(date) {
+        return date.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric' 
+        });
+    }
+
+    function toggleClearButtonVisibility() {
+        if (ELEMENTS.clearSearchButton) {
+            ELEMENTS.clearSearchButton.style.display = 
+                ELEMENTS.searchInput.value.trim() !== '' ? 'flex' : 'none';
+        }
+    }
+
+    // ======== DATA OPERATIONS ========
+    function fetchMembers(url = null) {
+        const params = new URLSearchParams();
+        
+        // Add filters if they exist
+        if (ELEMENTS.searchInput && ELEMENTS.searchInput.value) {
+            params.append('search', ELEMENTS.searchInput.value);
+        }
+        
+        if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+            params.append('status', ELEMENTS.statusSelect.value);
+        }
+        
+        // Use provided URL or construct one
+        const fetchUrl = url || `{{ route("staff.viewmembers") }}?${params.toString()}`;
+        console.log(`Fetching from: ${fetchUrl}`); // Debug logging
+        
+        // Show loading state
+        if (ELEMENTS.tableContainer) {
+            ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+        }
+        
+        fetch(fetchUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data fetched successfully'); // Debug logging
+            
+            // Update table and pagination
+            if (ELEMENTS.tableContainer) {
+                ELEMENTS.tableContainer.innerHTML = data.table;
+            }
+            
+            if (ELEMENTS.paginationContainer) {
+                ELEMENTS.paginationContainer.innerHTML = data.pagination || '';
+            }
+            
+            // Re-attach event listeners to the new table elements
+            attachTableEventListeners();
+            
+            // Re-apply current sort after data is loaded
+            setTimeout(() => {
+                console.log(`Re-applying sort to column ${currentSortColumn}`); // Debug logging
+                sortTable(currentSortColumn);
+            }, 100);
+        })
+        .catch(error => {
+            console.error('Error fetching members:', error);
+            if (ELEMENTS.tableContainer) {
+                ELEMENTS.tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+            }
+        });
+    }
 
         // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
         function updateAllDetails() {
@@ -1197,19 +1408,20 @@
         }
 
         // Export functions to global scope for HTML onclick handlers
-        window.openViewModal = openViewModal;
-        window.closeViewModal = closeViewModal;
-        window.openRenewModal = openRenewModal;
-        window.closeRenewModal = closeRenewModal;
-        window.openRevokeModal = openRevokeModal;
-        window.closeRevokeModal = closeRevokeModal;
-        window.openRestoreModal = openRestoreModal;
-        window.closeRestoreModal = closeRestoreModal;
-        window.openRevokedReasonModal = openRevokedReasonModal;
-        window.closeReasonModal = closeReasonModal;
-        window.showConfirmation = showConfirmation;
-        window.backToForm = backToForm;
-        window.confirmRevoke = confirmRevoke;
+        window.sortTable = sortTable;
+        window.openViewModal = openViewModal || function() {};
+        window.closeViewModal = closeViewModal || function() {};
+        window.openRenewModal = openRenewModal || function() {};
+        window.closeRenewModal = closeRenewModal || function() {};
+        window.openRevokeModal = openRevokeModal || function() {};
+        window.closeRevokeModal = closeRevokeModal || function() {};
+        window.openRestoreModal = openRestoreModal || function() {};
+        window.closeRestoreModal = closeRestoreModal || function() {};
+        window.openRevokedReasonModal = openRevokedReasonModal || function() {};
+        window.closeReasonModal = closeReasonModal || function() {};
+        window.showConfirmation = showConfirmation || function() {};
+        window.backToForm = backToForm || function() {};
+        window.confirmRevoke = confirmRevoke || function() {};
 
         // Initialize everything
         initialize();
