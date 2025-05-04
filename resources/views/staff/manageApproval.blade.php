@@ -201,16 +201,11 @@
             @csrf
             @method('PUT')
             <input type="hidden" id="rejectUserId" name="user_id">
-            <div class="mb-4">
-                <label for="rejection_reason" class="block text-sm font-medium text-gray-200 mb-1">Rejection Reason</label>
-                <textarea 
-                    name="rejection_reason" 
-                    id="rejection_reason"
-                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#212121] text-gray-200 placeholder-gray-400"
-                    rows="4"
-                    placeholder="Example: Incomplete information provided"></textarea>
-            </div>
-            <div class="flex justify-end gap-3">
+
+            <!-- Rejection reason input field -->
+            <textarea name="rejection_reason" id="rejection_reason" class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#212121] text-gray-200 placeholder-gray-400" rows="4" placeholder="Example: Incomplete information provided"></textarea>
+
+            <div class="flex justify-end gap-3 mt-3">
                 <button type="button" onclick="closeModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
                     Cancel
                 </button>
@@ -231,13 +226,20 @@
         document.body.classList.remove('overflow-hidden');
     }
 
-    let currentUserId = null;
-
-    function rejectUser(userId) {
-        document.getElementById('rejectUserId').value = userId;
-        document.getElementById('rejectForm').action = '/staff/reject/' + userId;
+    function rejectUser(id) {
+        const rejectForm = document.getElementById('rejectForm');
+        rejectForm.action = `/staff/reject/${userId}`;
+        
+        // Set the user ID in the hidden field
+        document.getElementById('rejectUserId').value = id;
+        
+        // Show the modal
         document.getElementById('rejectModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
+
+        // In your rejectUser function
+        console.log('Attempting to reject user ID:', userId);
+        console.log('Form action will be:', `/staff/reject/${userId}`);
     }
 
     // Filter options change

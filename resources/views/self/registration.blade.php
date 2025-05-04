@@ -369,9 +369,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         showError(field, errorElement, 'Phone number can only contain digits');
                         return false;
                     }
-                    
-                    // Check for correct format (11 digits starting with 09)
-                    if (!isValidPhone(field.value)) {
+
+                    // Check if the phone number has 11 digits and starts with 09
+                    if (!/^09\d{9}$/.test(field.value)) {
                         showError(field, errorElement, 'Please enter a valid 11-digit phone number starting with 09');
                         return false;
                     }

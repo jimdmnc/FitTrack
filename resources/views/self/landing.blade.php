@@ -234,6 +234,11 @@
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
                 <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
+                <!-- Register Button -->
+                @if(!session('registered') && !session('timed_out'))
+                    <a href="{{ route('self.registration') }}" class="nav-link font-semibold hover:text-red-500 transition duration-300" id="register-button">Register</a>
+                @endif
+                
             </div>
 
             <!-- Workout Duration Timer (New Element) -->
@@ -422,7 +427,7 @@
                         <div class="text-center max-w-2xl mb-12">
                             <!-- Heading -->
                             <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                                WELCOME TO <span class="text-gray-200">ROCKIES <span class="gradient-text bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">FITNESS </span></span>
+                                WELCOME TO <span class="text-gray-200">ROCKIES FITNESS </span>
                             </h1>
                             
                             <!-- Subtitle -->
@@ -1055,6 +1060,41 @@
             modalOverlay.addEventListener('click', hideProfile);
         }
     });
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+    // Check for session status after the page loads
+    const registerButton = document.getElementById('register-button');
+    const timeoutButton = document.getElementById('timeout-button');
+
+    // If session is 'registered', hide the Register button
+    if (sessionStorage.getItem('registered')) {
+        if (registerButton) registerButton.style.display = 'none';
+    }
+
+    // If session is 'timed_out', show the Register button again
+    if (sessionStorage.getItem('timed_out')) {
+        if (registerButton) registerButton.style.display = 'inline-block';
+    }
+
+    // Hide register button after successful registration
+    if (registerButton) {
+        registerButton.addEventListener('click', function () {
+            // Assuming after clicking Register, the user is registered
+            sessionStorage.setItem('registered', true);
+            registerButton.style.display = 'none'; // Hide register button after registration
+        });
+    }
+
+    // Show register button when timeout occurs
+    if (timeoutButton) {
+        timeoutButton.addEventListener('click', function () {
+            sessionStorage.removeItem('registered'); // Reset registration session
+            sessionStorage.setItem('timed_out', true); // Set timed out session
+            if (registerButton) registerButton.style.display = 'inline-block'; // Show register button
+        });
+    }
+});
 </script>
 </body>
 </html>

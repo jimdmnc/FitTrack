@@ -25,10 +25,8 @@ class StaffApprovalController extends Controller
         // Get the count of pending approvals
         $pendingApprovalCount = $pendingUsers->count();
         
-
         // Pass the count to the view
         return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
-        
     }
 
     // Approve New User Registration
@@ -38,7 +36,6 @@ class StaffApprovalController extends Controller
 
         // Update the user's session status to approved
         $user->member_status = 'active';
-
         $user->session_status = 'approved';
         $user->needs_approval = false;
         $user->save();
@@ -58,17 +55,27 @@ class StaffApprovalController extends Controller
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
 
+    // Reject User Registration
+    public function rejectUser(Request $request, User $user)
+{
+    \Log::info('Rejecting user: ' . $user->id);
+    \Log::info('Rejection reason: ' . $request->rejection_reason);
+    // In your controller
+    \Log::debug('Reject endpoint hit', ['user_id' => $user->id, 'input' => $request->all()]);
+    
+    // Validate the rejection reason
+    $validated = $request->validate([
+        'rejection_reason' => 'required|string|max:255',
+    ]);
 
+    // Update user status
+    $user->update([
+        'session_status' => 'rejected',
+        'needs_approval' => false,
+        'rejection_reason' => $request->rejection_reason
+    ]);
 
-    // Reject User Request
-    public function rejectUser(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-
-        $user->session_status = 'rejected';
-        $user->rejection_reason = $request->rejection_reason;
-        $user->save();
-
-        return redirect()->route('staff.manageApproval')->with('success', 'User rejected successfully!');
-    }
+    return redirect()->route('staff.manageApproval')
+        ->with('success', 'Membership request rejected successfully.');
+}
 }

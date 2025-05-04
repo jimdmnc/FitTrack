@@ -22,6 +22,8 @@ Route::get('/', function () {
 });
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
+Route::get('/register', [RegistrationController::class, 'showForm'])->name('register');
+
 
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
 
@@ -66,7 +68,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
         Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
         // Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.renewMembership');
-        Route::put('/staff/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
+        Route::put('/staff/reject/{user}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
 
 
 
