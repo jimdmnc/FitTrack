@@ -1140,31 +1140,103 @@ function runAnimation() {
         <h2 class="text-lg font-semibold mb-4">Confirm Membership Renewal</h2>
         <p><strong>RFID UID:</strong> {{ auth()->user()->rfid_uid }}</p>
         <p><strong>Membership Type:</strong> {{ auth()->user()->membership_type }}</p>
-        <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
-        <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
+        <p><strong>Start Date:</strong> <span id="displayStartDate">{{ now()->toDateString() }}</span></p>
+        <p><strong>End Date:</strong> <span id="displayEndDate">{{ now()->addYear()->toDateString() }}</span></p>
 
-        <form id="renewForm" method="POST" action="{{ route('self.landingProfile') }}">
+        <form id="renewForm" method="POST">
             @csrf
             <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
             <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
-            <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-            <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
+            <input type="hidden" name="start_date" id="startDate" value="{{ now()->toDateString() }}">
+            <input type="hidden" name="end_date" id="endDate" value="{{ now()->addYear()->toDateString() }}">
             
-            <!-- You can also include a hidden field for payment_method and amount if needed -->
-            <input type="hidden" name="payment_method" value="cash"> <!-- change if needed -->
-            <input type="hidden" name="amount" value="500"> <!-- example amount -->
+            <label class="block mt-2">Payment Method:</label>
+            <select name="payment_method" class="w-full border rounded p-2" required>
+                <option value="cash">Cash</option>
+                <option value="gcash">GCash</option>
+            </select>
+
+            <label class="block mt-2">Amount:</label>
+            <input type="number" name="amount" value="500" min="0" class="w-full border rounded p-2" required>
 
             <div class="mt-4 flex justify-end">
                 <button type="button" onclick="closeRenewModal()" class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2">
                     Cancel
                 </button>
                 <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Confirm
+                    Confirm Renewal
                 </button>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Success/Error Notification -->
+<div id="renewalNotification" class="fixed top-4 right-4 z-50 hidden">
+    <div class="px-6 py-4 rounded shadow-lg"></div>
+</div>
+
+@push('scripts')
+<script>
+    // Handle form submission with AJAX
+    document.getElementById('renewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Processing...';
+        
+        fetch("{{ route('self.renewMembership') }}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const notification = document.getElementById('renewalNotification');
+            const notificationContent = notification.querySelector('div');
+            
+            notification.classList.remove('hidden');
+            
+            if (data.success) {
+                notificationContent.className = 'px-6 py-4 rounded shadow-lg bg-green-500 text-white';
+                notificationContent.textContent = data.message;
+                
+                // Close modal after success
+                setTimeout(() => {
+                    closeRenewModal();
+                    window.location.reload(); // Refresh to show updated status
+                }, 2000);
+            } else {
+                notificationContent.className = 'px-6 py-4 rounded shadow-lg bg-red-500 text-white';
+                notificationContent.textContent = data.message || 'Renewal failed. Please try again.';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Confirm Renewal';
+            }
+            
+            // Hide notification after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('hidden');
+            }, 5000);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Confirm Renewal';
+        });
+    });
+    
+    function closeRenewModal() {
+        document.getElementById('renewModal').classList.add('hidden');
+    }
+</script>
+@endpush
 <script>
     function openRenewModal() {
         document.getElementById('renewModal').classList.remove('hidden');
