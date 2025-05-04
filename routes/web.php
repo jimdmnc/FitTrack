@@ -32,6 +32,10 @@ Route::get('/landingProfile', function () {
     return view('self.landingProfile');
 })->name('self.landingProfile');
 
+Route::get('/landing', function () {
+    return view('self.landing');
+})->name('self.landing');
+
 // routes/web.php
 Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
 

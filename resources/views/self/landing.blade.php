@@ -136,86 +136,16 @@
         opacity: 0;
     }
 
-    .workout-timer {
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 0.5rem;
-            padding: 0.5rem 1rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            margin-right: 1rem;
-            border: 1px solid #ff5722;
-        }
+
         
-        .timer-icon {
-            margin-right: 0.5rem;
-            color: #FF5722;
-        }
-        
-        .timer-text {
-            color: white;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        .timer-active {
-            animation: pulse 2s infinite;
-        }
+    
+  
+ 
+  
 
-     /* Enhanced Profile Modal Styles */
-     .profile-modal {
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-    }
 
-    .profile-modal-content {
-        transform: translateX(100%);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
-        width: 380px;
-    }
+   
 
-    .profile-modal.active .profile-modal-content {
-        transform: translateX(0);
-    }
-
-    .profile-header {
-        background: linear-gradient(135deg, #ff5722 0%, #ff7043 100%);
-        padding: 1.5rem;
-    }
-
-    .profile-avatar {
-        width: 80px;
-        height: 80px;
-        border: 3px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        background-color: #2c2c2c;
-    }
-
-    .profile-info-item {
-        border-bottom: 1px solid #2c2c2c;
-        padding: 1rem;
-        transition: background-color 0.2s ease;
-    }
-
-    .profile-info-item:hover {
-        background-color: #252525;
-    }
-
-    @media (max-width: 640px) {
-        .profile-modal-content {
-            width: 100%;
-        }
-    }
-
-    @media (max-width: 640px) {
-        .profile-modal-content {
-            width: 100%;
-        }
-    }
 
     </style>
 </head>
@@ -233,30 +163,12 @@
                 <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-                <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
-                <!-- Register Button -->
-                @if(!session('registered') && !session('timed_out'))
-                    <a href="{{ route('self.registration') }}" class="nav-link font-semibold hover:text-red-500 transition duration-300" id="register-button">Register</a>
-                @endif
+             
                 
             </div>
 
-            <!-- Workout Duration Timer (New Element) -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <div class="workout-timer" id="workout-timer">
-                <i class="fas fa-stopwatch timer-icon timer-active"></i>
-                <span class="timer-text" id="workout-duration">00:00:00</span>
-            </div>
-            @endif
+      
 
-            <!-- Time Out Button -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <button onclick="document.getElementById('timeout-modal').showModal()" 
-            class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-2 px-3 text-sm rounded-full transition duration-300 flex items-center"
-            id="timeout-button">
-                <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
-            </button>
-            @endif
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden">
@@ -271,146 +183,12 @@
             <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-            <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
-            <!-- Register Button -->
-                @if(!session('registered') && !session('timed_out'))
-                    <a href="{{ route('self.registration') }}" class="block py-2 text-center hover:bg-gray-800 rounded" id="register-button">Register</a>
-                @endif
-            
-            <!-- Mobile Workout Timer Display -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <div class="flex justify-center items-center py-3 border-t border-gray-700 mt-2">
-                <div class="flex items-center">
-                    <i class="fas fa-stopwatch mr-2 text-red-500"></i>
-                    <span id="mobile-workout-duration">00:00:00</span>
-                </div>
-            </div>
-            @endif
+           
         </div>
     </nav>
         
-        <!-- Success Alert Modal -->
-            @if(session('success'))
-                    <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="successAlert">
-                        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('successAlert').classList.add('hidden')"></div>
-                        <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
-                            <!-- Header with colored bar -->
-                            <div class="bg-green-500 h-2"></div>
-                            
-                            <div class="p-5">
-                                <!-- Success Icon and Message -->
-                                <div class="flex items-start space-x-4">
-                                    <div class="flex-shrink-0 bg-green-100 rounded-full p-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                    </div>
-                                    <div class="flex-1 pt-0.5">
-                                        <h3 class="text-lg font-medium text-gray-900">Success!</h3>
-                                        <p class="mt-1 text-gray-600">{{ session('success') }}</p>
-                                    </div>
-                                    <!-- Close Button -->
-                                    <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('successAlert').classList.add('hidden')">
-                                        <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <!-- Action Button -->
-                            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-gray-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('successAlert').classList.add('hidden')">
-                                    Got it
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Auto-dismiss after 5 seconds -->
-                    <script>
-                        setTimeout(function() {
-                            const alert = document.getElementById('successAlert');
-                            if (alert) {
-                                alert.classList.add('hidden');
-                            }
-                        }, 5000);
-                    </script>
-            @endif
 
-        <!-- Error Alert Modal -->
-            @if(session('error'))
-                <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="errorAlert">
-                    <div class="absolute inset-0 bg-black bg-opacity-50" onclick="document.getElementById('errorAlert').classList.add('hidden')"></div>
-                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md mx-4 overflow-hidden transform transition-all animate-slide-up">
-                        <!-- Header with colored bar -->
-                        <div class="bg-red-500 h-2"></div>
-                        
-                        <div class="p-5">
-                            <!-- Error Icon and Message -->
-                            <div class="flex items-start space-x-4">
-                                <div class="flex-shrink-0 bg-red-100 rounded-full p-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                    </svg>
-                                </div>
-                                <div class="flex-1 pt-0.5">
-                                    <h3 class="text-lg font-medium text-gray-900">Error</h3>
-                                    <p class="mt-1 text-gray-600">{{ session('error') }}</p>
-                                </div>
-                                <!-- Close Button -->
-                                <button type="button" class="text-gray-400 hover:text-gray-500" onclick="document.getElementById('errorAlert').classList.add('hidden')">
-                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <!-- Action Button -->
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                            <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-gray-200 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm" onclick="document.getElementById('errorAlert').classList.add('hidden')">
-                                Close
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Auto-dismiss after 5 seconds -->
-                <script>
-                    setTimeout(function() {
-                        const alert = document.getElementById('errorAlert');
-                        if (alert) {
-                            alert.classList.add('hidden');
-                        }
-                    }, 5000);
-                </script>
-            @endif   
-        <!-- Time Out Confirmation Modal -->
-        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-                <p class="mb-6">Are you sure you want to time out?</p>
-                
-                <div class="flex justify-center gap-4">
-                    @auth
-                        <form action="{{ url('/attendance/timeout') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                            <button type="submit" 
-                                    class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                                Yes, Time Out
-                            </button>
-                        </form>
-                    @endauth
-                    <button onclick="document.getElementById('timeout-modal').close()" 
-                            class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </dialog>
-
+    
         
         <!-- Hero Section with Parallax Effect -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
@@ -680,56 +458,7 @@
             </div>
         </footer>
 
-<!-- Enhanced Profile Modal -->
-<div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
-    <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-        <div class="profile-header">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-2xl font-bold text-white">User Profile</h3>
-                <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            
-            <div class="text-center">
-                
-                <h2 class="text-xl font-semibold mt-4 text-white">
-                    {{ Auth::user()->first_name . ' ' . Auth::user()->last_name ?? 'Guest User' }}
-                </h2>
-                <p class="text-sm text-gray-300">{{ Auth::user()->email ?? '' }}</p>
-            </div>
-        </div>
 
-        <div class="overflow-y-auto h-[calc(100vh-200px)] bg-[#1e1e1e]">
-            <div class="space-y-2 p-4">
-                <div class="profile-info-item">
-                    <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
-                    <p class="font-medium text-gray-200">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
-                </div>
-                
-                <div class="profile-info-item">
-                    <label class="block text-sm text-gray-400 mb-1">Gender</label>
-                    <p class="font-medium text-gray-200">{{ Auth::user()->gender ?? 'Not specified' }}</p>
-                </div>
-                
-                <div class="profile-info-item">
-                    <label class="block text-sm text-gray-400 mb-1">Member Since</label>
-                    <p class="font-medium text-gray-200">
-                        {{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}
-                    </p>
-                </div>
-                
-                <div class="profile-info-item">
-                    <label class="block text-sm text-gray-400 mb-1">Last Activity</label>
-                    <p class="font-medium text-gray-200">
-                        {{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <script>
         /**
      * Main application JavaScript
@@ -740,11 +469,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all components
         initNavigation();
-        initProfile();
         initParallaxEffect();
         initCarousel();
-        initSessionHandling();
-        initWorkoutTimer();
         initPhoneAnimation();
     });
 
@@ -788,67 +514,8 @@
         mobileMenu.classList.toggle('animate-slideDown');
     }
 
-    /**
-     * Profile modal handling
-     */
-    function initProfile() {
-        // Initialize profile links in mobile menu
-        document.querySelectorAll('[onclick="toggleProfile()"]').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                toggleProfile();
-                // Close mobile menu if open
-                const mobileMenu = document.getElementById('mobile-menu');
-                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                    toggleMobileMenu();
-                }
-            });
-        });
-        
-        // Add event listener to close modal when clicking outside
-        const modalOverlay = document.querySelector('#profile-modal .absolute.inset-0');
-        if (modalOverlay) {
-            modalOverlay.addEventListener('click', hideProfile);
-        }
-    }
 
-    /**
-     * Show profile modal with animation
-     */
-    function showProfile() {
-        const modal = document.getElementById('profile-modal');
-        modal.classList.remove('hidden');
-        // Add active class to trigger animation
-        setTimeout(() => {
-            modal.classList.add('active');
-            modal.classList.remove('opacity-0', 'invisible');
-        }, 10);
-    }
 
-/**
- * Hide profile modal with animation
- */
-function hideProfile() {
-    const modal = document.getElementById('profile-modal');
-    modal.classList.remove('active');
-    modal.classList.add('opacity-0', 'invisible');
-    // Add a delay before hiding to allow animation to complete
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
-
-/**
- * Toggle profile modal visibility
- */
-function toggleProfile() {
-    const modal = document.getElementById('profile-modal');
-    if (modal.classList.contains('hidden') || modal.classList.contains('invisible')) {
-        showProfile();
-    } else {
-        hideProfile();
-    }
-}
 
 /**
  * Parallax background effect
@@ -961,101 +628,9 @@ function initCarousel() {
     }
 }
 
-/**
- * Session and registration handling
- */
-function initSessionHandling() {
-    const registerButton = document.getElementById('register-button');
-    const timeoutButton = document.getElementById('timeout-button');
-    const timeoutModal = document.getElementById('timeout-modal');
-    
-    // Check session status
-    if (sessionStorage.getItem('registered') && registerButton) {
-        registerButton.style.display = 'none';
-    }
-    
-    if (sessionStorage.getItem('timed_out') && registerButton) {
-        registerButton.style.display = 'inline-block';
-    }
-    
-    // Registration button click handler
-    if (registerButton) {
-        registerButton.addEventListener('click', function() {
-            sessionStorage.setItem('registered', true);
-            registerButton.style.display = 'none';
-        });
-    }
-    
-    // Timeout button click handler
-    if (timeoutButton) {
-        timeoutButton.addEventListener('click', function() {
-            sessionStorage.removeItem('registered');
-            sessionStorage.setItem('timed_out', true);
-            if (registerButton) registerButton.style.display = 'inline-block';
-        });
-        
-        // Handle session timeout state
-        const sessionHasTimedOut = false; // This should be set by your app logic
-        if (sessionHasTimedOut) {
-            timeoutButton.style.display = 'none';
-        }
-    }
-    
-    // Timeout form submission handler
-    const timeoutForm = timeoutModal ? timeoutModal.querySelector('form') : null;
-    if (timeoutForm) {
-        timeoutForm.addEventListener('submit', function() {
-            if (timeoutButton) timeoutButton.style.display = 'none';
-        });
-    }
-}
 
-/**
- * Workout timer functionality
- */
-function initWorkoutTimer() {
-    // Check if we have the necessary elements
-    const timerElement = document.getElementById('workout-duration');
-    const mobileTimerElement = document.getElementById('mobile-workout-duration');
-    
-    if (!timerElement && !mobileTimerElement) return;
-    
-    // This would normally be set by PHP/Laravel
-    const isUserLoggedIn = false; // Replace with actual logic
-    const hasRfidUid = false; // Replace with actual logic
-    const isTimedOut = false; // Replace with actual logic
-    const checkInTime = new Date(); // Replace with actual check-in time
-    
-    // Only initialize timer if user is logged in with proper conditions
-    if (isUserLoggedIn && hasRfidUid && !isTimedOut) {
-        // Update timer every second
-        setInterval(function() {
-        const now = new Date();
-        const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
 
-        // Calculate hours, minutes, seconds
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = duration % 60;
 
-        // Format time as HH:MM:SS
-        const formattedTime = 
-            String(hours).padStart(2, '0') + ":" + 
-            String(minutes).padStart(2, '0') + ":" + 
-            String(seconds).padStart(2, '0');
-
-        // Update timer display
-        if (timerElement) timerElement.textContent = formattedTime;
-        if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-
-        // Highlight duration if it's over 2 hours
-        if (hours >= 2) {
-            if (timerElement) timerElement.classList.add('text-red-400');
-            if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
-        }
-    }, 1000);
-    }
-}
 
 /**
  * Phone animation functionality

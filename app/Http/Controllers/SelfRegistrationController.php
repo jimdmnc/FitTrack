@@ -45,7 +45,7 @@ public function checkApproval()
     public function waiting()
     {
         if (auth()->user()->session_status === 'approved') {
-            return redirect()->route('self.landing');
+            return redirect()->route('self.landingProfile');
         }
         return view('self.waiting');
     }
