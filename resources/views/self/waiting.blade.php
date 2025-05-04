@@ -35,17 +35,47 @@
             100% { width: 10%; opacity: 0.7; }
         }
 
-        /* Shake animation for rejection "X" */
-        @keyframes shake {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(10deg); }
-            50% { transform: rotate(0deg); }
-            75% { transform: rotate(-10deg); }
+        /* Enhanced X animation */
+        @keyframes xAnimation {
+            0% { transform: scale(0.5); opacity: 0; }
+            20% { transform: scale(1.2); opacity: 1; }
+            40% { transform: scale(1); opacity: 1; }
+            60% { transform: rotate(-5deg); }
+            80% { transform: rotate(5deg); }
             100% { transform: rotate(0deg); }
         }
 
-        #statusGif {
-            animation: shake 0.5s ease-in-out forwards;
+        .x-animation {
+            animation: xAnimation 0.8s ease-in-out forwards;
+        }
+
+        /* Custom X icon */
+        .x-icon {
+            position: relative;
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            margin: 20px auto;
+        }
+
+        .x-icon:before, .x-icon:after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            background-color: #ef4444; /* red-500 */
+            border-radius: 4px;
+            top: 50%;
+            left: 0;
+            margin-top: -4px;
+        }
+
+        .x-icon:before {
+            transform: rotate(45deg);
+        }
+
+        .x-icon:after {
+            transform: rotate(-45deg);
         }
 
         .hidden {
@@ -65,9 +95,11 @@
 <body class="bg-neutral-900 flex justify-center items-center min-h-screen m-0 p-0 font-sans">
     <div class="w-11/12 max-w-lg p-8 m-5 rounded-xl shadow-lg bg-neutral-800 text-center">
         <div class="mb-6">
-            <!-- Loading animation GIF -->
+            <!-- Status icon area - will contain either loading animation, checkmark, or X -->
             <div class="flex justify-center">
                 <img src="images/loadinghand3.gif" alt="Loading animation" class="h-32 w-auto" id="statusGif" />
+                <!-- The X icon (hidden by default) -->
+                <div id="xIcon" class="x-icon hidden"></div>
             </div>
             <h2 class="text-2xl font-bold text-orange-500 mb-3" id="statusTitle">Your Request is Processing</h2>
             <p class="text-white text-lg mb-8" id="statusSubtitle">Our team is reviewing your request. You'll be automatically redirected once approved.</p>
@@ -96,7 +128,6 @@
             
             <div class="mt-6">
                 <a href="{{ url('/session-registration') }}" class="inline-block px-6 py-2 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition duration-300">Try Again</a>
-                <a href="{{ url('/contact') }}" class="inline-block px-6 py-2 ml-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition duration-300">Contact Support</a>
             </div>
         </div>
         
@@ -130,15 +161,20 @@
             }
         }
         
-        // Show rejection UI
+        // Show rejection UI with animated X
         function showRejection(reason) {
             // Hide progress elements
             document.getElementById('progressContainer').classList.add('hidden');
             
+            // Hide loading GIF and show X icon with animation
+            document.getElementById('statusGif').classList.add('hidden');
+            const xIcon = document.getElementById('xIcon');
+            xIcon.classList.remove('hidden');
+            xIcon.classList.add('x-animation');
+            
             // Update status elements for rejection
-            document.getElementById('statusGif').src = "images/rejected.gif"; // Point to your rejection GIF (X animation)
-            document.getElementById('statusGif').alt = "Request Rejected";
             document.getElementById('statusTitle').textContent = "Request Not Approved";
+            document.getElementById('statusTitle').className = "text-2xl font-bold text-red-500 mb-3";
             document.getElementById('statusSubtitle').textContent = "Unfortunately, your request was not approved.";
             document.getElementById('statusMessage').classList.add('hidden');
             
@@ -149,15 +185,6 @@
             if (reason) {
                 document.getElementById('rejectionReason').textContent = reason;
             }
-            
-            // Trigger the X animation
-            const gif = document.getElementById('statusGif');
-            gif.classList.add('animate-shake');
-
-            // Reset animation after it completes
-            setTimeout(function() {
-                gif.classList.remove('animate-shake');
-            }, 500); // The duration of the animation (500ms in this case)
         }
 
         // Status message updates
@@ -192,7 +219,7 @@
                         
                         // Redirect after delay
                         setTimeout(function() {
-                            window.location.href = '/dashboard';
+                            window.location.href = '/landing';
                         }, 1500);
                     } else if (data.rejected) {
                         // Clear intervals

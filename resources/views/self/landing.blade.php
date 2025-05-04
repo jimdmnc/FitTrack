@@ -1030,30 +1030,30 @@ function initWorkoutTimer() {
     if (isUserLoggedIn && hasRfidUid && !isTimedOut) {
         // Update timer every second
         setInterval(function() {
-            const now = new Date();
-            const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
-            
-            // Calculate hours, minutes, seconds
-            const hours = Math.floor(duration / 3600);
-            const minutes = Math.floor((duration % 3600) / 60);
-            const seconds = duration % 60;
-            
-            // Format time as HH:MM:SS
-            const formattedTime = 
-                String(hours).padStart(2, '0') + ":" + 
-                String(minutes).padStart(2, '0') + ":" + 
-                String(seconds).padStart(2, '0');
-            
-            // Update timer display
-            if (timerElement) timerElement.textContent = formattedTime;
-            if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-            
-            // Highlight duration if it's over 2 hours
-            if (hours >= 2) {
-                if (timerElement) timerElement.classList.add('text-red-400');
-                if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
-            }
-        }, 1000);
+        const now = new Date();
+        const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
+
+        // Calculate hours, minutes, seconds
+        const hours = Math.floor(duration / 3600);
+        const minutes = Math.floor((duration % 3600) / 60);
+        const seconds = duration % 60;
+
+        // Format time as HH:MM:SS
+        const formattedTime = 
+            String(hours).padStart(2, '0') + ":" + 
+            String(minutes).padStart(2, '0') + ":" + 
+            String(seconds).padStart(2, '0');
+
+        // Update timer display
+        if (timerElement) timerElement.textContent = formattedTime;
+        if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
+
+        // Highlight duration if it's over 2 hours
+        if (hours >= 2) {
+            if (timerElement) timerElement.classList.add('text-red-400');
+            if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
+        }
+    }, 1000);
     }
 }
 
