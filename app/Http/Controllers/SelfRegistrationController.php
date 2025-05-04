@@ -142,4 +142,16 @@ public function checkApproval()
                 ->with('error', 'Registration failed: ' . $e->getMessage());
         }
     }
+
+    public function landingProfile()
+{
+    $user = auth()->user();
+
+    if ($user->session_status !== 'approved') {
+        return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
+    }
+
+    return view('self.landingProfile', compact('user'));
+}
+
 }
