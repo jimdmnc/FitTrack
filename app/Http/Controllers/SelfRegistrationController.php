@@ -41,14 +41,14 @@ public function checkApproval()
 }
 
 
-    // SelfRegistrationController.php
-    public function waiting()
-    {
-        if (auth()->user()->session_status === 'approved') {
-            return redirect()->route('self.landingProfile');
+        // SelfRegistrationController.php
+        public function waiting()
+        {
+            if (auth()->user()->session_status === 'approved') {
+                return redirect()->route('self.landingProfile');
+            }
+            return view('self.waiting');
         }
-        return view('self.waiting');
-    }
         // Store method for handling self-registration
         public function store(Request $request)
         {

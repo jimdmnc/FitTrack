@@ -234,11 +234,19 @@
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
                 <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
+                
                 <!-- Register Button -->
                 @if(!session('registered') && !session('timed_out'))
                     <a href="{{ route('self.registration') }}" class="nav-link font-semibold hover:text-red-500 transition duration-300" id="register-button">Register</a>
                 @endif
-                
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                        <i class="fas fa-door-open mr-2"></i> Sign Out
+                    </button>
+                </form>
+
             </div>
 
             <!-- Workout Duration Timer (New Element) -->
@@ -276,6 +284,14 @@
                 @if(!session('registered') && !session('timed_out'))
                     <a href="{{ route('self.registration') }}" class="block py-2 text-center hover:bg-gray-800 rounded" id="register-button">Register</a>
                 @endif
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="w-full text-left py-2 px-4 text-white hover:bg-gray-800 rounded">
+                        <i class="fas fa-door-open mr-2"></i> Sign Out
+                    </button>
+                </form>
+
+
             
             <!-- Mobile Workout Timer Display -->
             @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))

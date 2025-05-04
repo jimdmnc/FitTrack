@@ -145,6 +145,10 @@ Route::middleware('auth')->group(function () {
         return view('payment.failed');
     })->name('payment.failed');
 
+
+    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
+
 });
 
 // Authentication routes (login, register, etc.)

@@ -185,6 +185,8 @@ class AttendanceController extends Controller
             return back()->with('error', 'Error: ' . $e->getMessage());
         }
     }
+
+    
     public function timeIn(Request $request)
 {
     try {
