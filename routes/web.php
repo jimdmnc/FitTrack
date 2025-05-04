@@ -146,8 +146,20 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
 
-    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
-
+    Route::post('/logout', function (Request $request) {
+        $user = Auth::user(); // capture user before logout
+    
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+    
+        // Redirect based on role/session status
+        if ($user && $user->is_admin) {
+            return redirect('/login'); // Adjust if needed
+        }
+    
+        return redirect('/landing'); // Redirect to your landing page
+    })->name('logout');
 
 });
 
