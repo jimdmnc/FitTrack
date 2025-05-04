@@ -154,7 +154,7 @@ Route::middleware('auth')->group(function () {
         $request->session()->regenerateToken();
     
         // Redirect based on role/session status
-        if ($user && $user->is_admin) {
+        if ($user && $user->role === 'admin') {
             return redirect('/login'); // Adjust if needed
         }
     
