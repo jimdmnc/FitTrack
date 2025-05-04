@@ -51,97 +51,97 @@ public function checkApproval()
         }
         // Store method for handling self-registration
         public function store(Request $request)
-        {
-            try {
-                // Validate the necessary fields
-                $validatedData = $request->validate([
-                    'first_name' => 'required|string|max:255',
-                    'last_name' => 'required|string|max:255',
-                    'phone_number' => 'required|string|max:15',
-                    'email' => 'required|email',
-                    'gender' => 'required|string|in:male,female,other',
-                    'membership_type' => 'required|string|in:1',
-                ]);
-                $request->session()->forget('timed_out');  // <-- ADD THIS LINE
+                    {
+                        try {
+                            // Validate the necessary fields
+                            $validatedData = $request->validate([
+                                'first_name' => 'required|string|max:255',
+                                'last_name' => 'required|string|max:255',
+                                'phone_number' => 'required|string|max:15',
+                                'email' => 'required|email',
+                                'gender' => 'required|string|in:male,female,other',
+                                'membership_type' => 'required|string|in:1',
+                            ]);
+                            $request->session()->forget('timed_out');  // <-- ADD THIS LINE
 
-                // Check if user exists by email and phone
-                $existingUser = User::where(function ($query) use ($validatedData) {
-                    $query->where('email', $validatedData['email'])
-                        ->orWhere(function ($subQuery) use ($validatedData) {
-                            $subQuery->where('first_name', $validatedData['first_name'])
-                                    ->where('last_name', $validatedData['last_name']);
+                            // Check if user exists by email and phone
+                            $existingUser = User::where(function ($query) use ($validatedData) {
+                                $query->where('email', $validatedData['email'])
+                                    ->orWhere(function ($subQuery) use ($validatedData) {
+                                        $subQuery->where('first_name', $validatedData['first_name'])
+                                                ->where('last_name', $validatedData['last_name']);
+                                    });
+                            })->first();
+                            
+
+                            if ($existingUser) {
+                                // Update user details and reset session_status
+                                $existingUser->update([
+                                    'first_name' => $validatedData['first_name'],
+                                    'last_name' => $validatedData['last_name'],
+                                    'gender' => $validatedData['gender'],
+                                    'membership_type' => $validatedData['membership_type'],
+                                    'session_status' => 'pending',
+                                    'start_date' => Carbon::now(),
+                                    'end_date' => Carbon::now(), // ✅ Add this
+                                    'needs_approval' => true, // <-- ADD THIS
+
+                                ]);
+
+                                // Add a new payment record
+                                MembersPayment::create([
+                                    'rfid_uid' => $existingUser->rfid_uid,
+                                    'amount' => 60,
+                                    'payment_method' => 'cash',
+                                    'payment_date' => now(),
+                                ]);
+
+                                Auth::login($existingUser);
+
+                                return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');                }
+
+                        // If user doesn't exist, generate a new RFID UID
+                        $rfidUid = 'DAILY' . strtoupper(Str::random(5));
+
+                        // Create the user and payment inside a transaction
+                        $user = DB::transaction(function () use ($validatedData, $rfidUid) {
+                            $user = User::create([
+                                'first_name' => $validatedData['first_name'],
+                                'last_name' => $validatedData['last_name'],
+                                'phone_number' => $validatedData['phone_number'],
+                                'email' => $validatedData['email'],
+                                'gender' => $validatedData['gender'],
+                                'membership_type' => $validatedData['membership_type'],
+                                'role' => 'user',
+                                'session_status' => 'pending',
+                                'start_date' => Carbon::now(),
+                                'end_date' => Carbon::now(), // ✅ Add this here
+                                'rfid_uid' => $rfidUid,
+                                'password' => Hash::make('defaultpassword123'),
+                                'needs_approval' => true, // ✅ here too
+
+                            ]);
+
+                            MembersPayment::create([
+                                'rfid_uid' => $user->rfid_uid,
+                                'amount' => 60,
+                                'payment_method' => 'cash',
+                                'payment_date' => now(),
+                            ]);
+
+                            return $user;
                         });
-                })->first();
-                
 
-                if ($existingUser) {
-                    // Update user details and reset session_status
-                    $existingUser->update([
-                        'first_name' => $validatedData['first_name'],
-                        'last_name' => $validatedData['last_name'],
-                        'gender' => $validatedData['gender'],
-                        'membership_type' => $validatedData['membership_type'],
-                        'session_status' => 'pending',
-                        'start_date' => Carbon::now(),
-                        'end_date' => Carbon::now(), // ✅ Add this
-                        'needs_approval' => true, // <-- ADD THIS
+                        Auth::login($user);
 
-                    ]);
-
-                    // Add a new payment record
-                    MembersPayment::create([
-                        'rfid_uid' => $existingUser->rfid_uid,
-                        'amount' => 60,
-                        'payment_method' => 'cash',
-                        'payment_date' => now(),
-                    ]);
-
-                    Auth::login($existingUser);
-
-                    return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');                }
-
-            // If user doesn't exist, generate a new RFID UID
-            $rfidUid = 'DAILY' . strtoupper(Str::random(5));
-
-            // Create the user and payment inside a transaction
-            $user = DB::transaction(function () use ($validatedData, $rfidUid) {
-                $user = User::create([
-                    'first_name' => $validatedData['first_name'],
-                    'last_name' => $validatedData['last_name'],
-                    'phone_number' => $validatedData['phone_number'],
-                    'email' => $validatedData['email'],
-                    'gender' => $validatedData['gender'],
-                    'membership_type' => $validatedData['membership_type'],
-                    'role' => 'user',
-                    'session_status' => 'pending',
-                    'start_date' => Carbon::now(),
-                    'end_date' => Carbon::now(), // ✅ Add this here
-                    'rfid_uid' => $rfidUid,
-                    'password' => Hash::make('defaultpassword123'),
-                    'needs_approval' => true, // ✅ here too
-
-                ]);
-
-                MembersPayment::create([
-                    'rfid_uid' => $user->rfid_uid,
-                    'amount' => 60,
-                    'payment_method' => 'cash',
-                    'payment_date' => now(),
-                ]);
-
-                return $user;
-            });
-
-            Auth::login($user);
-
-            return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
-        } catch (\Exception $e) {
-            logger()->error('Session Membership Registration Error: ' . $e->getMessage());
-            return redirect()->route('self.registration')
-                ->withInput()
-                ->with('error', 'Registration failed: ' . $e->getMessage());
-        }
-    }
+                        return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
+                    } catch (\Exception $e) {
+                        logger()->error('Session Membership Registration Error: ' . $e->getMessage());
+                        return redirect()->route('self.registration')
+                            ->withInput()
+                            ->with('error', 'Registration failed: ' . $e->getMessage());
+                    }
+            }
 
     public function landingProfile()
 {
@@ -153,7 +153,85 @@ public function checkApproval()
 
     return view('self.landingProfile', compact('user'));
 }
+public function renewMembershipApp(Request $request)
+{
+    try {
+        // Validate request with same strictness as registration
+        $validatedData = $request->validate([
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+            'membership_type' => 'required|string|in:1', // Same validation as registration
+            'payment_method' => 'required|in:cash,gcash', // Added to match registration's payment handling
+            'amount' => 'required|numeric|min:0', // Required like in registration
+        ]);
 
+        // Clear session timeout like in registration
+        $request->session()->forget('timed_out');
+
+        // Find user - more consistent with registration's approach
+        $user = User::where('rfid_uid', $validatedData['rfid_uid'])->first();
+        if (!$user) {
+            throw new \Exception('User not found');
+        }
+
+        // Calculate dates following registration's pattern
+        $startDate = now();
+        $endDate = now(); // Will be updated after approval, like in registration
+
+        // Update user with same status logic as registration
+        $user->update([
+            'membership_type' => $validatedData['membership_type'],
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'member_status' => 'expired', // Explicit status like in registration
+            'session_status' => 'pending',
+            'needs_approval' => true,
+        ]);
+
+        // Create records in transaction like registration
+        DB::transaction(function () use ($user, $validatedData, $startDate, $endDate) {
+            // Create renewal record (similar to registration's payment creation)
+            Renewal::create([
+                'rfid_uid' => $user->rfid_uid,
+                'membership_type' => $validatedData['membership_type'],
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'payment_method' => $validatedData['payment_method'],
+                'status' => 'pending',
+            ]);
+
+            // Create payment record exactly like registration does
+            MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $validatedData['amount'],
+                'payment_method' => $validatedData['payment_method'],
+                'payment_date' => now(),
+                'status' => 'pending',
+            ]);
+        });
+
+        // Return success with same messaging pattern as registration
+        return response()->json([
+            'success' => true,
+            'redirect' => route('self.waiting'),
+            'message' => 'Renewal submitted for approval. Please wait for staff confirmation.',
+        ]);
+
+    } catch (\Exception $e) {
+        // Consistent error logging with registration
+        logger()->error('Membership Renewal Error - RFID: ' . $request->rfid_uid . ' - ' . $e->getMessage());
+        
+        // Same error response structure as registration
+        return response()->json([
+            'success' => false,
+            'message' => 'Renewal failed. ' . ($e instanceof \Illuminate\Validation\ValidationException 
+                        ? 'Invalid data provided.' 
+                        : $e->getMessage()),
+            'errors' => $e instanceof \Illuminate\Validation\ValidationException 
+                        ? $e->errors() 
+                        : [],
+        ], 400);
+    }
+}
 
 public function logout(Request $request)
 {
