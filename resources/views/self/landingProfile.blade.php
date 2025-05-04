@@ -804,6 +804,36 @@
     </div>
 </div>
 <script>
+       document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-mobile-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        // Open mobile menu
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        });
+        
+        // Close mobile menu
+        closeMenuButton.addEventListener('click', function() {
+            closeMobileMenu();
+        });
+        
+        // Close function
+        window.closeMobileMenu = function() {
+            mobileMenu.classList.add('hidden');
+            document.body.style.overflow = ''; // Allow scrolling again
+        };
+        
+        // Sync workout timers
+        if (document.getElementById('workout-duration') && document.getElementById('mobile-workout-duration')) {
+            setInterval(function() {
+                const mainTimer = document.getElementById('workout-duration').textContent;
+                document.getElementById('mobile-workout-duration').textContent = mainTimer;
+            }, 1000);
+        }
+    });
         /**
      * Main application JavaScript
      * Organized by functionality
