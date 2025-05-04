@@ -221,7 +221,7 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
+ <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
     <div class="container mx-auto">
         <!-- Alerts for Success and Error messages -->
         @if(session('success'))
@@ -344,13 +344,12 @@
             <!-- Mobile Action Buttons -->
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <!-- Renew Button -->
-                <button type="button" onclick="openRenewModal(); closeMobileMenu();"
-                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                <button type="button" onclick="openRenewModal()"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
                     <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                 </button>
-                
-                <!-- Sign Out Button -->
-                <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
+             <!-- Sign Out Button -->
+             <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                     @csrf
                     <button type="submit"
                         class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
@@ -803,9 +802,7 @@
         </div>
     </div>
 </div>
-
 <script>
-    
         /**
      * Main application JavaScript
      * Organized by functionality
@@ -829,16 +826,10 @@
     function initNavigation() {
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
-
-           // Close mobile menu
-           closeMenuButton.addEventListener('click', function() {
-            closeMobileMenu();
-        });
-          // Close function
-          window.closeMobileMenu = function() {
-            mobileMenu.classList.add('hidden');
-            document.body.style.overflow = ''; // Allow scrolling again
-        };
+        if (mobileMenuButton) {
+            mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        }
+        
         // Smooth scroll for all anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
