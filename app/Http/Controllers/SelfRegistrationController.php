@@ -180,7 +180,6 @@ public function renew(Request $request)
             'membership_type' => 'required|string|in:1,3,6,12', // Adjust types as needed
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'payment_method' => 'required|string',
             'amount' => 'required|numeric',
         ]);
 
@@ -200,7 +199,6 @@ public function renew(Request $request)
         MembersPayment::create([
             'rfid_uid' => $user->rfid_uid,
             'amount' => $request->amount,
-            'payment_method' => $request->payment_method,
             'payment_date' => now(),
         ]);
 
