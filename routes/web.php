@@ -60,6 +60,7 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
             ->name('renew.membership');
+            
 
         Route::get('/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance');
