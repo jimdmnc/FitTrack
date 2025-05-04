@@ -166,4 +166,60 @@ public function logout(Request $request)
     return redirect()->route('self.landing'); // Make sure this route exists
 }
 
+
+
+
+
+
+public function renew(Request $request)
+{
+    try {
+        // Validate the request
+        $request->validate([
+            'rfid_uid' => 'required|string',
+            'membership_type' => 'required|string|in:1,3,6,12', // Adjust types as needed
+            'start_date' => 'required|date',
+            'end_date' => 'required|date',
+            'payment_method' => 'required|string',
+            'amount' => 'required|numeric',
+        ]);
+
+        // Find the user
+        $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+        // Update user membership
+        $user->update([
+            'membership_type' => $request->membership_type,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'session_status' => 'pending', // Set to pending for approval
+            'needs_approval' => true,
+        ]);
+
+        // Create payment record
+        MembersPayment::create([
+            'rfid_uid' => $user->rfid_uid,
+            'amount' => $request->amount,
+            'payment_method' => $request->payment_method,
+            'payment_date' => now(),
+        ]);
+
+        // Optionally log in the user if not already
+        if (!Auth::check()) {
+            Auth::login($user);
+        }
+
+        return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
+
+    } catch (\Exception $e) {
+        logger()->error('Membership Renewal Error: ' . $e->getMessage());
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'Renewal failed: ' . $e->getMessage());
+    }
+}
+
+
+
+
 }
