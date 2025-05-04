@@ -1139,6 +1139,7 @@ function runAnimation() {
     <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
         <h2 class="text-lg font-semibold mb-4">Confirm Membership Renewal</h2>
         <p><strong>RFID UID:</strong> {{ auth()->user()->rfid_uid }}</p>
+        <p><strong>Membership Type:</strong> {{ auth()->user()->membership_type }}</p>
         <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
         <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
 
