@@ -221,110 +221,146 @@
 </head>
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
-    <nav class="bg-black text-gray-200 py-2 px-6 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
+    <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
+    <div class="container mx-auto">
+        <!-- Alerts for Success and Error messages -->
+        @if(session('success'))
+            <div class="alert-banner success-alert mb-2 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert-banner error-alert mb-2 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <span>{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
+
+        <!-- Main Navigation Content -->
+        <div class="flex justify-between items-center">
             <!-- Logo Image -->
             <div class="flex items-center">
-                <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
+                <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
             </div>
-            @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
 
-@if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
+            <!-- Workout Timer - Always Visible -->
+            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                    <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                    <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                </div>
+            @endif
 
-            <!-- Navigation Links -->
-            <div class="hidden md:flex space-x-8">
-                <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
-                <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
-                <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-                <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
-                <!-- Renew Button (triggers modal) -->
-                <button type="button" onclick="openRenewModal()"
-                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
+                <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
+                <a href="#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
+                <a href="#" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
+                
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-2">
+                    <!-- Renew Button -->
+                    <button type="button" onclick="openRenewModal()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                        <i class="fas fa-sync-alt mr-1"></i> Renew
+                    </button>
+
+                    <!-- TimeOut Button -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                        <button onclick="document.getElementById('timeout-modal').showModal()" 
+                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-1"></i> TimeOut
+                        </button>
+                    @endif
+
+                    <!-- Sign Out Button -->
+                    <form method="POST" action="{{ route('logout.custom') }}">
+                        @csrf
+                        <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                            <i class="fas fa-door-open mr-1"></i> Exit
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center space-x-3">
+                <!-- TimeOut Button for Mobile -->
+                @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                    <button onclick="document.getElementById('timeout-modal').showModal()" 
+                        class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                @endif
+                
+                <!-- Menu Toggle Button -->
+                <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu - Full Screen Overlay -->
+    <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
+        <div class="container mx-auto px-4 py-8 flex flex-col h-full">
+            <!-- Close Button -->
+            <div class="flex justify-end mb-6">
+                <button id="close-mobile-menu" class="text-gray-300 hover:text-white">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div class="flex flex-col space-y-6 text-center flex-grow">
+                <a href="#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
+                <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Tutorial</a>
+                <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">In Here</a>
+                <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
+                
+                <!-- Mobile Workout Timer Display -->
+                @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                    <div class="flex justify-center items-center py-4">
+                        <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                            <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                            <span id="mobile-workout-duration" class="text-lg font-medium">00:00:00</span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+            
+            <!-- Mobile Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 mt-6">
+                <!-- Renew Button -->
+                <button type="button" onclick="openRenewModal(); closeMobileMenu();"
+                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
                     <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                 </button>
-
-
-                <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
+                
+                <!-- Sign Out Button -->
+                <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                     @csrf
                     <button type="submit"
-                        class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                        class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
                         <i class="fas fa-door-open mr-2"></i> Sign Out
                     </button>
                 </form>
-
-                </form>
-
-            </div>
-
-            <!-- Workout Duration Timer (New Element) -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <div class="workout-timer" id="workout-timer">
-                <i class="fas fa-stopwatch timer-icon timer-active"></i>
-                <span class="timer-text" id="workout-duration">00:00:00</span>
-            </div>
-            @endif
-
-            <!-- Time Out Button -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <button onclick="document.getElementById('timeout-modal').showModal()" 
-            class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-2 px-3 text-sm rounded-full transition duration-300 flex items-center"
-            id="timeout-button">
-                <i class="fas fa-sign-out-alt mr-2"></i> TimeOut
-            </button>
-            @endif
-
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-200 focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
             </div>
         </div>
-
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
-            <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
-            <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
-            <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-            <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
-                    <!-- Renew Button (triggers modal) -->
-            <button type="button" onclick="openRenewModal()"
-                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
-                <i class="fas fa-sync-alt mr-2"></i> Renew Membership
-            </button>
-
-
-
-            <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
-                @csrf
-                <button type="submit"
-                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
-                    <i class="fas fa-door-open mr-2"></i> Sign Out
-                </button>
-            </form>
-
-
-
-            
-            <!-- Mobile Workout Timer Display -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-            <div class="flex justify-center items-center py-3 border-t border-gray-700 mt-2">
-                <div class="flex items-center">
-                    <i class="fas fa-stopwatch mr-2 text-red-500"></i>
-                    <span id="mobile-workout-duration">00:00:00</span>
-                </div>
-            </div>
-            @endif
-        </div>
-    </nav>
+    </div>
+</nav>
         
         <!-- Success Alert Modal -->
             @if(session('success'))
