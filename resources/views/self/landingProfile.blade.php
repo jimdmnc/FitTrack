@@ -245,17 +245,12 @@
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
                 <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
-                <!-- Renew Button -->
-                    <form method="POST" action="{{ route('renew.membership') }}">
-                        @csrf
-                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                        <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
-                        <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-                        <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}"> <!-- example renewal duration -->
-                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew Membership
-                        </button>
-                    </form>
+                <!-- Renew Button (triggers modal) -->
+                <button type="button" onclick="openRenewModal()"
+                    class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                    <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+                </button>
+
 
                 <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
                     @csrf
@@ -300,17 +295,12 @@
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
             <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
-            <!-- Renew Button -->
-                <form method="POST" action="{{ route('renew.membership') }}">
-                    @csrf
-                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                    <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
-                    <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-                    <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}"> <!-- example renewal duration -->
-                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
-                        <i class="fas fa-sync-alt mr-2"></i> Renew Membership
-                    </button>
-                </form>
+                    <!-- Renew Button (triggers modal) -->
+            <button type="button" onclick="openRenewModal()"
+                class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+            </button>
+
 
 
             <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
@@ -1144,6 +1134,47 @@ function runAnimation() {
     }, 50);
 }
 </script>
+<!-- Confirmation Modal -->
+<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
+        <h2 class="text-lg font-semibold mb-4">Confirm Membership Renewal</h2>
+        <p><strong>RFID UID:</strong> {{ auth()->user()->rfid_uid }}</p>
+        <p><strong>Membership Type:</strong> {{ auth()->user()->membership_type }}</p>
+        <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
+        <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
+
+        <form id="renewForm" method="POST" action="{{ route('renew.membership') }}">
+            @csrf
+            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+            <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
+            <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
+            <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
+            
+            <!-- You can also include a hidden field for payment_method and amount if needed -->
+            <input type="hidden" name="payment_method" value="cash"> <!-- change if needed -->
+            <input type="hidden" name="amount" value="500"> <!-- example amount -->
+
+            <div class="mt-4 flex justify-end">
+                <button type="button" onclick="closeRenewModal()" class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Confirm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    function openRenewModal() {
+        document.getElementById('renewModal').classList.remove('hidden');
+    }
+
+    function closeRenewModal() {
+        document.getElementById('renewModal').classList.add('hidden');
+    }
+</script>
+
 </body>
 </html>
 
