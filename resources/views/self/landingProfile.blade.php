@@ -259,10 +259,6 @@
                     </form>
                 @endif
 
-                <!-- Register Button -->
-                @if(!session('registered') && !session('timed_out'))
-                    <a href="{{ route('self.registration') }}" class="nav-link font-semibold hover:text-red-500 transition duration-300" id="register-button">Register</a>
-                @endif
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit"
@@ -318,10 +314,7 @@
                 </form>
             @endif
 
-            <!-- Register Button -->
-                @if(!session('registered') && !session('timed_out'))
-                    <a href="{{ route('self.registration') }}" class="block py-2 text-center hover:bg-gray-800 rounded" id="register-button">Register</a>
-                @endif
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full text-left py-2 px-4 text-white hover:bg-gray-800 rounded">
