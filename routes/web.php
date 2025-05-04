@@ -146,7 +146,7 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
 
-    Route::post('/logout-custom', [App\Http\Controllers\Auth\LogoutController::class, 'logout'])->name('logout.custom');
+    Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
 
 
 });
