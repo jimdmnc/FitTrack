@@ -259,12 +259,14 @@
                     </form>
                 @endif
 
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
                     @csrf
                     <button type="submit"
                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
                         <i class="fas fa-door-open mr-2"></i> Sign Out
                     </button>
+                </form>
+
                 </form>
 
             </div>
@@ -315,12 +317,14 @@
             @endif
 
 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="w-full text-left py-2 px-4 text-white hover:bg-gray-800 rounded">
-                        <i class="fas fa-door-open mr-2"></i> Sign Out
-                    </button>
-                </form>
+            <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
+                @csrf
+                <button type="submit"
+                    class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                    <i class="fas fa-door-open mr-2"></i> Sign Out
+                </button>
+            </form>
+
 
 
             

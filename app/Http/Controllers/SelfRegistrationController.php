@@ -154,4 +154,16 @@ public function checkApproval()
     return view('self.landingProfile', compact('user'));
 }
 
+
+public function logout(Request $request)
+{
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    // Redirect to your landing page route
+    return redirect()->route('landing'); // Make sure this route exists
+}
+
 }
