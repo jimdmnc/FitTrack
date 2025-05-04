@@ -136,16 +136,7 @@
         opacity: 0;
     }
 
-
-        
     
-  
- 
-  
-
-
-   
-
 
     </style>
 </head>
@@ -163,12 +154,12 @@
                 <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-             
-                
+            
             </div>
 
-      
+        
 
+      
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden">
@@ -183,12 +174,13 @@
             <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-           
+  
+      
         </div>
     </nav>
-        
+       
+     
 
-    
         
         <!-- Hero Section with Parallax Effect -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
@@ -469,6 +461,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all components
         initNavigation();
+        initProfile();
         initParallaxEffect();
         initCarousel();
         initPhoneAnimation();
@@ -514,8 +507,67 @@
         mobileMenu.classList.toggle('animate-slideDown');
     }
 
+    /**
+     * Profile modal handling
+     */
+    function initProfile() {
+        // Initialize profile links in mobile menu
+        document.querySelectorAll('[onclick="toggleProfile()"]').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                toggleProfile();
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+        
+        // Add event listener to close modal when clicking outside
+        const modalOverlay = document.querySelector('#profile-modal .absolute.inset-0');
+        if (modalOverlay) {
+            modalOverlay.addEventListener('click', hideProfile);
+        }
+    }
 
+    /**
+     * Show profile modal with animation
+     */
+    function showProfile() {
+        const modal = document.getElementById('profile-modal');
+        modal.classList.remove('hidden');
+        // Add active class to trigger animation
+        setTimeout(() => {
+            modal.classList.add('active');
+            modal.classList.remove('opacity-0', 'invisible');
+        }, 10);
+    }
 
+/**
+ * Hide profile modal with animation
+ */
+function hideProfile() {
+    const modal = document.getElementById('profile-modal');
+    modal.classList.remove('active');
+    modal.classList.add('opacity-0', 'invisible');
+    // Add a delay before hiding to allow animation to complete
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+/**
+ * Toggle profile modal visibility
+ */
+function toggleProfile() {
+    const modal = document.getElementById('profile-modal');
+    if (modal.classList.contains('hidden') || modal.classList.contains('invisible')) {
+        showProfile();
+    } else {
+        hideProfile();
+    }
+}
 
 /**
  * Parallax background effect
@@ -627,8 +679,6 @@ function initCarousel() {
         startAutoSlide();
     }
 }
-
-
 
 
 
