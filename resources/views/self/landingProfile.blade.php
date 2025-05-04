@@ -829,11 +829,7 @@
     function initNavigation() {
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
-      // Open mobile menu
-      mobileMenuButton.addEventListener('click', function() {
-            mobileMenu.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
-        });
+
            // Close mobile menu
            closeMenuButton.addEventListener('click', function() {
             closeMobileMenu();
