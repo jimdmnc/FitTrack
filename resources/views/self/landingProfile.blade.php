@@ -1143,7 +1143,7 @@ function runAnimation() {
         <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
         <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
 
-        <form id="renewForm" method="POST" action="{{ route('self.landingProfile') }}">
+        <form id="renewForm" method="POST" action="{{ route('renew.membership') }}">
             @csrf
             <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
             <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
@@ -1153,15 +1153,6 @@ function runAnimation() {
             <!-- You can also include a hidden field for payment_method and amount if needed -->
             <input type="hidden" name="payment_method" value="cash"> <!-- change if needed -->
             <input type="hidden" name="amount" value="500"> <!-- example amount -->
-<!-- Inside the modal form -->
-<label class="block mt-2">Payment Method:</label>
-<select name="payment_method" class="w-full border rounded p-2" required>
-    <option value="cash">Cash</option>
-    <option value="gcash">GCash</option>
-</select>
-
-<label class="block mt-2">Amount:</label>
-<input type="number" name="amount" value="500" min="0" class="w-full border rounded p-2" required>
 
             <div class="mt-4 flex justify-end">
                 <button type="button" onclick="closeRenewModal()" class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2">
