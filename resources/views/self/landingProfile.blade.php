@@ -1173,7 +1173,7 @@ function runAnimation() {
                             <span class="text-gray-500 text-sm">Type</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800">Annual Session</span>
+                            <span class="font-medium text-gray-800">Session</span>
                         </div>
                     </div>
                     
@@ -1183,7 +1183,7 @@ function runAnimation() {
                             <span class="text-gray-500 text-sm">Period</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800">{{ now()->format('M d, Y') }} - {{ now()->addYear()->format('M d, Y') }}</span>
+                            <span class="font-medium text-gray-800">{{ now()->format('M d, Y') }} - {{ now()->format('M d, Y') }}</span>
                         </div>
                     </div>
                     
@@ -1193,7 +1193,7 @@ function runAnimation() {
                             <span class="text-gray-500 text-sm">Amount</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800 text-lg">$60.00</span>
+                            <span class="font-medium text-gray-800 text-lg">₱60.00</span>
                         </div>
                     </div>
                 </div>
