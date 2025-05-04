@@ -803,8 +803,9 @@
         </div>
     </div>
 </div>
+<!-- JavaScript for Mobile Menu -->
 <script>
-       document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const closeMenuButton = document.getElementById('close-mobile-menu');
         const mobileMenu = document.getElementById('mobile-menu');
@@ -834,6 +835,9 @@
             }, 1000);
         }
     });
+</script>
+<script>
+    
         /**
      * Main application JavaScript
      * Organized by functionality
