@@ -219,7 +219,7 @@
                         
                         // Redirect after delay
                         setTimeout(function() {
-                            window.location.href = '/landing';
+                            window.location.href = '/landingProfile';
                         }, 1500);
                     } else if (data.rejected) {
                         // Clear intervals
