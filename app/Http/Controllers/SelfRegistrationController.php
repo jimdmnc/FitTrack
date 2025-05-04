@@ -163,7 +163,7 @@ public function logout(Request $request)
     $request->session()->regenerateToken();
 
     // Redirect to your landing page route
-    return redirect()->route('landing'); // Make sure this route exists
+    return redirect()->route('self.landing'); // Make sure this route exists
 }
 
 }
