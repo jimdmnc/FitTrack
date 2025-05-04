@@ -344,12 +344,13 @@
             <!-- Mobile Action Buttons -->
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <!-- Renew Button -->
-                <button type="button" onclick="openRenewModal()"
-                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                <button type="button" onclick="openRenewModal(); closeMobileMenu();"
+                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
                     <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                 </button>
-             <!-- Sign Out Button -->
-             <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
+                
+                <!-- Sign Out Button -->
+                <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                     @csrf
                     <button type="submit"
                         class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
