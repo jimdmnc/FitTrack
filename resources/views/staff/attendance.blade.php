@@ -129,7 +129,7 @@
 
                         <!-- # Column with Iteration Number -->
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
-                            {{ $loop->iteration }}
+                            {{ ($attendances->currentPage() - 1) * $attendances->perPage() + $loop->iteration }}
                         </td>
 
                         <!-- Member Column -->

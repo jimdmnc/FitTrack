@@ -115,7 +115,9 @@
                         @else
                             @foreach ($payments as $payment)
                             <tr class="bg-[#1e1e1e]">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">{{ $loop->iteration }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                                    {{ ($payments->currentPage() - 1) * $payments->perPage() + $loop->iteration }}
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="text-sm font-medium text-gray-200">

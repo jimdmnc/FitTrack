@@ -43,6 +43,8 @@ class ViewmembersController extends Controller
     {
         $searchQuery = $request->input('search');
         $status = $request->input('status', 'all');
+        $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
+        $sortDirection = $request->input('sort_direction', -1); // Default to descending
         
         // First update all members' status based on their end dates
         $allMembers = User::where('role', 'user')->get();
@@ -65,10 +67,30 @@ class ViewmembersController extends Controller
             });
         }
         
-        // Sorting alphabetically by first_name and last_name
-        $members = $query->orderBy('first_name', 'asc')  // Or 'desc' for reverse order
-                        ->orderBy('last_name', 'asc')   // Sorting by last_name as well
-                        ->paginate(10)
+        // Apply sorting based on the column index
+        switch ($sortColumn) {
+            case 0: // #
+                // Typically you wouldn't sort by row number
+                break;
+            case 1: // Name
+                $query->orderBy('first_name', $sortDirection > 0 ? 'asc' : 'desc')
+                    ->orderBy('last_name', $sortDirection > 0 ? 'asc' : 'desc');
+                break;
+            case 2: // Member ID
+                $query->orderBy('rfid_uid', $sortDirection > 0 ? 'asc' : 'desc');
+                break;
+            case 3: // Membership Type
+                $query->orderBy('membership_type', $sortDirection > 0 ? 'asc' : 'desc');
+                break;
+            case 4: // Registration Date
+                $query->orderBy('start_date', $sortDirection > 0 ? 'asc' : 'desc');
+                break;
+            case 5: // Status
+                $query->orderBy('member_status', $sortDirection > 0 ? 'asc' : 'desc');
+                break;
+        }
+        
+        $members = $query->paginate(10)
                         ->appends(request()->except('page'));
         
         // For AJAX requests, return JSON response

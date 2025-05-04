@@ -162,7 +162,9 @@
                                 @foreach($attendances as $attendance)
                                     <tr class="@if($loop->even) bg-[#1e1e1e] @else bg-[#1e1e1e] @endif" data-date="{{ $attendance->time_in ? $attendance->time_in->format('Y-m-d') : '' }}">
                                         <!-- # -->
-                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">{{ $loop->iteration }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                                            {{ ($attendances->currentPage() - 1) * $attendances->perPage() + $loop->iteration }}
+                                        </td>
 
                                         <!-- Member -->
                                         <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -262,7 +264,9 @@
                             @if($payments->count() > 0)
                                 @foreach ($payments as $index => $payment)
                                     <tr class="" data-date="{{ \Carbon\Carbon::parse($payment->payment_date)->format('Y-m-d') }}">
-                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-200">{{ $index + 1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">
+                                            {{ ($payments->currentPage() - 1) * $payments->perPage() + $loop->iteration }}
+                                        </td>
                                         <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="text-xs sm:text-sm font-medium text-gray-200">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
