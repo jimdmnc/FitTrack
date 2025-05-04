@@ -155,7 +155,7 @@ Route::middleware('auth')->group(function () {
     
         // Redirect based on role/session status
         if ($user && $user->role === 'admin') {
-            return redirect('/login'); // Adjust if needed
+            return redirect('/landing'); // Adjust if needed
         }
     
         return redirect('/landing'); // Redirect to your landing page
