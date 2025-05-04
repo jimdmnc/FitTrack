@@ -1134,49 +1134,78 @@ function runAnimation() {
     }, 50);
 }
 </script>
-<!-- Confirmation Modal -->
-<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-white p-6 rounded shadow-md w-full max-w-md">
-        <h2 class="text-lg font-semibold mb-4">Confirm Membership Renewal</h2>
-        <p><strong>RFID UID:</strong> {{ auth()->user()->rfid_uid }}</p>
-        <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
-        <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
-
+<!-- Improved Membership Renewal Modal -->
+<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
+    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all">
+        <!-- Header -->
+        <div class="mb-6 text-center">
+            <h2 class="text-2xl font-bold text-gray-800">Membership Renewal</h2>
+            <p class="text-gray-600 mt-1">Please confirm your annual membership details</p>
+        </div>
+        
+        <!-- Divider -->
+        <div class="border-b border-gray-200 mb-6"></div>
+        
         <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
             @csrf
             <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-            
-            <!-- Membership Type (Hidden) -->
-            <div class="flex items-center mb-4">
-                <label class="w-32 font-medium text-gray-700">Membership Type:</label>
-                <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
-                    Session
-                </div>
-                <input type="hidden" name="membership_type" value="1">
-            </div>
-
-            <!-- Start and End Date (Hidden) -->
+            <input type="hidden" name="membership_type" value="1">
             <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
             <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
+            <input type="hidden" name="amount" value="60">
             
-            <!-- Amount -->
-            <div class="max-w-md space-y-4 mb-4">             
-                <div class="flex items-center">
-                    <label class="w-32 font-medium text-gray-700">Amount:</label>
-                    <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
-                        $60.00
+            <!-- Membership Details Card -->
+            <div class="bg-gray-50 p-5 rounded-lg mb-6">
+                <div class="space-y-3">
+                    <!-- User ID -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-500 text-sm">RFID UID</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-gray-800">{{ auth()->user()->rfid_uid }}</span>
+                        </div>
                     </div>
-                    <input type="hidden" name="amount" value="70">
+                    
+                    <!-- Membership Type -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-500 text-sm">Type</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-gray-800">Annual Session</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-500 text-sm">Period</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-gray-800">{{ now()->format('M d, Y') }} - {{ now()->addYear()->format('M d, Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-500 text-sm">Amount</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-gray-800 text-lg">$60.00</span>
+                        </div>
+                    </div>
                 </div>
             </div>
-
+            
             <!-- Action Buttons -->
-            <div class="mt-4 flex justify-end">
-                <button type="button" onclick="closeRenewModal()" class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2">
+            <div class="flex space-x-4 mt-8">
+                <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition duration-200">
                     Cancel
                 </button>
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                    Confirm
+                <button type="submit" class="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
+                    <span>Confirm Payment</span>
                 </button>
             </div>
         </form>
@@ -1184,13 +1213,42 @@ function runAnimation() {
 </div>
 
 <script>
-    function openRenewModal() {
-        document.getElementById('renewModal').classList.remove('hidden');
-    }
-
     function closeRenewModal() {
         document.getElementById('renewModal').classList.add('hidden');
     }
+    
+    function openRenewModal() {
+        document.getElementById('renewModal').classList.remove('hidden');
+    }
+    
+    // Add animation when modal appears
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('renewModal');
+        const modalContent = modal.querySelector('div');
+        
+        modal.addEventListener('transitionend', function() {
+            if (modal.classList.contains('hidden')) {
+                modalContent.classList.remove('scale-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+            }
+        });
+        
+        window.openRenewModal = function() {
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        };
+        
+        window.closeRenewModal = function() {
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        };
+    });
 </script>
 
 </body>
