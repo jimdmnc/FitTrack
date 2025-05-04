@@ -13,9 +13,9 @@ class EnsureUserIsApproved
             return redirect()->route('self.registration'); // Redirect to registration if not logged in
         }
 
-        if (Auth::user()->session_status !== 'approved') {
-            return redirect()->route('self.waiting'); // Redirect to waiting page if not approved
-        }
+        // if (Auth::user()->session_status !== 'approved') {
+        //     return redirect()->route('self.waiting'); // Redirect to waiting page if not approved
+        // }
 
         return $next($request);
     }
