@@ -29,9 +29,8 @@ Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->na
 
 
 Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
-    ->name('self.landingProfile')
-    ->middleware('auth');
-
+    ->middleware('approved.user')  // Apply the middleware
+    ->name('self.landingProfile');
 
 Route::get('/landing', function () {
     return view('self.landing');
