@@ -1143,7 +1143,7 @@ function runAnimation() {
         <p><strong>Start Date:</strong> {{ now()->toDateString() }}</p>
         <p><strong>End Date:</strong> {{ now()->addYear()->toDateString() }}</p>
 
-        <form id="renewForm" method="POST">
+        <form id="renewForm" method="GET" action="{{ route('self.renewMembership') }}">
             @csrf
             <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
             <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
