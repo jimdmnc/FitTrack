@@ -22,7 +22,6 @@ Route::get('/', function () {
 });
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
-Route::get('/register', [RegistrationController::class, 'showForm'])->name('register');
 
 
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
@@ -68,8 +67,22 @@ Route::middleware('auth')->group(function () {
         Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
         Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
         // Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.renewMembership');
-        Route::put('/staff/reject/{user}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
+        // Define the route for rejecting users - using POST method
+        Route::post('/staff/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
 
+        // If you're still having issues, add a debugging route to see all registered routes
+        Route::get('/debug/routes', function () {
+            $routes = collect(Route::getRoutes())->map(function ($route) {
+                return [
+                    'uri' => $route->uri(),
+                    'name' => $route->getName(),
+                    'methods' => $route->methods(),
+                    'action' => $route->getActionName(),
+                ];
+            });
+            
+            return response()->json($routes);
+        });
 
 
         // Route to record attendance

@@ -21,10 +21,25 @@ class SelfRegistrationController extends Controller
 // SelfRegistrationController.php
 public function checkApproval()
 {
-    return response()->json([
-        'approved' => auth()->check() && auth()->user()->session_status === 'approved'
-    ]);
+    $user = auth()->user();
+
+    // Check if user is approved
+    if ($user->session_status === 'approved') {
+        return response()->json(['approved' => true]);
+    }
+
+    // Check if user is rejected
+    if ($user->session_status === 'rejected') {
+        return response()->json([
+            'rejected' => true,
+            'reason' => $user->rejection_reason // Pass rejection reason if available
+        ]);
+    }
+
+    // Default case, still pending
+    return response()->json(['approved' => false]);
 }
+
 
     // SelfRegistrationController.php
     public function waiting()

@@ -55,27 +55,30 @@ class StaffApprovalController extends Controller
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
 
-    // Reject User Registration
-    public function rejectUser(Request $request, User $user)
-{
-    \Log::info('Rejecting user: ' . $user->id);
-    \Log::info('Rejection reason: ' . $request->rejection_reason);
-    // In your controller
-    \Log::debug('Reject endpoint hit', ['user_id' => $user->id, 'input' => $request->all()]);
-    
-    // Validate the rejection reason
-    $validated = $request->validate([
-        'rejection_reason' => 'required|string|max:255',
-    ]);
+    public function rejectUser(Request $request, $id)
+    {
+        // Log the incoming request for debugging
+        \Log::info('Reject User Request', [
+            'id' => $id,
+            'request_data' => $request->all(),
+            'method' => $request->method()
+        ]);
 
-    // Update user status
-    $user->update([
-        'session_status' => 'rejected',
-        'needs_approval' => false,
-        'rejection_reason' => $request->rejection_reason
-    ]);
+        try {
+            $user = User::findOrFail($id);
+            $user->session_status = 'rejected';
+            $user->rejection_reason = $request->rejection_reason;
+            $user->save();
 
-    return redirect()->route('staff.manageApproval')
-        ->with('success', 'Membership request rejected successfully.');
-}
+            return redirect()->route('staff.manageApproval')->with('success', 'Membership request rejected');
+        } catch (\Exception $e) {
+            \Log::error('Error rejecting user', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            
+            return redirect()->back()->with('error', 'Error rejecting user: ' . $e->getMessage());
+        }
+    }
+
 }

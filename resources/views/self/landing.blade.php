@@ -271,7 +271,11 @@
             <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-            <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
+            <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
+            <!-- Register Button -->
+                @if(!session('registered') && !session('timed_out'))
+                    <a href="{{ route('self.registration') }}" class="block py-2 text-center hover:bg-gray-800 rounded" id="register-button">Register</a>
+                @endif
             
             <!-- Mobile Workout Timer Display -->
             @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
@@ -726,39 +730,35 @@
         </div>
     </div>
 </div>
-<!-- Update the JavaScript section -->
 <script>
-    function toggleProfile() {
-        const modal = document.getElementById('profile-modal');
-        modal.classList.toggle('opacity-0');
-        modal.classList.toggle('invisible');
-        modal.classList.toggle('active');
+    /**
+ * Main application JavaScript
+ * Organized by functionality
+ */
+
+// Wait for DOM to be fully loaded
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all components
+    initNavigation();
+    initProfile();
+    initParallaxEffect();
+    initCarousel();
+    initSessionHandling();
+    initWorkoutTimer();
+    initPhoneAnimation();
+});
+
+/**
+ * Mobile and desktop navigation functionality
+ */
+function initNavigation() {
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    if (mobileMenuButton) {
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
     }
-
-    // Enhanced Mobile Menu Toggle
-    function toggleMobileMenu() {
-        const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('hidden');
-        menu.classList.toggle('animate-slideDown');
-    }
-
-    // Update DOMContentLoaded event listener
-    document.addEventListener('DOMContentLoaded', function() {
-        // Existing initializations...
-
-        // Mobile menu button
-        document.getElementById('mobile-menu-button').addEventListener('click', toggleMobileMenu);
-
-        // Profile links in mobile menu
-        document.querySelectorAll('[onclick="toggleProfile()"]').forEach(link => {
-            link.addEventListener('click', () => {
-                toggleProfile();
-                toggleMobileMenu();
-            });
-        });
-    });
-
-    // Add smooth scroll behavior
+    
+    // Smooth scroll for all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             e.preventDefault();
@@ -768,333 +768,334 @@
                     behavior: 'smooth',
                     block: 'start'
                 });
+                
+                // Close mobile menu if open
+                const mobileMenu = document.getElementById('mobile-menu');
+                if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
             }
         });
     });
-</script>
+}
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-<!-- Add this script at the end of your body tag -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Parallax Background Effect
-            initParallaxEffect();
-            
-            // Mobile Menu Functionality
-            initMobileMenu();
-            
-            // Carousel Functionality
-            initCarousel();
-            
-            // Smooth scroll for navigation links
-            initSmoothScroll();
-            
-            // Timeout Modal Functionality
-            initTimeoutModal();
+/**
+ * Toggle mobile menu visibility
+ */
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    mobileMenu.classList.toggle('hidden');
+    mobileMenu.classList.toggle('animate-slideDown');
+}
 
-            // Initialize workout timer if user is logged in
-            initWorkoutTimer()
+/**
+ * Profile modal handling
+ */
+function initProfile() {
+    // Initialize profile links in mobile menu
+    document.querySelectorAll('[onclick="toggleProfile()"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleProfile();
+            // Close mobile menu if open
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                toggleMobileMenu();
+            }
         });
+    });
+    
+    // Add event listener to close modal when clicking outside
+    const modalOverlay = document.querySelector('#profile-modal .absolute.inset-0');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', hideProfile);
+    }
+}
 
-        // Workout Timer Functionality
-        function initWorkoutTimer() {
-            // Check if user is logged in and has an active session
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                // Get the user's check-in time from the database
-                const checkInTime = new Date("{{ auth()->user()->attendances()->latest()->first()->created_at ?? now() }}");
-                const timerElement = document.getElementById('workout-duration');
-                const mobileTimerElement = document.getElementById('mobile-workout-duration');
-                
-                // Update timer every second
-                setInterval(function() {
-                    const now = new Date();
-                    const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
-                    
-                    // Calculate hours, minutes, seconds
-                    const hours = Math.floor(duration / 3600);
-                    const minutes = Math.floor((duration % 3600) / 60);
-                    const seconds = duration % 60;
-                    
-                    // Format time as HH:MM:SS
-                    const formattedTime = 
-                        String(hours).padStart(2, '0') + ":" + 
-                        String(minutes).padStart(2, '0') + ":" + 
-                        String(seconds).padStart(2, '0');
-                    
-                    // Update timer display
-                    if (timerElement) timerElement.textContent = formattedTime;
-                    if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-                    
-                    // Highlight duration if it's over 2 hours (optional feature)
-                    if (hours >= 2) {
-                        timerElement.classList.add('text-red-400');
-                        if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
-                    }
-                }, 1000);
-            @endif
-        }
+/**
+ * Show profile modal with animation
+ */
+function showProfile() {
+    const modal = document.getElementById('profile-modal');
+    modal.classList.remove('hidden');
+    // Add active class to trigger animation
+    setTimeout(() => {
+        modal.classList.add('active');
+        modal.classList.remove('opacity-0', 'invisible');
+    }, 10);
+}
 
-        // Parallax Background Effect
-        function initParallaxEffect() {
-            const parallaxBg = document.getElementById('parallax-bg');
-            
-            if (parallaxBg) {
-                // Check if device is mobile
-                const isMobile = 'ontouchstart' in window;
-                
-                // Set the parallax speed based on device type
-                const parallaxSpeed = isMobile ? 0.2 : 0.5;
-                
-                // Add scroll event listener
-                window.addEventListener('scroll', function() {
-                    // Get the current scroll position
-                    const scrolled = window.pageYOffset;
-                    
-                    // Apply the parallax effect
-                    parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
-                });
-            }
-        }
+/**
+ * Hide profile modal with animation
+ */
+function hideProfile() {
+    const modal = document.getElementById('profile-modal');
+    modal.classList.remove('active');
+    modal.classList.add('opacity-0', 'invisible');
+    // Add a delay before hiding to allow animation to complete
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
 
-        // Mobile Menu Functionality
-        function initMobileMenu() {
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            
-            if (mobileMenuButton) {
-                mobileMenuButton.addEventListener('click', function() {
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
-        }
+/**
+ * Toggle profile modal visibility
+ */
+function toggleProfile() {
+    const modal = document.getElementById('profile-modal');
+    if (modal.classList.contains('hidden') || modal.classList.contains('invisible')) {
+        showProfile();
+    } else {
+        hideProfile();
+    }
+}
 
-        // Carousel Functionality
-        function initCarousel() {
-            const carousel = document.getElementById('gym-carousel');
+/**
+ * Parallax background effect
+ */
+function initParallaxEffect() {
+    const parallaxBg = document.getElementById('parallax-bg');
+    
+    if (parallaxBg) {
+        // Check if device is mobile
+        const isMobile = 'ontouchstart' in window;
+        
+        // Set the parallax speed based on device type
+        const parallaxSpeed = isMobile ? 0.2 : 0.5;
+        
+        // Add scroll event listener
+        window.addEventListener('scroll', function() {
+            // Get the current scroll position
+            const scrolled = window.pageYOffset;
             
-            if (!carousel) return;
-            
-            const slides = carousel.children;
-            const dots = document.querySelectorAll('.carousel-dot');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            let currentIndex = 0;
-            let intervalId;
-            
-            // Set initial position
+            // Apply the parallax effect
+            parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
+        });
+    }
+}
+
+/**
+ * Image carousel functionality
+ */
+function initCarousel() {
+    const carousel = document.getElementById('gym-carousel');
+    
+    if (!carousel) return;
+    
+    const slides = carousel.children;
+    const dots = document.querySelectorAll('.carousel-dot');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    let currentIndex = 0;
+    let intervalId;
+    
+    // Set initial position
+    updateCarousel();
+    
+    // Auto-scroll every 5 seconds
+    startAutoSlide();
+    
+    // Previous button
+    if (prevBtn) {
+        prevBtn.addEventListener('click', function() {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
             updateCarousel();
-            
-            // Auto-scroll every 5 seconds
-            startAutoSlide();
-            
-            // Previous button
-            if (prevBtn) {
-                prevBtn.addEventListener('click', function() {
-                    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-                    updateCarousel();
-                    resetAutoSlide();
-                });
-            }
-            
-            // Next button
-            if (nextBtn) {
-                nextBtn.addEventListener('click', function() {
-                    nextSlide();
-                    resetAutoSlide();
-                });
-            }
-            
-            // Dot navigation
-            dots.forEach(dot => {
-                dot.addEventListener('click', function() {
-                    currentIndex = parseInt(this.getAttribute('data-index'));
-                    updateCarousel();
-                    resetAutoSlide();
-                });
-            });
-            
-            // Pause auto-scrolling when hovering over carousel
-            carousel.addEventListener('mouseenter', function() {
-                clearInterval(intervalId);
-            });
-            
-            // Resume auto-scrolling when mouse leaves carousel
-            carousel.addEventListener('mouseleave', function() {
-                startAutoSlide();
-            });
-            
-            function nextSlide() {
-                currentIndex = (currentIndex + 1) % slides.length;
-                updateCarousel();
-            }
-            
-            function updateCarousel() {
-                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
-                
-                // Update active dot
-                dots.forEach((dot, index) => {
-                    if (index === currentIndex) {
-                        dot.classList.add('active', 'opacity-100');
-                        dot.classList.remove('opacity-50');
-                    } else {
-                        dot.classList.remove('active', 'opacity-100');
-                        dot.classList.add('opacity-50');
-                    }
-                });
-            }
-            
-            function startAutoSlide() {
-                intervalId = setInterval(nextSlide, 5000);
-            }
-            
-            function resetAutoSlide() {
-                clearInterval(intervalId);
-                startAutoSlide();
-            }
-        }
-
-        // Smooth scroll for navigation links
-        function initSmoothScroll() {
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    const targetElement = document.querySelector(this.getAttribute('href'));
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                    
-                    // Close mobile menu if open
-                    const mobileMenu = document.getElementById('mobile-menu');
-                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
-                });
-            });
-        }
-
-        // Timeout Modal Functionality
-        function initTimeoutModal() {
-            // This was originally a PHP/Laravel snippet
-            // We convert it to plain JavaScript
-            const timeoutButton = document.getElementById('timeout-button');
-            const sessionHasTimedOut = false; // This should be set by your app logic
-            
-            if (sessionHasTimedOut && timeoutButton) {
-                timeoutButton.style.display = 'none';
-            }
-            
-            const timeoutForm = document.querySelector('#timeout-modal form');
-            if (timeoutForm) {
-                timeoutForm.addEventListener('submit', function() {
-                    if (timeoutButton) timeoutButton.style.display = 'none';
-                });
-            }
-        }
-        
-
-    </script>
-
-<script>
-    // Function to trigger the animation
-    function runAnimation() {
-        const phone1 = document.getElementById('phone1');
-        const phone2 = document.getElementById('phone2');
-        const container = document.getElementById('phone-container');
-        
-        // Reset animation state
-        container.classList.add('hide-images');
-        phone1.classList.remove('slide-from-right');
-        phone2.classList.remove('slide-from-left');
-        
-        // Force browser reflow to ensure animation can run again
-        void phone1.offsetWidth;
-        
-        // Start animation after a brief delay
-        setTimeout(() => {
-            container.classList.remove('hide-images');
-            phone1.classList.add('slide-from-right');
-            phone2.classList.add('slide-from-left');
-        }, 50);
+            resetAutoSlide();
+        });
     }
     
-    // Run animation when the page loads
-    document.addEventListener('DOMContentLoaded', runAnimation);
-</script>
-<!-- JavaScript for Profile Modal -->
-<script>
-    function showProfile() {
-        const modal = document.getElementById('profile-modal');
-        modal.classList.remove('hidden');
-        // Add active class to trigger animation
-        setTimeout(() => {
-            modal.classList.add('active');
-        }, 10); // Small delay to ensure transition works
+    // Next button
+    if (nextBtn) {
+        nextBtn.addEventListener('click', function() {
+            nextSlide();
+            resetAutoSlide();
+        });
     }
-
-    function hideProfile() {
-        const modal = document.getElementById('profile-modal');
-        modal.classList.remove('active');
-        // Add a delay before hiding to allow animation to complete
-        setTimeout(() => {
-            modal.classList.add('hidden');
-        }, 300); // Match this with the CSS transition duration
-    }
-
-    // Function to toggle the profile modal
-    function toggleProfile() {
-        const modal = document.getElementById('profile-modal');
-        if (modal.classList.contains('hidden')) {
-            showProfile();
-        } else {
-            hideProfile();
-        }
-    }
-
-    // Add event listener to close modal when clicking outside
-    document.addEventListener('DOMContentLoaded', function() {
-        const modalOverlay = document.querySelector('#profile-modal .absolute.inset-0');
-        if (modalOverlay) {
-            modalOverlay.addEventListener('click', hideProfile);
-        }
+    
+    // Dot navigation
+    dots.forEach(dot => {
+        dot.addEventListener('click', function() {
+            currentIndex = parseInt(this.getAttribute('data-index'));
+            updateCarousel();
+            resetAutoSlide();
+        });
     });
+    
+    // Pause auto-scrolling when hovering over carousel
+    carousel.addEventListener('mouseenter', function() {
+        clearInterval(intervalId);
+    });
+    
+    // Resume auto-scrolling when mouse leaves carousel
+    carousel.addEventListener('mouseleave', function() {
+        startAutoSlide();
+    });
+    
+    function nextSlide() {
+        currentIndex = (currentIndex + 1) % slides.length;
+        updateCarousel();
+    }
+    
+    function updateCarousel() {
+        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+        
+        // Update active dot
+        dots.forEach((dot, index) => {
+            if (index === currentIndex) {
+                dot.classList.add('active', 'opacity-100');
+                dot.classList.remove('opacity-50');
+            } else {
+                dot.classList.remove('active', 'opacity-100');
+                dot.classList.add('opacity-50');
+            }
+        });
+    }
+    
+    function startAutoSlide() {
+        intervalId = setInterval(nextSlide, 5000);
+    }
+    
+    function resetAutoSlide() {
+        clearInterval(intervalId);
+        startAutoSlide();
+    }
+}
 
-
-    document.addEventListener('DOMContentLoaded', function () {
-    // Check for session status after the page loads
+/**
+ * Session and registration handling
+ */
+function initSessionHandling() {
     const registerButton = document.getElementById('register-button');
     const timeoutButton = document.getElementById('timeout-button');
-
-    // If session is 'registered', hide the Register button
-    if (sessionStorage.getItem('registered')) {
-        if (registerButton) registerButton.style.display = 'none';
+    const timeoutModal = document.getElementById('timeout-modal');
+    
+    // Check session status
+    if (sessionStorage.getItem('registered') && registerButton) {
+        registerButton.style.display = 'none';
     }
-
-    // If session is 'timed_out', show the Register button again
-    if (sessionStorage.getItem('timed_out')) {
-        if (registerButton) registerButton.style.display = 'inline-block';
+    
+    if (sessionStorage.getItem('timed_out') && registerButton) {
+        registerButton.style.display = 'inline-block';
     }
-
-    // Hide register button after successful registration
+    
+    // Registration button click handler
     if (registerButton) {
-        registerButton.addEventListener('click', function () {
-            // Assuming after clicking Register, the user is registered
+        registerButton.addEventListener('click', function() {
             sessionStorage.setItem('registered', true);
-            registerButton.style.display = 'none'; // Hide register button after registration
+            registerButton.style.display = 'none';
         });
     }
-
-    // Show register button when timeout occurs
+    
+    // Timeout button click handler
     if (timeoutButton) {
-        timeoutButton.addEventListener('click', function () {
-            sessionStorage.removeItem('registered'); // Reset registration session
-            sessionStorage.setItem('timed_out', true); // Set timed out session
-            if (registerButton) registerButton.style.display = 'inline-block'; // Show register button
+        timeoutButton.addEventListener('click', function() {
+            sessionStorage.removeItem('registered');
+            sessionStorage.setItem('timed_out', true);
+            if (registerButton) registerButton.style.display = 'inline-block';
+        });
+        
+        // Handle session timeout state
+        const sessionHasTimedOut = false; // This should be set by your app logic
+        if (sessionHasTimedOut) {
+            timeoutButton.style.display = 'none';
+        }
+    }
+    
+    // Timeout form submission handler
+    const timeoutForm = timeoutModal ? timeoutModal.querySelector('form') : null;
+    if (timeoutForm) {
+        timeoutForm.addEventListener('submit', function() {
+            if (timeoutButton) timeoutButton.style.display = 'none';
         });
     }
-});
+}
+
+/**
+ * Workout timer functionality
+ */
+function initWorkoutTimer() {
+    // Check if we have the necessary elements
+    const timerElement = document.getElementById('workout-duration');
+    const mobileTimerElement = document.getElementById('mobile-workout-duration');
+    
+    if (!timerElement && !mobileTimerElement) return;
+    
+    // This would normally be set by PHP/Laravel
+    const isUserLoggedIn = false; // Replace with actual logic
+    const hasRfidUid = false; // Replace with actual logic
+    const isTimedOut = false; // Replace with actual logic
+    const checkInTime = new Date(); // Replace with actual check-in time
+    
+    // Only initialize timer if user is logged in with proper conditions
+    if (isUserLoggedIn && hasRfidUid && !isTimedOut) {
+        // Update timer every second
+        setInterval(function() {
+            const now = new Date();
+            const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
+            
+            // Calculate hours, minutes, seconds
+            const hours = Math.floor(duration / 3600);
+            const minutes = Math.floor((duration % 3600) / 60);
+            const seconds = duration % 60;
+            
+            // Format time as HH:MM:SS
+            const formattedTime = 
+                String(hours).padStart(2, '0') + ":" + 
+                String(minutes).padStart(2, '0') + ":" + 
+                String(seconds).padStart(2, '0');
+            
+            // Update timer display
+            if (timerElement) timerElement.textContent = formattedTime;
+            if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
+            
+            // Highlight duration if it's over 2 hours
+            if (hours >= 2) {
+                if (timerElement) timerElement.classList.add('text-red-400');
+                if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
+            }
+        }, 1000);
+    }
+}
+
+/**
+ * Phone animation functionality
+ */
+function initPhoneAnimation() {
+    const phone1 = document.getElementById('phone1');
+    const phone2 = document.getElementById('phone2');
+    const container = document.getElementById('phone-container');
+    
+    if (!phone1 || !phone2 || !container) return;
+    
+    // Run the animation on load
+    runAnimation();
+}
+
+/**
+ * Run the phone animation sequence
+ */
+function runAnimation() {
+    const phone1 = document.getElementById('phone1');
+    const phone2 = document.getElementById('phone2');
+    const container = document.getElementById('phone-container');
+    
+    if (!phone1 || !phone2 || !container) return;
+    
+    // Reset animation state
+    container.classList.add('hide-images');
+    phone1.classList.remove('slide-from-right');
+    phone2.classList.remove('slide-from-left');
+    
+    // Force browser reflow to ensure animation can run again
+    void phone1.offsetWidth;
+    
+    // Start animation after a brief delay
+    setTimeout(() => {
+        container.classList.remove('hide-images');
+        phone1.classList.add('slide-from-right');
+        phone2.classList.add('slide-from-left');
+    }, 50);
+}
 </script>
 </body>
 </html>

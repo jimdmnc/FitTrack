@@ -190,19 +190,16 @@
     <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-200">Reject Membership Request</h3>
-            <button onclick="closeModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+            <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
         <p class="text-gray-400 mb-4">Please provide a reason for rejecting this membership request. This information may be shared with the applicant.</p>
-        <form id="rejectForm" method="POST">
+        
+        <form action="{{ route('staff.rejectUser', ['id' => 0]) }}" method="POST" id="rejectForm">
             @csrf
-            @method('PUT')
-            <input type="hidden" id="rejectUserId" name="user_id">
-
-            <!-- Rejection reason input field -->
             <textarea name="rejection_reason" id="rejection_reason" class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#212121] text-gray-200 placeholder-gray-400" rows="4" placeholder="Example: Incomplete information provided"></textarea>
 
             <div class="flex justify-end gap-3 mt-3">
@@ -219,7 +216,6 @@
         </form>
     </div>
 </div>
-
 <script>
     function closeModal() {
         document.getElementById('rejectModal').classList.add('hidden');
@@ -227,31 +223,42 @@
     }
 
     function rejectUser(id) {
-        const rejectForm = document.getElementById('rejectForm');
-        rejectForm.action = `/staff/reject/${userId}`;
+        // Get the form and update its action URL
+        const form = document.getElementById('rejectForm');
         
-        // Set the user ID in the hidden field
-        document.getElementById('rejectUserId').value = id;
+        // Get the original action URL which has a placeholder ID of 0
+        let actionUrl = form.getAttribute('action');
+        
+        // Replace the placeholder ID with the actual ID
+        actionUrl = actionUrl.replace('/0', '/' + id);
+        
+        // Update the form's action attribute
+        form.setAttribute('action', actionUrl);
         
         // Show the modal
         document.getElementById('rejectModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-
-        // In your rejectUser function
-        console.log('Attempting to reject user ID:', userId);
-        console.log('Form action will be:', `/staff/reject/${userId}`);
+        
+        console.log('Form will submit to:', form.action);
     }
+    // Wrap the event listeners in a DOMContentLoaded to ensure elements exist
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter options change - check if element exists first
+        const filterOptions = document.getElementById('filterOptions');
+        if (filterOptions) {
+            filterOptions.addEventListener('change', function() {
+                console.log("Filter changed:", this.value);
+                // Would typically trigger an AJAX request here
+            });
+        }
 
-    // Filter options change
-    document.getElementById('filterOptions').addEventListener('change', function() {
-        // In a real implementation, this would filter the data
-        console.log("Filter changed:", this.value);
-        // Would typically trigger an AJAX request here
-    });
-
-    // Refresh button click
-    document.getElementById('refreshBtn').addEventListener('click', function() {
-        location.reload();
+        // Refresh button click - check if element exists first
+        const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                location.reload();
+            });
+        }
     });
 </script>
 @endsection
