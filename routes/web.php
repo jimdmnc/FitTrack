@@ -32,6 +32,9 @@ Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfil
     ->middleware('approved.user')  // Apply the middleware
     ->name('self.landingProfile');
 
+    Route::post('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
+    ->name('self.landingProfile');
+
 Route::get('/landing', function () {
     return view('self.landing');
 })->name('self.landing');
