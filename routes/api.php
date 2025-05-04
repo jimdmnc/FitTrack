@@ -97,7 +97,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/foods/search', [FoodController::class, 'search']);
 
     Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
-    ->middleware('guest')
     ->name('password.email');
 
 
