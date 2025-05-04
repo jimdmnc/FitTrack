@@ -1146,21 +1146,18 @@ function runAnimation() {
         <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
             @csrf
             <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-            <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
+            <div class="flex items-center">
+                    <label class="w-32 font-medium text-gray-700">Membership Type:</label>
+                        <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
+                            Session
+                        </div>
+                    <input type="hidden" name="membership_type" value="1">
+            </div>            
             <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-            <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
+            <input type="hidden" name="end_date" value="{{ now()->toDateString() }}">
             
             <!-- You can also include a hidden field for payment_method and amount if needed -->
-            <div class="max-w-md space-y-4">
-                <!-- Membership Type -->
-                <div class="flex items-center">
-                    <label class="w-32 font-medium text-gray-700">Membership Type:</label>
-                    <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
-                    Session
-                    </div>
-                    <input type="hidden" name="membership_type" value="1">
-                </div>
-
+            <div class="max-w-md space-y-4">             
                 <!-- Amount -->
                 <div class="flex items-center">
                     <label class="w-32 font-medium text-gray-700">Amount:</label>
