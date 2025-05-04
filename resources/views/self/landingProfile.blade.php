@@ -1151,8 +1151,25 @@ function runAnimation() {
             <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
             
             <!-- You can also include a hidden field for payment_method and amount if needed -->
-            <input type="hidden" name="payment_method" value="cash"> <!-- change if needed -->
-            <input type="hidden" name="amount" value="500"> <!-- example amount -->
+            <div class="max-w-md space-y-4">
+                <!-- Membership Type -->
+                <div class="flex items-center">
+                    <label class="w-32 font-medium text-gray-700">Membership Type:</label>
+                    <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
+                    Session
+                    </div>
+                    <input type="hidden" name="membership_type" value="1">
+                </div>
+
+                <!-- Amount -->
+                <div class="flex items-center">
+                    <label class="w-32 font-medium text-gray-700">Amount:</label>
+                    <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
+                    $60.00
+                    </div>
+                    <input type="hidden" name="amount" value="60">
+                </div>
+            </div>
 
             <div class="mt-4 flex justify-end">
                 <button type="button" onclick="closeRenewModal()" class="bg-gray-300 hover:bg-gray-400 text-black font-bold py-2 px-4 rounded mr-2">
