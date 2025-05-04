@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\RFIDController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\DashboardController;
@@ -146,20 +146,8 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
 
-    Route::post('/logout', function (Request $request) {
-        $user = Auth::user(); // capture user before logout
-    
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-    
-        // Redirect based on role/session status
-        if ($user && $user->role === 'admin') {
-            return redirect('/landing'); // Adjust if needed
-        }
-    
-        return redirect('/landing'); // Redirect to your landing page
-    })->name('logout');
+    Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
+
 
 });
 

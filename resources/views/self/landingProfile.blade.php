@@ -227,14 +227,38 @@
             <div class="flex items-center">
                 <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
             </div>
-            
+            @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
             <!-- Navigation Links -->
             <div class="hidden md:flex space-x-8">
                 <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
                 <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
-                
+                <!-- Renew Button -->
+                @if(auth()->check() && auth()->user()->role == 'user' && auth()->user()->member_status == 'expired')
+                    <form method="POST" action="{{ route('renew.membership') }}">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
+                        <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
+                        <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}"> <!-- example renewal duration -->
+                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                            <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+                        </button>
+                    </form>
+                @endif
+
                 <!-- Register Button -->
                 @if(!session('registered') && !session('timed_out'))
                     <a href="{{ route('self.registration') }}" class="nav-link font-semibold hover:text-red-500 transition duration-300" id="register-button">Register</a>
@@ -280,6 +304,20 @@
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
             <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
+            <!-- Renew Button -->
+            @if(auth()->check() && auth()->user()->role == 'user' && auth()->user()->member_status == 'expired')
+                <form method="POST" action="{{ route('renew.membership') }}">
+                    @csrf
+                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                    <input type="hidden" name="membership_type" value="{{ auth()->user()->membership_type }}">
+                    <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
+                    <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}"> <!-- example renewal duration -->
+                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full text-sm flex items-center ml-4">
+                        <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+                    </button>
+                </form>
+            @endif
+
             <!-- Register Button -->
                 @if(!session('registered') && !session('timed_out'))
                     <a href="{{ route('self.registration') }}" class="block py-2 text-center hover:bg-gray-800 rounded" id="register-button">Register</a>
