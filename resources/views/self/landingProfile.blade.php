@@ -1166,7 +1166,7 @@ function runAnimation() {
                     <div class="px-3 py-2 bg-gray-100 rounded-md border border-gray-300 text-gray-800">
                         $60.00
                     </div>
-                    <input type="hidden" name="amount" value="60">
+                    <input type="hidden" name="amount" value="70">
                 </div>
             </div>
 
