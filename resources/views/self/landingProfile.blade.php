@@ -246,7 +246,6 @@
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
                 <a href="#" onclick="showProfile()" class="nav-link font-semibold hover:text-red-500 transition duration-300">Profile</a>
                 <!-- Renew Button -->
-                @if(auth()->check() && auth()->user()->role == 'user' && auth()->user()->member_status == 'expired')
                     <form method="POST" action="{{ route('renew.membership') }}">
                         @csrf
                         <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
@@ -257,7 +256,6 @@
                             <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                         </button>
                     </form>
-                @endif
 
                 <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
                     @csrf
@@ -303,7 +301,6 @@
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
             <a href="#" onclick="showProfile()" class="block py-2 text-center hover:bg-gray-800 rounded">Profile</a>
             <!-- Renew Button -->
-            @if(auth()->check() && auth()->user()->role == 'user' && auth()->user()->member_status == 'expired')
                 <form method="POST" action="{{ route('renew.membership') }}">
                     @csrf
                     <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
@@ -314,7 +311,6 @@
                         <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                     </button>
                 </form>
-            @endif
 
 
             <form method="POST" action="{{ route('logout.custom') }}"> {{-- custom route --}}
