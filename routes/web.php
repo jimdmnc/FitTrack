@@ -22,7 +22,7 @@ Route::get('/', function () {
 });
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
-
+Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])->name('self.membership.renew');
 
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
 
@@ -30,9 +30,6 @@ Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->na
 
 Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
     ->middleware('approved.user')  // Apply the middleware
-    ->name('self.landingProfile');
-
-    Route::post('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
     ->name('self.landingProfile');
 
 Route::get('/landing', function () {
