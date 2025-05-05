@@ -1214,7 +1214,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Replace "Unknown" with "Custom Date" in the labels array
     membershipLabels = membershipLabels.map(label => {
-        return label === 'Unknown' ? 'Custom Date' : label;
+        return label === 'Unknown' ? 'Custom Day' : label;
     });
 
     // Render the Chart.js pie chart
