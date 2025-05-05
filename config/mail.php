@@ -111,7 +111,7 @@ return [
 // config/mail.php
 'from' => [
     'address' => env('MAIL_FROM_ADDRESS', 'no-reply@rockiesfitnessph.com'),
-    'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'FitTrack')),
+    'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
 ],
 
 ];
