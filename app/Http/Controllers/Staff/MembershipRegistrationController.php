@@ -50,8 +50,8 @@ class MembershipRegistrationController extends Controller
             // Membership payment rates
             $paymentRates = [
                 "7" => 300,   // 7-day weekly
-                "30" => 800, // 30-day monthly
-                "365" => 2000 // 1-year membership
+                "30" => 850, // 30-day monthly
+                "365" => 10000 // 1-year membership
             ];
     
             // Calculate payment amount

@@ -407,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const paymentRates = {
         "7": "300",   // 7-day weekly
-        "30": "1800", // 30-day monthly
+        "30": "850", // 30-day monthly
         "365": "2000" // 1-year membership
     };
 

@@ -41,10 +41,11 @@ class ViewmembersController extends Controller
 
     public function index(Request $request)
     {
-        $searchQuery = $request->input('search');
-        $status = $request->input('status', 'all');
+        // Get sort parameters from request, with defaults
         $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
         $sortDirection = $request->input('sort_direction', -1); // Default to descending
+        $searchQuery = $request->input('search');
+        $status = $request->input('status', 'all');
         
         // First update all members' status based on their end dates
         $allMembers = User::where('role', 'user')->get();
@@ -67,44 +68,57 @@ class ViewmembersController extends Controller
             });
         }
         
+        // Direction conversion from JavaScript to SQL
+        $sqlDirection = $sortDirection > 0 ? 'asc' : 'desc';
+        
         // Apply sorting based on the column index
         switch ($sortColumn) {
             case 0: // #
-                // Typically you wouldn't sort by row number
+                $query->orderBy('id', $sqlDirection);
                 break;
             case 1: // Name
-                $query->orderBy('first_name', $sortDirection > 0 ? 'asc' : 'desc')
-                    ->orderBy('last_name', $sortDirection > 0 ? 'asc' : 'desc');
+                $query->orderBy('first_name', $sqlDirection)
+                    ->orderBy('last_name', $sqlDirection);
                 break;
             case 2: // Member ID
-                $query->orderBy('rfid_uid', $sortDirection > 0 ? 'asc' : 'desc');
+                $query->orderBy('rfid_uid', $sqlDirection);
                 break;
             case 3: // Membership Type
-                $query->orderBy('membership_type', $sortDirection > 0 ? 'asc' : 'desc');
+                $query->orderBy('membership_type', $sqlDirection);
                 break;
             case 4: // Registration Date
-                $query->orderBy('start_date', $sortDirection > 0 ? 'asc' : 'desc');
+                $query->orderBy('start_date', $sqlDirection);
                 break;
             case 5: // Status
-                $query->orderBy('member_status', $sortDirection > 0 ? 'asc' : 'desc');
+                $query->orderBy('member_status', $sqlDirection);
                 break;
+            default:
+                // Default to registration date descending
+                $query->orderBy('start_date', 'desc');
         }
         
+        // IMPORTANT: Make sure to append ALL request parameters to pagination links
+        // This ensures sort parameters are maintained in the pagination links
         $members = $query->paginate(10)
-                        ->appends(request()->except('page'));
+                        ->appends($request->all());
         
-        // For AJAX requests, return JSON response
+        // For AJAX requests, return JSON response with all needed parameters
         if ($request->ajax()) {
             return response()->json([
-                'table' => view('partials.members_table', compact('members'))->render(),
-                'pagination' => $members->links()->render()
+                'table' => view('partials.members_table', compact('members', 'sortColumn', 'sortDirection'))->render(),
+                'pagination' => $members->links()->render(),
+                'sortColumn' => $sortColumn,
+                'sortDirection' => $sortDirection
             ]);
         }
 
+        // Pass the current sort parameters to the view for initialization
         return view('staff.viewmembers', [
             'members' => $members,
             'query' => $searchQuery,
-            'status' => $status
+            'status' => $status,
+            'sortColumn' => $sortColumn,
+            'sortDirection' => $sortDirection
         ]);
     }
 
