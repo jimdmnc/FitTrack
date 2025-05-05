@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Renewal;
 use App\Models\MembersPayment;
-
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -40,13 +40,26 @@ class ViewmembersController extends Controller
     }
 
     public function index(Request $request)
-    {
+{
+    try {
         // Get sort parameters from request, with defaults
         $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
         $sortDirection = $request->input('sort_direction', -1); // Default to descending
         $searchQuery = $request->input('search');
         $status = $request->input('status', 'all');
+        $page = $request->input('page', 1); // Get current page
         
+        // Validate sortColumn to prevent errors
+        $validColumns = [0, 1, 2, 3, 4, 5]; // Add all valid column indices
+        if (!in_array($sortColumn, $validColumns)) {
+            $sortColumn = 4; // Default if invalid
+        }
+        
+        // Validate sortDirection to prevent errors
+        if (!in_array($sortDirection, [1, -1])) {
+            $sortDirection = -1; // Default if invalid
+        }
+
         // First update all members' status based on their end dates
         $allMembers = User::where('role', 'user')->get();
         foreach ($allMembers as $member) {
@@ -97,22 +110,53 @@ class ViewmembersController extends Controller
                 $query->orderBy('start_date', 'desc');
         }
         
-        // IMPORTANT: Make sure to append ALL request parameters to pagination links
-        // This ensures sort parameters are maintained in the pagination links
-        $members = $query->paginate(10)
-                        ->appends($request->all());
+        // Ensure we preserve ALL current query parameters
+        $members = $query->paginate(10)->appends([
+            'sort_column' => $sortColumn,
+            'sort_direction' => $sortDirection,
+            'search' => $searchQuery,
+            'status' => $status,
+            'page' => $page
+        ]);
         
-        // For AJAX requests, return JSON response with all needed parameters
+        // For AJAX requests, return JSON response
         if ($request->ajax()) {
-            return response()->json([
-                'table' => view('partials.members_table', compact('members', 'sortColumn', 'sortDirection'))->render(),
-                'pagination' => $members->links()->render(),
-                'sortColumn' => $sortColumn,
-                'sortDirection' => $sortDirection
-            ]);
+            try {
+                // Make sure our view exists and can be rendered
+                $tableView = view('partials.members_table', [
+                    'members' => $members,
+                    'sortColumn' => $sortColumn,
+                    'sortDirection' => $sortDirection
+                ])->render();
+                
+                // Create pagination HTML - FIX HERE: Using Bootstrap 4 pagination
+                // Change from 'pagination.default' to 'vendor.pagination.bootstrap-4'
+                // Or alternatively, use the simpler direct ->links() rendering
+                $paginationView = $members->links()->render();
+                
+                // Return successful JSON response with all needed parameters
+                return response()->json([
+                    'table' => $tableView,
+                    'pagination' => $paginationView,
+                    'sortColumn' => $sortColumn,
+                    'sortDirection' => $sortDirection,
+                    'currentPage' => $members->currentPage() // Include current page in response
+                ]);
+            } catch (\Exception $e) {
+                // Log the error for server logs
+                Log::error('Error in members AJAX response: ' . $e->getMessage());
+                Log::error($e->getTraceAsString());
+                
+                // Return detailed error for debugging
+                return response()->json([
+                    'error' => 'Error rendering table: ' . $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine()
+                ], 500);
+            }
         }
 
-        // Pass the current sort parameters to the view for initialization
+        // For regular requests, return the view
         return view('staff.viewmembers', [
             'members' => $members,
             'query' => $searchQuery,
@@ -120,7 +164,15 @@ class ViewmembersController extends Controller
             'sortColumn' => $sortColumn,
             'sortDirection' => $sortDirection
         ]);
+    } catch (\Exception $e) {
+        // Log the error
+        Log::error('Error in members index: ' . $e->getMessage());
+        Log::error($e->getTraceAsString());
+        
+        // Return an error view or redirect with a message
+        return back()->with('error', 'An error occurred: ' . $e->getMessage());
     }
+}
 
    /**
      * Handle membership renewal.
