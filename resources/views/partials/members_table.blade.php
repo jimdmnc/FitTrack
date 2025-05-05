@@ -25,10 +25,9 @@
         <table class="min-w-full divide-y divide-black">
             <thead>
                 <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
-                    <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             #
-                            <span id="sort-icon-0" class="ml-1 text-gray-400">{{ $sortColumn == 0 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
                     <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
@@ -227,29 +226,21 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Ensure fallback values are used if variables are undefined
-    let currentSortColumn = {{ $sortColumn ?? 0 }};
-    let sortDirection = {{ $sortDirection ?? 1 }}; 
-
-    // Call updateSortIcons to reflect the current state
-    if (typeof updateSortIcons === 'function') {
-        setTimeout(updateSortIcons, 10);
-    }
-
-    // Update the URL with sort parameters
+    // Initialize sort state from server-side values
+    currentSortColumn = {{ $sortColumn ?? 0 }};
+    sortDirection = {{ $sortDirection ?? 1 }};
+    
+    // Update the icons to reflect current state
+    updateSortIcons();
+    
+    // Attach event listeners
+    attachTableEventListeners();
+    attachPaginationListeners();
+    
+    // Update URL to reflect current state
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('sort_column', currentSortColumn);
     currentUrl.searchParams.set('sort_direction', sortDirection);
-
-    // Only update if params changed to avoid unnecessary history entries
-    if (currentUrl.toString() !== window.location.href) {
-        window.history.replaceState({}, '', currentUrl.toString());
-    }
-
-    // Re-attach pagination listeners to ensure sort parameters are passed
-    if (typeof attachPaginationListeners === 'function') {
-        setTimeout(attachPaginationListeners, 20);
-    }
+    window.history.replaceState({}, '', currentUrl.toString());
 });
 </script>
-

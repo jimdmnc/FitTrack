@@ -40,139 +40,133 @@ class ViewmembersController extends Controller
     }
 
     public function index(Request $request)
-{
-    try {
-        // Get sort parameters from request, with defaults
-        $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
-        $sortDirection = $request->input('sort_direction', -1); // Default to descending
-        $searchQuery = $request->input('search');
-        $status = $request->input('status', 'all');
-        $page = $request->input('page', 1); // Get current page
-        
-        // Validate sortColumn to prevent errors
-        $validColumns = [0, 1, 2, 3, 4, 5]; // Add all valid column indices
-        if (!in_array($sortColumn, $validColumns)) {
-            $sortColumn = 4; // Default if invalid
-        }
-        
-        // Validate sortDirection to prevent errors
-        if (!in_array($sortDirection, [1, -1])) {
-            $sortDirection = -1; // Default if invalid
-        }
-
-        // First update all members' status based on their end dates
-        $allMembers = User::where('role', 'user')->get();
-        foreach ($allMembers as $member) {
-            $this->updateMemberStatus($member);
-        }
-
-        // Now build the query with filters
-        $query = User::where('role', 'user');
-        
-        if ($status !== 'all') {
-            $query->where('member_status', $status);
-        }
-        
-        if ($searchQuery) {
-            $query->where(function($q) use ($searchQuery) {
-                $q->where('first_name', 'like', "%{$searchQuery}%")
-                ->orWhere('last_name', 'like', "%{$searchQuery}%")
-                ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
-            });
-        }
-        
-        // Direction conversion from JavaScript to SQL
-        $sqlDirection = $sortDirection > 0 ? 'asc' : 'desc';
-        
-        // Apply sorting based on the column index
-        switch ($sortColumn) {
-            case 0: // #
-                $query->orderBy('id', $sqlDirection);
-                break;
-            case 1: // Name
-                $query->orderBy('first_name', $sqlDirection)
-                    ->orderBy('last_name', $sqlDirection);
-                break;
-            case 2: // Member ID
-                $query->orderBy('rfid_uid', $sqlDirection);
-                break;
-            case 3: // Membership Type
-                $query->orderBy('membership_type', $sqlDirection);
-                break;
-            case 4: // Registration Date
-                $query->orderBy('start_date', $sqlDirection);
-                break;
-            case 5: // Status
-                $query->orderBy('member_status', $sqlDirection);
-                break;
-            default:
-                // Default to registration date descending
-                $query->orderBy('start_date', 'desc');
-        }
-        
-        // Ensure we preserve ALL current query parameters
-        $members = $query->paginate(10)->appends([
-            'sort_column' => $sortColumn,
-            'sort_direction' => $sortDirection,
-            'search' => $searchQuery,
-            'status' => $status,
-            'page' => $page
-        ]);
-        
-        // For AJAX requests, return JSON response
-        if ($request->ajax()) {
-            try {
-                // Make sure our view exists and can be rendered
-                $tableView = view('partials.members_table', [
-                    'members' => $members,
-                    'sortColumn' => $sortColumn,
-                    'sortDirection' => $sortDirection
-                ])->render();
-                
-                // Create pagination HTML - FIX HERE: Using Bootstrap 4 pagination
-                // Change from 'pagination.default' to 'vendor.pagination.bootstrap-4'
-                // Or alternatively, use the simpler direct ->links() rendering
-                $paginationView = $members->links()->render();
-                
-                // Return successful JSON response with all needed parameters
-                return response()->json([
-                    'table' => $tableView,
-                    'pagination' => $paginationView,
-                    'sortColumn' => $sortColumn,
-                    'sortDirection' => $sortDirection,
-                    'currentPage' => $members->currentPage() // Include current page in response
-                ]);
-            } catch (\Exception $e) {
-                // Log the error for server logs
-                Log::error('Error in members AJAX response: ' . $e->getMessage());
-                Log::error($e->getTraceAsString());
-                
-                // Return detailed error for debugging
-                return response()->json([
-                    'error' => 'Error rendering table: ' . $e->getMessage(),
-                    'file' => $e->getFile(),
-                    'line' => $e->getLine()
-                ], 500);
+    {
+        try {
+            // Get sort parameters from request, with defaults
+            $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
+            $sortDirection = $request->input('sort_direction', -1); // Default to descending
+            $searchQuery = $request->input('search');
+            $status = $request->input('status', 'all');
+            $page = $request->input('page', 1); // Get current page
+            
+            // Validate sortColumn to prevent errors
+            $validColumns = [0, 1, 2, 3, 4, 5]; // Add all valid column indices
+            if (!in_array($sortColumn, $validColumns)) {
+                $sortColumn = 4; // Default if invalid
             }
-        }
+            
+            // Validate sortDirection to prevent errors
+            if (!in_array($sortDirection, [1, -1])) {
+                $sortDirection = -1; // Default if invalid
+            }
 
-        // For regular requests, return the view
-        return view('staff.viewmembers', [
-            'members' => $members,
-            'query' => $searchQuery,
-            'status' => $status,
-            'sortColumn' => $sortColumn,
-            'sortDirection' => $sortDirection
-        ]);
-    } catch (\Exception $e) {
-        // Log the error
-        Log::error('Error in members index: ' . $e->getMessage());
-        Log::error($e->getTraceAsString());
-        
-        // Return an error view or redirect with a message
-        return back()->with('error', 'An error occurred: ' . $e->getMessage());
+            // First update all members' status based on their end dates
+            $allMembers = User::where('role', 'user')->get();
+            foreach ($allMembers as $member) {
+                $this->updateMemberStatus($member);
+            }
+
+            // Now build the query with filters
+            $query = User::where('role', 'user');
+            
+            if ($status !== 'all') {
+                $query->where('member_status', $status);
+            }
+            
+            if ($searchQuery) {
+                $query->where(function($q) use ($searchQuery) {
+                    $q->where('first_name', 'like', "%{$searchQuery}%")
+                    ->orWhere('last_name', 'like', "%{$searchQuery}%")
+                    ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
+                });
+            }
+            
+            // Direction conversion from JavaScript to SQL
+            $sqlDirection = $sortDirection > 0 ? 'asc' : 'desc';
+            
+            // Apply sorting based on the column index
+            switch ($sortColumn) {
+                case 0: // #
+                    $query->orderBy('id', $sqlDirection);
+                    break;
+                case 1: // Name
+                    $query->orderBy('first_name', $sqlDirection)
+                        ->orderBy('last_name', $sqlDirection);
+                    break;
+                case 2: // Member ID
+                    $query->orderBy('rfid_uid', $sqlDirection);
+                    break;
+                case 3: // Membership Type
+                    $query->orderBy('membership_type', $sqlDirection);
+                    break;
+                case 4: // Registration Date
+                    $query->orderBy('start_date', $sqlDirection);
+                    break;
+                case 5: // Status
+                    $query->orderBy('member_status', $sqlDirection);
+                    break;
+                default:
+                    // Default to registration date descending
+                    $query->orderBy('start_date', 'desc');
+            }
+            
+            // IMPORTANT: Always append ALL current query parameters to maintain state
+            $members = $query->paginate(10)->appends($request->all());
+            
+            // For AJAX requests, return JSON response
+            if ($request->ajax()) {
+                try {
+                    // Make sure our view exists and can be rendered
+                    $tableView = view('partials.members_table', [
+                        'members' => $members,
+                        'sortColumn' => $sortColumn,
+                        'sortDirection' => $sortDirection
+                    ])->render();
+                    
+                    // Create pagination HTML
+                    $paginationView = $members->links()->render();
+                    
+                    // Return successful JSON response with all needed parameters
+                    return response()->json([
+                        'table' => $tableView,
+                        'pagination' => $paginationView,
+                        'sortColumn' => $sortColumn,
+                        'sortDirection' => $sortDirection,
+                        'currentPage' => $members->currentPage(), // Include current page in response
+                        'lastPage' => $members->lastPage(),       // Include last page info
+                        'total' => $members->total()              // Include total records count
+                    ]);
+                } catch (\Exception $e) {
+                    // Log the error for server logs
+                    Log::error('Error in members AJAX response: ' . $e->getMessage());
+                    Log::error($e->getTraceAsString());
+                    
+                    // Return detailed error for debugging
+                    return response()->json([
+                        'error' => 'Error rendering table: ' . $e->getMessage(),
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ], 500);
+                }
+            }
+
+            // For regular requests, return the view
+            return view('staff.viewmembers', [
+                'members' => $members,
+                'query' => $searchQuery,
+                'status' => $status,
+                'sortColumn' => $sortColumn,
+                'sortDirection' => $sortDirection
+            ]);
+        } catch (\Exception $e) {
+            // Log the error
+            Log::error('Error in members index: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+            
+            // Return an error view or redirect with a message
+            return back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
-}
 
    /**
      * Handle membership renewal.
