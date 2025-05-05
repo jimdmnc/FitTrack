@@ -20,7 +20,9 @@ class ForgotPasswordController extends Controller
         if ($status == Password::RESET_LINK_SENT) {
             return response()->json([
                 'status' => true,
-                'message' => __($status)
+                'message' => __($status),
+                'redirect' => false // Explicitly disable redirect
+
             ]);
         }
     
