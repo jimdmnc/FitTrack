@@ -35,13 +35,11 @@ class AuthenticatedSessionController extends Controller
             $user = Auth::user();
 
             // Redirect based on role
+        // In your controller where you handle the login/redirect
             if ($user->role === 'admin') {
-                return response()->json(['redirect' => route('staff.dashboard')]);
+                return redirect()->route('staff.dashboard');
             } else {
-                return response()->json([
-                    'error' => 'This is not an admin account',
-                    'message' => 'Please use the member login page'
-                ], 403);
+                return back()->with('error', 'This is not an admin account. Please use the member login.');
             }
         }
 
