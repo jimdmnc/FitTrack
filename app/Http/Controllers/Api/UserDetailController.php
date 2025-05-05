@@ -255,17 +255,15 @@ class UserDetailController extends Controller
 
 
 
-
     public function renewMembershipApp(Request $request)
     {
         // Validate request
         $request->validate([
             'rfid_uid' => 'required|exists:users,rfid_uid',
             'membership_type' => 'required',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
+            'payment_screenshot' => 'required_if:payment_method,gcash|image|mimes:jpeg,png,jpg|max:2048',
         ]);
     
         // Find user by RFID
@@ -279,49 +277,85 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Update user membership - both payment methods will be pending approval
+            DB::beginTransaction();
+    
+            // Handle screenshot upload if payment is via GCash
+            $screenshotPath = null;
+            if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
+                $screenshotPath = $request->file('payment_screenshot')->store('payment-screenshots', 'public');
+            }
+    
+            // Calculate dates based on membership type
+            $startDate = now();
+            $endDate = $this->calculateEndDate($startDate, $request->membership_type);
+    
+            // Update user membership
             $user->update([
                 'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
                 'member_status' => 'expired', 
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
     
-            // Create Renewal and Payment records
-            $renewal = Renewal::create([
-                'rfid_uid' => $user->rfid_uid,
-                'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'payment_method' => $request->payment_method,
-                'status' => 'pending',
-                'payment_reference' => null,
-            ]);
-    
-            MembersPayment::create([
+            // Create payment record
+            $payment = MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
-                'payment_date' => now(),
-                'payment_reference' => null,
                 'status' => 'pending',
+                'payment_reference' => $request->payment_reference ?? null,
+                'payment_screenshot' => $screenshotPath,
             ]);
+    
+            // Create renewal record (if you have this table)
+            if (Schema::hasTable('renewals')) {
+                Renewal::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'membership_type' => $request->membership_type,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'payment_method' => $request->payment_method,
+                    'status' => 'pending',
+                    'payment_reference' => $request->payment_reference ?? null,
+                ]);
+            }
+    
+            DB::commit();
     
             return response()->json([
                 'success' => true,
                 'message' => 'Renewal request submitted. Waiting for staff approval.',
-                'user' => $user,
+                'payment_id' => $payment->id,
             ]);
     
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json([
                 'success' => false,
                 'message' => 'Renewal failed: ' . $e->getMessage(),
             ], 400);
         }
     }
+    
+    private function calculateEndDate($startDate, $membershipType)
+    {
+        switch ($membershipType) {
+            case 'weekly':
+                return $startDate->copy()->addWeek();
+            case 'monthly':
+                return $startDate->copy()->addMonth();
+            case 'yearly': // Changed from 'annual' to match your enum
+                return $startDate->copy()->addYear();
+            default:
+                return $startDate->copy()->addWeek();
+        }
+    }
+
+
+
+
 /**
  * Get payment history
  */
