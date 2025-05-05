@@ -14,41 +14,52 @@ class AuthController extends Controller
     // ✅ User Login
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-    
-        // Check if the user exists and validate password
-        $user = User::where('email', $request->email)->first();
-    
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Invalid credentials.']
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required'
             ]);
-        }
     
-        // Restrict login for admins
-        if ($user->role === 'admin') {
-            return response()->json(['message' => 'Admin accounts are not allowed on this app'], 403);
-        }
+            $user = User::where('email', $request->email)->first();
     
-        // Check if the user has an associated RFID UID
-        if (!$user->rfid_uid) {
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials',
+                    'errors' => ['email' => ['Invalid credentials']]
+                ], 401); // HTTP 401 for unauthorized
+            }
+    
+            if ($user->role === 'admin') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin accounts are not allowed on this app'
+                ], 403);
+            }
+    
+            if (!$user->rfid_uid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No RFID UID associated with this user'
+                ], 400);
+            }
+    
+            $token = $user->createToken('authToken')->plainTextToken;
+    
             return response()->json([
-                'message' => 'No RFID UID associated with this user.',
-            ], 400);
+                'success' => true,
+                'user' => $user,
+                'token' => $token,
+                'rfid_uid' => $user->rfid_uid
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during login',
+                'error' => $e->getMessage()
+            ], 500);
         }
-    
-        // Generate Token (ensure it is a plain text token)
-        $token = $user->createToken('authToken')->plainTextToken;
-    
-        // Return response with user data and token
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-            'rfid_uid' => $user->rfid_uid,  // Include RFID UID
-        ]);
     }
 
     // ✅ Get Authenticated User
