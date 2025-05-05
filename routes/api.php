@@ -103,9 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
 Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
-Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
-->middleware(['guest'])
-->name('password.email');
+
 
 Route::post('/attendance', [RFIDController::class, 'handleAttendance']);
 Route::post('/save_rfid', [RFIDController::class, 'saveRFID']);
