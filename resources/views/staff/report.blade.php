@@ -49,23 +49,63 @@
             background-color: #ff5722;
             border-radius: 20px;
         }
-        
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .mobile-full-width {
-                width: 100%;
-            }
-            
-            .pagination-container {
-                overflow-x: auto;
-                padding-bottom: 1rem;
-            }
-            
-            .pagination {
-                display: flex;
-                white-space: nowrap;
-            }
-        }
+
+        /* Pagination Styles */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin: 1rem 0;
+}
+
+.pagination li {
+    margin: 0 2px;
+}
+
+.pagination li a,
+.pagination li span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    color: #b9b9b9;
+    background-color: #2d2d2d;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.pagination li.active span {
+    background-color: #ff5722;
+    color: #fff;
+    font-weight: 600;
+}
+
+.pagination li a:hover {
+    background-color: #3d3d3d;
+    color: #fff;
+}
+
+.pagination li.disabled span {
+    background-color: #202020;
+    color: #666;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .pagination li a,
+    .pagination li span {
+        min-width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+}
+
     </style>
 
     <div class="mb-20 px-4 sm:px-6 md:px-8">
@@ -232,7 +272,7 @@
                 
                 <!-- Pagination for Members Report -->
                 @if($attendances->count() > 0)
-                    <div class="pagination-container mt-4 w-full flex justify-center">
+                    <div class="pagination-container">
                         {{ $attendances->appends([
                             'type' => request('type', 'members'),
                             'filter' => request('filter'),
@@ -312,7 +352,7 @@
                 </div>
                 <!-- Pagination for Payments Report -->
                 @if($payments->count() > 0)
-                    <div class="pagination-container mt-4 w-full flex justify-center">
+                    <div class="pagination-container">
                         {{ $payments->appends([
                             'type' => request('type', 'members'),
                             'filter' => request('filter'),
@@ -458,33 +498,49 @@
         window.location.href = url.toString();
     }
 
-    // Update pagination links with current filters
     function updatePaginationLinks() {
         const type = reportTypeSelect.value;
         const filterValue = dateFilter.value;
         const startDateValue = startDate.value;
         const endDateValue = endDate.value;
         
-        // Update all pagination links
-        document.querySelectorAll('.pagination a').forEach(link => {
-            const url = new URL(link.href);
-            url.searchParams.set('type', type);
-            
-            if (filterValue) {
-                url.searchParams.set('filter', filterValue);
-            } else {
-                url.searchParams.delete('filter');
+        // Target only links within pagination container
+        document.querySelectorAll('.pagination-container a').forEach(link => {
+            try {
+                if (!link.href || !link.href.includes('http')) return;
+                
+                const url = new URL(link.href);
+                
+                // Preserve existing page parameter
+                const pageParam = url.searchParams.get('page');
+                
+                // Update parameters
+                url.searchParams.set('type', type);
+                
+                if (filterValue) {
+                    url.searchParams.set('filter', filterValue);
+                } else {
+                    url.searchParams.delete('filter');
+                }
+                
+                if (filterValue === 'custom' && startDateValue && endDateValue) {
+                    url.searchParams.set('start_date', startDateValue);
+                    url.searchParams.set('end_date', endDateValue);
+                } else {
+                    url.searchParams.delete('start_date');
+                    url.searchParams.delete('end_date');
+                }
+                
+                // Restore page parameter if it existed
+                if (pageParam) {
+                    url.searchParams.set('page', pageParam);
+                }
+                
+                // Update href without changing the element's structure
+                link.href = url.toString();
+            } catch (e) {
+                console.error("Error updating pagination link:", e);
             }
-            
-            if (filterValue === 'custom' && startDateValue && endDateValue) {
-                url.searchParams.set('start_date', startDateValue);
-                url.searchParams.set('end_date', endDateValue);
-            } else {
-                url.searchParams.delete('start_date');
-                url.searchParams.delete('end_date');
-            }
-            
-            link.href = url.toString();
         });
     }
 
