@@ -108,9 +108,10 @@ return [
     |
     */
 
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS'),
-        'name' => env('MAIL_FROM_NAME'),
-    ],
+// config/mail.php
+'from' => [
+    'address' => env('MAIL_FROM_ADDRESS', 'no-reply@rockiesfitnessph.com'),
+    'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Rockies Fitness')),
+],
 
 ];
