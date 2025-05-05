@@ -201,9 +201,12 @@ class UserDetailController extends Controller
             });
     
             return $this->successResponse('Weight updated successfully', [
-                'new_weight' => $validator->validated()['weight'],
-                'updated_at' => now()->toDateTimeString()
+                [
+                    'new_weight' => $validator->validated()['weight'],
+                    'updated_at' => now()->toDateTimeString()
+                ]
             ]);
+            
         } catch (\Exception $e) {
             return $this->errorResponse('Failed to update weight', $e->getMessage(), 500);
         }
