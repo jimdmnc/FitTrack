@@ -403,7 +403,12 @@
                 
             <!-- Pagination Links -->
             <div class="mt-4">
-                {{ $members->appends(request()->except('page'))->links('vendor.pagination.default') }}
+            {{ $members->appends([
+                'search' => request('search'),
+                'status' => request('status'),
+                'sort_column' => request('sort_column', 4),
+                'sort_direction' => request('sort_direction', -1)
+            ])->links('vendor.pagination.default') }}
             </div>
 
 </section>
@@ -823,6 +828,7 @@
     </div>
 </div>
 <!-- End Restore Member Modal -->
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
@@ -839,23 +845,29 @@
         summaryText: document.getElementById('membershipSummaryText')
     };
 
-    // Global sorting variables - accessible throughout the script
-    let currentSortColumn = 4; // Default to Registration Date column
-    let sortDirection = -1;    // Default to descending (newest first)
+    // Get URL parameters to initialize sort state
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Initialize sort parameters from URL or defaults
+    let currentSortColumn = parseInt(urlParams.get('sort_column')) || 4; // Default to Registration Date column
+    let sortDirection = parseInt(urlParams.get('sort_direction')) || -1; // Default to descending (newest first)
+    
+    // Update sort icon display for initial state
+    updateSortIcons();
 
     // Membership type data configuration
     const MEMBERSHIP_DATA = {
-        '1': { fee: 70, name: 'Session (1 day)' },
+        '1': { fee: 60, name: 'Session (1 day)' },
         '7': { fee: 300, name: 'Weekly (7 days)' },
-        '30': { fee: 1000, name: 'Monthly (30 days)' },
-        '365': { fee: 5000, name: 'Annual (365 days)' }
+        '30': { fee: 850, name: 'Monthly (30 days)' },
+        '365': { fee: 10000, name: 'Annual (365 days)' }
     };
 
     // Status badge style mapping
     const STATUS_STYLES = {
         active: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200",
         revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
-    };
+    }
 
     let searchTimeout;
     const today = new Date();
@@ -868,33 +880,13 @@
         toggleClearButtonVisibility();
         ensureRevokedStatusOption();
         
-        // Initialize the default sort on page load
-        setTimeout(() => {
-            sortTable(currentSortColumn);
-        }, 100);
+        // Make sure to re-attach pagination listeners when page loads
+        attachPaginationListeners();
     }
 
     // ======== SORTING FUNCTIONS ========
     function sortTable(columnIndex) {
-        console.log(`Sorting by column ${columnIndex}`); // Debug logging
-        
-        const tableBody = document.querySelector('table tbody');
-        if (!tableBody) {
-            console.error('Table body not found'); // Debug logging
-            return;
-        }
-        
-        const rows = Array.from(tableBody.querySelectorAll('tr'));
-        if (rows.length === 0) {
-            console.error('No rows found in table'); // Debug logging
-            return;
-        }
-        
-        // Reset all sort icons
-        const icons = document.querySelectorAll('[id^="sort-icon-"]');
-        icons.forEach(icon => {
-            icon.textContent = '↕';
-        });
+        console.log(`Sorting by column ${columnIndex}`);
         
         // If clicking the same column, reverse direction
         if (currentSortColumn === columnIndex) {
@@ -904,67 +896,34 @@
             sortDirection = 1;
         }
         
-        console.log(`Sort direction: ${sortDirection}`); // Debug logging
+        console.log(`Sort direction: ${sortDirection}`);
         
         // Update the icon for the current column
-        const currentIcon = document.getElementById(`sort-icon-${columnIndex}`);
+        updateSortIcons();
+        
+        // Now fetch the data from the server with the sort parameters
+        fetchMembers();
+        
+        // Also update the URL in the browser to reflect the current sort state
+        // without causing page refresh
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort_column', currentSortColumn);
+        url.searchParams.set('sort_direction', sortDirection);
+        window.history.pushState({}, '', url.toString());
+    }
+    
+    function updateSortIcons() {
+        // Reset all icons first
+        const icons = document.querySelectorAll('[id^="sort-icon-"]');
+        icons.forEach(icon => {
+            icon.textContent = '↕';
+        });
+        
+        // Update the current column's icon
+        const currentIcon = document.getElementById(`sort-icon-${currentSortColumn}`);
         if (currentIcon) {
             currentIcon.textContent = sortDirection === 1 ? '↑' : '↓';
         }
-        
-        // Define status priority for sorting (column 5)
-        const statusPriority = {
-            'active': 1,
-            'expired': 2,
-            'revoked': 3
-        };
-        
-        // Sort the rows
-        rows.sort((a, b) => {
-            // Make sure the cells exist
-            if (!a.cells[columnIndex] || !b.cells[columnIndex]) return 0;
-            
-            let aValue = a.cells[columnIndex].textContent.trim();
-            let bValue = b.cells[columnIndex].textContent.trim();
-            
-            console.log(`Comparing: "${aValue}" with "${bValue}"`); // Debug logging
-            
-            // Special handling for dates (Registration Date column)
-            if (columnIndex === 4) {
-                // Try to parse dates in various formats
-                const aDate = parseDate(aValue);
-                const bDate = parseDate(bValue);
-                
-                if (aDate && bDate) {
-                    return (aDate - bDate) * sortDirection;
-                }
-            }
-            
-            // Special handling for status column
-            if (columnIndex === 5) {
-                // Extract just the status text from potentially complex HTML
-                const aStatus = aValue.toLowerCase().replace(/[^a-z]/g, '');
-                const bStatus = bValue.toLowerCase().replace(/[^a-z]/g, '');
-                
-                // Use the priority map for sorting
-                const aPriority = statusPriority[aStatus] || 999;
-                const bPriority = statusPriority[bStatus] || 999;
-                
-                return (aPriority - bPriority) * sortDirection;
-            }
-            
-            // Check if we're dealing with numbers
-            if (!isNaN(parseFloat(aValue)) && !isNaN(parseFloat(bValue))) {
-                return (parseFloat(aValue) - parseFloat(bValue)) * sortDirection;
-            }
-            
-            // Default string comparison
-            return aValue.localeCompare(bValue) * sortDirection;
-        });
-        
-        // Reattach sorted rows to maintain references and event handlers
-        rows.forEach(row => tableBody.appendChild(row));
-        console.log('Sorting complete'); // Debug logging
     }
 
     // Helper function to parse dates in various formats
@@ -1079,19 +1038,60 @@
     
     // This is a separate function so we can reattach listeners after AJAX loads
     function attachTableEventListeners() {
-        // Pagination links
-        document.querySelectorAll('.pagination a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                fetchMembers(this.href);
+        // First, attach sort header listeners
+        document.querySelectorAll('[id^="sort-header-"]').forEach((header, index) => {
+            // Remove any existing event listeners to prevent duplicates
+            const newHeader = header.cloneNode(true);
+            header.parentNode.replaceChild(newHeader, header);
+            
+            // Add new event listener
+            newHeader.addEventListener('click', () => {
+                console.log(`Header ${index} clicked`);
+                sortTable(index);
             });
         });
         
-        // Attach sort handlers to table headers
-        document.querySelectorAll('[id^="sort-header-"]').forEach((header, index) => {
-            header.addEventListener('click', () => {
-                console.log(`Header ${index} clicked`); // Debug logging
-                sortTable(index);
+        // Then, attach pagination links handlers
+        attachPaginationListeners();
+    }
+
+    // Separate function for pagination listeners - FIX HERE
+    function attachPaginationListeners() {
+        // Select all pagination links
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        
+        paginationLinks.forEach(link => {
+            // Clone and replace to remove existing listeners
+            const newLink = link.cloneNode(true);
+            if (link.parentNode) {
+                link.parentNode.replaceChild(newLink, link);
+            }
+            
+            newLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Get the URL from the link
+                const url = new URL(this.href);
+                
+                // Always ensure sort parameters are included
+                url.searchParams.set('sort_column', currentSortColumn);
+                url.searchParams.set('sort_direction', sortDirection);
+                
+                // Preserve search query if exists
+                if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
+                    url.searchParams.set('search', ELEMENTS.searchInput.value.trim());
+                }
+                
+                // Preserve status filter if not 'all'
+                if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+                    url.searchParams.set('status', ELEMENTS.statusSelect.value);
+                }
+                
+                // Update browser URL without page refresh
+                window.history.pushState({}, '', url.toString());
+                
+                // Fetch members with the complete URL
+                fetchMembers(url.toString());
             });
         });
     }
@@ -1123,27 +1123,36 @@
 
     // ======== DATA OPERATIONS ========
     function fetchMembers(url = null) {
-        const params = new URLSearchParams();
-        
-        // Add filters if they exist
-        if (ELEMENTS.searchInput && ELEMENTS.searchInput.value) {
-            params.append('search', ELEMENTS.searchInput.value);
+        // Construct URL with parameters if none provided
+        if (!url) {
+            const params = new URLSearchParams();
+            
+            // Add search filter if exists
+            if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
+                params.append('search', ELEMENTS.searchInput.value.trim());
+            }
+            
+            // Add status filter if not 'all'
+            if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+                params.append('status', ELEMENTS.statusSelect.value);
+            }
+            
+            // ALWAYS include sort parameters
+            params.append('sort_column', currentSortColumn);
+            params.append('sort_direction', sortDirection);
+            
+            url = `${window.location.pathname}?${params.toString()}`;
         }
         
-        if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
-            params.append('status', ELEMENTS.statusSelect.value);
-        }
+        console.log(`Fetching from: ${url}`);
         
-        // Use provided URL or construct one
-        const fetchUrl = url || `{{ route("staff.viewmembers") }}?${params.toString()}`;
-        console.log(`Fetching from: ${fetchUrl}`); // Debug logging
-        
-        // Show loading state
+        // Show loading indicator
         if (ELEMENTS.tableContainer) {
             ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
         }
         
-        fetch(fetchUrl, {
+        // Fetch data with AJAX
+        fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
@@ -1155,25 +1164,30 @@
             return response.json();
         })
         .then(data => {
-            console.log('Data fetched successfully'); // Debug logging
+            console.log('Data fetched successfully');
             
-            // Update table and pagination
+            // Update table content
             if (ELEMENTS.tableContainer) {
                 ELEMENTS.tableContainer.innerHTML = data.table;
             }
             
+            // Update pagination
             if (ELEMENTS.paginationContainer) {
                 ELEMENTS.paginationContainer.innerHTML = data.pagination || '';
             }
             
-            // Re-attach event listeners to the new table elements
-            attachTableEventListeners();
+            // Update sort state from server response if provided
+            if (data.sortColumn !== undefined && data.sortDirection !== undefined) {
+                currentSortColumn = parseInt(data.sortColumn);
+                sortDirection = parseInt(data.sortDirection);
+            }
             
-            // Re-apply current sort after data is loaded
+            // Re-attach event listeners to the new elements
             setTimeout(() => {
-                console.log(`Re-applying sort to column ${currentSortColumn}`); // Debug logging
-                sortTable(currentSortColumn);
-            }, 100);
+                attachTableEventListeners();
+                // Update sort icons to match current state
+                updateSortIcons();
+            }, 50);
         })
         .catch(error => {
             console.error('Error fetching members:', error);
@@ -1183,248 +1197,280 @@
         });
     }
 
-        // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
-        function updateAllDetails() {
-            updateMembershipFee();
-            updateExpirationDate();
-            updateSummaryText();
-        }
+    // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
+    function updateAllDetails() {
+        updateMembershipFee();
+        updateExpirationDate();
+        updateSummaryText();
+    }
+    
+    function updateMembershipFee() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
         
-        function updateMembershipFee() {
-            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
-            
-            const selectedType = ELEMENTS.membershipTypeSelect.value;
-            ELEMENTS.membershipFeeInput.value = selectedType ? 
-                MEMBERSHIP_DATA[selectedType].fee.toFixed(2) : '0.00';
-        }
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        ELEMENTS.membershipFeeInput.value = selectedType ? 
+            MEMBERSHIP_DATA[selectedType].fee.toFixed(2) : '0.00';
+    }
+    
+    function updateExpirationDate() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
         
-        function updateExpirationDate() {
-            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
-            
-            const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
-            const renewalDate = ELEMENTS.startDateInput.value;
-        
-            if (renewalDate && selectedType) {
-                try {
-                    const renewal = new Date(renewalDate);
-                    if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-        
-                    renewal.setDate(renewal.getDate() + selectedType);
-                    ELEMENTS.endDateInput.value = formatDate(renewal);
-                } catch (error) {
-                    console.error('Error calculating expiration date:', error);
-                    ELEMENTS.endDateInput.value = '';
-                }
-            } else {
+        const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
+        const renewalDate = ELEMENTS.startDateInput.value;
+    
+        if (renewalDate && selectedType) {
+            try {
+                const renewal = new Date(renewalDate);
+                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+    
+                renewal.setDate(renewal.getDate() + selectedType);
+                ELEMENTS.endDateInput.value = formatDate(renewal);
+            } catch (error) {
+                console.error('Error calculating expiration date:', error);
                 ELEMENTS.endDateInput.value = '';
             }
+        } else {
+            ELEMENTS.endDateInput.value = '';
+        }
+    }
+    
+    function updateSummaryText() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
+            !ELEMENTS.endDateInput || !ELEMENTS.summaryText) return;
+        
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        const renewalDate = ELEMENTS.startDateInput.value;
+        const endDate = ELEMENTS.endDateInput.value;
+    
+        if (!selectedType) {
+            ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
+            return;
+        }
+    
+        const typeName = MEMBERSHIP_DATA[selectedType].name;
+        const fee = MEMBERSHIP_DATA[selectedType].fee.toFixed(2);
+    
+        if (renewalDate && endDate) {
+            const formattedStart = formatDisplayDate(new Date(renewalDate));
+            const formattedEnd = formatDisplayDate(new Date(endDate));
+            ELEMENTS.summaryText.textContent = 
+                `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
+        } else {
+            ELEMENTS.summaryText.textContent = 
+                `${typeName} membership. Total fee: ₱${fee}`;
+        }
+    }
+
+    // ======== MODAL FUNCTIONS ========
+    // View Member Modal
+    function openViewModal(memberID, name, membershipType, startDate, status) {
+        // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+
+        // Calculate and set expiration date based on membership type
+        const start = new Date(startDate);
+        let endDate = new Date(start);
+
+        switch(membershipType.toLowerCase()) {
+            case 'session':
+                endDate.setDate(start.getDate() + 1);
+                break;
+            case 'week':
+                endDate.setDate(start.getDate() + 7);
+                break;
+            case 'month':
+                endDate.setMonth(start.getMonth() + 1);
+                break;
+            case 'annual':
+                endDate.setFullYear(start.getFullYear() + 1);
+                break;
+            default:
+                endDate = 'N/A';
+        }
+
+        document.getElementById('viewEndDate').textContent = 
+            typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+        // Change status color based on status
+        const statusBadge = document.getElementById('viewStatus');
+        statusBadge.textContent = status;
+        statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+        // Show modal with animation
+        animateModalOpen('viewMemberModal', 'viewModalContent');
+    }
+
+    function closeViewModal() {
+        animateModalClose('viewMemberModal', 'viewModalContent');
+    }
+
+    // Renew Member Modal
+    function openRenewModal(memberID, name, email, phone, endDate) {
+        // Set form values
+        document.getElementById("editMemberID").value = memberID;
+        document.getElementById("editMemberName").value = name;
+        
+        // If we have email and phone, set those too
+        if (document.getElementById("editEmail") && email) {
+            document.getElementById("editEmail").value = email;
         }
         
-        function updateSummaryText() {
-            if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
-                !ELEMENTS.endDateInput || !ELEMENTS.summaryText) return;
-            
-            const selectedType = ELEMENTS.membershipTypeSelect.value;
-            const renewalDate = ELEMENTS.startDateInput.value;
-            const endDate = ELEMENTS.endDateInput.value;
+        if (document.getElementById("editPhone") && phone) {
+            document.getElementById("editPhone").value = phone;
+        }
+
+        // Initialize date fields with current values if available
+        if (document.getElementById("startDate")) {
+            document.getElementById("startDate").value = todayFormatted;
+        }
+
+        // Show modal with animation
+        animateModalOpen('renewMemberModal', 'editModalContent');
         
-            if (!selectedType) {
-                ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
-                return;
-            }
+        // Update the summary and pricing
+        if (ELEMENTS.membershipTypeSelect) {
+            updateAllDetails();
+        }
+    }
+
+    function closeRenewModal() {
+        animateModalClose('renewMemberModal', 'editModalContent');
+    }
+    
+    // Revoke Member Modal
+    function openRevokeModal(memberID, memberName) {
+        // Set form values
+        document.getElementById("revokeMemberID").value = memberID;
+        document.getElementById("revokeConfirmName").value = memberName;
         
-            const typeName = MEMBERSHIP_DATA[selectedType].name;
-            const fee = MEMBERSHIP_DATA[selectedType].fee.toFixed(2);
+        // Clear reason field
+        document.getElementById("revokeReason").value = '';
+
+        // Make sure we're showing the form view, not the confirmation view
+        document.getElementById('revokeFormView').classList.remove('hidden');
+        document.getElementById('confirmationView').classList.add('hidden');
+
+        // Show modal with animation
+        animateModalOpen('revokeMemberModal', 'revokeModalContent');
+    }
+
+    function closeRevokeModal() {
+        animateModalClose('revokeMemberModal', 'revokeModalContent');
+    }
+
+    // Restore Member Modal
+    function openRestoreModal(memberID, memberName) {
+        // Set form values
+        document.getElementById("restoreMemberID").value = memberID;
+        document.getElementById("restoreConfirmName").value = memberName;
+
+        // Show modal with animation
+        animateModalOpen('restoreMemberModal', 'restoreModalContent');
+    }
+
+    function closeRestoreModal() {
+        animateModalClose('restoreMemberModal', 'restoreModalContent');
+    }
+
+    // Revocation Reason Modal
+    function openRevokedReasonModal(memberId, reason) {
+        // Set the revocation reason inside the modal
+        document.getElementById('revocationReason').textContent = reason || 'No reason provided';
+
+        // Show modal with animation
+        animateModalOpen('viewReasonModal', 'viewReasonModalContent');
+    }
+
+    function closeReasonModal() {
+        animateModalClose('viewReasonModal', 'viewReasonModalContent');
+    }
+
+    // General modal animation helpers
+    function animateModalOpen(modalId, contentId) {
+        const modal = document.getElementById(modalId);
+        const modalContent = document.getElementById(contentId);
+
+        if (!modal || !modalContent) return;
+
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
+
+    function animateModalClose(modalId, contentId) {
+        const modal = document.getElementById(modalId);
+        const modalContent = document.getElementById(contentId);
+
+        if (!modal || !modalContent) return;
+
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
         
-            if (renewalDate && endDate) {
-                const formattedStart = formatDisplayDate(new Date(renewalDate));
-                const formattedEnd = formatDisplayDate(new Date(endDate));
-                ELEMENTS.summaryText.textContent = 
-                    `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
-            } else {
-                ELEMENTS.summaryText.textContent = 
-                    `${typeName} membership. Total fee: ₱${fee}`;
-            }
-        }
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
 
-        // ======== MODAL FUNCTIONS ========
-        // View Member Modal
-        function openViewModal(memberID, name, membershipType, startDate, status) {
-            // Set modal data
-            document.getElementById('viewMemberName').textContent = name;
-            document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-            document.getElementById('viewMembershipType').textContent = membershipType;
-            document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
-
-            // Calculate and set expiration date based on membership type
-            const start = new Date(startDate);
-            let endDate = new Date(start);
-
-            switch(membershipType.toLowerCase()) {
-                case 'session':
-                    endDate.setDate(start.getDate() + 1);
-                    break;
-                case 'week':
-                    endDate.setDate(start.getDate() + 7);
-                    break;
-                case 'month':
-                    endDate.setMonth(start.getMonth() + 1);
-                    break;
-                case 'annual':
-                    endDate.setFullYear(start.getFullYear() + 1);
-                    break;
-                default:
-                    endDate = 'N/A';
-            }
-
-            document.getElementById('viewEndDate').textContent = 
-                typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
-
-            // Change status color based on status
-            const statusBadge = document.getElementById('viewStatus');
-            statusBadge.textContent = status;
-            statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
-
-            // Show modal with animation
-            animateModalOpen('viewMemberModal', 'viewModalContent');
-        }
-
-        function closeViewModal() {
-            animateModalClose('viewMemberModal', 'viewModalContent');
-        }
-
-        // Renew Member Modal
-        function openRenewModal(memberID, name, membershipType, memberStatus) {
-            // Set form values
-            document.getElementById("editMemberID").value = memberID;
-            document.getElementById("editMemberName").value = name;
-            document.getElementById("membershipType").value = membershipType;
-
-            // Set radio button based on status
-            const formattedStatus = memberStatus.trim().toLowerCase();
-            document.querySelectorAll('input[name="status"]').forEach(radio => {
-                radio.checked = radio.value.toLowerCase() === formattedStatus;
-            });
-
-            // Show modal with animation
-            animateModalOpen('renewMemberModal', 'editModalContent');
-        }
-
-        function closeRenewModal() {
-            animateModalClose('renewMemberModal', 'editModalContent');
-        }
+    // ======== REVOCATION CONFIRMATION FUNCTIONS ========
+    function showConfirmation() {
+        // Get the member name and set it in the confirmation view
+        const memberName = document.getElementById('revokeConfirmName').value;
+        document.getElementById('confirmMemberName').textContent = memberName;
         
-        // Revoke Member Modal
-        function openRevokeModal(memberID, memberName) {
-            // Set form values
-            document.getElementById("revokeMemberID").value = memberID;
-            document.getElementById("revokeConfirmName").value = memberName;
-            
-            // Clear reason field
-            document.getElementById("revokeReason").value = '';
+        // Hide the form view and show the confirmation view
+        document.getElementById('revokeFormView').classList.add('hidden');
+        document.getElementById('confirmationView').classList.remove('hidden');
+    }
+    
+    function backToForm() {
+        document.getElementById('confirmationView').classList.add('hidden');
+        document.getElementById('revokeFormView').classList.remove('hidden');
+    }
 
-            // Make sure we're showing the form view, not the confirmation view
-            document.getElementById('revokeFormView').classList.remove('hidden');
-            document.getElementById('confirmationView').classList.add('hidden');
+    function confirmRevoke() {
+        // Submit the form
+        document.getElementById('revokeForm').submit();
+    }
 
-            // Show modal with animation
-            animateModalOpen('revokeMemberModal', 'revokeModalContent');
-        }
+    // Export functions to global scope for HTML onclick handlers
+    window.sortTable = sortTable;
+    window.openViewModal = openViewModal;
+    window.closeViewModal = closeViewModal;
+    window.openRenewModal = openRenewModal;
+    window.closeRenewModal = closeRenewModal;
+    window.openRevokeModal = openRevokeModal;
+    window.closeRevokeModal = closeRevokeModal;
+    window.openRestoreModal = openRestoreModal;
+    window.closeRestoreModal = closeRestoreModal;
+    window.openRevokedReasonModal = openRevokedReasonModal;
+    window.closeReasonModal = closeReasonModal;
+    window.showConfirmation = showConfirmation;
+    window.backToForm = backToForm;
+    window.confirmRevoke = confirmRevoke;
 
-        function closeRevokeModal() {
-            animateModalClose('revokeMemberModal', 'revokeModalContent');
-        }
-
-        // Restore Member Modal
-        function openRestoreModal(memberID, memberName) {
-            // Set form values
-            document.getElementById("restoreMemberID").value = memberID;
-            document.getElementById("restoreConfirmName").value = memberName;
-
-            // Show modal with animation
-            animateModalOpen('restoreMemberModal', 'restoreModalContent');
-        }
-
-        function closeRestoreModal() {
-            animateModalClose('restoreMemberModal', 'restoreModalContent');
-        }
-
-        // Revocation Reason Modal
-        function openRevokedReasonModal(memberId, reason) {
-            // Set the revocation reason inside the modal
-            document.getElementById('revocationReason').textContent = reason || 'No reason provided';
-
-            // Show modal with animation
-            animateModalOpen('viewReasonModal', 'viewReasonModalContent');
-        }
-
-        function closeReasonModal() {
-            animateModalClose('viewReasonModal', 'viewReasonModalContent');
-        }
-
-        // General modal animation helpers
-        function animateModalOpen(modalId, contentId) {
-            const modal = document.getElementById(modalId);
-            const modalContent = document.getElementById(contentId);
-
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function animateModalClose(modalId, contentId) {
-            const modal = document.getElementById(modalId);
-            const modalContent = document.getElementById(contentId);
-
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
-        }
-
-        // ======== REVOCATION CONFIRMATION FUNCTIONS ========
-        function showConfirmation() {
-            // Get the member name and set it in the confirmation view
-            const memberName = document.getElementById('revokeConfirmName').value;
-            document.getElementById('confirmMemberName').textContent = memberName;
-            
-            // Hide the form view and show the confirmation view
-            document.getElementById('revokeFormView').classList.add('hidden');
-            document.getElementById('confirmationView').classList.remove('hidden');
-        }
+    // Handle browser back/forward navigation
+    window.addEventListener('popstate', function(event) {
+        // Re-read the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const newSortColumn = parseInt(urlParams.get('sort_column')) || 4;
+        const newSortDirection = parseInt(urlParams.get('sort_direction')) || -1;
         
-        function backToForm() {
-            document.getElementById('confirmationView').classList.add('hidden');
-            document.getElementById('revokeFormView').classList.remove('hidden');
+        // Only refresh if sort parameters have changed
+        if (newSortColumn !== currentSortColumn || newSortDirection !== sortDirection) {
+            currentSortColumn = newSortColumn;
+            sortDirection = newSortDirection;
+            updateSortIcons();
+            fetchMembers();
         }
-
-        function confirmRevoke() {
-            // Submit the form
-            document.getElementById('revokeForm').submit();
-        }
-
-        // Export functions to global scope for HTML onclick handlers
-        window.sortTable = sortTable;
-        window.openViewModal = openViewModal || function() {};
-        window.closeViewModal = closeViewModal || function() {};
-        window.openRenewModal = openRenewModal || function() {};
-        window.closeRenewModal = closeRenewModal || function() {};
-        window.openRevokeModal = openRevokeModal || function() {};
-        window.closeRevokeModal = closeRevokeModal || function() {};
-        window.openRestoreModal = openRestoreModal || function() {};
-        window.closeRestoreModal = closeRestoreModal || function() {};
-        window.openRevokedReasonModal = openRevokedReasonModal || function() {};
-        window.closeReasonModal = closeReasonModal || function() {};
-        window.showConfirmation = showConfirmation || function() {};
-        window.backToForm = backToForm || function() {};
-        window.confirmRevoke = confirmRevoke || function() {};
-
-        // Initialize everything
-        initialize();
     });
+
+    // Initialize everything
+    initialize();
+});
 </script>
 @endsection

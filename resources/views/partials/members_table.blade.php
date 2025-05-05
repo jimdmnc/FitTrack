@@ -23,17 +23,47 @@
         <table class="min-w-full divide-y divide-black">
             <thead>
                 <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Name</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member ID</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Registration Date</th>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Status</th>
+                    <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            #
+                            <span id="sort-icon-0" class="ml-1 text-gray-400">{{ $sortColumn == 0 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
+                    <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            Name
+                            <span id="sort-icon-1" class="ml-1 text-gray-400">{{ $sortColumn == 1 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
+                    <th id="sort-header-2" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            Member ID
+                            <span id="sort-icon-2" class="ml-1 text-gray-400">{{ $sortColumn == 2 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
+                    <th id="sort-header-3" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            Membership Type
+                            <span id="sort-icon-3" class="ml-1 text-gray-400">{{ $sortColumn == 3 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
+                    <th id="sort-header-4" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            Registration Date
+                            <span id="sort-icon-4" class="ml-1 text-gray-400">{{ $sortColumn == 4 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
+                    <th id="sort-header-5" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                        <div class="flex items-center">
+                            Status
+                            <span id="sort-icon-5" class="ml-1 text-gray-400">{{ $sortColumn == 5 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
+                        </div>
+                    </th>
                     <th class="px-4 py-3 text-right text-xs font-medium text-gray-200 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-black">
-                @foreach ($members as $member)
+                @foreach ($members as $index => $member)
                 <tr class="bg-[#1e1e1e] transition-colors member-table-row" data-status="{{ $member->member_status }}">
                     <td class="px-4 py-4 text-sm text-gray-200">{{ ($members->currentPage() - 1) * $members->perPage() + $loop->iteration }}</td>
                     <td class="px-4 py-4 whitespace-nowrap">
@@ -91,4 +121,20 @@
             </tbody>
         </table>
     </div>
+    <script>
+    // Re-initialize sort icons when the table is refreshed via AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+        // This ensures the sort icons show correctly after a page navigation
+        if (typeof currentSortColumn !== 'undefined' && typeof sortDirection !== 'undefined') {
+            // Update global sort variables with server values if provided
+            currentSortColumn = {{ $sortColumn }};
+            sortDirection = {{ $sortDirection }};
+            
+            // Call updateSortIcons to reflect the current state
+            if (typeof updateSortIcons === 'function') {
+                updateSortIcons();
+            }
+        }
+    });
+    </script>
 @endif
