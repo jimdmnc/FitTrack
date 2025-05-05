@@ -108,9 +108,9 @@ return [
     |
     */
 
-    'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'pabalatedominic2@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'FitTrack'),
-    ],
+ 'from' => [
+    'address' => env('MAIL_FROM_ADDRESS', 'no-reply@rockiesfitnessph.com'),
+    'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'FitTrack')),
+],
 
 ];
