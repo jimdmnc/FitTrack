@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::table('members_payments', function (Blueprint $table) {
+        Schema::table('members_payment', function (Blueprint $table) {
             // Drop the 'payment_reference' column
             $table->dropColumn('payment_reference');
 
