@@ -39,7 +39,15 @@ class AuthenticatedSessionController extends Controller
             if ($user->role === 'admin') {
                 return redirect()->route('staff.dashboard');
             } else {
-                return back()->with('error', 'This is not an admin account. Please use the member login.');
+                // Log out non-admin users immediately
+                Auth::logout();
+                
+                // Return JSON response instead of redirect
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This is not an admin account',
+                    'is_admin' => false
+                ], 403);
             }
         }
 
