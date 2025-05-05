@@ -108,10 +108,9 @@ return [
     |
     */
 
-// config/mail.php
-'from' => [
-    'address' => env('MAIL_FROM_ADDRESS', 'pabalatedominic2@gmail.com'),
-    'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'FitTrack')),
-],
+    'from' => [
+        'address' => env('MAIL_FROM_ADDRESS', 'pabalatedominic2@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'FitTrack'),
+    ],
 
 ];
