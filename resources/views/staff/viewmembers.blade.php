@@ -92,6 +92,62 @@
     th:hover [id^="sort-icon-"] {
         opacity: 1;
     }
+
+    .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .pagination li {
+            margin: 0 2px;
+        }
+
+        .pagination li a,
+        .pagination li span {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            padding: 0 8px;
+            color: #b9b9b9;
+            background-color: #2d2d2d;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .pagination li.active span {
+            background-color: #ff5722;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .pagination li a:hover {
+            background-color: #3d3d3d;
+            color: #fff;
+        }
+
+        .pagination li.disabled span {
+            background-color: #202020;
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 640px) {
+            .pagination li a,
+            .pagination li span {
+                min-width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+        }
+
 </style>
 
 <div class="py-8 sm:px-6 lg:px-4 h-screen">
@@ -197,7 +253,7 @@
                     <thead>
                         <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
                             <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                # <span id="sort-icon-0" class="ml-1">↕</span>
+                                # 
                             </th>
                             <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
                                 Name <span id="sort-icon-1" class="ml-1">↕</span>
@@ -886,14 +942,17 @@
 
     // ======== SORTING FUNCTIONS ========
     function sortTable(columnIndex) {
-        console.log(`Sorting by column ${columnIndex}`);
-        
+    console.log(`Sorting by column ${columnIndex}`);
+    
+    try {
         // If clicking the same column, reverse direction
         if (currentSortColumn === columnIndex) {
             sortDirection *= -1;
         } else {
             currentSortColumn = columnIndex;
-            sortDirection = 1;
+            // For most columns, default to ascending when first clicked
+            // For date columns, default to descending
+            sortDirection = (columnIndex === 4) ? -1 : 1;
         }
         
         console.log(`Sort direction: ${sortDirection}`);
@@ -901,16 +960,25 @@
         // Update the icon for the current column
         updateSortIcons();
         
-        // Now fetch the data from the server with the sort parameters
-        fetchMembers();
-        
-        // Also update the URL in the browser to reflect the current sort state
-        // without causing page refresh
+        // Construct URL with all parameters
         const url = new URL(window.location.href);
         url.searchParams.set('sort_column', currentSortColumn);
         url.searchParams.set('sort_direction', sortDirection);
+        
+        // Don't reset page parameter when sorting - keep current page
+        const currentPage = url.searchParams.get('page');
+        // We'll maintain the page parameter as is, so no need to set it
+        
+        // Update browser URL
         window.history.pushState({}, '', url.toString());
+        
+        // Fetch members with the new sort parameters
+        fetchMembers(url.toString());
+    } catch (error) {
+        console.error('Error in sort table function:', error);
+        alert('An error occurred while sorting. Please try again.');
     }
+}
     
     function updateSortIcons() {
         // Reset all icons first
@@ -1057,23 +1125,23 @@
 
     // Separate function for pagination listeners - FIX HERE
     function attachPaginationListeners() {
-        // Select all pagination links
-        const paginationLinks = document.querySelectorAll('.pagination a');
+    const paginationLinks = document.querySelectorAll('.pagination a');
+    
+    paginationLinks.forEach(link => {
+        // Clone and replace to remove existing listeners
+        const newLink = link.cloneNode(true);
+        if (link.parentNode) {
+            link.parentNode.replaceChild(newLink, link);
+        }
         
-        paginationLinks.forEach(link => {
-            // Clone and replace to remove existing listeners
-            const newLink = link.cloneNode(true);
-            if (link.parentNode) {
-                link.parentNode.replaceChild(newLink, link);
-            }
+        newLink.addEventListener('click', function(e) {
+            e.preventDefault();
             
-            newLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                
+            try {
                 // Get the URL from the link
-                const url = new URL(this.href);
+                const url = new URL(this.href, window.location.origin);
                 
-                // Always ensure sort parameters are included
+                // Make sure sort parameters are included
                 url.searchParams.set('sort_column', currentSortColumn);
                 url.searchParams.set('sort_direction', sortDirection);
                 
@@ -1087,14 +1155,18 @@
                     url.searchParams.set('status', ELEMENTS.statusSelect.value);
                 }
                 
-                // Update browser URL without page refresh
+                // Update browser URL - now with pagination AND sort parameters
                 window.history.pushState({}, '', url.toString());
                 
                 // Fetch members with the complete URL
                 fetchMembers(url.toString());
-            });
+            } catch (error) {
+                console.error('Error in pagination link handler:', error);
+                alert('An error occurred during pagination. Please try again.');
+            }
         });
-    }
+    });
+}
 
     // ======== HELPER FUNCTIONS ========
     function debounce(func, delay) {
@@ -1123,79 +1195,93 @@
 
     // ======== DATA OPERATIONS ========
     function fetchMembers(url = null) {
-        // Construct URL with parameters if none provided
-        if (!url) {
-            const params = new URLSearchParams();
-            
-            // Add search filter if exists
-            if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
-                params.append('search', ELEMENTS.searchInput.value.trim());
-            }
-            
-            // Add status filter if not 'all'
-            if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
-                params.append('status', ELEMENTS.statusSelect.value);
-            }
-            
-            // ALWAYS include sort parameters
-            params.append('sort_column', currentSortColumn);
-            params.append('sort_direction', sortDirection);
-            
-            url = `${window.location.pathname}?${params.toString()}`;
-        }
-        
-        console.log(`Fetching from: ${url}`);
-        
-        // Show loading indicator
-        if (ELEMENTS.tableContainer) {
-            ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
-        }
-        
-        // Fetch data with AJAX
-        fetch(url, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            console.log('Data fetched successfully');
-            
-            // Update table content
-            if (ELEMENTS.tableContainer) {
-                ELEMENTS.tableContainer.innerHTML = data.table;
-            }
-            
-            // Update pagination
-            if (ELEMENTS.paginationContainer) {
-                ELEMENTS.paginationContainer.innerHTML = data.pagination || '';
-            }
-            
-            // Update sort state from server response if provided
-            if (data.sortColumn !== undefined && data.sortDirection !== undefined) {
-                currentSortColumn = parseInt(data.sortColumn);
-                sortDirection = parseInt(data.sortDirection);
-            }
-            
-            // Re-attach event listeners to the new elements
-            setTimeout(() => {
-                attachTableEventListeners();
-                // Update sort icons to match current state
-                updateSortIcons();
-            }, 50);
-        })
-        .catch(error => {
-            console.error('Error fetching members:', error);
-            if (ELEMENTS.tableContainer) {
-                ELEMENTS.tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
-            }
-        });
+    // Show loading indicator
+    if (ELEMENTS.tableContainer) {
+        ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
     }
+    
+    // Construct URL with parameters if none provided
+    if (!url) {
+        const params = new URLSearchParams();
+        
+        // Add search filter if exists
+        if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
+            params.append('search', ELEMENTS.searchInput.value.trim());
+        }
+        
+        // Add status filter if not 'all'
+        if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+            params.append('status', ELEMENTS.statusSelect.value);
+        }
+        
+        // Add sort parameters
+        params.append('sort_column', currentSortColumn);
+        params.append('sort_direction', sortDirection);
+        
+        // Preserve current page if exists
+        const currentPage = new URL(window.location.href).searchParams.get('page');
+        if (currentPage) {
+            params.append('page', currentPage);
+        }
+        
+        url = `${window.location.pathname}?${params.toString()}`;
+    }
+    
+    console.log(`Fetching from: ${url}`);
+    
+    // Fetch data with AJAX
+    fetch(url, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(text => {
+                console.error('Server response:', text);
+                throw new Error(`Server error (${response.status}): ${text}`);
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data fetched successfully');
+        
+        // Update table content
+        if (ELEMENTS.tableContainer) {
+            ELEMENTS.tableContainer.innerHTML = data.table;
+        }
+        
+        // Update pagination - check if pagination exists before rendering
+        if (ELEMENTS.paginationContainer && data.pagination) {
+            ELEMENTS.paginationContainer.innerHTML = data.pagination;
+        } else if (ELEMENTS.paginationContainer) {
+            // Clear pagination if none provided
+            ELEMENTS.paginationContainer.innerHTML = '';
+        }
+        
+        // Update sort state from server response but keep current page
+        if (data.sortColumn !== undefined && data.sortDirection !== undefined) {
+            currentSortColumn = parseInt(data.sortColumn);
+            sortDirection = parseInt(data.sortDirection);
+        }
+        
+        // Re-attach event listeners
+        setTimeout(() => {
+            attachTableEventListeners();
+            updateSortIcons();
+        }, 50);
+    })
+    .catch(error => {
+        console.error('Error fetching members:', error);
+        if (ELEMENTS.tableContainer) {
+            ELEMENTS.tableContainer.innerHTML = `<div class="text-center py-8 text-red-500">
+                Error loading data: ${error.message}. Please try again or contact support.
+            </div>`;
+        }
+    });
+}
 
     // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
     function updateAllDetails() {
