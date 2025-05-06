@@ -47,7 +47,7 @@ class MembershipRegistrationController extends Controller
                 'phone_number' => [
                     'required',
                     'digits:11',
-                    'regex:/^09\d{9}$/',
+                    'regex:/^09\d{9}$/'
                 ],
                 'membership_type' => 'required|string|in:custom,7,30,365',
                 'custom_days' => 'nullable|integer|min:1|required_if:membership_type,custom',

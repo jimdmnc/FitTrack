@@ -804,11 +804,7 @@
     </div>
 </div>
 <script>
-        /**
-     * Main application JavaScript
-     * Organized by functionality
-     */
-
+       
     // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all components
@@ -1249,6 +1245,7 @@ function runAnimation() {
 </div>
 
 <script>
+    // Modal functions (unchanged)
     function closeRenewModal() {
         document.getElementById('renewModal').classList.add('hidden');
     }
@@ -1257,7 +1254,6 @@ function runAnimation() {
         document.getElementById('renewModal').classList.remove('hidden');
     }
     
-    // Add animation when modal appears
     document.addEventListener('DOMContentLoaded', function() {
         const modal = document.getElementById('renewModal');
         const modalContent = modal.querySelector('div');
@@ -1284,6 +1280,88 @@ function runAnimation() {
                 modal.classList.add('hidden');
             }, 300);
         };
+
+        // Workout Timer Functionality - Modified to start only after registration
+        const workoutDurationElement = document.getElementById('workout-duration');
+        const mobileWorkoutDurationElement = document.getElementById('mobile-workout-duration');
+
+        // Get attendance data passed from controller
+        const attendance = @json($attendance ?? null);
+        const isTimedOut = {{ session('timed_out') ? 'true' : 'false' }};
+        
+        let timerInterval;
+        
+        // Only start timer if user has attendance record and is not timed out
+        if (attendance && !isTimedOut) {
+            const timeIn = new Date('{{ $attendance->time_in ?? null }}').getTime();
+            let timeOut = attendance.time_out ? new Date(attendance.time_out).getTime() : null;
+            
+            function formatTime(totalSeconds) {
+                const hours = Math.floor(totalSeconds / 3600);
+                const minutes = Math.floor((totalSeconds % 3600) / 60);
+                const seconds = Math.floor(totalSeconds % 60);
+                
+                return [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    seconds.toString().padStart(2, '0')
+                ].join(':');
+            }
+            
+            function updateTimerDisplay() {
+                const currentTime = new Date().getTime();
+                let elapsedTime;
+                
+                if (timeOut) {
+                    // If session is completed (has time_out)
+                    elapsedTime = Math.floor((timeOut - timeIn) / 1000);
+                } else {
+                    // Session is still active
+                    elapsedTime = Math.floor((currentTime - timeIn) / 1000);
+                }
+                
+                const formattedTime = formatTime(elapsedTime);
+                
+                if (workoutDurationElement) {
+                    workoutDurationElement.textContent = formattedTime;
+                }
+                
+                if (mobileWorkoutDurationElement) {
+                    mobileWorkoutDurationElement.textContent = formattedTime;
+                }
+            }
+            
+            // Initial update
+            updateTimerDisplay();
+            
+            // Only continue updating if session is still active
+            if (!timeOut && !isTimedOut) {
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+            }
+            
+            // Clean up on page unload
+            window.addEventListener('beforeunload', function() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+            });
+            
+            // Function to manually stop the timer (if needed)
+            window.stopWorkoutTimer = function() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+                updateTimerDisplay(); // Final update
+            };
+        } else {
+            // No attendance or timed out - show 00:00:00
+            if (workoutDurationElement) {
+                workoutDurationElement.textContent = '00:00:00';
+            }
+            if (mobileWorkoutDurationElement) {
+                mobileWorkoutDurationElement.textContent = '00:00:00';
+            }
+        }
     });
 </script>
 
