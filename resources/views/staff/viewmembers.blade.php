@@ -341,7 +341,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -355,7 +355,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
@@ -366,7 +366,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -380,7 +380,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
                                             aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="View member details"
                                         >
@@ -392,7 +392,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
@@ -406,7 +406,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
                                             aria-label="View reason for revocation"
                                             title="View reason for revocation"
                                         >
@@ -417,7 +417,7 @@
                                         </button>
                                         <button 
                                             onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-green-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm group"
                                             aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Restore revoked membership"
                                         >
