@@ -341,7 +341,7 @@
                                         </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-red-600 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-red-700 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                             aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Revoke membership"
                                         >
