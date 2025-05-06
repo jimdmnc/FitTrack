@@ -7,6 +7,7 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    @vite('resources/css/app.css')
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
@@ -815,16 +816,17 @@
     </div>
 </div>
 
-<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all">
+<!-- Session Renewal Modal -->
+<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-[#1e1e1e] p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
         <!-- Header -->
         <div class="mb-6 text-center">
-            <h2 class="text-2xl font-bold text-gray-800">Membership Renewal</h2>
-            <p class="text-gray-600 mt-1">Please confirm your annual membership details</p>
+            <h2 class="text-2xl font-bold text-white">Membership Renewal</h2>
+            <p class="text-gray-400 mt-1">Please confirm your session membership details</p>
         </div>
         
         <!-- Divider -->
-        <div class="border-b border-gray-200 mb-6"></div>
+        <div class="border-b border-gray-700 mb-6"></div>
         
         <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
             @csrf
@@ -835,45 +837,45 @@
             <input type="hidden" name="amount" value="60">
             
             <!-- Membership Details Card -->
-            <div class="bg-gray-50 p-5 rounded-lg mb-6">
+            <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
                 <div class="space-y-3">
                     <!-- User ID -->
                     <div class="flex items-center">
                         <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">RFID UID</span>
+                            <span class="text-gray-400 text-sm">RFID UID</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800">{{ auth()->user()->rfid_uid }}</span>
+                            <span class="font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
                         </div>
                     </div>
                     
                     <!-- Membership Type -->
                     <div class="flex items-center">
                         <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Type</span>
+                            <span class="text-gray-400 text-sm">Type</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800">Session</span>
+                            <span class="font-medium text-white">Session</span>
                         </div>
                     </div>
                     
                     <!-- Dates -->
                     <div class="flex items-center">
                         <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Period</span>
+                            <span class="text-gray-400 text-sm">Period</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800">{{ now()->format('M d, Y') }} - {{ now()->format('M d, Y') }}</span>
+                            <span class="font-medium text-white">{{ now()->format('M d, Y') }}</span>
                         </div>
                     </div>
                     
                     <!-- Amount -->
                     <div class="flex items-center">
                         <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Amount</span>
+                            <span class="text-gray-400 text-sm">Amount</span>
                         </div>
                         <div class="w-2/3">
-                            <span class="font-medium text-gray-800 text-lg">₱60.00</span>
+                            <span class="font-medium text-white text-lg">₱60.00</span>
                         </div>
                     </div>
                 </div>
@@ -881,10 +883,10 @@
             
             <!-- Action Buttons -->
             <div class="flex space-x-4 mt-8">
-                <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition duration-200">
+                <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
                     Cancel
                 </button>
-                <button type="submit" class="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
+                <button type="submit" class="w-1/2 py-3 bg-[#FF5722] hover:bg-[#e64a19] text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
                     <span>Confirm Payment</span>
                 </button>
             </div>
