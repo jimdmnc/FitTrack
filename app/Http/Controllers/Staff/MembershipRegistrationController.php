@@ -23,7 +23,17 @@ class MembershipRegistrationController extends Controller
     public function store(Request $request)
     {
         try {
-            $validatedData = $request->validate([
+            // First, check if the membership type is not custom
+            // If it's not custom, we'll set custom_days to null to avoid validation errors
+            $input = $request->all();
+            if ($request->input('membership_type') !== 'custom') {
+                $input['custom_days'] = null;
+            }
+            
+            // Create a new request with the modified input
+            $modifiedRequest = new Request($input);
+            
+            $validatedData = $modifiedRequest->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => [
@@ -34,9 +44,13 @@ class MembershipRegistrationController extends Controller
                     Rule::unique('users')
                 ],
                 'gender' => 'required|string|in:male,female,other',
-                'phone_number' => 'required|string|max:15',
-                'membership_type' => 'required|string|in:custom,7,30,365', // Add 'custom' to allowed values
-                'custom_days' => 'required_if:membership_type,custom|integer|min:1',
+                'phone_number' => [
+                    'required',
+                    'digits:11',
+                    'regex:/^09\d{9}$/',
+                ],
+                'membership_type' => 'required|string|in:custom,7,30,365',
+                'custom_days' => 'nullable|integer|min:1|required_if:membership_type,custom',
                 'start_date' => 'required|date|after_or_equal:today',
                 'birthdate' => 'required|date|before:today',
                 'uid' => [
@@ -86,15 +100,11 @@ class MembershipRegistrationController extends Controller
                     'password' => Hash::make($generatedPassword),
                     'role' => 'user',
                     'rfid_uid' => $validatedData['uid'],
-                    'session_status' => 'pending', // Default status
+                    'session_status' => 'approved', // Set directly to approved
                     'end_date' => Carbon::parse($validatedData['start_date'])
                         ->addDays((int)$membershipDays)
                         ->format('Y-m-d'),
                 ]);
-    
-                // After the user is created, change session_status to 'approved'
-                $user->session_status = 'approved';
-                $user->save();
     
                 // Create payment record
                 MembersPayment::create([
