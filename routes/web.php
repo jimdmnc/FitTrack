@@ -67,6 +67,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/staff/attendance', [AttendanceController::class, 'index'])
             ->name('staff.attendance.index');
 
+        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout'])->name('attendance.timeout');
+        // In web.php or api.php
+        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout']);
 
 
         Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');

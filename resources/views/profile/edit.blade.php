@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <div class="container mx-auto px-4 py-12 bg-[#121212] min-h-screen">
     <div class="mb-8">
         <h2 class="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600 tracking-tight">Profile Overview</h2>
@@ -105,16 +106,6 @@
                             Account created: {{ $user->created_at->format('F d, Y') }}
                         </p>
                     </div>
-                    <!-- <button 
-                        x-data=""
-                        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-                        class="text-red-500 hover:text-red-200 hover:translate-y-[-2px] font-medium flex items-center space-x-2 transition-colors "
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        <span>Delete Account</span>
-                    </button> -->
                 </div>
             </div>
         </div>
@@ -181,7 +172,7 @@
             </div>
         </div>
 
-        <!-- Edit Profile Modal with improved styling -->
+        <!-- Edit Profile Modal with improved styling and validation -->
         <x-modal name="edit-profile" :show="$errors->updateProfile->isNotEmpty()" focusable>
             <div class="flex items-center justify-center min-h-full p-4">
                 <form 
@@ -196,19 +187,50 @@
                     <p class="text-gray-400 mb-6">Update your personal information</p>
 
                     <div class="space-y-6">
-                        <div>
-                            <x-input-label for="name" :value="__('Full Name')" class="text-gray-200 mb-2" />
-                            <x-text-input
-                                id="name"
-                                name="name"
-                                type="text"
-                                class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                :value="old('name', $user->name)"
-                                required
-                                autofocus
-                                placeholder="Enter your full name"
-                            />
-                            <x-input-error :messages="$errors->updateProfile->get('name')" class="mt-2" />
+                        <!-- Separated First Name and Last Name fields -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="first_name" :value="__('First Name')" class="text-gray-200 mb-2" />
+                                <x-text-input
+                                    id="first_name"
+                                    name="first_name"
+                                    type="text"
+                                    class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    :value="old('first_name', $user->first_name)"
+                                    required
+                                    autofocus
+                                    placeholder="Enter your first name"
+                                    minlength="2"
+                                    maxlength="50"
+                                    pattern="[A-Za-z\s]+"
+                                    title="Only letters and spaces are allowed"
+                                />
+                                <x-input-error :messages="$errors->updateProfile->get('first_name')" class="mt-2" />
+                                @error('first_name')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <x-input-label for="last_name" :value="__('Last Name')" class="text-gray-200 mb-2" />
+                                <x-text-input
+                                    id="last_name"
+                                    name="last_name"
+                                    type="text"
+                                    class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                                    :value="old('last_name', $user->last_name)"
+                                    required
+                                    placeholder="Enter your last name"
+                                    minlength="2"
+                                    maxlength="50"
+                                    pattern="[A-Za-z\s]+"
+                                    title="Only letters and spaces are allowed"
+                                />
+                                <x-input-error :messages="$errors->updateProfile->get('last_name')" class="mt-2" />
+                                @error('last_name')
+                                    <span class="text-red-500 text-sm">{{ $message }}</span>
+                                @enderror
+                            </div>
                         </div>
 
                         <div>
@@ -221,26 +243,39 @@
                                 :value="old('email', $user->email)"
                                 required
                                 placeholder="your.email@example.com"
+                                pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                title="Please enter a valid email address"
                             />
                             <x-input-error :messages="$errors->updateProfile->get('email')" class="mt-2" />
+                            @error('email')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                            <p class="text-xs text-gray-400 mt-2">Must be a valid email address</p>
                         </div>
 
                         <div>
-                            <x-input-label for="phone" :value="__('Phone Number')" class="text-gray-200 mb-2" />
+                            <x-input-label for="phone_number" :value="__('Phone Number')" class="text-gray-200 mb-2" />
                             <x-text-input
-                                id="phone"
-                                name="phone"
+                                id="phone_number"
+                                name="phone_number"
                                 type="tel"
                                 class="w-full bg-[#1e1e1e] border-gray-700 text-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"
-                                :value="old('phone', $user->phone)"
+                                :value="old('phone_number', $user->phone_number)"
                                 placeholder="09** **** *** (Optional)"
+                                pattern="09[0-9]{9}"
+                                title="Phone number must start with 09 and be 11 digits"
+                                maxlength="11"
                             />
-                            <x-input-error :messages="$errors->updateProfile->get('phone')" class="mt-2" />
+                            <x-input-error :messages="$errors->updateProfile->get('phone_number')" class="mt-2" />
+                            @error('phone_number')
+                                <span class="text-red-500 text-sm">{{ $message }}</span>
+                            @enderror
+                            <p class="text-xs text-gray-400 mt-2">Must start with 09 and be 11 digits in length</p>
                         </div>
                     </div>
 
                     <div class="mt-8 flex justify-end space-x-4">
-                        <x-secondary-button x-on:click="$dispatch('close')" class="bg-gray-800 text-gray-00 hover:bg-[#2c2c2c] border-gray-700">
+                        <x-secondary-button x-on:click="$dispatch('close')" class="bg-gray-800 text-gray-400 hover:bg-[#2c2c2c] border-gray-700">
                             {{ __('Cancel') }}
                         </x-secondary-button>
 
@@ -251,7 +286,6 @@
                 </form>
             </div>
         </x-modal>
-
 
         <!-- Change Password Modal with improved styling -->
         <x-modal name="change-password" :show="$errors->updatePassword->isNotEmpty()" focusable>

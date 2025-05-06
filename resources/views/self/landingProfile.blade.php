@@ -7,7 +7,9 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    @vite('resources/css/app.css')
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap');
@@ -219,7 +221,7 @@
 
     </style>
 </head>
-<body class="bg-gray-100">
+<body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
     <!-- Navigation Bar -->
  <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
     <div class="container mx-auto">
@@ -254,11 +256,17 @@
             </div>
 
             <!-- Workout Timer - Always Visible -->
-            @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                    <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                    <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                </div>
+            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+            <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                <span class="timer-text text-sm md:text-base" id="workout-duration">
+                    @if(isset($attendance)) 
+                        {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                    @else
+                        00:00:00
+                    @endif
+                </span>
+            </div>
             @endif
 
             <!-- Desktop Navigation Links --> 
@@ -271,18 +279,18 @@
                 <!-- Action Buttons -->
                 <div class="flex items-center space-x-2">
                     <!-- Renew Button -->
-                    <button type="button" onclick="openRenewModal()"
+                    <button type="button" onclick="checkRenewalEligibility()"
                         class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
                         <i class="fas fa-sync-alt mr-1"></i> Renew
                     </button>
 
                     <!-- TimeOut Button -->
-                    @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                        <button onclick="document.getElementById('timeout-modal').showModal()" 
-                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
-                            <i class="fas fa-sign-out-alt mr-1"></i> TimeOut
-                        </button>
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                    <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                    </button>
                     @endif
+
 
                     <!-- Sign Out Button -->
                     <form method="POST" action="{{ route('logout.custom') }}">
@@ -331,14 +339,21 @@
                 <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                 
                 <!-- Mobile Workout Timer Display -->
-                @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                    <div class="flex justify-center items-center py-4">
-                        <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                            <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                            <span id="mobile-workout-duration" class="text-lg font-medium">00:00:00</span>
-                        </div>
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                <div class="flex justify-center items-center py-4">
+                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                        <span id="mobile-workout-duration" class="text-lg font-medium">
+                            @if(isset($attendance))
+                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                            @else
+                                00:00:00
+                            @endif
+                        </span>
                     </div>
+                </div>
                 @endif
+
             </div>
             
             <!-- Mobile Action Buttons -->
@@ -464,20 +479,17 @@
             <div class="text-center">
                 <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
                 <p class="mb-6">Are you sure you want to time out?</p>
-                
                 <div class="flex justify-center gap-4">
                     @auth
-                        <form action="{{ url('/attendance/timeout') }}" method="POST">
-                            @csrf
-                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                            <button type="submit" 
-                                    class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                                Yes, Time Out
-                            </button>
-                        </form>
+                    <form id="timeout-form" action="{{ url('/attendance/timeout') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
+                    </form>
                     @endauth
-                    <button onclick="document.getElementById('timeout-modal').close()" 
-                            class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
                         Cancel
                     </button>
                 </div>
@@ -803,9 +815,86 @@
         </div>
     </div>
 </div>
+
+<!-- Session Renewal Modal -->
+<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+    <div class="bg-[#1e1e1e] p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+        <!-- Header -->
+        <div class="mb-6 text-center">
+            <h2 class="text-2xl font-bold text-white">Membership Renewal</h2>
+            <p class="text-gray-400 mt-1">Please confirm your session membership details</p>
+        </div>
+        
+        <!-- Divider -->
+        <div class="border-b border-gray-700 mb-6"></div>
+        
+        <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
+            @csrf
+            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+            <input type="hidden" name="membership_type" value="1">
+            <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
+            <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
+            <input type="hidden" name="amount" value="60">
+            
+            <!-- Membership Details Card -->
+            <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
+                <div class="space-y-3">
+                    <!-- User ID -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-400 text-sm">RFID UID</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Membership Type -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-400 text-sm">Type</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-white">Session</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Dates -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-400 text-sm">Period</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-white">{{ now()->format('M d, Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div class="flex items-center">
+                        <div class="w-1/3">
+                            <span class="text-gray-400 text-sm">Amount</span>
+                        </div>
+                        <div class="w-2/3">
+                            <span class="font-medium text-white text-lg">₱60.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="flex space-x-4 mt-8">
+                <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
+                    Cancel
+                </button>
+                <button type="submit" class="w-1/2 py-3 bg-[#FF5722] hover:bg-[#e64a19] text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
+                    <span>Confirm Payment</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-       
-    // Wait for DOM to be fully loaded
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all components
         initNavigation();
@@ -813,8 +902,13 @@
         initParallaxEffect();
         initCarousel();
         initSessionHandling();
-        initWorkoutTimer();
         initPhoneAnimation();
+        initTimeoutHandling();
+        initModals();
+        initTimeoutHandlingComplete();
+        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+        initWorkoutTimer();
+        @endif
     });
 
     /**
@@ -823,8 +917,13 @@
     function initNavigation() {
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
-        if (mobileMenuButton) {
-            mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+                mobileMenu.classList.toggle('animate-slideDown');
+            });
         }
         
         // Smooth scroll for all anchor links
@@ -839,7 +938,6 @@
                     });
                     
                     // Close mobile menu if open
-                    const mobileMenu = document.getElementById('mobile-menu');
                     if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
                         mobileMenu.classList.add('hidden');
                     }
@@ -849,36 +947,36 @@
     }
 
     /**
-     * Toggle mobile menu visibility
-     */
-    function toggleMobileMenu() {
-        const mobileMenu = document.getElementById('mobile-menu');
-        mobileMenu.classList.toggle('hidden');
-        mobileMenu.classList.toggle('animate-slideDown');
-    }
-
-    /**
      * Profile modal handling
      */
     function initProfile() {
-        // Initialize profile links in mobile menu
+        const profileModal = document.getElementById('profile-modal');
+        if (!profileModal) return;
+        
+        // Initialize profile links
         document.querySelectorAll('[onclick="toggleProfile()"]').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 toggleProfile();
+                
                 // Close mobile menu if open
                 const mobileMenu = document.getElementById('mobile-menu');
                 if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                    toggleMobileMenu();
+                    mobileMenu.classList.add('hidden');
                 }
             });
         });
         
         // Add event listener to close modal when clicking outside
-        const modalOverlay = document.querySelector('#profile-modal .absolute.inset-0');
+        const modalOverlay = profileModal.querySelector('.absolute.inset-0');
         if (modalOverlay) {
             modalOverlay.addEventListener('click', hideProfile);
         }
+        
+        // Replace inline onclick with proper event listeners
+        window.toggleProfile = toggleProfile;
+        window.showProfile = showProfile;
+        window.hideProfile = hideProfile;
     }
 
     /**
@@ -886,6 +984,8 @@
      */
     function showProfile() {
         const modal = document.getElementById('profile-modal');
+        if (!modal) return;
+        
         modal.classList.remove('hidden');
         // Add active class to trigger animation
         setTimeout(() => {
@@ -894,379 +994,563 @@
         }, 10);
     }
 
-/**
- * Hide profile modal with animation
- */
-function hideProfile() {
-    const modal = document.getElementById('profile-modal');
-    modal.classList.remove('active');
-    modal.classList.add('opacity-0', 'invisible');
-    // Add a delay before hiding to allow animation to complete
-    setTimeout(() => {
-        modal.classList.add('hidden');
-    }, 300);
-}
-
-/**
- * Toggle profile modal visibility
- */
-function toggleProfile() {
-    const modal = document.getElementById('profile-modal');
-    if (modal.classList.contains('hidden') || modal.classList.contains('invisible')) {
-        showProfile();
-    } else {
-        hideProfile();
+    /**
+     * Hide profile modal with animation
+     */
+    function hideProfile() {
+        const modal = document.getElementById('profile-modal');
+        if (!modal) return;
+        
+        modal.classList.remove('active');
+        modal.classList.add('opacity-0', 'invisible');
+        // Add a delay before hiding to allow animation to complete
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
     }
-}
 
-/**
- * Parallax background effect
- */
-function initParallaxEffect() {
-    const parallaxBg = document.getElementById('parallax-bg');
-    
-    if (parallaxBg) {
-        // Check if device is mobile
-        const isMobile = 'ontouchstart' in window;
+    /**
+     * Toggle profile modal visibility
+     */
+    function toggleProfile() {
+        const modal = document.getElementById('profile-modal');
+        if (!modal) return;
         
-        // Set the parallax speed based on device type
-        const parallaxSpeed = isMobile ? 0.2 : 0.5;
+        if (modal.classList.contains('hidden') || modal.classList.contains('invisible')) {
+            showProfile();
+        } else {
+            hideProfile();
+        }
+    }
+
+    /**
+     * Parallax background effect
+     */
+    function initParallaxEffect() {
+        const parallaxBg = document.getElementById('parallax-bg');
         
-        // Add scroll event listener
-        window.addEventListener('scroll', function() {
-            // Get the current scroll position
-            const scrolled = window.pageYOffset;
+        if (parallaxBg) {
+            // Check if device is mobile
+            const isMobile = 'ontouchstart' in window;
             
-            // Apply the parallax effect
-            parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
-        });
+            // Set the parallax speed based on device type
+            const parallaxSpeed = isMobile ? 0.2 : 0.5;
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', function() {
+                // Get the current scroll position
+                const scrolled = window.pageYOffset;
+                
+                // Apply the parallax effect
+                parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
+            });
+        }
     }
-}
 
-/**
- * Image carousel functionality
- */
-function initCarousel() {
-    const carousel = document.getElementById('gym-carousel');
-    
-    if (!carousel) return;
-    
-    const slides = carousel.children;
-    const dots = document.querySelectorAll('.carousel-dot');
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
-    let currentIndex = 0;
-    let intervalId;
-    
-    // Set initial position
-    updateCarousel();
-    
-    // Auto-scroll every 5 seconds
-    startAutoSlide();
-    
-    // Previous button
-    if (prevBtn) {
-        prevBtn.addEventListener('click', function() {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-            updateCarousel();
-            resetAutoSlide();
-        });
-    }
-    
-    // Next button
-    if (nextBtn) {
-        nextBtn.addEventListener('click', function() {
-            nextSlide();
-            resetAutoSlide();
-        });
-    }
-    
-    // Dot navigation
-    dots.forEach(dot => {
-        dot.addEventListener('click', function() {
-            currentIndex = parseInt(this.getAttribute('data-index'));
-            updateCarousel();
-            resetAutoSlide();
-        });
-    });
-    
-    // Pause auto-scrolling when hovering over carousel
-    carousel.addEventListener('mouseenter', function() {
-        clearInterval(intervalId);
-    });
-    
-    // Resume auto-scrolling when mouse leaves carousel
-    carousel.addEventListener('mouseleave', function() {
-        startAutoSlide();
-    });
-    
-    function nextSlide() {
-        currentIndex = (currentIndex + 1) % slides.length;
+    /**
+     * Image carousel functionality
+     */
+    function initCarousel() {
+        const carousel = document.getElementById('gym-carousel');
+        
+        if (!carousel) return;
+        
+        const slides = carousel.children;
+        const dots = document.querySelectorAll('.carousel-dot');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        let currentIndex = 0;
+        let intervalId;
+        
+        // Set initial position
         updateCarousel();
-    }
-    
-    function updateCarousel() {
-        carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
         
-        // Update active dot
-        dots.forEach((dot, index) => {
-            if (index === currentIndex) {
-                dot.classList.add('active', 'opacity-100');
-                dot.classList.remove('opacity-50');
-            } else {
-                dot.classList.remove('active', 'opacity-100');
-                dot.classList.add('opacity-50');
-            }
-        });
-    }
-    
-    function startAutoSlide() {
-        intervalId = setInterval(nextSlide, 5000);
-    }
-    
-    function resetAutoSlide() {
-        clearInterval(intervalId);
+        // Auto-scroll every 5 seconds
         startAutoSlide();
-    }
-}
-
-/**
- * Session and registration handling
- */
-function initSessionHandling() {
-    const registerButton = document.getElementById('register-button');
-    const timeoutButton = document.getElementById('timeout-button');
-    const timeoutModal = document.getElementById('timeout-modal');
-    
-    // Check session status
-    if (sessionStorage.getItem('registered') && registerButton) {
-        registerButton.style.display = 'none';
-    }
-    
-    if (sessionStorage.getItem('timed_out') && registerButton) {
-        registerButton.style.display = 'inline-block';
-    }
-    
-    // Registration button click handler
-    if (registerButton) {
-        registerButton.addEventListener('click', function() {
-            sessionStorage.setItem('registered', true);
-            registerButton.style.display = 'none';
-        });
-    }
-    
-    // Timeout button click handler
-    if (timeoutButton) {
-        timeoutButton.addEventListener('click', function() {
-            sessionStorage.removeItem('registered');
-            sessionStorage.setItem('timed_out', true);
-            if (registerButton) registerButton.style.display = 'inline-block';
-        });
         
-        // Handle session timeout state
-        const sessionHasTimedOut = false; // This should be set by your app logic
-        if (sessionHasTimedOut) {
-            timeoutButton.style.display = 'none';
+        // Previous button
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+                updateCarousel();
+                resetAutoSlide();
+            });
         }
-    }
-    
-    // Timeout form submission handler
-    const timeoutForm = timeoutModal ? timeoutModal.querySelector('form') : null;
-    if (timeoutForm) {
-        timeoutForm.addEventListener('submit', function() {
-            if (timeoutButton) timeoutButton.style.display = 'none';
-        });
-    }
-}
-
-/**
- * Workout timer functionality
- */
-function initWorkoutTimer() {
-    // Check if we have the necessary elements
-    const timerElement = document.getElementById('workout-duration');
-    const mobileTimerElement = document.getElementById('mobile-workout-duration');
-    
-    if (!timerElement && !mobileTimerElement) return;
-    
-    // This would normally be set by PHP/Laravel
-    const isUserLoggedIn = false; // Replace with actual logic
-    const hasRfidUid = false; // Replace with actual logic
-    const isTimedOut = false; // Replace with actual logic
-    const checkInTime = new Date(); // Replace with actual check-in time
-    
-    // Only initialize timer if user is logged in with proper conditions
-    if (isUserLoggedIn && hasRfidUid && !isTimedOut) {
-        // Update timer every second
-        setInterval(function() {
-        const now = new Date();
-        const duration = Math.floor((now - checkInTime) / 1000); // Duration in seconds
-
-        // Calculate hours, minutes, seconds
-        const hours = Math.floor(duration / 3600);
-        const minutes = Math.floor((duration % 3600) / 60);
-        const seconds = duration % 60;
-
-        // Format time as HH:MM:SS
-        const formattedTime = 
-            String(hours).padStart(2, '0') + ":" + 
-            String(minutes).padStart(2, '0') + ":" + 
-            String(seconds).padStart(2, '0');
-
-        // Update timer display
-        if (timerElement) timerElement.textContent = formattedTime;
-        if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-
-        // Highlight duration if it's over 2 hours
-        if (hours >= 2) {
-            if (timerElement) timerElement.classList.add('text-red-400');
-            if (mobileTimerElement) mobileTimerElement.classList.add('text-red-400');
+        
+        // Next button
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                nextSlide();
+                resetAutoSlide();
+            });
         }
-    }, 1000);
-    }
-}
-
-/**
- * Phone animation functionality
- */
-function initPhoneAnimation() {
-    const phone1 = document.getElementById('phone1');
-    const phone2 = document.getElementById('phone2');
-    const container = document.getElementById('phone-container');
-    
-    if (!phone1 || !phone2 || !container) return;
-    
-    // Run the animation on load
-    runAnimation();
-}
-
-/**
- * Run the phone animation sequence
- */
-function runAnimation() {
-    const phone1 = document.getElementById('phone1');
-    const phone2 = document.getElementById('phone2');
-    const container = document.getElementById('phone-container');
-    
-    if (!phone1 || !phone2 || !container) return;
-    
-    // Reset animation state
-    container.classList.add('hide-images');
-    phone1.classList.remove('slide-from-right');
-    phone2.classList.remove('slide-from-left');
-    
-    // Force browser reflow to ensure animation can run again
-    void phone1.offsetWidth;
-    
-    // Start animation after a brief delay
-    setTimeout(() => {
-        container.classList.remove('hide-images');
-        phone1.classList.add('slide-from-right');
-        phone2.classList.add('slide-from-left');
-    }, 50);
-}
-</script>
-<!-- Improved Membership Renewal Modal -->
-<div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 hidden">
-    <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all">
-        <!-- Header -->
-        <div class="mb-6 text-center">
-            <h2 class="text-2xl font-bold text-gray-800">Membership Renewal</h2>
-            <p class="text-gray-600 mt-1">Please confirm your annual membership details</p>
-        </div>
         
-        <!-- Divider -->
-        <div class="border-b border-gray-200 mb-6"></div>
+        // Dot navigation
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', function() {
+                currentIndex = parseInt(this.getAttribute('data-index') || index);
+                updateCarousel();
+                resetAutoSlide();
+            });
+        });
         
-        <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
-            @csrf
-            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-            <input type="hidden" name="membership_type" value="1">
-            <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-            <input type="hidden" name="end_date" value="{{ now()->addYear()->toDateString() }}">
-            <input type="hidden" name="amount" value="60">
+        // Pause auto-scrolling when hovering over carousel
+        carousel.addEventListener('mouseenter', function() {
+            clearInterval(intervalId);
+        });
+        
+        // Resume auto-scrolling when mouse leaves carousel
+        carousel.addEventListener('mouseleave', function() {
+            startAutoSlide();
+        });
+        
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % slides.length;
+            updateCarousel();
+        }
+        
+        function updateCarousel() {
+            carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
             
-            <!-- Membership Details Card -->
-            <div class="bg-gray-50 p-5 rounded-lg mb-6">
-                <div class="space-y-3">
-                    <!-- User ID -->
-                    <div class="flex items-center">
-                        <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">RFID UID</span>
-                        </div>
-                        <div class="w-2/3">
-                            <span class="font-medium text-gray-800">{{ auth()->user()->rfid_uid }}</span>
-                        </div>
-                    </div>
+            // Update active dot
+            dots.forEach((dot, index) => {
+                if (index === currentIndex) {
+                    dot.classList.add('active', 'opacity-100');
+                    dot.classList.remove('opacity-50');
+                } else {
+                    dot.classList.remove('active', 'opacity-100');
+                    dot.classList.add('opacity-50');
+                }
+            });
+        }
+        
+        function startAutoSlide() {
+            intervalId = setInterval(nextSlide, 5000);
+        }
+        
+        function resetAutoSlide() {
+            clearInterval(intervalId);
+            startAutoSlide();
+        }
+    }
+
+    /**
+     * Session and registration handling
+     */
+    function initSessionHandling() {
+        const registerButton = document.getElementById('register-button');
+        const timeoutButton = document.getElementById('timeout-button');
+        const checkinButton = document.getElementById('checkin-button');
+        
+        // Check session status
+        if (sessionStorage.getItem('registered') && registerButton) {
+            registerButton.style.display = 'none';
+        }
+        
+        if (sessionStorage.getItem('timed_out') && registerButton) {
+            registerButton.style.display = 'inline-block';
+        }
+        
+        // Registration button click handler
+        if (registerButton) {
+            registerButton.addEventListener('click', function() {
+                sessionStorage.setItem('registered', true);
+                registerButton.style.display = 'none';
+            });
+        }
+        
+        // Timeout button click handler - REMOVE automatic hiding of elements
+        if (timeoutButton) {
+            timeoutButton.addEventListener('click', function() {
+                // We're ONLY opening the modal here, not hiding elements
+                document.getElementById('timeout-modal').showModal();
+                
+                // REMOVED: Don't modify sessionStorage or hide button here
+                // sessionStorage.removeItem('registered');
+                // sessionStorage.setItem('timed_out', true);
+                // if (registerButton) registerButton.style.display = 'inline-block';
+                // if (timeoutButton) timeoutButton.style.display = 'none';
+                // if (checkinButton) checkinButton.style.display = '';
+                // stopWorkoutTimer();
+            });
+        }
+        
+        // Initialize check-in button if it exists
+        if (checkinButton) {
+            checkinButton.addEventListener('click', handleCheckin);
+        }
+    }
+
+    /**
+     * Handle user check-in
+     */
+    function handleCheckin() {
+        // AJAX check-in logic would go here
+        sessionStorage.removeItem('timed_out');
+        const checkinButton = document.getElementById('checkin-button');
+        const timeoutButton = document.getElementById('timeout-button');
+        
+        if (checkinButton) checkinButton.style.display = 'none';
+        if (timeoutButton) timeoutButton.style.display = '';
+        
+        // Reset and start the timer
+        initWorkoutTimer();
+        showNotification('Success', 'You have successfully checked in.', 'success');
+    }
+
+    /**
+     * Initialize timeout handling
+     */
+    function initTimeoutHandling() {
+        const timeoutModal = document.getElementById('timeout-modal');
+        const timeoutForm = document.getElementById('timeout-form');
+        const timeoutSubmitBtn = document.getElementById('timeout-submit-btn');
+        
+        if (!timeoutForm) return;
+
+        // The issue is here - we need to make sure the button and timer remain
+        // visible until the user confirms the timeout in the modal
+        
+        timeoutForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            if (timeoutSubmitBtn) {
+                timeoutSubmitBtn.disabled = true;
+                timeoutSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+            }
+
+            // Get form data
+            const formData = new FormData(this);
+            
+            // Send AJAX request
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Close the modal
+                    if (timeoutModal && typeof timeoutModal.close === 'function') {
+                        timeoutModal.close();
+                    }
                     
-                    <!-- Membership Type -->
-                    <div class="flex items-center">
-                        <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Type</span>
-                        </div>
-                        <div class="w-2/3">
-                            <span class="font-medium text-gray-800">Session</span>
-                        </div>
-                    </div>
+                    // Only hide elements after successful timeout confirmation
+                    // Stop the workout timer
+                    if (typeof stopWorkoutTimer === 'function') {
+                        stopWorkoutTimer();
+                    }
                     
-                    <!-- Dates -->
-                    <div class="flex items-center">
-                        <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Period</span>
-                        </div>
-                        <div class="w-2/3">
-                            <span class="font-medium text-gray-800">{{ now()->format('M d, Y') }} - {{ now()->format('M d, Y') }}</span>
-                        </div>
-                    </div>
+                    // Hide the timeout button (both desktop and mobile)
+                    const timeoutButtons = document.querySelectorAll('#timeout-button, [onclick*="timeout-modal"]');
+                    timeoutButtons.forEach(button => {
+                        if (button) button.style.display = 'none';
+                    });
                     
-                    <!-- Amount -->
-                    <div class="flex items-center">
-                        <div class="w-1/3">
-                            <span class="text-gray-500 text-sm">Amount</span>
-                        </div>
-                        <div class="w-2/3">
-                            <span class="font-medium text-gray-800 text-lg">₱60.00</span>
-                        </div>
-                    </div>
+                    // Hide the timer elements
+                    const timerElements = [
+                        document.getElementById('workout-duration')?.parentElement,
+                        document.getElementById('mobile-workout-duration')?.parentElement?.parentElement
+                    ].filter(el => el);
+                    
+                    timerElements.forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    
+                    // Show success message
+                    showNotification('Success', 'You have successfully timed out.', 'success');
+                    
+                    // Reload the page after 2 seconds to ensure UI consistency
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    // Show error message
+                    showNotification('Error', data.message || 'Failed to time out. Please try again.', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('Error', 'An error occurred while processing your request.', 'error');
+            })
+            .finally(() => {
+                // Reset button state
+                if (timeoutSubmitBtn) {
+                    timeoutSubmitBtn.disabled = false;
+                    timeoutSubmitBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
+                }
+            });
+        });
+    }
+
+    /**
+     * Show a notification message
+     */
+    function showNotification(title, message, type = 'info') {
+        // Create or use existing notification system
+        // This is a simple implementation - you might want to use a library like Toastr or SweetAlert2
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+            type === 'success' ? 'bg-green-500' : 
+            type === 'error' ? 'bg-red-500' : 
+            'bg-blue-500'
+        } text-white transform transition-all duration-300`;
+        
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <div class="mr-3">
+                    ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                    type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                    '<i class="fas fa-info-circle"></i>'}
+                </div>
+                <div>
+                    <h4 class="font-bold">${title}</h4>
+                    <p>${message}</p>
                 </div>
             </div>
-            
-            <!-- Action Buttons -->
-            <div class="flex space-x-4 mt-8">
-                <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition duration-200">
-                    Cancel
-                </button>
-                <button type="submit" class="w-1/2 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
-                    <span>Confirm Payment</span>
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    // Modal functions (unchanged)
-    function closeRenewModal() {
-        document.getElementById('renewModal').classList.add('hidden');
-    }
-    
-    function openRenewModal() {
-        document.getElementById('renewModal').classList.remove('hidden');
-    }
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('renewModal');
-        const modalContent = modal.querySelector('div');
+        `;
         
-        modal.addEventListener('transitionend', function() {
-            if (modal.classList.contains('hidden')) {
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            notification.remove();
+        }, 5000);
+    }
+
+    /**
+     * Workout timer functionality
+     */
+    function initWorkoutTimer() {
+        // Check if we have the necessary elements
+        const timerElement = document.getElementById('workout-duration');
+        const mobileTimerElement = document.getElementById('mobile-workout-duration');
+        
+        if (!timerElement && !mobileTimerElement) return;
+        
+        // Get the initial time from server (passed from controller)
+        let timeIn = new Date("{{ $attendance->time_in ?? '' }}").getTime();
+        let timeOut = null;
+        
+        let timerInterval;
+        
+        // Format time as HH:MM:SS
+        function formatTime(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = Math.floor(totalSeconds % 60);
+            
+            return [
+                hours.toString().padStart(2, '0'),
+                minutes.toString().padStart(2, '0'),
+                seconds.toString().padStart(2, '0')
+            ].join(':');
+        }
+        
+        // Update timer display
+        function updateTimerDisplay() {
+            const currentTime = new Date().getTime();
+            let elapsedTime;
+            
+            if (timeOut) {
+                // If session is completed (has time_out)
+                elapsedTime = Math.floor((timeOut - timeIn) / 1000);
+            } else if (timeIn) {
+                // Session is still active
+                elapsedTime = Math.floor((currentTime - timeIn) / 1000);
+            } else {
+                // No active session
+                elapsedTime = 0;
+            }
+            
+            const formattedTime = formatTime(elapsedTime);
+            
+            // Update display
+            if (timerElement) {
+                timerElement.textContent = formattedTime;
+                
+                // Highlight duration if it's over 2 hours
+                if (elapsedTime >= 7200) { // 2 hours = 7200 seconds
+                    timerElement.classList.add('text-red-400');
+                } else {
+                    timerElement.classList.remove('text-red-400');
+                }
+            }
+            
+            if (mobileTimerElement) {
+                mobileTimerElement.textContent = formattedTime;
+                
+                if (elapsedTime >= 7200) {
+                    mobileTimerElement.classList.add('text-red-400');
+                } else {
+                    mobileTimerElement.classList.remove('text-red-400');
+                }
+            }
+        }
+        
+        // Only initialize timer if we have valid time_in and not timed out
+        if (timeIn) {
+            // Initial update
+            updateTimerDisplay();
+            
+            // Continue updating if session is active
+            if (!timeOut) {
+                timerInterval = setInterval(updateTimerDisplay, 1000);
+            }
+        } else {
+            // Display 00:00:00 for timed out or no attendance
+            if (timerElement) timerElement.textContent = '00:00:00';
+            if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
+        }
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+        });
+        
+        // Expose stopWorkoutTimer function globally
+        window.stopWorkoutTimer = function() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            
+            // Set timeOut to current time to freeze the timer
+            timeOut = new Date().getTime();
+            
+            // Final update
+            updateTimerDisplay();
+            
+            // NOTE: We've removed the lines that hide timer elements here
+            // Instead, we hide them only after successful confirmation in the timeout form handler
+        };
+    }
+
+    // Handle timeout
+    function handleTimeout() {
+        // REMOVED: Don't stop timer or hide buttons immediately
+        // stopWorkoutTimer();
+        // const timeoutButton = document.getElementById('timeout-button');
+        // if (timeoutButton) {
+        //     timeoutButton.style.display = 'none';
+        // }
+        
+        // Instead, just open the confirmation modal
+        const timeoutModal = document.getElementById('timeout-modal');
+        if (timeoutModal) {
+            timeoutModal.showModal();
+        }
+        
+        // The actual timeout actions will happen after form submission
+        // and successful server response
+    }
+
+    /**
+     * Complete initialization by adding event listeners
+     */
+    function initTimeoutHandlingComplete() {
+        // Make sure the timeout button doesn't have inline onclick attributes
+        // that could be causing issues
+        const timeoutButtons = document.querySelectorAll('[id="timeout-button"]');
+        timeoutButtons.forEach(button => {
+            // Remove any existing click handlers
+            button.onclick = null;
+            
+            // Add proper event listener
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                const timeoutModal = document.getElementById('timeout-modal');
+                if (timeoutModal) {
+                    timeoutModal.showModal();
+                }
+            });
+        });
+    }
+
+    // Renewal modal handling
+    function checkRenewalEligibility() {
+        @if(isset($attendance) && !$attendance->time_out)
+            showNotification('Error', 'You must time out before renewing your membership.', 'error');
+            return false;
+        @else
+            openRenewModal();
+            return true;
+        @endif
+    }
+
+    /**
+     * Phone animation functionality
+     */
+    function initPhoneAnimation() {
+        const phone1 = document.getElementById('phone1');
+        const phone2 = document.getElementById('phone2');
+        const container = document.getElementById('phone-container');
+        
+        if (!phone1 || !phone2 || !container) return;
+        
+        // Run the animation on load
+        runAnimation();
+        
+        // Make the function globally available
+        window.runAnimation = runAnimation;
+    }
+
+    /**
+     * Run the phone animation sequence
+     */
+    function runAnimation() {
+        const phone1 = document.getElementById('phone1');
+        const phone2 = document.getElementById('phone2');
+        const container = document.getElementById('phone-container');
+        
+        if (!phone1 || !phone2 || !container) return;
+        
+        // Reset animation state
+        container.classList.add('hide-images');
+        phone1.classList.remove('slide-from-right');
+        phone2.classList.remove('slide-from-left');
+        
+        // Force browser reflow to ensure animation can run again
+        void phone1.offsetWidth;
+        
+        // Start animation after a brief delay
+        setTimeout(() => {
+            container.classList.remove('hide-images');
+            phone1.classList.add('slide-from-right');
+            phone2.classList.add('slide-from-left');
+        }, 50);
+    }
+
+    /**
+     * Modal handling
+     */
+    function initModals() {
+        const renewModal = document.getElementById('renewModal');
+        if (!renewModal) return;
+        
+        const modalContent = renewModal.querySelector('div');
+        
+        renewModal.addEventListener('transitionend', function() {
+            if (renewModal.classList.contains('hidden')) {
                 modalContent.classList.remove('scale-100');
                 modalContent.classList.add('scale-95', 'opacity-0');
             }
         });
         
+        // Make these functions available globally
         window.openRenewModal = function() {
-            modal.classList.remove('hidden');
+            renewModal.classList.remove('hidden');
             setTimeout(() => {
                 modalContent.classList.remove('scale-95', 'opacity-0');
                 modalContent.classList.add('scale-100', 'opacity-100');
@@ -1277,94 +1561,63 @@ function runAnimation() {
             modalContent.classList.remove('scale-100', 'opacity-100');
             modalContent.classList.add('scale-95', 'opacity-0');
             setTimeout(() => {
-                modal.classList.add('hidden');
+                renewModal.classList.add('hidden');
             }, 300);
         };
+    }
 
-        // Workout Timer Functionality - Modified to start only after registration
-        const workoutDurationElement = document.getElementById('workout-duration');
-        const mobileWorkoutDurationElement = document.getElementById('mobile-workout-duration');
-
-        // Get attendance data passed from controller
-        const attendance = @json($attendance ?? null);
-        const isTimedOut = {{ session('timed_out') ? 'true' : 'false' }};
-        
-        let timerInterval;
-        
-        // Only start timer if user has attendance record and is not timed out
-        if (attendance && !isTimedOut) {
-            const timeIn = new Date('{{ $attendance->time_in ?? null }}').getTime();
-            let timeOut = attendance.time_out ? new Date(attendance.time_out).getTime() : null;
-            
-            function formatTime(totalSeconds) {
-                const hours = Math.floor(totalSeconds / 3600);
-                const minutes = Math.floor((totalSeconds % 3600) / 60);
-                const seconds = Math.floor(totalSeconds % 60);
-                
-                return [
-                    hours.toString().padStart(2, '0'),
-                    minutes.toString().padStart(2, '0'),
-                    seconds.toString().padStart(2, '0')
-                ].join(':');
-            }
-            
-            function updateTimerDisplay() {
-                const currentTime = new Date().getTime();
-                let elapsedTime;
-                
-                if (timeOut) {
-                    // If session is completed (has time_out)
-                    elapsedTime = Math.floor((timeOut - timeIn) / 1000);
-                } else {
-                    // Session is still active
-                    elapsedTime = Math.floor((currentTime - timeIn) / 1000);
-                }
-                
-                const formattedTime = formatTime(elapsedTime);
-                
-                if (workoutDurationElement) {
-                    workoutDurationElement.textContent = formattedTime;
-                }
-                
-                if (mobileWorkoutDurationElement) {
-                    mobileWorkoutDurationElement.textContent = formattedTime;
-                }
-            }
-            
-            // Initial update
-            updateTimerDisplay();
-            
-            // Only continue updating if session is still active
-            if (!timeOut && !isTimedOut) {
-                timerInterval = setInterval(updateTimerDisplay, 1000);
-            }
-            
-            // Clean up on page unload
-            window.addEventListener('beforeunload', function() {
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                }
-            });
-            
-            // Function to manually stop the timer (if needed)
-            window.stopWorkoutTimer = function() {
-                if (timerInterval) {
-                    clearInterval(timerInterval);
-                }
-                updateTimerDisplay(); // Final update
-            };
-        } else {
-            // No attendance or timed out - show 00:00:00
-            if (workoutDurationElement) {
-                workoutDurationElement.textContent = '00:00:00';
-            }
-            if (mobileWorkoutDurationElement) {
-                mobileWorkoutDurationElement.textContent = '00:00:00';
-            }
+    /**
+     * Show a notification message
+     */
+    function showNotification(title, message, type = 'info') {
+        // Create notification element if it doesn't exist
+        let notification = document.getElementById('notification');
+        if (!notification) {
+            notification = document.createElement('div');
+            notification.id = 'notification';
+            notification.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
+            document.body.appendChild(notification);
         }
-    });
-</script>
+        
+        // Set notification type styling
+        const bgColor = type === 'success' ? 'bg-green-500' : 
+                    type === 'error' ? 'bg-red-500' : 
+                    'bg-blue-500';
+        
+        notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${bgColor} text-white transform transition-all duration-300`;
+        
+        // Set content
+        notification.innerHTML = `
+            <div class="flex items-center">
+                <div class="mr-3">
+                    ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
+                    type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
+                    '<i class="fas fa-info-circle"></i>'}
+                </div>
+                <div>
+                    <h4 class="font-bold">${title}</h4>
+                    <p>${message}</p>
+                </div>
+                <button onclick="this.parentElement.parentElement.classList.add('translate-x-full')" class="ml-4">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        // Show notification
+        setTimeout(() => {
+            notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // Auto hide after 5 seconds
+        setTimeout(() => {
+            notification.classList.add('translate-x-full');
+        }, 5000);
+    }
 
+    // Make sure we expose necessary functions to the global scope
+    window.showNotification = showNotification;
+</script>
 </body>
 </html>
 

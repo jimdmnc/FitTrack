@@ -1,6 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('error'))
+    <div id="flashMessage" class="fixed top-4 right-4 z-50 max-w-md p-4 mb-4 border-l-4 border-red-500 bg-red-900 text-red-100 rounded-lg shadow-lg" role="alert">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 mr-3">
+                <svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium">{{ session('error') }}</p>
+            </div>
+        </div>
+        <button type="button" class="absolute top-2 right-2 text-red-300 hover:text-white" onclick="this.parentElement.remove()">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <script>
+        setTimeout(function() {
+            const flashMessage = document.getElementById('flashMessage');
+            if (flashMessage) {
+                flashMessage.style.opacity = '0';
+                flashMessage.style.transform = 'translateY(-10px)';
+                setTimeout(() => flashMessage.remove(), 300);
+            }
+        }, 5000);
+    </script>
+@endif
+
+@if(session('success'))
+    <div id="flashMessage" class="fixed top-4 right-4 z-50 max-w-md p-4 mb-4 border-l-4 border-green-500 bg-green-900 text-green-100 rounded-lg shadow-lg" role="alert">
+        <div class="flex items-center">
+            <div class="flex-shrink-0 mr-3">
+                <svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            <div>
+                <p class="text-sm font-medium">{{ session('success') }}</p>
+            </div>
+        </div>
+        <button type="button" class="absolute top-2 right-2 text-green-300 hover:text-white" onclick="this.parentElement.remove()">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <script>
+        setTimeout(function() {
+            const flashMessage = document.getElementById('flashMessage');
+            if (flashMessage) {
+                flashMessage.style.opacity = '0';
+                flashMessage.style.transform = 'translateY(-10px)';
+                setTimeout(() => flashMessage.remove(), 300);
+            }
+        }, 5000);
+    </script>
+@endif
+
+<style>
+    #flashMessage {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+</style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
@@ -595,31 +660,38 @@
 
         // Validate report type
         if (!['members', 'payments'].includes(selectedType)) {
-            alert('Please select a valid report type');
+            showAlert('Please select a valid report type', 'error');
             return;
         }
 
         // Validate custom date range
         if (selectedFilter === 'custom') {
             if (!startDateValue || !endDateValue) {
-                alert('Please select both start and end dates');
+                showAlert('Please select both start and end dates', 'error');
                 return;
             }
 
             if (new Date(startDateValue) > new Date(today)) {
-                alert('Start date cannot be in the future');
+                showAlert('Start date cannot be in the future', 'error');
                 return;
             }
 
             if (new Date(endDateValue) > new Date(today)) {
-                alert('End date cannot be in the future');
+                showAlert('End date cannot be in the future', 'error');
                 return;
             }
 
             if (new Date(endDateValue) < new Date(startDateValue)) {
-                alert('End date cannot be before start date');
+                showAlert('End date cannot be before start date', 'error');
                 return;
             }
+        }
+
+        // Check if there's data available based on the current filters
+        const isDataAvailable = checkDataAvailability(selectedType);
+        if (!isDataAvailable) {
+            showAlert('No data available for the selected filters. Please adjust your filters and try again.', 'warning');
+            return;
         }
 
         // Build the URL
@@ -638,6 +710,131 @@
         window.location.href = url.toString();
     });
 
+    // Function to check if there's data available for the selected report type and filters
+    function checkDataAvailability(reportType) {
+        if (reportType === 'members') {
+            // For members report, check if there are visible rows in the members table
+            const visibleRows = Array.from(document.querySelectorAll('#membersTableBody tr:not(.hidden)'))
+                .filter(row => !row.id.includes('NoResults'));
+            return visibleRows.length > 0;
+        } else if (reportType === 'payments') {
+            // For payments report, check if there are visible rows in the payments table
+            const visibleRows = Array.from(document.querySelectorAll('#paymentsTableBody tr:not(.hidden)'))
+                .filter(row => !row.id.includes('NoResults'));
+            return visibleRows.length > 0;
+        }
+        return false;
+    }
+
+    // Function to show alert messages to the user
+    function showAlert(message, type = 'info') {
+        // Create alert container if it doesn't exist
+        let alertContainer = document.getElementById('alertContainer');
+        if (!alertContainer) {
+            alertContainer = document.createElement('div');
+            alertContainer.id = 'alertContainer';
+            alertContainer.className = 'fixed bottom-4 right-4 z-50 max-w-md';
+            document.body.appendChild(alertContainer);
+        }
+
+        // Create the alert element
+        const alertElement = document.createElement('div');
+        alertElement.className = `mb-3 p-4 rounded-lg shadow-lg flex items-center justify-between transition-all transform translate-y-0 opacity-100 ${getAlertClasses(type)}`;
+        
+        // Set the icon based on alert type
+        const icon = getAlertIcon(type);
+        
+        // Create alert content
+        alertElement.innerHTML = `
+            <div class="flex items-center">
+                <div class="flex-shrink-0 mr-3">
+                    ${icon}
+                </div>
+                <div>
+                    <p class="text-sm font-medium">${message}</p>
+                </div>
+            </div>
+            <button class="ml-4 text-gray-400 hover:text-gray-600 focus:outline-none" onclick="this.parentElement.remove()">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+        
+        // Add to container
+        alertContainer.appendChild(alertElement);
+        
+        // Auto remove after delay
+        setTimeout(() => {
+            alertElement.classList.replace('translate-y-0', 'translate-y-2');
+            alertElement.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => alertElement.remove(), 300);
+        }, 5000);
+    }
+
+    // Check for flash messages and display them using the existing alert system
+    @if(session('error'))
+        showAlert("{{ session('error') }}", 'error');
+    @endif
+    
+    @if(session('warning'))
+        showAlert("{{ session('warning') }}", 'warning');
+    @endif
+    
+    @if(session('success'))
+        showAlert("{{ session('success') }}", 'success');
+    @endif
+    
+    @if(session('info'))
+        showAlert("{{ session('info') }}", 'info');
+    @endif
+
+    // Helper function to get the appropriate alert classes based on type
+    function getAlertClasses(type) {
+        switch (type) {
+            case 'error':
+                return 'bg-red-900 border-l-4 border-red-500 text-red-100';
+            case 'success':
+                return 'bg-green-900 border-l-4 border-green-500 text-green-100';
+            case 'warning':
+                return 'bg-yellow-900 border-l-4 border-yellow-500 text-yellow-100';
+            case 'info':
+            default:
+                return 'bg-blue-900 border-l-4 border-blue-500 text-blue-100';
+        }
+    }
+
+    // Helper function to get the appropriate alert icon based on type
+    function getAlertIcon(type) {
+        switch (type) {
+            case 'error':
+                return `<svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>`;
+            case 'success':
+                return `<svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>`;
+            case 'warning':
+                return `<svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>`;
+            case 'info':
+            default:
+                return `<svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>`;
+        }
+    }
+
+    // Add CSS for animations
+    const styleEl = document.createElement('style');
+    styleEl.textContent = `
+        #alertContainer > div {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    `;
+    document.head.appendChild(styleEl);
     // Reset filters button handler
     document.querySelectorAll('[onclick^="resetFilters"]').forEach(button => {
         button.addEventListener('click', function(e) {

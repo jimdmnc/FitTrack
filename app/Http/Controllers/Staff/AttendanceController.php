@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\GymEntry;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AttendanceController extends Controller
 {
@@ -133,56 +134,129 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Process user checkout
+     * Record a timeout for the user
      */
-    public function timeOut(Request $request)
+    public function timeout(Request $request)
     {
         try {
-            // Validate input
-            $request->validate([
-                'rfid_uid' => 'required|string',
-            ]);
-    
-            $rfid_uid = $request->input('rfid_uid');
-    
-            // Find the user with an approved session
-            $user = User::where('rfid_uid', $rfid_uid)->first();
-    
-            if (!$user) {
-                return back()->with('error', "User not found with RFID: $rfid_uid.");
-            }
-    
-            if ($user->session_status !== 'approved') {
-                return back()->with('error', "User $user->first_name is not approved.");
-            }
-    
-            // Find the latest attendance record using RFID UID
-            $attendance = Attendance::where('rfid_uid', $rfid_uid)
+            $rfidUid = $request->input('rfid_uid');
+            
+            // Find the latest attendance record for this user
+            $attendance = DB::table('attendances')
+                ->where('rfid_uid', $rfidUid)
                 ->whereNull('time_out')
-                ->latest('time_in')
+                ->orderBy('time_in', 'desc')
                 ->first();
-    
-            if (!$attendance) {
-                return back()->with('error', "Session Expired - You need to register again.");
+            
+            if ($attendance) {
+                // Update the attendance record with time_out
+                DB::table('attendances')
+                    ->where('id', $attendance->id)
+                    ->update([
+                        'time_out' => Carbon::now(),
+                    ]);
+                
+                // Set a session flag that the user has timed out
+                session(['timed_out' => true]);
+                
+                // Return JSON response for AJAX requests
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Timed out successfully',
+                        'timed_out' => true
+                    ]);
+                }
+                
+                // For non-AJAX requests, redirect back with success message
+                return redirect()->back()->with('success', 'You have successfully timed out.');
             }
-    
-            // Set the time_out
-            $attendance->update(['time_out' => Carbon::now()]);
-    
-            // Update session_status and member_status
-            $user->update([
-                'session_status' => 'pending',
-                'member_status' => 'expired',
+            
+            // No active attendance found
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No active session found'
+                ]);
+            }
+            
+            return redirect()->back()->with('error', 'No active session found.');
+            
+        } catch (\Exception $e) {
+            logger()->error('Attendance Timeout Error: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error processing timeout: ' . $e->getMessage()
+                ]);
+            }
+            
+            return redirect()->back()->with('error', 'Error processing timeout: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Record a check-in for the user
+     */
+    public function checkin(Request $request)
+    {
+        try {
+            $rfidUid = $request->input('rfid_uid');
+            
+            // Check if there's already an active attendance record
+            $activeAttendance = DB::table('attendances')
+                ->where('rfid_uid', $rfidUid)
+                ->whereNull('time_out')
+                ->whereDate('time_in', today())
+                ->first();
+                
+            if ($activeAttendance) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'You already have an active session'
+                    ]);
+                }
+                
+                return redirect()->back()->with('error', 'You already have an active session.');
+            }
+            
+            // Create new attendance record
+            $attendanceId = DB::table('attendances')->insertGetId([
+                'rfid_uid' => $rfidUid,
+                'time_in' => Carbon::now(),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
-    
-            \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Time-out recorded at " . now());
-    
-            return back()
-            ->with('success', "✅ Time-out recorded successfully for {$user->first_name}. Membership marked as expired.")
-            ->with('timed_out', true); 
-         } catch (\Exception $e) {
-            \Log::error("❌ Time-out error: " . $e->getMessage());
-            return back()->with('error', 'Error: ' . $e->getMessage());
+            
+            // Get the created attendance record
+            $attendance = DB::table('attendances')->find($attendanceId);
+            
+            // Clear the timed_out flag
+            session()->forget('timed_out');
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Checked in successfully',
+                    'attendance' => $attendance
+                ]);
+            }
+            
+            return redirect()->back()->with('success', 'You have successfully checked in.');
+            
+        } catch (\Exception $e) {
+            logger()->error('Attendance Check-in Error: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Error processing check-in: ' . $e->getMessage()
+                ]);
+            }
+            
+            return redirect()->back()->with('error', 'Error processing check-in: ' . $e->getMessage());
         }
     }
 
