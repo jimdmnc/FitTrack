@@ -90,7 +90,8 @@ class ReportController extends Controller
     
     // Validate the report type
     if (!in_array($type, ['members', 'payments'])) {
-        return response()->json(['error' => 'Invalid report type'], 400);
+        // Redirect back with error message instead of returning JSON
+        return redirect()->back()->with('error', 'Invalid report type selected.');
     }
 
     // Set the query based on the report type
@@ -133,7 +134,8 @@ class ReportController extends Controller
     $data = $query->get();
 
     if ($data->isEmpty()) {
-        return response()->json(['error' => 'No data found for the selected filters'], 404);
+        // Redirect back with error message instead of returning JSON
+        return redirect()->back()->with('warning', 'No data found for the selected filters. Please adjust your filter criteria and try again.');
     }
 
     // Prepare view data - ensure we use the correct variable names
@@ -147,21 +149,27 @@ class ReportController extends Controller
         'timezone' => $timezone,
     ];
 
-    // Select the correct view
-    $view = $type === 'members' ? 'reports.members_report' : 'reports.payments_report';
+    try {
+        // Select the correct view
+        $view = $type === 'members' ? 'reports.members_report' : 'reports.payments_report';
 
-    // Setup DOMPDF
-    $options = new Options();
-    $options->set('isHtml5ParserEnabled', true);
-    $options->set('isPhpEnabled', true);
+        // Setup DOMPDF
+        $options = new Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
 
-    $dompdf = new Dompdf($options);
-    $dompdf->loadHtml(view($view, $viewData)->render());
-    $dompdf->setPaper('A4', 'portrait');
-    $dompdf->render();
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml(view($view, $viewData)->render());
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
 
-    $filename = "{$type}_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
-    return $dompdf->stream($filename);
+        $filename = "{$type}_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
+        return $dompdf->stream($filename);
+    } catch (\Exception $e) {
+        // Handle PDF generation errors gracefully
+        \Log::error('PDF Generation Error: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Failed to generate the report. Please try again later.');
+    }
 }
     
     private function generateFinanceReport($period, $startDate = null, $endDate = null)
