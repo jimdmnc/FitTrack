@@ -34,7 +34,7 @@ public function handleAttendance(Request $request)
             return response()->json(['message' => 'Membership expired! Attendance not recorded.'], 403);
         }
         
-        if ($user->member_status === 'revoke') {
+        if ($user->member_status === 'revoked') {
             return response()->json(['message' => 'Membership revoked! Attendance not recorded.'], 403);
         }
 
