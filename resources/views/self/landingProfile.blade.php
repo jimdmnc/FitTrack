@@ -261,7 +261,7 @@
                 </div>
             @endif
 
-            <!-- Desktop Navigation Links -->
+            <!-- Desktop Navigation Links --> 
             <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
                 <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
                 <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>

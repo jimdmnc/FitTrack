@@ -233,18 +233,21 @@
                 </table>
             </div>
             <div class="mt-4">
-                {{ $payments->appends(['search' => request('search'), 'payment_method' => request('payment_method'), 'time_filter' => request('time_filter')])->links('vendor.pagination.default') }}
+                {{ $payments->appends([
+                    'search' => request('search'), 
+                    'payment_method' => request('payment_method'), 
+                    'time_filter' => request('time_filter')
+                ])->links('vendor.pagination.default') }}
             </div>
         </div>
     </div>
 </div>
 <script>
-$(document).ready(function () {
+    $(document).ready(function () {
     // Define the input and select elements
     const paymentMethodFilter = $('#paymentMethodFilter');
     const timeFilter = $('#timeFilter');
     const searchInput = $('input[type="search"]');
-    const loadingIndicator = $('#loadingIndicator');
     const clearSearchButton = $('#clearSearch');
     
     // Debounce function to prevent too many AJAX requests while typing
@@ -257,6 +260,7 @@ $(document).ready(function () {
     // Listen for input in the search field with debounce
     searchInput.on('input', function () {
         debounce(fetchPayments);
+        toggleClearButtonVisibility();
     });
 
     // Listen for changes in the filters
@@ -265,36 +269,45 @@ $(document).ready(function () {
     });
 
     // Function to fetch payments based on search and filters
-    function fetchPayments() {
+    function fetchPayments(url = null) {
         const search = searchInput.val();
         const paymentMethod = paymentMethodFilter.val();
         const time = timeFilter.val();
-
-        // Show loading indicator
-        loadingIndicator.removeClass('hidden')
+        
+        // Use provided URL or default to the route
+        const requestUrl = url || '{{ route("staff.paymentTracking") }}';
 
         // Show loading state in table
         $('tbody').html('<tr><td colspan="7" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
         
+        // Prepare the parameters for the request
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        if (paymentMethod) params.append('payment_method', paymentMethod);
+        if (time) params.append('time_filter', time);
+
+        // Construct the full URL with parameters
+        const fullUrl = requestUrl + (requestUrl.includes('?') ? '&' : '?') + params.toString();
+        
         // Send an AJAX request
         $.ajax({
-            url: '{{ route("staff.paymentTracking") }}',
+            url: fullUrl,
             type: 'GET',
-            data: {
-                search: search,
-                payment_method: paymentMethod,
-                time_filter: time
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
             },
             success: function (data) {
-                // Replace the entire table (including pagination if needed)
-                $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
-                // Hide loading indicator
-                loadingIndicator.addClass('hidden');
+                // Replace the table body with the new content
+                $('tbody').html($(data).find('tbody').html());
+                
+                // Replace the pagination links
+                $('.mt-4').html($(data).find('.mt-4').html());
+                
+                // Update browser URL without reload
+                window.history.pushState({}, '', fullUrl);
             },
             error: function () {
                 $('tbody').html('<tr><td colspan="7" class="text-center py-8 text-red-500">Error loading payments</td></tr>');
-                // Hide loading indicator even on error
-                loadingIndicator.addClass('hidden');
             }
         });
     }
@@ -302,62 +315,41 @@ $(document).ready(function () {
     // Show/hide the clear search button based on input value
     function toggleClearButtonVisibility() {
         if (searchInput.val().trim() !== '') {
-            clearSearchButton.removeClass('hidden');  // Show button
+            clearSearchButton.removeClass('hidden');
         } else {
-            clearSearchButton.addClass('hidden');    // Hide button
+            clearSearchButton.addClass('hidden');
         }
     }
 
-     // Listen for input to show/hide clear button
-     searchInput.on('input', function() {
-        toggleClearButtonVisibility();
-        debounce(fetchPayments);
-    });
-
     // Clear search functionality
     clearSearchButton.on('click', function() {
-        searchInput.val('');  // Clear the input field
-        fetchPayments();      // Fetch data without search term
-        toggleClearButtonVisibility();  // Hide the clear button
+        searchInput.val('');
+        toggleClearButtonVisibility();
+        fetchPayments();
     });
 
     // Set initial filter values from URL
     const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has("payment_method")) {
-            paymentMethodFilter.val(urlParams.get("payment_method"));
-        }
-        if (urlParams.has("time_filter")) {
-            timeFilter.val(urlParams.get("time_filter"));
-        }
-    });
+    if (urlParams.has("payment_method")) {
+        paymentMethodFilter.val(urlParams.get("payment_method"));
+    }
+    if (urlParams.has("time_filter")) {
+        timeFilter.val(urlParams.get("time_filter"));
+    }
+    if (urlParams.has("search")) {
+        searchInput.val(urlParams.get("search"));
+        toggleClearButtonVisibility();
+    }
 
     // Handle pagination links with AJAX
     $(document).on('click', '.pagination a', function(e) {
         e.preventDefault();
         let url = $(this).attr('href');
-
-        // Show loading indicator
-        loadingIndicator.removeClass('hidden');
-
-        $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(data) {
-                    $('.overflow-x-auto').html($(data).find('.overflow-x-auto').html());
-                    // Update URL without reload
-                    window.history.pushState({}, '', url);
-                    // Hide loading indicator
-                    loadingIndicator.addClass('hidden');
-                },
-                error: function() {
-                    // Hide loading indicator even on error
-                    loadingIndicator.addClass('hidden');
-                }
-        });
+        fetchPayments(url);
+    });
 
     // Initial visibility check for clear button
     toggleClearButtonVisibility();
 });
-
 </script>
 @endsection
