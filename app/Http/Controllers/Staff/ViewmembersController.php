@@ -42,24 +42,11 @@ class ViewmembersController extends Controller
     public function index(Request $request)
     {
         try {
-            // Get sort parameters from request, with defaults
-            $sortColumn = $request->input('sort_column', 4); // Default to Registration Date
-            $sortDirection = $request->input('sort_direction', -1); // Default to descending
+            // Get search and status filter parameters
             $searchQuery = $request->input('search');
             $status = $request->input('status', 'all');
             $page = $request->input('page', 1); // Get current page
             
-            // Validate sortColumn to prevent errors
-            $validColumns = [0, 1, 2, 3, 4, 5]; // Add all valid column indices
-            if (!in_array($sortColumn, $validColumns)) {
-                $sortColumn = 4; // Default if invalid
-            }
-            
-            // Validate sortDirection to prevent errors
-            if (!in_array($sortDirection, [1, -1])) {
-                $sortDirection = -1; // Default if invalid
-            }
-
             // First update all members' status based on their end dates
             $allMembers = User::where('role', 'user')->get();
             foreach ($allMembers as $member) {
@@ -81,34 +68,8 @@ class ViewmembersController extends Controller
                 });
             }
             
-            // Direction conversion from JavaScript to SQL
-            $sqlDirection = $sortDirection > 0 ? 'asc' : 'desc';
-            
-            // Apply sorting based on the column index
-            switch ($sortColumn) {
-                case 0: // #
-                    $query->orderBy('id', $sqlDirection);
-                    break;
-                case 1: // Name
-                    $query->orderBy('first_name', $sqlDirection)
-                        ->orderBy('last_name', $sqlDirection);
-                    break;
-                case 2: // Member ID
-                    $query->orderBy('rfid_uid', $sqlDirection);
-                    break;
-                case 3: // Membership Type
-                    $query->orderBy('membership_type', $sqlDirection);
-                    break;
-                case 4: // Registration Date
-                    $query->orderBy('start_date', $sqlDirection);
-                    break;
-                case 5: // Status
-                    $query->orderBy('member_status', $sqlDirection);
-                    break;
-                default:
-                    // Default to registration date descending
-                    $query->orderBy('start_date', 'desc');
-            }
+            // Apply default order - using registration date descending
+            $query->orderBy('start_date', 'desc');
             
             // IMPORTANT: Always append ALL current query parameters to maintain state
             $members = $query->paginate(10)->appends($request->all());
@@ -118,34 +79,31 @@ class ViewmembersController extends Controller
                 try {
                     // Make sure our view exists and can be rendered
                     $tableView = view('partials.members_table', [
-                        'members' => $members,
-                        'sortColumn' => $sortColumn,
-                        'sortDirection' => $sortDirection
+                        'members' => $members
                     ])->render();
                     
                     // Create pagination HTML
                     $paginationView = $members->links()->render();
                     
-                    // Return successful JSON response with all needed parameters
+                    // Return successful JSON response with needed parameters
                     return response()->json([
                         'table' => $tableView,
                         'pagination' => $paginationView,
-                        'sortColumn' => $sortColumn,
-                        'sortDirection' => $sortDirection,
-                        'currentPage' => $members->currentPage(), // Include current page in response
-                        'lastPage' => $members->lastPage(),       // Include last page info
-                        'total' => $members->total()              // Include total records count
+                        'currentPage' => $members->currentPage(),
+                        'lastPage' => $members->lastPage(),
+                        'total' => $members->total()
                     ]);
-                } catch (\Exception $e) {
-                    // Log the error for server logs
-                    Log::error('Error in members AJAX response: ' . $e->getMessage());
-                    Log::error($e->getTraceAsString());
+                } catch (\Exception $e) {         
+                    // Log the error but don't expose details to the client
+                    \Log::error('Error rendering members table: ' . $e->getMessage());
                     
-                    // Return detailed error for debugging
+                    // Return a user-friendly error message
                     return response()->json([
-                        'error' => 'Error rendering table: ' . $e->getMessage(),
-                        'file' => $e->getFile(),
-                        'line' => $e->getLine()
+                        'table' => '<div class="text-center py-8 text-gray-500">
+                            <p>Unable to load members data. Please try again later.</p>
+                        </div>',
+                        'pagination' => '',
+                        'error' => true
                     ], 500);
                 }
             }
@@ -154,20 +112,22 @@ class ViewmembersController extends Controller
             return view('staff.viewmembers', [
                 'members' => $members,
                 'query' => $searchQuery,
-                'status' => $status,
-                'sortColumn' => $sortColumn,
-                'sortDirection' => $sortDirection
+                'status' => $status
             ]);
         } catch (\Exception $e) {
             // Log the error
-            Log::error('Error in members index: ' . $e->getMessage());
-            Log::error($e->getTraceAsString());
+            \Log::error('Member listing error: ' . $e->getMessage());
             
-            // Return an error view or redirect with a message
-            return back()->with('error', 'An error occurred: ' . $e->getMessage());
+            // Return a view with a user-friendly error message
+            $members = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            return view('staff.viewmembers', [
+                'members' => $members,
+                'error' => 'Unable to load members. Please try again later.',
+                'query' => $searchQuery,
+                'status' => $status
+            ]);
         }
     }
-
    /**
      * Handle membership renewal.
      */

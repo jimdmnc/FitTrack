@@ -12,7 +12,7 @@
     /* Better table styling for mobile */
     @media (max-width: 640px) {
         table {
-            min-width: 600px; /* Forces horizontal scroll on small screens */
+            min-width: 600px;
         }
         
         .action-buttons {
@@ -74,7 +74,7 @@
         }
     }
 
-    /* Add to your existing styles */
+    /*
     th {
         position: relative;
         user-select: none;
@@ -91,7 +91,7 @@
 
     th:hover [id^="sort-icon-"] {
         opacity: 1;
-    }
+    } */
 
     .pagination {
             display: flex;
@@ -252,25 +252,30 @@
                 <table class="min-w-full divide-y divide-black">
                     <thead>
                         <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
-                            <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                                 # 
                             </th>
-                            <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                Name <span id="sort-icon-1" class="ml-1">↕</span>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Name 
+                                <!-- <span id="sort-icon-1" class="ml-1">↕</span> -->
                             </th>
-                            <th id="sort-header-2" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                Member ID <span id="sort-icon-2" class="ml-1">↕</span>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Member ID 
+                                <!-- <span id="sort-icon-2" class="ml-1">↕</span> -->
                             </th>
-                            <th id="sort-header-3" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                Membership Type <span id="sort-icon-3" class="ml-1">↕</span>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Membership Type 
+                                <!-- <span id="sort-icon-3" class="ml-1">↕</span> -->
                             </th>
-                            <th id="sort-header-4" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                Registration Date <span id="sort-icon-4" class="ml-1">↑</span>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Registration Date 
+                                <!-- <span id="sort-icon-4" class="ml-1">↑</span> -->
                             </th>
-                            <th id="sort-header-5" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
-                                Status <span id="sort-icon-5" class="ml-1">↕</span>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                                Status 
+                                <!-- <span id="sort-icon-5" class="ml-1">↕</span> -->
                             </th>
-                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-200 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-200 uppercase">
                                 Actions
                             </th>
                         </tr>
@@ -828,8 +833,6 @@
 </div>
 <!-- End View Reason Modal -->
 
-
-
 <!-- Restore Member Modal -->
 <div id="restoreMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
     <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="restoreModalContent">
@@ -901,15 +904,12 @@
         summaryText: document.getElementById('membershipSummaryText')
     };
 
-    // Get URL parameters to initialize sort state
+    // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Initialize sort parameters from URL or defaults
-    let currentSortColumn = parseInt(urlParams.get('sort_column')) || 4; // Default to Registration Date column
-    let sortDirection = parseInt(urlParams.get('sort_direction')) || -1; // Default to descending (newest first)
-    
-    // Update sort icon display for initial state
-    updateSortIcons();
+    const today = new Date();
+    const todayFormatted = formatDate(today);
+    let searchTimeout;
 
     // Membership type data configuration
     const MEMBERSHIP_DATA = {
@@ -925,10 +925,6 @@
         revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
     }
 
-    let searchTimeout;
-    const today = new Date();
-    const todayFormatted = formatDate(today);
-
     // ======== INITIALIZATION ========
     function initialize() {
         initializeEventListeners();
@@ -938,58 +934,6 @@
         
         // Make sure to re-attach pagination listeners when page loads
         attachPaginationListeners();
-    }
-
-    // ======== SORTING FUNCTIONS ========
-    function sortTable(columnIndex) {
-        // If clicking the same column, reverse direction
-        if (currentSortColumn === columnIndex) {
-            sortDirection *= -1;
-        } else {
-            currentSortColumn = columnIndex;
-            // For date columns, default to descending
-            sortDirection = (columnIndex === 4) ? -1 : 1;
-        }
-        
-        // Update the icons
-        updateSortIcons();
-        
-        // Construct URL with all parameters
-        const url = new URL(window.location.href);
-        url.searchParams.set('sort_column', currentSortColumn);
-        url.searchParams.set('sort_direction', sortDirection);
-        
-        // Reset to page 1 when sorting
-        url.searchParams.set('page', 1);
-        
-        // Preserve search and status filters
-        if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
-            url.searchParams.set('search', ELEMENTS.searchInput.value.trim());
-        }
-        
-        if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
-            url.searchParams.set('status', ELEMENTS.statusSelect.value);
-        }
-        
-        // Update browser URL
-        window.history.pushState({}, '', url.toString());
-        
-        // Fetch members with the new sort parameters
-        fetchMembers(url.toString());
-    }
-    
-    function updateSortIcons() {
-        // Reset all icons first
-        const icons = document.querySelectorAll('[id^="sort-icon-"]');
-        icons.forEach(icon => {
-            icon.textContent = '↕';
-        });
-        
-        // Update the current column's icon
-        const currentIcon = document.getElementById(`sort-icon-${currentSortColumn}`);
-        if (currentIcon) {
-            currentIcon.textContent = sortDirection === 1 ? '↑' : '↓';
-        }
     }
 
     // Helper function to parse dates in various formats
@@ -1059,8 +1003,6 @@
     }
 
     function initializeEventListeners() {
-        attachTableEventListeners();
-        
         // Search input debounced event
         if (ELEMENTS.searchInput) {
             ELEMENTS.searchInput.addEventListener('input', () => {
@@ -1100,28 +1042,12 @@
                 updateAllDetails();
             });
         }
-    }
-    
-    // This is a separate function so we can reattach listeners after AJAX loads
-    function attachTableEventListeners() {
-        // First, attach sort header listeners
-        document.querySelectorAll('[id^="sort-header-"]').forEach((header, index) => {
-            // Remove any existing event listeners to prevent duplicates
-            const newHeader = header.cloneNode(true);
-            header.parentNode.replaceChild(newHeader, header);
-            
-            // Add new event listener
-            newHeader.addEventListener('click', () => {
-                console.log(`Header ${index} clicked`);
-                sortTable(index);
-            });
-        });
         
         // Then, attach pagination links handlers
         attachPaginationListeners();
     }
 
-    // Separate function for pagination listeners - FIX HERE
+    // Separate function for pagination listeners
     function attachPaginationListeners() {
         const paginationLinks = document.querySelectorAll('.pagination a');
         
@@ -1131,10 +1057,6 @@
                 
                 // Get the base URL from the link
                 const url = new URL(this.href, window.location.origin);
-                
-                // Preserve all current parameters
-                url.searchParams.set('sort_column', currentSortColumn);
-                url.searchParams.set('sort_direction', sortDirection);
                 
                 // Preserve search query if exists
                 if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
@@ -1201,10 +1123,6 @@
                 params.append('status', ELEMENTS.statusSelect.value);
             }
             
-            // Always add current sort parameters
-            params.append('sort_column', currentSortColumn);
-            params.append('sort_direction', sortDirection);
-            
             // Get current page from URL or default to 1
             const urlObj = new URL(window.location.href);
             const currentPage = urlObj.searchParams.get('page') || 1;
@@ -1245,11 +1163,9 @@
             const newUrl = new URL(url, window.location.origin);
             window.history.replaceState({}, '', newUrl.toString());
             
-            // Re-attach event listeners
+            // Re-attach pagination listeners
             setTimeout(() => {
-                attachTableEventListeners();
                 attachPaginationListeners();
-                updateSortIcons();
             }, 50);
         })
         .catch(error => {
@@ -1503,7 +1419,6 @@
     }
 
     // Export functions to global scope for HTML onclick handlers
-    window.sortTable = sortTable;
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
@@ -1517,22 +1432,6 @@
     window.showConfirmation = showConfirmation;
     window.backToForm = backToForm;
     window.confirmRevoke = confirmRevoke;
-
-    // Handle browser back/forward navigation
-    window.addEventListener('popstate', function(event) {
-        // Re-read the URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const newSortColumn = parseInt(urlParams.get('sort_column')) || 4;
-        const newSortDirection = parseInt(urlParams.get('sort_direction')) || -1;
-        
-        // Only refresh if sort parameters have changed
-        if (newSortColumn !== currentSortColumn || newSortDirection !== sortDirection) {
-            currentSortColumn = newSortColumn;
-            sortDirection = newSortDirection;
-            updateSortIcons();
-            fetchMembers();
-        }
-    });
 
     // Handle browser back/forward navigation
     window.addEventListener('popstate', function() {

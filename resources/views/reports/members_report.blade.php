@@ -110,13 +110,20 @@
             <td>{{ now()->format('F d, Y h:i A') }}</td>
             <td class="info-label">Date Range:</td>
             <td>
-                @php
-                    // Find oldest and newest dates in the attendance records
-                    $oldestDate = $attendances->min('time_in');
-                    $latestDate = $attendances->max('time_in');
-                @endphp
-                {{ $oldestDate ? $oldestDate->format('M d, Y') : 'N/A' }} - 
-                {{ $latestDate ? $latestDate->format('M d, Y') : now()->format('M d, Y') }}
+                @if(request('filter') === 'custom' && request('start_date') && request('end_date'))
+                    {{ \Carbon\Carbon::parse(request('start_date'))->format('M d, Y') }} - 
+                    {{ \Carbon\Carbon::parse(request('end_date'))->format('M d, Y') }}
+                @elseif(request('filter') === 'today')
+                    Today ({{ now()->format('M d, Y') }})
+                @elseif(request('filter') === 'yesterday')
+                    Yesterday ({{ now()->subDay()->format('M d, Y') }})
+                @elseif(request('filter') === 'last7')
+                    Last 7 Days ({{ now()->subDays(6)->format('M d, Y') }} - {{ now()->format('M d, Y') }})
+                @elseif(request('filter') === 'last30')
+                    Last 30 Days ({{ now()->subDays(29)->format('M d, Y') }} - {{ now()->format('M d, Y') }})
+                @else
+                    All Time ({{ $attendances->min('time_in')->format('M d, Y') }} - {{ $attendances->max('time_in')->format('M d, Y') }})
+                @endif
             </td>
         </tr>
         <tr>

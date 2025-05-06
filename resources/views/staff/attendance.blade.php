@@ -519,226 +519,262 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Initial setup
-        initializeAttendancePage();
+    // Initial setup
+    initializeAttendancePage();
 
-        // Also run it when Alpine.js is finished initializing
-        document.addEventListener('alpine:init', initializeAttendancePage);
+    // Also run it when Alpine.js is finished initializing
+    document.addEventListener('alpine:init', initializeAttendancePage);
+});
+
+// Function to initialize all the attendance page functionality
+function initializeAttendancePage() {
+    const selectBtn = document.getElementById('select-btn');
+    const dropdown = document.getElementById('dropdown');
+    const selectedOption = document.getElementById('selected-option');
+    const searchInput = document.querySelector('input[name="search"]');
+    const searchForm = searchInput ? searchInput.closest('form') : null;
+    const clearSearchButton = document.getElementById('clearSearch');
+    const tableContainer = document.querySelector('.overflow-x-auto');
+    const paginationContainer = document.querySelector('.mt-4');
+    let searchTimeout;
+    
+    // Only proceed if we're on the attendance page
+    if (!selectBtn || !tableContainer) return;
+
+    // Set up the current filter based on URL parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentFilter = urlParams.get('filter') || 'all';
+
+    // Set initial selected option
+    const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
+    if (initialOption) {
+        selectedOption.textContent = initialOption.textContent;
+    }
+
+    // Set up dropdown toggle
+    selectBtn.addEventListener('click', () => {
+        dropdown.classList.toggle('hidden');
     });
 
-    // Function to initialize all the attendance page functionality
-    function initializeAttendancePage() {
-        const selectBtn = document.getElementById('select-btn');
-        const dropdown = document.getElementById('dropdown');
-        const selectedOption = document.getElementById('selected-option');
-        const searchInput = document.querySelector('input[name="search"]');
-        const clearSearchButton = document.getElementById('clearSearch');
-        const tableContainer = document.querySelector('.overflow-x-auto');
-        const paginationContainer = document.querySelector('.mt-4');
-        let searchTimeout;
+    // Set up filter options
+    dropdown.querySelectorAll('li').forEach(option => {
+        option.addEventListener('click', () => {
+            const filterValue = option.getAttribute('data-value');
+            selectedOption.textContent = option.textContent;
+            dropdown.classList.add('hidden');
+            
+            // Get current URL parameters
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            
+            // Update filter parameter
+            searchParams.set('filter', filterValue);
+            
+            // Remove page parameter to go back to first page
+            searchParams.delete('page');
+            
+            // Update URL and load new data
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            fetchAttendances();
+        });
+    });
+
+    // Prevent the search form from submitting traditionally
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            updateSearchParam(searchInput.value);
+            fetchAttendances();
+        });
+    }
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+        if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+
+    // Function to update the search parameter in URL
+    function updateSearchParam(searchValue) {
+        const url = new URL(window.location.href);
+        const searchParams = new URLSearchParams(url.search);
         
-        // Only proceed if we're on the attendance page
-        if (!selectBtn || !tableContainer) return;
+        if (searchValue.trim()) {
+            searchParams.set('search', searchValue.trim());
+        } else {
+            searchParams.delete('search');
+        }
+        
+        // Reset to page 1 when search changes
+        searchParams.delete('page');
+        
+        // Update URL without reloading
+        window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+    }
 
-        // Set up the current filter based on URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const currentFilter = urlParams.get('filter') || 'all';
+    window.fetchAttendances = function() {
+        const params = new URLSearchParams(window.location.search);
 
-        // Set initial selected option
-        const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
-        if (initialOption) {
-            selectedOption.textContent = initialOption.textContent;
+        // Get current page number from the URL or default to 1
+        const page = params.get('page') || 1;
+        params.set('page', page);  // Add the current page to the request
+
+        // Make sure search parameter is included from the input
+        const searchValue = searchInput ? searchInput.value.trim() : '';
+        if (searchValue) {
+            params.set('search', searchValue);
         }
 
-        // Set up dropdown toggle
-        selectBtn.addEventListener('click', () => {
-            dropdown.classList.toggle('hidden');
-        });
+        // Build URL for AJAX request
+        const fetchUrl = window.location.pathname + '?' + params.toString();
 
-        // Set up filter options
-        dropdown.querySelectorAll('li').forEach(option => {
-            option.addEventListener('click', () => {
-                const filterValue = option.getAttribute('data-value');
-                selectedOption.textContent = option.textContent;
-                dropdown.classList.add('hidden');
-                
-                // Get current URL parameters
+        // Show loading state while fetching
+        tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
+
+        // Fetch data via AJAX
+        fetch(fetchUrl, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (tableContainer) {
+                tableContainer.innerHTML = data.table;
+            }
+
+            if (paginationContainer && data.pagination) {
+                paginationContainer.innerHTML = data.pagination;
+            }
+
+            // Reinitialize event listeners for the new content
+            initializeModalButtons();
+            attachPaginationListeners();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            if (tableContainer) {
+                tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
+            }
+        });
+    };
+
+
+    // Attach event listeners to pagination links
+    function attachPaginationListeners() {
+        const paginationLinks = document.querySelectorAll('.pagination a');
+        paginationLinks.forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                // Get the page URL from pagination link
+                const pageUrl = new URL(this.href);
+                const page = pageUrl.searchParams.get('page');
+
+                // Update the URL in the address bar without reloading
                 const url = new URL(window.location.href);
-                const searchParams = new URLSearchParams(url.search);
-                
-                // Update filter parameter
-                searchParams.set('filter', filterValue);
-                
-                // Remove page parameter to go back to first page
-                searchParams.delete('page');
-                
-                // Update URL and load new data
-                window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+                url.searchParams.set('page', page);
+                window.history.pushState({}, '', url.toString());
+
+                // Fetch attendance data for the new page
                 fetchAttendances();
             });
         });
+    }
 
-        // Close dropdown when clicking outside
-        window.addEventListener('click', (e) => {
-            if (!selectBtn.contains(e.target) && !dropdown.contains(e.target)) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        window.fetchAttendances = function() {
-            const params = new URLSearchParams(window.location.search);
-
-            // Get current page number from the URL or default to 1
-            const page = params.get('page') || 1;
-            params.set('page', page);  // Add the current page to the request
-
-            // Build URL for AJAX request
-            const fetchUrl = '{{ route("staff.attendance.index") }}?' + params.toString();
-
-            // Show loading state while fetching
-            tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
-
-            // Fetch data via AJAX
-            fetch(fetchUrl, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (tableContainer) {
-                    tableContainer.innerHTML = data.table;
-                }
-
-                if (paginationContainer && data.pagination) {
-                    paginationContainer.innerHTML = data.pagination;
-                }
-
-                // Reinitialize event listeners for the new content
-                initializeModalButtons();
-                attachPaginationListeners();
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                if (tableContainer) {
-                    tableContainer.innerHTML = '<div class="text-center py-8 text-red-500">Error loading data. Please try again.</div>';
-                }
-            });
-        };
-
-
-        // Attach event listeners to pagination links
-        function attachPaginationListeners() {
-            const paginationLinks = document.querySelectorAll('.pagination a');
-            paginationLinks.forEach(link => {
-                link.addEventListener('click', function (e) {
-                    e.preventDefault();
-
-                    // Get the page URL from pagination link
-                    const pageUrl = new URL(this.href);
-                    const page = pageUrl.searchParams.get('page');
-
-                    // Update the URL in the address bar without reloading
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('page', page);
-                    window.history.pushState({}, '', url.toString());
-
-                    // Fetch attendance data for the new page
-                    fetchAttendances();
-                });
-            });
-        }
-
-        // Function to initialize modal open buttons
-        function initializeModalButtons() {
-            const detailButtons = document.querySelectorAll('[x-on\\:click], [\\@click]');
-            detailButtons.forEach(button => {
-                const clickAttr = button.getAttribute('x-on:click') || button.getAttribute('@click');
-                if (clickAttr && clickAttr.includes('openModal')) {
-                    button.addEventListener('click', function() {
-                        try {
-                            // This will get the Alpine.js instance
-                            const alpineInstance = this.$root; // Use this.$root instead of Alpine.getRoot(this)
-                            if (alpineInstance && alpineInstance.$data) {
-                                // If this is a DOM element with the openModal attribute
-                                const attendanceString = this.getAttribute('x-on:click') || this.getAttribute('@click');
-                                if (attendanceString && attendanceString.includes('openModal')) {
-                                    // Extract the attendance data from the attribute
-                                    // This is a safer approach than evaluating the string
-                                    const match = attendanceString.match(/openModal\((.*)\)/);
-                                    if (match && match[1]) {
-                                        // Parse the JSON data
-                                        try {
-                                            const attendanceData = JSON.parse(match[1].replace(/'/g, '"'));
-                                            alpineInstance.$data.openModal(attendanceData);
-                                        } catch (jsonError) {
-                                            console.error("Error parsing attendance data:", jsonError);
-                                        }
+    // Function to initialize modal open buttons
+    function initializeModalButtons() {
+        const detailButtons = document.querySelectorAll('[x-on\\:click], [\\@click]');
+        detailButtons.forEach(button => {
+            const clickAttr = button.getAttribute('x-on:click') || button.getAttribute('@click');
+            if (clickAttr && clickAttr.includes('openModal')) {
+                button.addEventListener('click', function() {
+                    try {
+                        // For Alpine.js v3, we need to access the component differently
+                        const alpineData = window.Alpine ? window.Alpine.raw(this) : null;
+                        
+                        // If we couldn't get Alpine data through Alpine.raw, use attribute parsing
+                        if (!alpineData) {
+                            const attendanceString = this.getAttribute('x-on:click') || this.getAttribute('@click');
+                            if (attendanceString && attendanceString.includes('openModal')) {
+                                // Extract the attendance data from the attribute
+                                const match = attendanceString.match(/openModal\((.*)\)/);
+                                if (match && match[1]) {
+                                    try {
+                                        // If you need to execute this data, you'd need a safe way to evaluate it
+                                        console.log("Would parse and execute:", match[1]);
+                                        // This is where you'd integrate with Alpine.js properly
+                                    } catch (jsonError) {
+                                        console.error("Error parsing attendance data:", jsonError);
                                     }
                                 }
                             }
-                        } catch (error) {
-                            console.error("Error opening modal:", error);
                         }
-                    });
-                }
-            });
-        }
-
-        // Show/hide clear button based on search input
-        const toggleClearButtonVisibility = () => {
-            if (searchInput.value.trim()) {
-                clearSearchButton.classList.remove('hidden');
-            } else {
-                clearSearchButton.classList.add('hidden');
+                    } catch (error) {
+                        console.error("Error opening modal:", error);
+                    }
+                });
             }
-        };
-
-        // Debounce function for search input
-        const debounce = (func, delay) => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(func, delay);
-        };
-
-        // Listen for search input to trigger AJAX fetch
-        searchInput.addEventListener('input', () => {
-            toggleClearButtonVisibility();
-            debounce(fetchAttendances, 500); // Trigger after 500ms of typing
         });
-
-        // Clear search button functionality
-        if (clearSearchButton) {
-            clearSearchButton.addEventListener('click', () => {
-                searchInput.value = ''; // Clear input
-                clearSearchButton.classList.add('hidden'); // Hide button
-                
-                // Update URL to remove search parameter
-                const url = new URL(window.location.href);
-                const searchParams = new URLSearchParams(url.search);
-                searchParams.delete('search');
-                window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
-
-                fetchAttendances(); // Fetch data without search term
-            });
-        }
-
-        // Initialize the clear button visibility on page load
-        toggleClearButtonVisibility();
-        
-        // Initialize modal buttons
-        initializeModalButtons();
-        
-        // Fetch initial data if this is an initial page load (not a navigation)
-        if (performance.navigation.type === performance.navigation.TYPE_NAVIGATE) {
-            fetchAttendances();
-        }
     }
 
+    // Show/hide clear button based on search input
+    const toggleClearButtonVisibility = () => {
+        if (searchInput && searchInput.value.trim()) {
+            clearSearchButton.classList.remove('hidden');
+        } else {
+            clearSearchButton.classList.add('hidden');
+        }
+    };
+
+    // Debounce function for search input
+    const debounce = (func, delay) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(func, delay);
+    };
+
+    // Listen for search input to trigger AJAX fetch with debounce
+    if (searchInput) {
+        searchInput.addEventListener('input', () => {
+            toggleClearButtonVisibility();
+            debounce(() => {
+                updateSearchParam(searchInput.value);
+                fetchAttendances();
+            }, 500); // Trigger after 500ms of typing
+        });
+    }
+
+    // Clear search button functionality
+    if (clearSearchButton) {
+        clearSearchButton.addEventListener('click', () => {
+            if (searchInput) searchInput.value = ''; // Clear input
+            clearSearchButton.classList.add('hidden'); // Hide button
+            
+            // Update URL to remove search parameter
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            searchParams.delete('search');
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+
+            fetchAttendances(); // Fetch data without search term
+        });
+    }
+
+    // Initialize the clear button visibility on page load
+    toggleClearButtonVisibility();
+    
+    // Initialize modal buttons
+    initializeModalButtons();
+    
+    // Attach pagination listeners for initial page load
+    attachPaginationListeners();
+}
 </script>
 @endsection

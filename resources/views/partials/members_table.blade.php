@@ -25,39 +25,34 @@
         <table class="min-w-full divide-y divide-black">
             <thead>
                 <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] rounded-lg">
-                    <th id="sort-header-0" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             #
                         </div>
                     </th>
-                    <th id="sort-header-1" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             Name
-                            <span id="sort-icon-1" class="ml-1 text-gray-400">{{ $sortColumn == 1 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
-                    <th id="sort-header-2" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             Member ID
-                            <span id="sort-icon-2" class="ml-1 text-gray-400">{{ $sortColumn == 2 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
-                    <th id="sort-header-3" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             Membership Type
-                            <span id="sort-icon-3" class="ml-1 text-gray-400">{{ $sortColumn == 3 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
-                    <th id="sort-header-4" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             Registration Date
-                            <span id="sort-icon-4" class="ml-1 text-gray-400">{{ $sortColumn == 4 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
-                    <th id="sort-header-5" class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider cursor-pointer">
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
                         <div class="flex items-center">
                             Status
-                            <span id="sort-icon-5" class="ml-1 text-gray-400">{{ $sortColumn == 5 ? ($sortDirection > 0 ? '↑' : '↓') : '↕' }}</span>
                         </div>
                     </th>
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -223,24 +218,3 @@
         </table>
     </div>
 @endif
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize sort state from server-side values
-    currentSortColumn = {{ $sortColumn ?? 0 }};
-    sortDirection = {{ $sortDirection ?? 1 }};
-    
-    // Update the icons to reflect current state
-    updateSortIcons();
-    
-    // Attach event listeners
-    attachTableEventListeners();
-    attachPaginationListeners();
-    
-    // Update URL to reflect current state
-    const currentUrl = new URL(window.location.href);
-    currentUrl.searchParams.set('sort_column', currentSortColumn);
-    currentUrl.searchParams.set('sort_direction', sortDirection);
-    window.history.replaceState({}, '', currentUrl.toString());
-});
-</script>
