@@ -329,7 +329,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-transparent hover:bg-[#ff5722] hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-[#Ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
                                             aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="View member details"
                                         >
