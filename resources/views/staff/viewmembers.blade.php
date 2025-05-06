@@ -467,8 +467,6 @@
             {{ $members->appends([
                 'search' => request('search'),
                 'status' => request('status'),
-                'sort_column' => request('sort_column', 4),
-                'sort_direction' => request('sort_direction', -1)
             ])->links('vendor.pagination.default') }}
             </div>
 
@@ -1020,9 +1018,22 @@
             });
         }
         
-        // Status filter change
+        // Status filter change - FIX: Use event handler instead of direct onchange attribute
         if (ELEMENTS.statusSelect) {
-            ELEMENTS.statusSelect.addEventListener('change', fetchMembers);
+            ELEMENTS.statusSelect.addEventListener('change', function(e) {
+                e.preventDefault(); // Prevent default form submission
+                
+                // Create new URL with status parameter
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('status', this.value);
+                currentUrl.searchParams.set('page', '1'); // Reset to page 1 when filter changes
+                
+                // Update URL without reloading page
+                window.history.pushState({}, '', currentUrl.toString());
+                
+                // Fetch members with new status filter
+                fetchMembers();
+            });
         }
         
         // Membership renewal events
@@ -1049,32 +1060,39 @@
 
     // Separate function for pagination listeners
     function attachPaginationListeners() {
-        const paginationLinks = document.querySelectorAll('.pagination a');
-        
-        paginationLinks.forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
+        // Use setTimeout to ensure the DOM is fully updated
+        setTimeout(() => {
+            const paginationLinks = document.querySelectorAll('.pagination a');
+            
+            paginationLinks.forEach(link => {
+                // Remove old event listeners if they exist
+                const oldLink = link.cloneNode(true);
+                link.parentNode.replaceChild(oldLink, link);
                 
-                // Get the base URL from the link
-                const url = new URL(this.href, window.location.origin);
-                
-                // Preserve search query if exists
-                if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
-                    url.searchParams.set('search', ELEMENTS.searchInput.value.trim());
-                }
-                
-                // Preserve status filter if not 'all'
-                if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
-                    url.searchParams.set('status', ELEMENTS.statusSelect.value);
-                }
-                
-                // Update browser URL
-                window.history.pushState({}, '', url.toString());
-                
-                // Fetch members with the complete URL
-                fetchMembers(url.toString());
+                oldLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Get the base URL from the link
+                    const url = new URL(this.href, window.location.origin);
+                    
+                    // Preserve search query if exists
+                    if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
+                        url.searchParams.set('search', ELEMENTS.searchInput.value.trim());
+                    }
+                    
+                    // Preserve status filter if not 'all'
+                    if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
+                        url.searchParams.set('status', ELEMENTS.statusSelect.value);
+                    }
+                    
+                    // Update browser URL
+                    window.history.pushState({}, '', url.toString());
+                    
+                    // Fetch members with the complete URL
+                    fetchMembers(url.toString());
+                });
             });
-        });
+        }, 100);
     }
 
     // ======== HELPER FUNCTIONS ========
@@ -1098,7 +1116,7 @@
     function toggleClearButtonVisibility() {
         if (ELEMENTS.clearSearchButton) {
             ELEMENTS.clearSearchButton.style.display = 
-                ELEMENTS.searchInput.value.trim() !== '' ? 'flex' : 'none';
+                ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim() !== '' ? 'flex' : 'none';
         }
     }
 
@@ -1140,9 +1158,7 @@
         })
         .then(response => {
             if (!response.ok) {
-                return response.text().then(text => {
-                    throw new Error(`Server error (${response.status}): ${text}`);
-                });
+                throw new Error('Network response was not ok');
             }
             return response.json();
         })
@@ -1155,6 +1171,8 @@
             // Update pagination
             if (ELEMENTS.paginationContainer && data.pagination) {
                 ELEMENTS.paginationContainer.innerHTML = data.pagination;
+                // Re-attach pagination listeners after content update
+                attachPaginationListeners();
             } else if (ELEMENTS.paginationContainer) {
                 ELEMENTS.paginationContainer.innerHTML = '';
             }
@@ -1163,19 +1181,38 @@
             const newUrl = new URL(url, window.location.origin);
             window.history.replaceState({}, '', newUrl.toString());
             
-            // Re-attach pagination listeners
+            // Re-attach event listeners
             setTimeout(() => {
-                attachPaginationListeners();
+                attachTableEventListeners();
+                if (typeof updateSortIcons === 'function') {
+                    updateSortIcons();
+                }
             }, 50);
         })
         .catch(error => {
             console.error('Error fetching members:', error);
+            
+            // Show error message in table container
             if (ELEMENTS.tableContainer) {
-                ELEMENTS.tableContainer.innerHTML = `<div class="text-center py-8 text-red-500">
-                    Error loading data: ${error.message}. Please try again or contact support.
-                </div>`;
+                ELEMENTS.tableContainer.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-32 text-center">
+                        <div class="text-red-500 mb-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-400">Failed to load members. Please try again.</p>
+                    </div>
+                `;
             }
         });
+    }
+
+    // Fix: Add missing attachTableEventListeners function
+    function attachTableEventListeners() {
+        // This function would attach any event listeners to table elements
+        // For now it's empty since we don't have specific table interactions defined
+        // But it's called in the code, so we need to define it
     }
 
     // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
