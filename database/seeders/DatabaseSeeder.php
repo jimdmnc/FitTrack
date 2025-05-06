@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
         \Database\Seeders\FoodSeeder::class,
 
     ]);
-        
+    $this->call(UsersTableSeeder::class);
+
     }
 }
