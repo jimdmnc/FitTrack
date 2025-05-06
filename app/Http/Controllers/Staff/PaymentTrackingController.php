@@ -19,8 +19,7 @@ class PaymentTrackingController extends Controller
         $search = $request->search;
         $query->whereHas('user', function($q) use ($search) {
             $q->where('first_name', 'like', "%$search%")
-              ->orWhere('last_name', 'like', "%$search%")
-              ->orWhere('rfid_uid', 'like', "%$search%");
+              ->orWhere('last_name', 'like', "%$search%");
         });
     }
 

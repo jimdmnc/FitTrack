@@ -112,7 +112,7 @@
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                             </svg>
                         </div>
-                        <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-full bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments...">
+                        <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-full bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search">
                         <!-- Clear Search Button -->
                         <a 
                             id="clearSearch" 
