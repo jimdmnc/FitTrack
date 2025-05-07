@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Attendance;
 
 class SelfRegistrationController extends Controller
 {
@@ -19,7 +20,7 @@ class SelfRegistrationController extends Controller
         return view('self.registration');
     }
 
-    // SelfRegistrationController.php
+    // Check approval status via AJAX
     public function checkApproval()
     {
         $user = auth()->user();
@@ -41,8 +42,7 @@ class SelfRegistrationController extends Controller
         return response()->json(['approved' => false]);
     }
 
-
-     // SelfRegistrationController.php
+    // Waiting approval page
     public function waiting()
     {
         if (auth()->user()->session_status === 'approved') {
@@ -58,18 +58,19 @@ class SelfRegistrationController extends Controller
         try {
             // Validate the necessary fields
             $validatedData = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'phone_number' => [
-                'required',
-                'digits:11',
-                'regex:/^09\d{9}$/'
-            ],
-            'email' => 'required|email',
-            'gender' => 'required|string|in:male,female,other',
-            'membership_type' => 'required|string|in:1',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'phone_number' => [
+                    'required',
+                    'digits:11',
+                    'regex:/^09\d{9}$/'
+                ],
+                'email' => 'required|email',
+                'gender' => 'required|string|in:male,female,other',
+                'membership_type' => 'required|string|in:1',
             ]);
 
+            // Clear timed_out flag when registering new session
             $request->session()->forget('timed_out');
 
             // Check if user exists by email and phone
@@ -81,10 +82,9 @@ class SelfRegistrationController extends Controller
                 });
             })->first();
                         
-
             if ($existingUser) {
                 // Update user details and reset session_status
-                 $existingUser->update([
+                $existingUser->update([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
                     'gender' => $validatedData['gender'],
@@ -95,17 +95,18 @@ class SelfRegistrationController extends Controller
                     'needs_approval' => true,
                 ]);
 
-            // Add a new payment record
-            MembersPayment::create([
-                'rfid_uid' => $existingUser->rfid_uid,
-                'amount' => 60,
-                'payment_method' => 'cash',
-                'payment_date' => now(),
-            ]);
+                // Add a new payment record
+                MembersPayment::create([
+                    'rfid_uid' => $existingUser->rfid_uid,
+                    'amount' => 60,
+                    'payment_method' => 'cash',
+                    'payment_date' => now(),
+                ]);
 
-            Auth::login($existingUser);
+                Auth::login($existingUser);
 
-            return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');                }
+                return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');
+            }
 
             // If user doesn't exist, generate a new RFID UID
             $rfidUid = 'DAILY' . strtoupper(Str::random(5));
@@ -122,10 +123,10 @@ class SelfRegistrationController extends Controller
                     'role' => 'user',
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
-                    'end_date' => Carbon::now(), // ✅ Add this here
+                    'end_date' => Carbon::now(),
                     'rfid_uid' => $rfidUid,
                     'password' => Hash::make('defaultpassword123'),
-                    'needs_approval' => true, // ✅ here too
+                    'needs_approval' => true,
                 ]);
 
                 MembersPayment::create([
@@ -136,7 +137,6 @@ class SelfRegistrationController extends Controller
                 ]);
 
                 return $user;
-
             });
 
             Auth::login($user);
@@ -146,8 +146,8 @@ class SelfRegistrationController extends Controller
         } catch (\Exception $e) {
             logger()->error('Session Membership Registration Error: ' . $e->getMessage());
             return redirect()->route('self.registration')
-            ->withInput()
-            ->with('error', 'Registration failed: ' . $e->getMessage());
+                ->withInput()
+                ->with('error', 'Registration failed: ' . $e->getMessage());
         }
     }
 
@@ -166,6 +166,11 @@ class SelfRegistrationController extends Controller
             ->orderBy('time_in', 'desc')
             ->first();
 
+        // Clear timed_out flag if user has a new attendance record with no time_out
+        $attendance = Attendance::where('rfid_uid', auth()->user()->rfid_uid)
+                ->whereNull('time_out')
+                ->first();
+
         return view('self.landingProfile', compact('user', 'attendance'));
     }
 
@@ -177,7 +182,7 @@ class SelfRegistrationController extends Controller
         $request->session()->regenerateToken();
 
         // Redirect to your landing page route
-        return redirect()->route('self.landing'); // Make sure this route exists
+        return redirect()->route('self.landing');
     }
 
     public function renew(Request $request)
@@ -186,11 +191,14 @@ class SelfRegistrationController extends Controller
             // Validate the request
             $request->validate([
                 'rfid_uid' => 'required|string',
-                'membership_type' => 'required|string|in:1,3,6,12', // Adjust types as needed
+                'membership_type' => 'required|string|in:1,3,6,12',
                 'start_date' => 'required|date',
                 'end_date' => 'required|date',
                 'amount' => 'required|numeric',
             ]);
+
+            // Clear timed_out flag when renewing
+            $request->session()->forget('timed_out');
 
             // Find the user
             $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
@@ -200,7 +208,7 @@ class SelfRegistrationController extends Controller
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'session_status' => 'pending', // Set to pending for approval
+                'session_status' => 'pending',
                 'needs_approval' => true,
             ]);
 
