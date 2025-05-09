@@ -268,7 +268,17 @@ class UserDetailController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash', // Add this
+            'payment_screenshot' => [
+                'nullable',
+                'string',
+                'required_if:payment_method,gcash',
+                function ($attribute, $value, $fail) {
+                    // Roughly 5MB max (Base64 increases size by ~33%)
+                    if (strlen($value) > 6_700_000) { 
+                        $fail('The payment screenshot must not exceed 5MB');
+                    }
+                }
+            ]
         ]);
     
         // Find user by RFID
@@ -329,7 +339,7 @@ class UserDetailController extends Controller
     }
 
 
-    
+
 /**
  * Get payment history
  */
