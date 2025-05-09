@@ -261,7 +261,7 @@ class UserDetailController extends Controller
     public function renewMembershipApp(Request $request)
     {
         // Validate request
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'rfid_uid' => 'required|exists:users,rfid_uid',
             'membership_type' => 'required',
             'start_date' => 'required|date',
@@ -273,13 +273,23 @@ class UserDetailController extends Controller
                 'string',
                 'required_if:payment_method,gcash',
                 function ($attribute, $value, $fail) {
-                    // Roughly 5MB max (Base64 increases size by ~33%)
-                    if (strlen($value) > 6_700_000) { 
+                    if (strlen($value) > 10_000_000) { // ~7.5MB max
                         $fail('The payment screenshot must not exceed 5MB');
+                    }
+                    if (!preg_match('/^data:image\/(\w+);base64,/', $value)) {
+                        $fail('Invalid image format');
                     }
                 }
             ]
         ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
     
         // Find user by RFID
         $user = User::where('rfid_uid', $request->rfid_uid)->first();
@@ -292,7 +302,13 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Update user membership - both payment methods will be pending approval
+            // Handle screenshot - store in storage if needed
+            $screenshotPath = null;
+            if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
+                $screenshotPath = $this->storeScreenshot($request->payment_screenshot);
+            }
+    
+            // Update user membership
             $user->update([
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -302,7 +318,7 @@ class UserDetailController extends Controller
                 'needs_approval' => 1,
             ]);
     
-            // Create Renewal and Payment records
+            // Create records
             $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
@@ -311,7 +327,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => $request->payment_screenshot, // Add this
+                'payment_screenshot' => $request->payment_screenshot, // or $screenshotPath if storing files
             ]);
     
             MembersPayment::create([
@@ -320,7 +336,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
                 'payment_reference' => null,
-                'payment_screenshot' => $request->payment_screenshot, // Add this
+                'payment_screenshot' => $request->payment_screenshot, // or $screenshotPath
                 'status' => 'pending',
             ]);
     
@@ -337,7 +353,8 @@ class UserDetailController extends Controller
             ], 400);
         }
     }
-
+    
+    //
 
 
 /**
