@@ -10,7 +10,6 @@ use App\Http\Controllers\UsdaFoodController;
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
-use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 
 use App\Http\Controllers\Staff\AttendanceController;
@@ -101,8 +100,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 });
 
-Route::post('/gcash/create', [PaymentController::class, 'createGcashPayment']);
-Route::post('/gcash/check-status', [PaymentController::class, 'checkPaymentStatus']);
+
 Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
 ->middleware(['guest'])
 ->name('password.email');
