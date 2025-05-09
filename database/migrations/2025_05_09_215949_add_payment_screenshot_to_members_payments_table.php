@@ -8,7 +8,7 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('members_payment', function (Blueprint $table) {
-            $table->string('payment_screenshot')->nullable()->after('payment_reference');
+            $table->string('payment_screenshot')->nullable()->after('payment_method');
         });
     }
 
