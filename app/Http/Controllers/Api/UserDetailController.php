@@ -268,6 +268,7 @@ class UserDetailController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
+            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash', // Add this
         ]);
     
         // Find user by RFID
@@ -300,6 +301,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
+                'payment_screenshot' => $request->payment_screenshot, // Add this
             ]);
     
             MembersPayment::create([
@@ -308,6 +310,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
                 'payment_reference' => null,
+                'payment_screenshot' => $request->payment_screenshot, // Add this
                 'status' => 'pending',
             ]);
     
@@ -324,6 +327,9 @@ class UserDetailController extends Controller
             ], 400);
         }
     }
+
+
+    
 /**
  * Get payment history
  */
