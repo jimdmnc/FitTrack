@@ -277,7 +277,7 @@ class UserDetailController extends Controller
                         $fail('The payment screenshot must not exceed 5MB');
                     }
                     if (!preg_match('/^data:image\/(\w+);base64,/', $value)) {
-                        $fail('Invalid image format');
+                        $fail('Invalid image format. Please upload a valid image.');
                     }
                 }
             ]
@@ -292,17 +292,10 @@ class UserDetailController extends Controller
         }
     
         // Find user by RFID
-        $user = User::where('rfid_uid', $request->rfid_uid)->first();
-    
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
-        }
+        $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
     
         try {
-            // Handle screenshot - store in storage if needed
+            // Handle screenshot storage
             $screenshotPath = null;
             if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
                 $screenshotPath = $this->storeScreenshot($request->payment_screenshot);
@@ -319,7 +312,7 @@ class UserDetailController extends Controller
             ]);
     
             // Create records
-            $renewal = Renewal::create([
+            Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -327,7 +320,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => $request->payment_screenshot, // or $screenshotPath if storing files
+                'payment_screenshot' => $screenshotPath,
             ]);
     
             MembersPayment::create([
@@ -336,24 +329,47 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
                 'payment_reference' => null,
-                'payment_screenshot' => $request->payment_screenshot, // or $screenshotPath
+                'payment_screenshot' => $screenshotPath,
                 'status' => 'pending',
             ]);
     
             return response()->json([
                 'success' => true,
                 'message' => 'Renewal request submitted. Waiting for staff approval.',
-                'user' => $user,
+                'screenshot_path' => $screenshotPath ? url('storage/'.$screenshotPath) : null,
             ]);
     
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Renewal failed: ' . $e->getMessage(),
-            ], 400);
+            ], 500);
         }
     }
     
+    protected function storeScreenshot($base64Image)
+    {
+        try {
+            // Extract image extension
+            preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches);
+            $extension = $matches[1] ?? 'png';
+            
+            // Remove data URL part
+            $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
+            $imageData = base64_decode($imageData);
+            
+            // Generate unique filename
+            $filename = 'payment_screenshots/' . Str::uuid() . '.' . $extension;
+            
+            // Store in public disk (creates symlink from public/storage to storage/app/public)
+            Storage::disk('public')->put($filename, $imageData);
+            
+            return $filename;
+        } catch (\Exception $e) {
+            \Log::error('Failed to store screenshot: ' . $e->getMessage());
+            throw new \Exception('Failed to process payment screenshot');
+        }
+    }
     //
 
 
