@@ -258,121 +258,77 @@ class UserDetailController extends Controller
 
 
 
-public function renewMembershipApp(Request $request)
-{
-    // Validate request
-    $validator = Validator::make($request->all(), [
-        'rfid_uid' => 'required|exists:users,rfid_uid',
-        'membership_type' => 'required',
-        'start_date' => 'required|date',
-        'end_date' => 'required|date|after:start_date',
-        'payment_method' => 'required|in:cash,gcash',
-        'amount' => 'required|numeric|min:0',
-        'payment_screenshot' => [
-            'nullable',
-            'string',
-            'required_if:payment_method,gcash',
-            function ($attribute, $value, $fail) {
-                if (strlen($value) > 10_000_000) { // ~7.5MB max
-                    $fail('The payment screenshot must not exceed 5MB');
-                }
-                if (!preg_match('/^data:image\/(\w+);base64,/', $value)) {
-                    $fail('Invalid image format. Please upload a valid image.');
-                }
-            }
-        ]
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Validation failed',
-            'errors' => $validator->errors()
-        ], 422);
-    }
-
-    // Find user by RFID
-    $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
-
-    try {
-        // Handle screenshot storage
-        $screenshotPath = null;
-        if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
-            $screenshotPath = $this->storeScreenshot($request->payment_screenshot);
+    public function renewMembershipApp(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+            'membership_type' => 'required',
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after:start_date',
+            'payment_method' => 'required|in:cash,gcash',
+            'amount' => 'required|numeric|min:0',
+            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash', // Add this
+        ]);
+    
+        // Find user by RFID
+        $user = User::where('rfid_uid', $request->rfid_uid)->first();
+    
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
         }
-
-        // Update user membership
-        $user->update([
-            'membership_type' => $request->membership_type,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'member_status' => 'expired', 
-            'session_status' => 'pending',
-            'needs_approval' => 1,
-        ]);
-
-        // Create records
-        Renewal::create([
-            'rfid_uid' => $user->rfid_uid,
-            'membership_type' => $request->membership_type,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'payment_method' => $request->payment_method,
-            'status' => 'pending',
-            'payment_reference' => null,
-            'payment_screenshot' => $screenshotPath,
-        ]);
-
-        MembersPayment::create([
-            'rfid_uid' => $user->rfid_uid,
-            'amount' => $request->amount,
-            'payment_method' => $request->payment_method,
-            'payment_date' => now(),
-            'payment_reference' => null,
-            'payment_screenshot' => $screenshotPath,
-            'status' => 'pending',
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Renewal request submitted. Waiting for staff approval.',
-            'screenshot_path' => $screenshotPath ? url('storage/'.$screenshotPath) : null,
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Renewal failed: ' . $e->getMessage(),
-        ], 500);
+    
+        try {
+            // Update user membership - both payment methods will be pending approval
+            $user->update([
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'member_status' => 'expired', 
+                'session_status' => 'pending',
+                'needs_approval' => 1,
+            ]);
+    
+            // Create Renewal and Payment records
+            $renewal = Renewal::create([
+                'rfid_uid' => $user->rfid_uid,
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'payment_method' => $request->payment_method,
+                'status' => 'pending',
+                'payment_reference' => null,
+                'payment_screenshot' => $request->payment_screenshot, // Add this
+            ]);
+    
+            MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'payment_date' => now(),
+                'payment_reference' => null,
+                'payment_screenshot' => $request->payment_screenshot, // Add this
+                'status' => 'pending',
+            ]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Renewal request submitted. Waiting for staff approval.',
+                'user' => $user,
+            ]);
+    
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Renewal failed: ' . $e->getMessage(),
+            ], 400);
+        }
     }
-}
 
-protected function storeScreenshot($base64Image)
-{
-    try {
-        // Extract image extension
-        preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches);
-        $extension = $matches[1] ?? 'png';
-        
-        // Remove data URL part
-        $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
-        $imageData = base64_decode($imageData);
-        
-        // Generate unique filename
-        $filename = 'payment_screenshots/' . Str::uuid() . '.' . $extension;
-        
-        // Store in public disk (creates symlink from public/storage to storage/app/public)
-        Storage::disk('public')->put($filename, $imageData);
-        
-        return $filename;
-    } catch (\Exception $e) {
-        \Log::error('Failed to store screenshot: ' . $e->getMessage());
-        throw new \Exception('Failed to process payment screenshot');
-    }
-}
-    //
-
-
+    
 /**
  * Get payment history
  */
