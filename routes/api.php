@@ -78,7 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment-history/{rfid_uid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
-    // Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
+    Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
 
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
