@@ -258,47 +258,6 @@ class UserDetailController extends Controller
 
 
 
-    public function uploadPaymentScreenshot(Request $request)
-    {
-        // Validate the incoming request
-        $request->validate([
-            'payment_screenshot' => 'required|image|max:2048', // Max 2MB
-        ]);
-
-        try {
-            if ($request->hasFile('payment_screenshot')) {
-                // Store the file
-                $file = $request->file('payment_screenshot');
-                $filename = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-                
-                // Store in the public 'payment_screenshots' folder
-                $path = $file->storeAs('payment_screenshots', $filename, 'public');
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Image uploaded successfully',
-                    'filePath' => $path
-                ]);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'No file uploaded'
-            ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Upload failed: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Renew membership from mobile app
-     * 
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function renewMembershipApp(Request $request)
     {
         // Validate request
@@ -323,6 +282,21 @@ class UserDetailController extends Controller
         }
     
         try {
+            // Handle screenshot upload if present
+            $screenshotPath = null;
+            if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
+                $imageData = $request->payment_screenshot;
+                $imageData = str_replace('data:image/png;base64,', '', $imageData);
+                $imageData = str_replace(' ', '+', $imageData);
+                $imageName = 'payment_' . time() . '_' . $user->rfid_uid . '.jpg';
+                
+                // Save to storage
+                \Storage::disk('public')->put('payment_screenshots/' . $imageName, base64_decode($imageData));
+                
+                // Get full path
+                $screenshotPath = 'payment_screenshots/' . $imageName;
+            }
+    
             // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
@@ -333,9 +307,6 @@ class UserDetailController extends Controller
                 'needs_approval' => 1,
             ]);
     
-            // Process payment screenshot if provided
-            $paymentScreenshotPath = $request->payment_screenshot;
-    
             // Create Renewal and Payment records
             $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
@@ -345,7 +316,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => $paymentScreenshotPath,
+                'payment_screenshot' => $screenshotPath,
             ]);
     
             MembersPayment::create([
@@ -354,7 +325,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
                 'payment_reference' => null,
-                'payment_screenshot' => $paymentScreenshotPath,
+                'payment_screenshot' => $screenshotPath,
                 'status' => 'pending',
             ]);
     
@@ -371,6 +342,7 @@ class UserDetailController extends Controller
             ], 400);
         }
     }
+
     
 /**
  * Get payment history
