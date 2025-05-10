@@ -381,6 +381,8 @@ class UserDetailController extends Controller
                 'image_url' => $url,
                 'path' => $folder . '/' . $filename
             ]);
+            
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
