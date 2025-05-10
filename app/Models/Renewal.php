@@ -18,7 +18,6 @@ class Renewal extends Model
         'end_date',
         'payment_method', // ✅ Added payment_method here
         'session_status', // Add this
-        'payment_screenshot' // Added this field
 
 
     ];

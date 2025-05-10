@@ -323,12 +323,6 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Process the image if provided
-            $paymentScreenshotPath = null;
-            if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
-                $paymentScreenshotPath = $this->saveBase64Image($request->payment_screenshot, $user->rfid_uid);
-            }
-    
             // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
@@ -338,6 +332,9 @@ class UserDetailController extends Controller
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
+    
+            // Process payment screenshot if provided
+            $paymentScreenshotPath = $request->payment_screenshot;
     
             // Create Renewal and Payment records
             $renewal = Renewal::create([
@@ -372,44 +369,6 @@ class UserDetailController extends Controller
                 'success' => false,
                 'message' => 'Renewal failed: ' . $e->getMessage(),
             ], 400);
-        }
-    }
-    
-    /**
-     * Save base64 encoded image to server and return file path
-     * 
-     * @param string $base64Image Base64 encoded image string
-     * @param string $rfidUid User's RFID UID
-     * @return string|null Path to saved image or null on failure
-     */
-    private function saveBase64Image($base64Image, $rfidUid)
-    {
-        try {
-            // Remove data URI scheme if present (e.g., "data:image/jpeg;base64,")
-            if (strpos($base64Image, ';base64,') !== false) {
-                list(, $base64Image) = explode(';base64,', $base64Image);
-            }
-            
-            // Decode the base64 string
-            $decodedImage = base64_decode($base64Image);
-            
-            // Generate unique filename
-            $filename = 'payment_' . $rfidUid . '_' . time() . '.jpg';
-            
-            // Define upload path (create if doesn't exist)
-            $uploadPath = public_path('uploads/payments');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
-            }
-            
-            // Save image to public directory
-            file_put_contents($uploadPath . '/' . $filename, $decodedImage);
-            
-            // Store uploaded file path in database
-            return 'uploads/payments/' . $filename;
-        } catch (\Exception $e) {
-            \Log::error('Error saving payment screenshot: ' . $e->getMessage());
-            return null;
         }
     }
     

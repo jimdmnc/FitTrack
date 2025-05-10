@@ -78,12 +78,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment-history/{rfid_uid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
-    // Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
-// Add this new route for file uploads
-Route::post('upload-payment-screenshot', [UserDetailController::class, 'uploadPaymentScreenshot']);
+    Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
 
-// Your existing renewal endpoint
-Route::post('renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
 
