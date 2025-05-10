@@ -342,54 +342,54 @@ class UserDetailController extends Controller
 
 
 
-
     public function upload(Request $request)
     {
-        // Validate request
-        $request->validate([
-            'image' => 'required|image|max:10240', // Max 10MB
-            'path' => 'required|string',
+        $validated = $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // 10MB
+            'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i', // Safe path chars
             'is_public' => 'required|boolean'
         ]);
     
         try {
             $image = $request->file('image');
-            $folder = $request->input('path', 'uploads');
-            $isPublic = $request->boolean('is_public', false);
+            $folder = 'uploads/' . trim($validated['path'], '/');
+            $isPublic = (bool)$validated['is_public'];
     
-            // Create a unique filename
+            // Create secure filename
             $extension = $image->getClientOriginalExtension();
-            $filename = time() . '_' . Str::random(10) . '.' . $extension;
+            $filename = 'upload_' . time() . '_' . Str::random(10) . '.' . strtolower($extension);
     
-            // Define the destination path in the public directory
-            $destinationPath = public_path($folder);
+            // Store in organized directory structure (year/month)
+            $storagePath = "{$folder}/" . date('Y/m');
+            $fullPath = $image->storeAs($storagePath, $filename, $isPublic ? 'public' : 'local');
     
-            // Make sure the directory exists
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0755, true);
+            if (!$fullPath) {
+                throw new \Exception("Failed to store image");
             }
     
-            // Move the file to public/uploads
-            $image->move($destinationPath, $filename);
-    
-            // Generate the public URL
-            $url = asset($folder . '/' . $filename);
+            // Generate proper URL based on storage
+            $url = $isPublic 
+                ? asset(Storage::url($fullPath))
+                : route('image.show', ['path' => $fullPath]); // For private images
     
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'imageUrl' => $url, // ← change to camelCase
-                'path' => $folder . '/' . $filename
-            ]);
-            
+                'imageUrl' => $url,
+                'path' => $fullPath
+            ], 200, [], JSON_UNESCAPED_SLASHES);
+    
         } catch (\Exception $e) {
+            Log::error('Image upload failed: ' . $e->getMessage(), [
+                'request' => $request->all()
+            ]);
+    
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload image: ' . $e->getMessage()
+                'message' => 'Upload failed: ' . (config('app.debug') ? $e->getMessage() : 'Internal error')
             ], 500);
         }
     }
-    
 
 
 
