@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\RenewalController;
 
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewMembersController;
@@ -78,8 +79,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/payment-history/{rfid_uid}', [UserDetailController::class, 'getPaymentHistory']);
 
 
-    Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
-    Route::post('/upload-image', [UserDetailController::class, 'upload']);
+    Route::post('/renew-membershipApp', [RenewalController::class, 'renewMembershipApp']);
+    Route::post('/upload-image', [RenewalController::class, 'upload']);
 
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
