@@ -100,24 +100,25 @@ class RenewalController extends Controller
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'amount' => 'required|string',
-            'membership_type' => 'required|string',
+            'payment_method' => 'required|in:cash,gcash',
             'rfid' => 'required|string'
         ]);
     
         try {
             // Store the image
             $path = $request->file('image')->store('payment_screenshots', 'public');
-            
+    
             // Get user ID from RFID
             $user = User::where('rfid_uid', $request->rfid)->firstOrFail();
-            
+    
             // Save to database
             $payment = MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
-                'membership_type' => $request->membership_type,
-                'screenshot_path' => $path,
-                'status' => 'pending'
+                'payment_method' => $request->payment_method,
+                'payment_screenshot' => $path,
+                'status' => 'pending',
+                'payment_date' => now(),
             ]);
     
             return response()->json([
@@ -125,7 +126,7 @@ class RenewalController extends Controller
                 'message' => 'Payment uploaded successfully',
                 'data' => $payment
             ]);
-            
+    
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -133,7 +134,7 @@ class RenewalController extends Controller
             ], 500);
         }
     }
-
+    
 
 
 
