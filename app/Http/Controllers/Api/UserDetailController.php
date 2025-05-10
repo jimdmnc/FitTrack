@@ -326,11 +326,9 @@ class UserDetailController extends Controller
     
             return response()->json([
                 'success' => true,
-                'message' => 'Image uploaded successfully',
-                'imageUrl' => $url, // ← change to camelCase
-                'path' => $folder . '/' . $filename
+                'message' => 'Renewal request submitted. Waiting for staff approval.',
+                'user' => $user,
             ]);
-            
     
         } catch (\Exception $e) {
             return response()->json([
