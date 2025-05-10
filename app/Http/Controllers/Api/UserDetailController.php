@@ -258,6 +258,47 @@ class UserDetailController extends Controller
 
 
 
+    public function uploadPaymentScreenshot(Request $request)
+    {
+        // Validate the incoming request
+        $request->validate([
+            'payment_screenshot' => 'required|image|max:2048', // Max 2MB
+        ]);
+
+        try {
+            if ($request->hasFile('payment_screenshot')) {
+                // Store the file
+                $file = $request->file('payment_screenshot');
+                $filename = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
+                
+                // Store in the public 'payment_screenshots' folder
+                $path = $file->storeAs('payment_screenshots', $filename, 'public');
+                
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Image uploaded successfully',
+                    'filePath' => $path
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'No file uploaded'
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Renew membership from mobile app
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function renewMembershipApp(Request $request)
     {
         // Validate request
@@ -268,7 +309,7 @@ class UserDetailController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
+            'payment_screenshot' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048|required_if:payment_method,gcash',
         ]);
     
         // Find user by RFID
@@ -282,19 +323,12 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Handle screenshot upload if present
+            // Handle file upload if present
             $screenshotPath = null;
-            if ($request->payment_method === 'gcash' && $request->payment_screenshot) {
-                $imageData = $request->payment_screenshot;
-                $imageData = str_replace('data:image/png;base64,', '', $imageData);
-                $imageData = str_replace(' ', '+', $imageData);
-                $imageName = 'payment_' . time() . '_' . $user->rfid_uid . '.jpg';
-                
-                // Save to storage
-                \Storage::disk('public')->put('payment_screenshots/' . $imageName, base64_decode($imageData));
-                
-                // Get full path
-                $screenshotPath = 'payment_screenshots/' . $imageName;
+            if ($request->hasFile('payment_screenshot')) {
+                $file = $request->file('payment_screenshot');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $screenshotPath = $file->storeAs('payment_screenshots', $fileName, 'public');
             }
     
             // Update user membership - both payment methods will be pending approval
@@ -342,7 +376,6 @@ class UserDetailController extends Controller
             ], 400);
         }
     }
-
     
 /**
  * Get payment history
