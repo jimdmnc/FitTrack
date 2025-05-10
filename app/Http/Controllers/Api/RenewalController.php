@@ -95,61 +95,41 @@ class RenewalController extends Controller
 
 
 
-    public function upload(Request $request)
+    public function uploadPayment(Request $request)
     {
-        $validated = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
-            'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
-            'is_public' => 'required|boolean'
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'amount' => 'required|string',
+            'membership_type' => 'required|string',
+            'rfid' => 'required|string'
         ]);
-        
+    
         try {
-            $file = $request->file('image');
+            // Store the image
+            $path = $request->file('image')->store('payment_screenshots', 'public');
             
-            // Use the path provided by the Android app with format checking
-            $basePath = $request->input('path', 'payments');
-            // Ensure it starts with a valid base directory
-            if (!in_array($basePath, ['payments', 'profile', 'member_payments'])) {
-                $basePath = 'payments';
-            }
+            // Get user ID from RFID
+            $user = User::where('rfid_uid', $request->rfid)->firstOrFail();
             
-            // Build the complete path
-            $path = $basePath . "/" . date('Y/m/d');
-            $filename = 'image_' . time() . '_' . Str::random(8) . '.' . $file->extension();
-            
-            // Determine storage disk based on public flag
-            $disk = $request->boolean('is_public') ? 'public' : 'local';
-            
-            // Store file
-            $fullPath = $file->storeAs(
-                $path,
-                $filename,
-                $disk
-            );
-            
-            // Generate URL for public files
-            $imageUrl = $disk === 'public' 
-                ? Storage::disk('public')->url($fullPath) 
-                : null;
-                
-            // Return response matching the Android model expectations
+            // Save to database
+            $payment = Payment::create([
+                'user_id' => $user->id,
+                'amount' => $request->amount,
+                'membership_type' => $request->membership_type,
+                'screenshot_path' => $path,
+                'status' => 'pending'
+            ]);
+    
             return response()->json([
                 'success' => true,
-                'message' => 'Image uploaded successfully',
-                'imageUrl' => $imageUrl ?? $fullPath, // Field name matches Android model
-                'path' => $fullPath
+                'message' => 'Payment uploaded successfully',
+                'data' => $payment
             ]);
             
         } catch (\Exception $e) {
-            Log::channel('uploads')->error('Image upload failed', [
-                'error' => $e->getMessage(),
-                'request' => $request->except(['image'])
-            ]);
-            
             return response()->json([
                 'success' => false,
-                'message' => 'Upload failed: ' . $e->getMessage(),
-                'error_code' => 'UPLOAD_FAILED'
+                'message' => 'Failed to upload payment: ' . $e->getMessage()
             ], 500);
         }
     }
