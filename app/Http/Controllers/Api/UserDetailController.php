@@ -351,35 +351,36 @@ class UserDetailController extends Controller
             'path' => 'required|string',
             'is_public' => 'required|boolean'
         ]);
-
+    
         try {
             $image = $request->file('image');
-            $path = $request->input('path', 'uploads');
+            $folder = $request->input('path', 'uploads');
             $isPublic = $request->boolean('is_public', false);
-            
+    
             // Create a unique filename
             $extension = $image->getClientOriginalExtension();
             $filename = time() . '_' . Str::random(10) . '.' . $extension;
-            
-            // Store the file
-            $disk = 'public';
-            $path = 'uploads'; // Save to public/uploads            $fullPath = $path . '/' . $filename;
-            
-            // Upload the file
-            $image->storeAs($path, $filename, $disk);
-            
-            // Generate the URL
-            $url = $isPublic 
-                ? asset(Storage::url($fullPath))  // For public storage
-                : null;                           // For private storage, no direct URL
-            
+    
+            // Define the destination path in the public directory
+            $destinationPath = public_path($folder);
+    
+            // Make sure the directory exists
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+    
+            // Move the file to public/uploads
+            $image->move($destinationPath, $filename);
+    
+            // Generate the public URL
+            $url = asset($folder . '/' . $filename);
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
                 'image_url' => $url,
-                'path' => $fullPath
+                'path' => $folder . '/' . $filename
             ]);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -387,6 +388,7 @@ class UserDetailController extends Controller
             ], 500);
         }
     }
+    
 
 
 
