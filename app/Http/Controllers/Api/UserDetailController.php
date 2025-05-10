@@ -345,68 +345,39 @@ class UserDetailController extends Controller
     public function upload(Request $request)
     {
         $validated = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // 10MB
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
             'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
-            'is_public' => 'required|boolean',
-            'file_name' => 'sometimes|string|max:255' // New optional field
+            'is_public' => 'required|boolean'
         ]);
     
-        DB::beginTransaction();
         try {
-            $image = $request->file('image');
-            $folder = 'uploads/' . trim($validated['path'], '/');
-            $isPublic = (bool)$validated['is_public'];
+            $file = $request->file('image');
+            $path = "member_payments/gcash/" . date('Y/m/d');
+            $filename = 'payment_' . time() . '_' . Str::random(8) . '.' . $file->extension();
     
-            // Use client filename if provided, otherwise generate one
-            $filename = $request->has('file_name') 
-                ? pathinfo($validated['file_name'], PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension()
-                : 'upload_' . time() . '_' . Str::random(10) . '.' . strtolower($image->getClientOriginalExtension());
-    
-            // Organized storage path (year/month/day)
-            $storagePath = "{$folder}/" . date('Y/m/d');
-            
-            // Store with visibility setting
-            $fullPath = $image->storeAs(
-                $storagePath, 
-                $filename, 
-                $isPublic ? 'public' : 'local'
+            // Store file (matches Android's path)
+            $fullPath = $file->storeAs(
+                $path,
+                $filename,
+                $request->boolean('is_public') ? 'public' : 'local'
             );
-    
-            if (!$fullPath) {
-                throw new \Exception("File storage failed");
-            }
-    
-            // Generate appropriate URL
-            $url = $isPublic
-                ? Storage::url($fullPath)
-                : route('image.show', ['path' => encrypt($fullPath)]);
-    
-            DB::commit();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Image uploaded successfully',
-                'data' => [
-                    'url' => $url,
-                    'path' => $fullPath,
-                    'storage' => $isPublic ? 'public' : 'private',
-                    'size' => $image->getSize(),
-                    'mimeType' => $image->getMimeType()
-                ]
-            ], 200, [], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
+                'message' => 'Payment verified',
+                'imageUrl' => Storage::url($fullPath),
+                'path' => $fullPath
+            ]);
     
         } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('ImageUploadError: ' . $e->getMessage(), [
-                'trace' => $e->getTraceAsString(),
+            Log::channel('payments')->error('GCash upload failed', [
+                'error' => $e->getMessage(),
                 'request' => $request->except(['image'])
             ]);
     
             return response()->json([
                 'success' => false,
-                'message' => config('app.debug') 
-                    ? $e->getMessage() 
-                    : 'Image upload failed. Please try again.',
+                'message' => 'Payment verification failed',
                 'error_code' => 'UPLOAD_FAILED'
             ], 500);
         }
