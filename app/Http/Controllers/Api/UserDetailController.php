@@ -344,24 +344,38 @@ class UserDetailController extends Controller
 
     public function upload(Request $request)
     {
-        $validated = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
-            'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
-            'is_public' => 'required|boolean'
-        ]);
+        // First validate that the request includes an image
+        try {
+            $validated = $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240',
+                'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
+                'is_public' => 'required|boolean'
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Image upload validation failed', [
+                'errors' => $e->errors(),
+                'request' => $request->except(['image'])
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed: ' . implode(', ', array_map(function($err) {
+                    return $err[0] ?? 'Unknown error';
+                }, $e->errors())),
+                'error_code' => 'VALIDATION_FAILED'
+            ], 422);
+        }
         
         try {
             $file = $request->file('image');
             
-            // Use the path provided by the Android app with format checking
+            // Use the path provided by the Android app with safety checks
             $basePath = $request->input('path', 'payments');
-            // Ensure it starts with a valid base directory
-            if (!in_array($basePath, ['payments', 'profile', 'member_payments'])) {
-                $basePath = 'payments';
-            }
+            // Remove leading/trailing slashes to avoid directory traversal issues
+            $basePath = trim($basePath, '/');
             
             // Build the complete path
-            $path = $basePath . "/" . date('Y/m/d');
+            $path = $basePath;
             $filename = 'image_' . time() . '_' . Str::random(8) . '.' . $file->extension();
             
             // Determine storage disk based on public flag
@@ -374,22 +388,24 @@ class UserDetailController extends Controller
                 $disk
             );
             
-            // Generate URL for public files
+            // Generate URL for public files or path for private files
             $imageUrl = $disk === 'public' 
                 ? Storage::disk('public')->url($fullPath) 
-                : null;
-                
+                : $fullPath;
+            
             // Return response matching the Android model expectations
+            // Ensure all fields and syntax is valid JSON
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'imageUrl' => $imageUrl ?? $fullPath, // Field name matches Android model
+                'imageUrl' => $imageUrl,
                 'path' => $fullPath
             ]);
             
         } catch (\Exception $e) {
-            Log::channel('uploads')->error('Image upload failed', [
+            Log::error('Image upload failed', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'request' => $request->except(['image'])
             ]);
             
