@@ -99,9 +99,7 @@ class RenewalController extends Controller
     {
         $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'amount' => 'required|string',
-            'payment_method' => 'required|in:cash,gcash',
-            'rfid' => 'required|string'
+         
         ]);
     
         try {

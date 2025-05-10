@@ -11,7 +11,7 @@ class MembersPayment extends Model {
 
     protected $table = 'members_payment';
 
-    protected $fillable = ['rfid_uid', 'amount', 'payment_method', 'payment_date'];
+    protected $fillable = ['rfid_uid', 'amount', 'payment_method', 'payment_date', 'payment_screenshot'];
 
     public function user() {
         return $this->belongsTo(User::class, 'rfid_uid', 'rfid_uid');
