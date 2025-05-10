@@ -309,7 +309,7 @@ class UserDetailController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'nullable|file|image|mimes:jpeg,png,jpg,gif|max:2048|required_if:payment_method,gcash',
+            'payment_screenshot' => 'required_if:payment_method,gcash|file|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
     
         // Find user by RFID
@@ -323,12 +323,12 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Handle file upload if present
-            $screenshotPath = null;
-            if ($request->hasFile('payment_screenshot')) {
+            // Handle file upload if payment method is gcash
+            $paymentScreenshotPath = null;
+            if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
                 $file = $request->file('payment_screenshot');
                 $fileName = time() . '_' . $file->getClientOriginalName();
-                $screenshotPath = $file->storeAs('payment_screenshots', $fileName, 'public');
+                $paymentScreenshotPath = $file->storeAs('payment_screenshots', $fileName, 'public');
             }
     
             // Update user membership - both payment methods will be pending approval
@@ -350,7 +350,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => $screenshotPath,
+                'payment_screenshot' => $paymentScreenshotPath,
             ]);
     
             MembersPayment::create([
@@ -359,7 +359,7 @@ class UserDetailController extends Controller
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
                 'payment_reference' => null,
-                'payment_screenshot' => $screenshotPath,
+                'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
     
