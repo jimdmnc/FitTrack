@@ -79,6 +79,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::post('/renew-membershipApp', [UserDetailController::class, 'renewMembershipApp']);
+    Route::post('/upload-image', [UserDetailController::class, 'upload']);
 
 
     Route::post('/change-password', [AuthController::class, 'changePassword']);
