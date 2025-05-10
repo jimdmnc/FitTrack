@@ -378,9 +378,10 @@ class UserDetailController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'image_url' => $url,
+                'imageUrl' => $url, // ← change to camelCase
                 'path' => $folder . '/' . $filename
             ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
