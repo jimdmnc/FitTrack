@@ -112,8 +112,8 @@ class RenewalController extends Controller
             $user = User::where('rfid_uid', $request->rfid)->firstOrFail();
             
             // Save to database
-            $payment = Payment::create([
-                'user_id' => $user->id,
+            $payment = MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'membership_type' => $request->membership_type,
                 'screenshot_path' => $path,
