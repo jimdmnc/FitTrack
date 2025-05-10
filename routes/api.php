@@ -11,7 +11,7 @@ use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\RenewalController;
+use App\Http\Controllers\Api\RenewalController;
 
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewMembersController;
