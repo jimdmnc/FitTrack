@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 use App\Models\Renewal;
@@ -372,6 +373,59 @@ class UserDetailController extends Controller
         }
     }
     
+
+
+
+
+
+    public function upload(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'image' => 'required|image|max:10240', // Max 10MB
+            'path' => 'required|string',
+            'is_public' => 'required|boolean'
+        ]);
+
+        try {
+            $image = $request->file('image');
+            $path = $request->input('path', 'uploads');
+            $isPublic = $request->boolean('is_public', false);
+            
+            // Create a unique filename
+            $extension = $image->getClientOriginalExtension();
+            $filename = time() . '_' . Str::random(10) . '.' . $extension;
+            
+            // Store the file
+            $disk = $isPublic ? 'public' : 'local';
+            $fullPath = $path . '/' . $filename;
+            
+            // Upload the file
+            $image->storeAs($path, $filename, $disk);
+            
+            // Generate the URL
+            $url = $isPublic 
+                ? asset(Storage::url($fullPath))  // For public storage
+                : null;                           // For private storage, no direct URL
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Image uploaded successfully',
+                'image_url' => $url,
+                'path' => $fullPath
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload image: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
+
+
 /**
  * Get payment history
  */
