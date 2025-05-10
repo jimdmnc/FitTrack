@@ -259,41 +259,6 @@ class UserDetailController extends Controller
 
 
 
-    public function uploadPaymentScreenshot(Request $request)
-    {
-        // Validate the incoming request
-        $request->validate([
-            'payment_screenshot' => 'required|image|max:2048', // Max 2MB
-        ]);
-
-        try {
-            if ($request->hasFile('payment_screenshot')) {
-                // Store the file
-                $file = $request->file('payment_screenshot');
-                $filename = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-                
-                // Store in the public 'payment_screenshots' folder
-                $path = $file->storeAs('payment_screenshots', $filename, 'public');
-                
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Image uploaded successfully',
-                    'filePath' => $path
-                ]);
-            }
-            
-            return response()->json([
-                'success' => false,
-                'message' => 'No file uploaded'
-            ], 400);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Upload failed: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
     /**
      * Renew membership from mobile app
      * 
@@ -397,8 +362,8 @@ class UserDetailController extends Controller
             $filename = time() . '_' . Str::random(10) . '.' . $extension;
             
             // Store the file
-            $disk = $isPublic ? 'public' : 'local';
-            $fullPath = $path . '/' . $filename;
+            $disk = 'public';
+            $path = 'uploads'; // Save to public/uploads            $fullPath = $path . '/' . $filename;
             
             // Upload the file
             $image->storeAs($path, $filename, $disk);
