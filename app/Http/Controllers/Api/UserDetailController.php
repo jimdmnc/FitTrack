@@ -309,7 +309,7 @@ class UserDetailController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'required_if:payment_method,gcash|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
         ]);
     
         // Find user by RFID
@@ -323,14 +323,6 @@ class UserDetailController extends Controller
         }
     
         try {
-            // Handle file upload if payment method is gcash
-            $paymentScreenshotPath = null;
-            if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
-                $file = $request->file('payment_screenshot');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $paymentScreenshotPath = $file->storeAs('payment_screenshots', $fileName, 'public');
-            }
-    
             // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
@@ -340,6 +332,9 @@ class UserDetailController extends Controller
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
+    
+            // Process payment screenshot if provided
+            $paymentScreenshotPath = $request->payment_screenshot;
     
             // Create Renewal and Payment records
             $renewal = Renewal::create([
