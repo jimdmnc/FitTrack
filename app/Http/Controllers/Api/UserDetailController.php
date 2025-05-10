@@ -346,51 +346,71 @@ class UserDetailController extends Controller
     {
         $validated = $request->validate([
             'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:10240', // 10MB
-            'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i', // Safe path chars
-            'is_public' => 'required|boolean'
+            'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
+            'is_public' => 'required|boolean',
+            'file_name' => 'sometimes|string|max:255' // New optional field
         ]);
     
+        DB::beginTransaction();
         try {
             $image = $request->file('image');
             $folder = 'uploads/' . trim($validated['path'], '/');
             $isPublic = (bool)$validated['is_public'];
     
-            // Create secure filename
-            $extension = $image->getClientOriginalExtension();
-            $filename = 'upload_' . time() . '_' . Str::random(10) . '.' . strtolower($extension);
+            // Use client filename if provided, otherwise generate one
+            $filename = $request->has('file_name') 
+                ? pathinfo($validated['file_name'], PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension()
+                : 'upload_' . time() . '_' . Str::random(10) . '.' . strtolower($image->getClientOriginalExtension());
     
-            // Store in organized directory structure (year/month)
-            $storagePath = "{$folder}/" . date('Y/m');
-            $fullPath = $image->storeAs($storagePath, $filename, $isPublic ? 'public' : 'local');
+            // Organized storage path (year/month/day)
+            $storagePath = "{$folder}/" . date('Y/m/d');
+            
+            // Store with visibility setting
+            $fullPath = $image->storeAs(
+                $storagePath, 
+                $filename, 
+                $isPublic ? 'public' : 'local'
+            );
     
             if (!$fullPath) {
-                throw new \Exception("Failed to store image");
+                throw new \Exception("File storage failed");
             }
     
-            // Generate proper URL based on storage
-            $url = $isPublic 
-                ? asset(Storage::url($fullPath))
-                : route('image.show', ['path' => $fullPath]); // For private images
+            // Generate appropriate URL
+            $url = $isPublic
+                ? Storage::url($fullPath)
+                : route('image.show', ['path' => encrypt($fullPath)]);
+    
+            DB::commit();
     
             return response()->json([
                 'success' => true,
                 'message' => 'Image uploaded successfully',
-                'imageUrl' => $url,
-                'path' => $fullPath
-            ], 200, [], JSON_UNESCAPED_SLASHES);
+                'data' => [
+                    'url' => $url,
+                    'path' => $fullPath,
+                    'storage' => $isPublic ? 'public' : 'private',
+                    'size' => $image->getSize(),
+                    'mimeType' => $image->getMimeType()
+                ]
+            ], 200, [], JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE);
     
         } catch (\Exception $e) {
-            Log::error('Image upload failed: ' . $e->getMessage(), [
-                'request' => $request->all()
+            DB::rollBack();
+            Log::error('ImageUploadError: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->except(['image'])
             ]);
     
             return response()->json([
                 'success' => false,
-                'message' => 'Upload failed: ' . (config('app.debug') ? $e->getMessage() : 'Internal error')
+                'message' => config('app.debug') 
+                    ? $e->getMessage() 
+                    : 'Image upload failed. Please try again.',
+                'error_code' => 'UPLOAD_FAILED'
             ], 500);
         }
     }
-
 
 
 
