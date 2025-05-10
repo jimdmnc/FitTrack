@@ -349,40 +349,57 @@ class UserDetailController extends Controller
             'path' => 'required|string|regex:/^[a-z0-9_\/-]+$/i',
             'is_public' => 'required|boolean'
         ]);
-    
+        
         try {
             $file = $request->file('image');
-            $path = "member_payments/gcash/" . date('Y/m/d');
-            $filename = 'payment_' . time() . '_' . Str::random(8) . '.' . $file->extension();
-    
-            // Store file (matches Android's path)
+            
+            // Use the path provided by the Android app with format checking
+            $basePath = $request->input('path', 'payments');
+            // Ensure it starts with a valid base directory
+            if (!in_array($basePath, ['payments', 'profile', 'member_payments'])) {
+                $basePath = 'payments';
+            }
+            
+            // Build the complete path
+            $path = $basePath . "/" . date('Y/m/d');
+            $filename = 'image_' . time() . '_' . Str::random(8) . '.' . $file->extension();
+            
+            // Determine storage disk based on public flag
+            $disk = $request->boolean('is_public') ? 'public' : 'local';
+            
+            // Store file
             $fullPath = $file->storeAs(
                 $path,
                 $filename,
-                $request->boolean('is_public') ? 'public' : 'local'
+                $disk
             );
-    
+            
+            // Generate URL for public files
+            $imageUrl = $disk === 'public' 
+                ? Storage::disk('public')->url($fullPath) 
+                : null;
+                
+            // Return response matching the Android model expectations
             return response()->json([
                 'success' => true,
-                'message' => 'Payment verified',
-                'imageUrl' => Storage::url($fullPath),
+                'message' => 'Image uploaded successfully',
+                'imageUrl' => $imageUrl ?? $fullPath, // Field name matches Android model
                 'path' => $fullPath
             ]);
-    
+            
         } catch (\Exception $e) {
-            Log::channel('payments')->error('GCash upload failed', [
+            Log::channel('uploads')->error('Image upload failed', [
                 'error' => $e->getMessage(),
                 'request' => $request->except(['image'])
             ]);
-    
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Payment verification failed',
+                'message' => 'Upload failed: ' . $e->getMessage(),
                 'error_code' => 'UPLOAD_FAILED'
             ], 500);
         }
     }
-
 
 
 /**
