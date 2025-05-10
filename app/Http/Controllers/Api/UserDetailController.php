@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use App\Models\User;
 
 use App\Models\Renewal;
@@ -260,31 +261,34 @@ class UserDetailController extends Controller
 
     public function uploadPaymentScreenshot(Request $request)
     {
-        // Validate the incoming request
-        $request->validate([
-            'payment_screenshot' => 'required|image|max:2048', // Max 2MB
-        ]);
-
         try {
-            if ($request->hasFile('payment_screenshot')) {
-                // Store the file
-                $file = $request->file('payment_screenshot');
-                $filename = 'payment_' . time() . '.' . $file->getClientOriginalExtension();
-                
-                // Store in the public 'payment_screenshots' folder
-                $path = $file->storeAs('payment_screenshots', $filename, 'public');
-                
+            // Validate file
+            $request->validate([
+                'file' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+            ]);
+            
+            if (!$request->hasFile('file')) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Image uploaded successfully',
-                    'filePath' => $path
-                ]);
+                    'success' => false,
+                    'message' => 'No file uploaded'
+                ], 400);
             }
             
+            $file = $request->file('file');
+            
+            // Generate a unique filename
+            $fileName = 'payment_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            
+            // Store the file in the public storage
+            $filePath = $file->storeAs('payment_screenshots', $fileName, 'public');
+            
+            // Return success response with file path
             return response()->json([
-                'success' => false,
-                'message' => 'No file uploaded'
-            ], 400);
+                'success' => true,
+                'message' => 'File uploaded successfully',
+                'filePath' => $filePath
+            ]);
+            
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -301,81 +305,112 @@ class UserDetailController extends Controller
      */
     public function renewMembershipApp(Request $request)
     {
-        // Validate request
-        $request->validate([
+        // Validate request with more specific messages
+        $validated = $request->validate([
             'rfid_uid' => 'required|exists:users,rfid_uid',
-            'membership_type' => 'required',
-            'start_date' => 'required|date',
+            'membership_type' => 'required|in:regular,premium,vip', // Add your actual membership types
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
-            'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'required_if:payment_method,gcash|file|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'amount' => 'required|numeric|min:100', // Set your minimum amount
+            'payment_screenshot' => 'required_if:payment_method,gcash|file|image|mimes:jpeg,png,jpg|max:5120', // 5MB max
+        ], [
+            'payment_screenshot.required_if' => 'Payment screenshot is required for GCash payments',
+            'end_date.after' => 'End date must be after start date',
         ]);
     
-        // Find user by RFID
-        $user = User::where('rfid_uid', $request->rfid_uid)->first();
+        // Find user by RFID with eager loading if needed
+        $user = User::where('rfid_uid', $validated['rfid_uid'])->firstOrFail();
     
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found'
-            ], 404);
-        }
-    
+        // Use database transaction for atomic operations
         try {
-            // Handle file upload if payment method is gcash
+            DB::beginTransaction();
+    
+            // Handle file upload
             $paymentScreenshotPath = null;
             if ($request->payment_method === 'gcash' && $request->hasFile('payment_screenshot')) {
                 $file = $request->file('payment_screenshot');
-                $fileName = time() . '_' . $file->getClientOriginalName();
-                $paymentScreenshotPath = $file->storeAs('payment_screenshots', $fileName, 'public');
+                $fileName = 'payment_' . time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+                
+                // Store in a structured directory by user ID
+                $paymentScreenshotPath = $file->storeAs(
+                    "payments/{$user->id}/screenshots",
+                    $fileName,
+                    'public'
+                );
             }
     
-            // Update user membership - both payment methods will be pending approval
+            // Update user membership
             $user->update([
-                'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'member_status' => 'expired', 
+                'membership_type' => $validated['membership_type'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'member_status' => 'pending_renewal', // More descriptive status
                 'session_status' => 'pending',
-                'needs_approval' => 1,
+                'needs_approval' => true,
             ]);
     
-            // Create Renewal and Payment records
+            // Create Renewal record
             $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
-                'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
-                'payment_method' => $request->payment_method,
-                'status' => 'pending',
-                'payment_reference' => null,
+                'membership_type' => $validated['membership_type'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'payment_method' => $validated['payment_method'],
+                'amount' => $validated['amount'],
+                'status' => 'pending_verification',
                 'payment_screenshot' => $paymentScreenshotPath,
+                'submitted_at' => now(),
             ]);
     
-            MembersPayment::create([
+            // Create Payment record
+            $payment = MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
-                'amount' => $request->amount,
-                'payment_method' => $request->payment_method,
+                'renewal_id' => $renewal->id, // Link to renewal
+                'amount' => $validated['amount'],
+                'payment_method' => $validated['payment_method'],
                 'payment_date' => now(),
-                'payment_reference' => null,
                 'payment_screenshot' => $paymentScreenshotPath,
-                'status' => 'pending',
+                'status' => 'pending_verification',
+                'verified_by' => null,
+                'verified_at' => null,
             ]);
+    
+            // Optionally: Send notification to admin
+            // Notification::send($adminUsers, new NewPaymentNotification($payment));
+    
+            DB::commit();
     
             return response()->json([
                 'success' => true,
-                'message' => 'Renewal request submitted. Waiting for staff approval.',
-                'user' => $user,
+                'message' => 'Renewal request submitted successfully. Waiting for verification.',
+                'data' => [
+                    'user' => $user->only(['id', 'name', 'membership_type', 'start_date', 'end_date']),
+                    'payment' => [
+                        'amount' => $payment->amount,
+                        'method' => $payment->payment_method,
+                        'status' => $payment->status,
+                        'screenshot_url' => $paymentScreenshotPath ? Storage::url($paymentScreenshotPath) : null,
+                    ]
+                ]
             ]);
     
         } catch (\Exception $e) {
+            DB::rollBack();
+            
+            Log::error('Renewal failed: ' . $e->getMessage(), [
+                'user_id' => $user->id ?? null,
+                'request' => $request->all()
+            ]);
+    
             return response()->json([
                 'success' => false,
-                'message' => 'Renewal failed: ' . $e->getMessage(),
-            ], 400);
+                'message' => 'Renewal processing failed. Please try again.',
+                'error' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
         }
     }
+
     
 /**
  * Get payment history
