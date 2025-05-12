@@ -135,10 +135,10 @@ Route::middleware('auth')->group(function () {
         return back()->with('status', 'Verification link sent!');
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-    // Member routes
-    Route::prefix('member')->group(function () {
-        Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
-    });
+    // // Member routes
+    // Route::prefix('member')->group(function () {
+    //     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
+    // });
     
 
 
@@ -156,7 +156,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('announcements', AnnouncementController::class);
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     
 
