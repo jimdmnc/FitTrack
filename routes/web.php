@@ -13,6 +13,7 @@ use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\StaffApprovalController;
+use App\Http\Controllers\Staff\AnnouncementController;
 use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
 
@@ -154,12 +155,11 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::prefix('admin')->group(function () {
         Route::get('dashboard', function () {
             return view('dashboard');
         })->name('dashboard');
+
         Route::resource('announcements', AnnouncementController::class);
-    });
     
 
 });
