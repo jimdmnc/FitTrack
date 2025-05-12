@@ -415,7 +415,7 @@
 
 
  <!-- Announcements List -->
- <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+ <div class="glass-card1 shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
     <h2 class="text-2xl font-semibold p-5 bg-gray-900 text-gray-100 border-b border-gray-800">Announcements</h2>
     <table class="min-w-full">
         <thead class="bg-gray-900">
