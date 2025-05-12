@@ -9,19 +9,21 @@ use Illuminate\Http\Request;
 class AnnouncementController extends Controller
 {
     /**
-     * Display a listing of the announcements.
+     * Display a listing of the announcements (unused, as dashboard handles this).
      */
     public function index()
     {
+        // This method is unused since announcements are displayed on the dashboard
         $announcements = Announcement::latest()->get();
-        return view('announcements.index', compact('announcements'));
+        return view('dashboard', compact('announcements'));
     }
 
     /**
-     * Show the form for creating a new announcement.
+     * Show the form for creating a new announcement (unused, as modal handles this).
      */
     public function create()
     {
+        // This method is unused since the modal in dashboard.blade.php handles creation
         return view('announcements.create');
     }
 
