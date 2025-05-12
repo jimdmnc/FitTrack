@@ -155,12 +155,11 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::resource('announcements', AnnouncementController::class);
-// Dashboard route
-Route::get('dashboard', function () {
-    $announcements = Announcement::latest()->get();
-    return view('dashboard', compact('announcements'));
-})->name('dashboard');
+        Route::get('dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
+
+        Route::resource('announcements', AnnouncementController::class);
     
 
 });
