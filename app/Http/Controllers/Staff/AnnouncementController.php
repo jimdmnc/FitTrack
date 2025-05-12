@@ -13,6 +13,7 @@ class AnnouncementController extends Controller
      */
     public function index()
     {
+        // This method is unused since announcements are displayed on the dashboard
         $announcements = Announcement::latest()->get();
         return view('dashboard', compact('announcements'));
     }
@@ -22,6 +23,7 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
+        // This method is unused since the modal in dashboard.blade.php handles creation
         return view('announcements.create');
     }
 
@@ -47,7 +49,7 @@ class AnnouncementController extends Controller
 
         try {
             Announcement::create($validated);
-            return redirect()->route('staff.dashboard')->with('success', 'Announcement created successfully.');
+            return redirect()->route('dashboard')->with('success', 'Announcement created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to create announcement. Please try again.');
         }
@@ -74,7 +76,7 @@ class AnnouncementController extends Controller
         ]);
 
         $announcement->update($request->all());
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
+        return redirect()->route('dashboard')->with('success', 'Announcement updated successfully.');
     }
 
     /**
@@ -83,6 +85,6 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement deleted successfully.');
+        return redirect()->route('dashboard')->with('success', 'Announcement deleted successfully.');
     }
 }
