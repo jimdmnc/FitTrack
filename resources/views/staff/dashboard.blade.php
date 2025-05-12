@@ -225,6 +225,48 @@
         </div>
     </div>
 
+
+
+
+
+
+
+    <div id="createAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+        <h2 class="text-xl font-bold mb-4 text-gray-800">Create Announcement</h2>
+        <form action="{{ route('admin.announcements.store') }}" method="POST">
+            @csrf
+            <div class="mb-4">
+                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                <input type="text" name="title" id="title" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+            </div>
+            <div class="mb-4">
+                <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
+                <textarea name="content" id="content" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required></textarea>
+            </div>
+            <div class="mb-4">
+                <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule (Optional)</label>
+                <input type="datetime-local" name="schedule" id="schedule" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]">
+            </div>
+            <div class="mb-4">
+                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                <select name="type" id="type" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+                    <option value="Maintenance">Maintenance</option>
+                    <option value="Event">Event</option>
+                    <option value="Update">Update</option>
+                </select>
+            </div>
+            <div class="flex justify-end space-x-2">
+                <button type="button" id="closeModalBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Cancel</button>
+                <button type="submit" class="bg-[#FF5722] text-white px-4 py-2 rounded hover:bg-[#e64a19] transition">Save</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+
+
         
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
