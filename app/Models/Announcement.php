@@ -10,4 +10,8 @@ class Announcement extends Model
     use HasFactory;
 
     protected $fillable = ['title', 'content', 'schedule', 'type'];
+
+    protected $casts = [
+        'schedule' => 'datetime',
+    ];
 }
