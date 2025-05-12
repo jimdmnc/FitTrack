@@ -9,20 +9,20 @@ use Illuminate\Http\Request;
 class AnnouncementController extends Controller
 {
     /**
-     * Display a listing of the announcements (unused, as dashboard handles this).
+     * Display a listing of the announcements.
      */
     public function index()
     {
         $announcements = Announcement::latest()->get();
-        return view('dashboard', compact('announcements'));
+        return view('admin.announcements.index', compact('announcements'));
     }
 
     /**
-     * Show the form for creating a new announcement (unused, as modal handles this).
+     * Show the form for creating a new announcement.
      */
     public function create()
     {
-        return view('announcements.create');
+        return view('admin.announcements.create');
     }
 
     /**
@@ -47,7 +47,7 @@ class AnnouncementController extends Controller
 
         try {
             Announcement::create($validated);
-            return redirect()->route('staff.dashboard')->with('success', 'Announcement created successfully.');
+            return redirect()->route('admin.dashboard')->with('success', 'Announcement created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to create announcement. Please try again.');
         }
@@ -58,7 +58,7 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
-        return view('announcements.edit', compact('announcement'));
+        return view('admin.announcements.edit', compact('announcement'));
     }
 
     /**
@@ -74,7 +74,7 @@ class AnnouncementController extends Controller
         ]);
 
         $announcement->update($request->all());
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement updated successfully.');
     }
 
     /**
@@ -83,6 +83,6 @@ class AnnouncementController extends Controller
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement deleted successfully.');
+        return redirect()->route('admin.announcements.index')->with('success', 'Announcement deleted successfully.');
     }
 }
