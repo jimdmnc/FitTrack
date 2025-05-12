@@ -265,7 +265,29 @@
 </div>
 
 
+<script>
 
+document.addEventListener('DOMContentLoaded', () => {
+            const openModalBtn = document.getElementById('openModalBtn');
+            const modal = document.getElementById('createAnnouncementModal');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            openModalBtn.addEventListener('click', () => {
+                modal.classList.remove('hidden');
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.add('hidden');
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.add('hidden');
+                }
+            });
+        });
+
+</script>
 
         
         <!-- Stats Cards -->
