@@ -317,47 +317,57 @@
         
 
  <!-- Announcements List -->
- <div class="bg-white shadow-md rounded-lg">
-            <h2 class="text-xl font-bold p-4 text-gray-800">Announcements</h2>
-            <table class="min-w-full">
-                <thead>
-                    <tr>
-                        <th class="py-2 px-4 border-b text-left text-gray-600">Title</th>
-                        <th class="py-2 px-4 border-b text-left text-gray-600">Type</th>
-                        <th class="py-2 px-4 border-b text-left text-gray-600">Schedule</th>
-                        <th class="py-2 px-4 border-b text-left text-gray-600">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($announcements as $announcement)
-                        <tr>
-                            <td class="border px-4 py-2">{{ $announcement->title }}</td>
-                            <td class="border px-4 py-2">{{ $announcement->type }}</td>
-                            <td class="border px-4 py-2">
-                                @if ($announcement->schedule)
-                                    {{ $announcement->schedule instanceof \Carbon\Carbon ? $announcement->schedule->format('Y-m-d H:i') : \Carbon\Carbon::parse($announcement->schedule)->format('Y-m-d H:i') }}
-                                @else
-                                    N/A
-                                @endif
-                            </td>
-                            <td class="border px-4 py-2">
-                                <a href="{{ route('announcements.edit', $announcement) }}" class="text-blue-500 hover:underline">Edit</a>
-                                <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-500 hover:underline">Delete</button>
-                                </form>
-                            </td>
-                        </tr>
-                    @endforeach
-                    @if ($announcements->isEmpty())
-                        <tr>
-                            <td colspan="4" class="border px-4 py-2 text-center text-gray-500">No announcements found.</td>
-                        </tr>
-                    @endif
-                </tbody>
-            </table>
-        </div>
+ <div class="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-100">
+    <h2 class="text-2xl font-semibold p-5 bg-gray-50 text-gray-800 border-b border-gray-200">Announcements</h2>
+    <table class="min-w-full">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="py-3 px-5 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Title</th>
+                <th class="py-3 px-5 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Type</th>
+                <th class="py-3 px-5 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Schedule</th>
+                <th class="py-3 px-5 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+            @foreach ($announcements as $announcement)
+                <tr class="hover:bg-gray-50 transition duration-150 ease-in-out">
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ $announcement->title }}</div>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            {{ $announcement->type }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500">
+                        @if ($announcement->schedule)
+                            {{ $announcement->schedule instanceof \Carbon\Carbon ? $announcement->schedule->format('Y-m-d H:i') : \Carbon\Carbon::parse($announcement->schedule)->format('Y-m-d H:i') }}
+                        @else
+                            N/A
+                        @endif
+                    </td>
+                    <td class="px-5 py-4 whitespace-nowrap text-sm font-medium">
+                        <a href="{{ route('announcements.edit', $announcement) }}" class="text-blue-600 hover:text-blue-900 mr-3">Edit</a>
+                        <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+            @if ($announcements->isEmpty())
+                <tr>
+                    <td colspan="4" class="px-5 py-4 text-center text-gray-500">
+                        <div class="bg-gray-100 rounded-lg p-4">
+                            No announcements found.
+                        </div>
+                    </td>
+                </tr>
+            @endif
+        </tbody>
+    </table>
+</div>
 
 
 
