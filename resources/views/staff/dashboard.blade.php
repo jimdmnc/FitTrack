@@ -236,12 +236,7 @@
                     </h1>
                     <p class="text-gray-200 mt-2">Track and analyze the gym's performance</p>
                 </div>
-                <!-- Right Section: Search, Feedback, Notifications, and Create Announcement -->
-                <div class="flex items-center space-x-2">
-                    <button id="openModalBtn" class="bg-[#FF5722] text-white px-4 py-2 rounded-full hover:bg-[#e64a19] transition-all duration-300">
-                        Create Announcement
-                    </button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -498,7 +493,15 @@
 
     <!-- Announcements List -->
     <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
-        <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
+        <div class="flex flex-col md:flex-row justify-between items-center">
+            <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
+                <!-- Right Section: Search, Feedback, Notifications, and Create Announcement -->
+                <div class="flex items-center space-x-2">
+                    <button id="openModalBtn" class="bg-orange-600 text-white border border-orange-600 px-4 py-2 rounded-full hover:bg-transparent hover:text-orange-700 transition-all duration-300">
+                        Create Announcement
+                    </button>
+                </div>
+        </div>
         <table class="min-w-full">
             <thead class="bg-gray-600">
                 <tr>
