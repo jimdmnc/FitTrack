@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User; // Make sure to import the User model
 use Carbon\Carbon;
 use App\Models\Attendance;
+use App\Models\Announcement;
+
 use Illuminate\Support\Facades\DB;
 
 
@@ -43,6 +45,7 @@ class DashboardController extends Controller
         $previousWeeklyCheckIns = $this->getPreviousWeeklyCheckIns();
         $previousMonthlyCheckIns = $this->getPreviousMonthlyCheckIns();
         $previousYearlyCheckIns = $this->getPreviousYearlyCheckIns();
+        $announcements = Announcement::latest()->get();
 
         return view('staff.dashboard', compact(
             'members', 
@@ -61,7 +64,8 @@ class DashboardController extends Controller
             'previousDailyCheckIns',
             'previousWeeklyCheckIns',
             'previousMonthlyCheckIns',
-            'previousYearlyCheckIns'
+            'previousYearlyCheckIns',
+            'announcements'
         ));
     }
 
