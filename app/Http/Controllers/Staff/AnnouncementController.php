@@ -8,26 +8,17 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
-    /**
-     * Display a listing of the announcements.
-     */
     public function index()
     {
         $announcements = Announcement::latest()->get();
-        return view('admin.announcements.index', compact('announcements'));
+        return view('staff.dashboard', compact('announcements'));
     }
 
-    /**
-     * Show the form for creating a new announcement.
-     */
     public function create()
     {
-        return view('admin.announcements.create');
+        return view('announcements.create');
     }
 
-    /**
-     * Store a newly created announcement in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -47,23 +38,17 @@ class AnnouncementController extends Controller
 
         try {
             Announcement::create($validated);
-            return redirect()->route('admin.dashboard')->with('success', 'Announcement created successfully.');
+            return redirect()->route('staff.dashboard')->with('success', 'Announcement created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to create announcement. Please try again.');
         }
     }
 
-    /**
-     * Show the form for editing the specified announcement.
-     */
     public function edit(Announcement $announcement)
     {
-        return view('admin.announcements.edit', compact('announcement'));
+        return view('announcements.edit', compact('announcement'));
     }
 
-    /**
-     * Update the specified announcement in storage.
-     */
     public function update(Request $request, Announcement $announcement)
     {
         $request->validate([
@@ -74,15 +59,12 @@ class AnnouncementController extends Controller
         ]);
 
         $announcement->update($request->all());
-        return redirect()->route('admin.announcements.index')->with('success', 'Announcement updated successfully.');
+        return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
     }
 
-    /**
-     * Remove the specified announcement from storage.
-     */
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
-        return redirect()->route('admin.announcements.index')->with('success', 'Announcement deleted successfully.');
+        return redirect()->route('staff.dashboard')->with('success', 'Announcement deleted successfully.');
     }
 }
