@@ -153,6 +153,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
 
 
+
+    Route::get('/', [PublicAnnouncementController::class, 'index'])->name('announcements.index');
+
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('announcements', AnnouncementController::class);
+    });
+
+
+
 });
 
 // Authentication routes (login, register, etc.)
