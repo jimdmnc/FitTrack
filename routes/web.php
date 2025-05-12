@@ -154,13 +154,13 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/', [PublicAnnouncementController::class, 'index'])->name('announcements.index');
-
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::prefix('admin')->group(function () {
+        Route::get('dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
         Route::resource('announcements', AnnouncementController::class);
     });
-
-
+    
 
 });
 

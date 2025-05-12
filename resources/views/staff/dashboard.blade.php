@@ -206,6 +206,18 @@
         
     </style>
     <div class="container mx-auto py-8 px-4">
+               <!-- Flash Messages -->
+               @if (session('success'))
+            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <!-- Header Section with Modern Design -->
         <div class="mb-8">
             <div class="flex flex-col md:flex-row justify-between items-center">
@@ -231,43 +243,56 @@
 
 
 
-    <div id="createAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 class="text-xl font-bold mb-4 text-gray-800">Create Announcement</h2>
-        <form action="{{ route('admin.announcements.store') }}" method="POST">
-            @csrf
-            <div class="mb-4">
-                <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                <input type="text" name="title" id="title" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+     <!-- Create Announcement Modal -->
+     <div id="createAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Create Announcement</h2>
+                <form action="{{ route('admin.announcements.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" name="title" id="title" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required value="{{ old('title') }}">
+                        @error('title')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
+                        <textarea name="content" id="content" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>{{ old('content') }}</textarea>
+                        @error('content')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule (Optional)</label>
+                        <input type="datetime-local" name="schedule" id="schedule" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" value="{{ old('schedule') }}">
+                        @error('schedule')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select name="type" id="type" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+                            <option value="Maintenance" {{ old('type') == 'Maintenance' ? 'selected' : '' }}>Maintenance</option>
+                            <option value="Event" {{ old('type') == 'Event' ? 'selected' : '' }}>Event</option>
+                            <option value="Update" {{ old('type') == 'Update' ? 'selected' : '' }}>Update</option>
+                        </select>
+                        @error('type')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="closeModalBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Cancel</button>
+                        <button type="submit" class="bg-[#FF5722] text-white px-4 py-2 rounded hover:bg-[#e64a19] transition">Save</button>
+                    </div>
+                </form>
             </div>
-            <div class="mb-4">
-                <label for="content" class="block text-sm font-medium text-gray-700">Content</label>
-                <textarea name="content" id="content" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required></textarea>
-            </div>
-            <div class="mb-4">
-                <label for="schedule" class="block text-sm font-medium text-gray-700">Schedule (Optional)</label>
-                <input type="datetime-local" name="schedule" id="schedule" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]">
-            </div>
-            <div class="mb-4">
-                <label for="type" class="block text-sm font-medium text-gray-700">Type</label>
-                <select name="type" id="type" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
-                    <option value="Maintenance">Maintenance</option>
-                    <option value="Event">Event</option>
-                    <option value="Update">Update</option>
-                </select>
-            </div>
-            <div class="flex justify-end space-x-2">
-                <button type="button" id="closeModalBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Cancel</button>
-                <button type="submit" class="bg-[#FF5722] text-white px-4 py-2 rounded hover:bg-[#e64a19] transition">Save</button>
-            </div>
-        </form>
-    </div>
+        </div>
 </div>
 
 
 <script>
-
-document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             const openModalBtn = document.getElementById('openModalBtn');
             const modal = document.getElementById('createAnnouncementModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
@@ -286,8 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
         });
-
-</script>
+    </script>
 
         
         <!-- Stats Cards -->
