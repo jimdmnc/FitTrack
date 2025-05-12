@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Staff;
 use App\Http\Controllers\Controller;
 use App\Models\Announcement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class AnnouncementController extends Controller
 {
@@ -21,6 +22,9 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
+        // Log the incoming request data for debugging
+        Log::info('Announcement store request data:', $request->all());
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
@@ -37,9 +41,11 @@ class AnnouncementController extends Controller
         ]);
 
         try {
-            Announcement::create($validated);
+            $announcement = Announcement::create($validated);
+            Log::info('Announcement created successfully:', $announcement->toArray());
             return redirect()->route('staff.dashboard')->with('success', 'Announcement created successfully.');
         } catch (\Exception $e) {
+            Log::error('Failed to create announcement: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Failed to create announcement. Please try again.');
         }
     }
@@ -58,13 +64,25 @@ class AnnouncementController extends Controller
             'type' => 'required|in:Maintenance,Event,Update',
         ]);
 
-        $announcement->update($request->all());
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
+        try {
+            $announcement->update($request->all());
+            Log::info('Announcement updated successfully:', $announcement->toArray());
+            return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to update announcement: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Failed to update announcement. Please try again.');
+        }
     }
 
     public function destroy(Announcement $announcement)
     {
-        $announcement->delete();
-        return redirect()->route('staff.dashboard')->with('success', 'Announcement deleted successfully.');
+        try {
+            $announcement->delete();
+            Log::info('Announcement deleted successfully:', ['id' => $announcement->id]);
+            return redirect()->route('staff.dashboard')->with('success', 'Announcement deleted successfully.');
+        } catch (\Exception $e) {
+            Log::error('Failed to delete announcement: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Failed to delete announcement. Please try again.');
+        }
     }
 }
