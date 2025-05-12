@@ -27,104 +27,59 @@ Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])-
 
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
 
-
-
 Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
-    ->middleware('approved.user')  // Apply the middleware
+    ->middleware('approved.user')
     ->name('self.landingProfile');
 
 Route::get('/landing', function () {
     return view('self.landing');
 })->name('self.landing');
 
-// routes/web.php
 Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
-
-// routes/web.php
 Route::get('/check-approval', [SelfRegistrationController::class, 'checkApproval'])->name('self.checkApproval');
 
-
-// Route to handle attendance
 Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);
 
 Route::middleware('auth')->group(function () {
     // Staff routes
-    Route::prefix('staff')->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
+    Route::prefix('staff')->name('staff.')->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('/peak-hours', [DashboardController::class, 'getPeakHours']);
 
-        // Membership Registration
-        Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])
-            ->name('staff.membershipRegistration');
-        Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
-            ->name('staff.membershipRegistration.store');
+        Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])->name('membershipRegistration');
+        Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('membershipRegistration.store');
 
-        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
-            ->name('renew.membership');
-            
+        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])->name('renew.membership');
 
-        Route::get('/attendance', [AttendanceController::class, 'index'])
-            ->name('staff.attendance');
-        Route::get('/staff/attendance', [AttendanceController::class, 'index'])
-            ->name('staff.attendance.index');
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+        Route::post('/record-attendance', [AttendanceController::class, 'recordAttendance'])->name('record-attendance');
 
-        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout'])->name('attendance.timeout');
-        // In web.php or api.php
-        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout']);
+        Route::get('/manage-approval', [StaffApprovalController::class, 'index'])->name('manageApproval');
+        Route::put('/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('approveUser');
+        Route::post('/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('rejectUser');
 
+        Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('viewmembers');
+        Route::post('/members/revoke', [ViewmembersController::class, 'revokeMember'])->name('revoke.membership');
+        Route::post('/members/restore', [ViewmembersController::class, 'restoreMember'])->name('restore.membership');
 
-        Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
-        Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
-        // Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.renewMembership');
-        // Define the route for rejecting users - using POST method
-        Route::post('/staff/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
+        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('paymentTracking');
+        Route::post('/paymentTracking/store', [PaymentTrackingController::class, 'store'])->name('payments.store');
+        Route::put('/paymentTracking/update/{id}', [PaymentTrackingController::class, 'update'])->name('payments.update');
+        Route::delete('/paymentTracking/destroy/{id}', [PaymentTrackingController::class, 'destroy'])->name('payments.destroy');
 
-        // If you're still having issues, add a debugging route to see all registered routes
-        Route::get('/debug/routes', function () {
-            $routes = collect(Route::getRoutes())->map(function ($route) {
-                return [
-                    'uri' => $route->uri(),
-                    'name' => $route->getName(),
-                    'methods' => $route->methods(),
-                    'action' => $route->getActionName(),
-                ];
-            });
-            
-            return response()->json($routes);
-        });
-
-
-        // Route to record attendance
-        Route::post('/staff/record-attendance', [AttendanceController::class, 'recordAttendance'])
-            ->name('staff.record-attendance');
-
-        Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-        Route::post('/staff/members/revoke', [ViewmembersController::class, 'revokeMember'])->name('revoke.membership');
-        Route::post('/staff/members/restore', [ViewmembersController::class, 'restoreMember'])->name('restore.membership');
-        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])
-            ->name('staff.paymentTracking');
-        Route::post('/staff/paymentTracking/store', [PaymentTrackingController::class, 'store'])
-            ->name('payments.store');
-        Route::put('/staff/paymentTracking/update/{id}', [PaymentTrackingController::class, 'update'])
-            ->name('payments.update');
-        Route::delete('/staff/paymentTracking/destroy/{id}', [PaymentTrackingController::class, 'destroy'])
-            ->name('payments.destroy');
-
-        // Report routes
-        Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
+        Route::get('/report', [ReportController::class, 'index'])->name('report');
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
     });
+
+    // Announcement routes
+    Route::resource('announcements', AnnouncementController::class);
 
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // // **📩 Email Verification Routes**
-    // Route::get('/email/verify', function () {
-    //     return view('auth.verify-email');
-    // })->middleware('auth')->name('verification.notice');
-
+    // Email Verification Routes
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         return redirect('/profile')->with('status', 'Email verified successfully!');
@@ -136,34 +91,20 @@ Route::middleware('auth')->group(function () {
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     // Member routes
-    Route::prefix('member')->group(function () {
-        Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
+    Route::prefix('member')->name('member.')->group(function () {
+        Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('dashboard');
     });
-    
 
-
+    // Payment routes
     Route::get('/payment/success', function () {
         return view('payment.success');
     })->name('payment.success');
-    
     Route::get('/payment/failed', function () {
         return view('payment.failed');
     })->name('payment.failed');
 
-
     Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
-
-
-
-    Route::resource('announcements', AnnouncementController::class);
-// Dashboard route
-Route::get('dashboard', function () {
-    $announcements = Announcement::latest()->get();
-    return view('dashboard', compact('announcements'));
-})->name('dashboard');
-    
-
 });
 
-// Authentication routes (login, register, etc.)
+// Authentication routes
 require __DIR__.'/auth.php';
