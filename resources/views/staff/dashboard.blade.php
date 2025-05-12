@@ -415,7 +415,7 @@
 
 
  <!-- Announcements List -->
- <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+ <!-- <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
     <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
     <table class="min-w-full">
         <thead>
@@ -465,7 +465,7 @@
             @endif
         </tbody>
     </table>
-</div>
+</div> -->
 
 
 
