@@ -206,8 +206,8 @@
         
     </style>
     <div class="container mx-5 py-8 px-4">
-               <!-- Flash Messages -->
-               @if (session('success'))
+           <!-- Flash Messages -->
+        @if (session('success'))
             <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
                 {{ session('success') }}
             </div>
@@ -215,6 +215,15 @@
         @if (session('error'))
             <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
                 {{ session('error') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
 
@@ -481,13 +490,18 @@
                             @endif
                         </td>
                         <td class="px-5 py-4 whitespace-nowrap text-sm font-medium">
-                            <a href="{{ route('announcements.edit', $announcement) }}" class="text-blue-400 hover:text-blue-300 mr-3">Edit</a>
-                            <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
-                            </form>
-                        </td>
+                                <button type="button" class="text-blue-400 hover:text-blue-300 mr-3 openEditModalBtn" 
+                                        data-id="{{ $announcement->id }}"
+                                        data-title="{{ $announcement->title }}"
+                                        data-content="{{ $announcement->content }}"
+                                        data-schedule="{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d\TH:i') : '' }}"
+                                        data-type="{{ $announcement->type }}">Edit</button>
+                                <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
+                                </form>
+                            </td>
                     </tr>
                 @endforeach
                 @if ($announcements->isEmpty())
