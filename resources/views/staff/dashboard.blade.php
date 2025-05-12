@@ -333,7 +333,13 @@
                         <tr>
                             <td class="border px-4 py-2">{{ $announcement->title }}</td>
                             <td class="border px-4 py-2">{{ $announcement->type }}</td>
-                            <td class="border px-4 py-2">{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d H:i') : 'N/A' }}</td>
+                            <td class="border px-4 py-2">
+                                @if ($announcement->schedule)
+                                    {{ $announcement->schedule instanceof \Carbon\Carbon ? $announcement->schedule->format('Y-m-d H:i') : \Carbon\Carbon::parse($announcement->schedule)->format('Y-m-d H:i') }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td class="border px-4 py-2">
                                 <a href="{{ route('announcements.edit', $announcement) }}" class="text-blue-500 hover:underline">Edit</a>
                                 <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
