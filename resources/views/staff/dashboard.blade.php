@@ -247,7 +247,7 @@
      <div id="createAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
             <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">Create Announcement</h2>
-                <form action="{{ route('admin.announcements.store') }}" method="POST">
+                <form action="{{ route('announcements.store') }}" method="POST">
                     @csrf
                     <div class="mb-4">
                         <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
