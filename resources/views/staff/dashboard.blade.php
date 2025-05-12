@@ -497,7 +497,7 @@
             <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
                 <!-- Right Section: Search, Feedback, Notifications, and Create Announcement -->
                 <div class="flex items-center space-x-2">
-                    <button id="openModalBtn" class="bg-orange-600 text-white border border-orange-600 px-4 py-2 rounded-full hover:bg-transparent hover:text-orange-700 transition-all duration-300">
+                    <button id="openModalBtn" class="bg-orange-600 text-white border border-[#e64a19] px-4 py-2 rounded-full hover:bg-transparent hover:text-orange-700 transition-all duration-300">
                         Create Announcement
                     </button>
                 </div>
