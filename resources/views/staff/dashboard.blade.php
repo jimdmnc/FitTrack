@@ -294,26 +294,62 @@
 
 <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Create Modal
             const openModalBtn = document.getElementById('openModalBtn');
-            const modal = document.getElementById('createAnnouncementModal');
+            const createModal = document.getElementById('createAnnouncementModal');
             const closeModalBtn = document.getElementById('closeModalBtn');
 
             openModalBtn.addEventListener('click', () => {
-                modal.classList.remove('hidden');
+                createModal.classList.remove('hidden');
             });
 
             closeModalBtn.addEventListener('click', () => {
-                modal.classList.add('hidden');
+                createModal.classList.add('hidden');
             });
 
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.add('hidden');
+            createModal.addEventListener('click', (e) => {
+                if (e.target === createModal) {
+                    createModal.classList.add('hidden');
+                }
+            });
+
+            // Edit Modal
+            const editModal = document.getElementById('editAnnouncementModal');
+            const closeEditModalBtn = document.getElementById('closeEditModalBtn');
+            const editForm = document.getElementById('editAnnouncementForm');
+            const openEditModalBtns = document.querySelectorAll('.openEditModalBtn');
+
+            openEditModalBtns.forEach(button => {
+                button.addEventListener('click', () => {
+                    const id = button.dataset.id;
+                    const title = button.dataset.title;
+                    const content = button.dataset.content;
+                    const schedule = button.dataset.schedule;
+                    const type = button.dataset.type;
+
+                    // Populate form
+                    editForm.action = `/announcements/${id}`;
+                    document.getElementById('edit_id').value = id;
+                    document.getElementById('edit_title').value = title;
+                    document.getElementById('edit_content').value = content;
+                    document.getElementById('edit_schedule').value = schedule;
+                    document.getElementById('edit_type').value = type;
+
+                    editModal.classList.remove('hidden');
+                });
+            });
+
+            closeEditModalBtn.addEventListener('click', () => {
+                editModal.classList.add('hidden');
+            });
+
+            editModal.addEventListener('click', (e) => {
+                if (e.target === editModal) {
+                    editModal.classList.add('hidden');
                 }
             });
         });
     </script>
-
         
 
 
@@ -468,7 +504,53 @@
     </div>
 
 
-
+ <!-- Edit Announcement Modal -->
+ <div id="editAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+                <h2 class="text-xl font-bold mb-4 text-gray-800">Edit Announcement</h2>
+                <form id="editAnnouncementForm" method="POST">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" name="id" id="edit_id">
+                    <div class="mb-4">
+                        <label for="edit_title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" name="title" id="edit_title" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+                        @error('title')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit_content" class="block text-sm font-medium text-gray-700">Content</label>
+                        <textarea name="content" id="edit_content" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required></textarea>
+                        @error('content')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit_schedule" class="block text-sm font-medium text-gray-700">Schedule (Optional)</label>
+                        <input type="datetime-local" name="schedule" id="edit_schedule" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]">
+                        @error('schedule')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit_type" class="block text-sm font-medium text-gray-700">Type</label>
+                        <select name="type" id="edit_type" class="w-full border rounded p-2 focus:ring-[#FF5722] focus:border-[#FF5722]" required>
+                            <option value="Maintenance">Maintenance</option>
+                            <option value="Event">Event</option>
+                            <option value="Update">Update</option>
+                        </select>
+                        @error('type')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="closeEditModalBtn" class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 transition">Cancel</button>
+                        <button type="submit" class="bg-[#FF5722] text-white px-4 py-2 rounded hover:bg-[#e64a19] transition">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
 
     <!-- Dashboard Grid Charts Section -->

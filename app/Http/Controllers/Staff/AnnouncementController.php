@@ -22,7 +22,6 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
-        // Log the incoming request data for debugging
         Log::info('Announcement store request data:', $request->all());
 
         $validated = $request->validate([
