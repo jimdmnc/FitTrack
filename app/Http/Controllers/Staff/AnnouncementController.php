@@ -47,7 +47,7 @@ class AnnouncementController extends Controller
 
         try {
             Announcement::create($validated);
-            return redirect()->route('admin.dashboard')->with('success', 'Announcement created successfully.');
+            return redirect()->route('staff.dashboard')->with('success', 'Announcement created successfully.');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Failed to create announcement. Please try again.');
         }

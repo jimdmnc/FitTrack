@@ -155,8 +155,8 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::resource('announcements', AnnouncementController::class);
-    // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::resource('announcements', \App\Http\Controllers\Staff\AnnouncementController::class);
+        // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     
 
