@@ -244,6 +244,7 @@
 
 
      <!-- Create Announcement Modal -->
+     <!-- Create Announcement Modal -->
      <div id="createAnnouncementModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center hidden z-50">
             <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
                 <h2 class="text-xl font-bold mb-4 text-gray-800">Create Announcement</h2>
@@ -313,7 +314,41 @@
         });
     </script>
 
-        
+<div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4 text-gray-800">Announcements</h1>
+        @if (session('success'))
+            <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
+                {{ session('success') }}
+            </div>
+        @endif
+        <table class="min-w-full bg-white mt-4 shadow-md rounded-lg">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">Title</th>
+                    <th class="py-2 px-4 border-b">Type</th>
+                    <th class="py-2 px-4 border-b">Schedule</th>
+                    <th class="py-2 px-4 border-b">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($announcements as $announcement)
+                    <tr>
+                        <td class="border px-4 py-2">{{ $announcement->title }}</td>
+                        <td class="border px-4 py-2">{{ $announcement->type }}</td>
+                        <td class="border px-4 py-2">{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d H:i') : 'N/A' }}</td>
+                        <td class="border px-4 py-2">
+                            <a href="{{ route('announcements.edit', $announcement) }}" class="text-blue-500 hover:underline">Edit</a>
+                            <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
 
