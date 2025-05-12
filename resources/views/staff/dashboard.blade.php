@@ -195,7 +195,7 @@
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(148, 163, 184, 0.5);
+            background: rgba(255, 145, 0, 0.5);
             border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
@@ -205,7 +205,7 @@
 
         
     </style>
-    <div class="container mx-auto py-8 px-4">
+    <div class="container mx-5 py-8 px-4">
                <!-- Flash Messages -->
                @if (session('success'))
             <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-lg">
@@ -415,7 +415,7 @@
 
 
  <!-- Announcements List -->
- <!-- <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+ <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
     <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
     <table class="min-w-full">
         <thead>
@@ -465,7 +465,7 @@
             @endif
         </tbody>
     </table>
-</div> -->
+</div>
 
 
 
