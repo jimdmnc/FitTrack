@@ -215,64 +215,16 @@
                     </h1>
                     <p class="text-gray-200 mt-2">Track and analyze the gym's performance</p>
                 </div>
-
+        <!-- Right Section: Search, Feedback, Notifications, and Create Announcement -->
+        <div class="flex items-center space-x-2">
+            <button id="openModalBtn" class="bg-[#FF5722] text-white px-4 py-2 rounded-full hover:bg-[#e64a19] transition-all duration-300">
+                Create Announcement
+            </button>
+        </div>
             </div>
         </div>
     </div>
-    <div class="container mx-auto p-6">
-        <h1 class="text-2xl font-bold mb-4">Announcements</h1>
-        <table class="min-w-full bg-white mt-4">
-            <thead>
-                <tr>
-                    <th class="py-2">Title</th>
-                    <th class="py-2">Type</th>
-                    <th class="py-2">Schedule</th>
-                    <th class="py-2">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($announcements as $announcement)
-                    <tr>
-                        <td class="border px-4 py-2">{{ $announcement->title }}</td>
-                        <td class="border px-4 py-2">{{ $announcement->type }}</td>
-                        <td class="border px-4 py-2">{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d H:i') : 'N/A' }}</td>
-                        <td class="border px-4 py-2">
-                            <a href="{{ route('admin.announcements.edit', $announcement) }}" class="text-blue-500">Edit</a>
-                            <form action="{{ route('admin.announcements.destroy', $announcement) }}" method="POST" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
 
-        <!-- Include the modal partial -->
-        @include('admin.announcements.create-modal')
-    </div>
-
-    <script>
-        const openModalBtn = document.getElementById('openModalBtn');
-        const modal = document.getElementById('createAnnouncementModal');
-        const closeModalBtn = document.getElementById('closeModalBtn');
-
-        openModalBtn.addEventListener('click', () => {
-            modal.classList.remove('hidden');
-        });
-
-        closeModalBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
-        });
-
-        // Close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
-    </script>
         
         <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
