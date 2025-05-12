@@ -415,10 +415,10 @@
 
 
  <!-- Announcements List -->
- <div class="glass-card1 shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
-    <h2 class="text-2xl font-semibold p-5 bg-gray-900 text-gray-100 border-b border-gray-800">Announcements</h2>
+ <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+    <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
     <table class="min-w-full">
-        <thead class="bg-gray-900">
+        <thead>
             <tr>
                 <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
                 <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
