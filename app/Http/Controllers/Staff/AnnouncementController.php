@@ -8,17 +8,26 @@ use Illuminate\Http\Request;
 
 class AnnouncementController extends Controller
 {
+    /**
+     * Display a listing of the announcements (unused, as dashboard handles this).
+     */
     public function index()
     {
         $announcements = Announcement::latest()->get();
-        return view('staff.dashboard', compact('announcements'));
+        return view('dashboard', compact('announcements'));
     }
 
+    /**
+     * Show the form for creating a new announcement (unused, as modal handles this).
+     */
     public function create()
     {
         return view('announcements.create');
     }
 
+    /**
+     * Store a newly created announcement in storage.
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -44,11 +53,17 @@ class AnnouncementController extends Controller
         }
     }
 
+    /**
+     * Show the form for editing the specified announcement.
+     */
     public function edit(Announcement $announcement)
     {
         return view('announcements.edit', compact('announcement'));
     }
 
+    /**
+     * Update the specified announcement in storage.
+     */
     public function update(Request $request, Announcement $announcement)
     {
         $request->validate([
@@ -62,6 +77,9 @@ class AnnouncementController extends Controller
         return redirect()->route('staff.dashboard')->with('success', 'Announcement updated successfully.');
     }
 
+    /**
+     * Remove the specified announcement from storage.
+     */
     public function destroy(Announcement $announcement)
     {
         $announcement->delete();
