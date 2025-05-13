@@ -223,27 +223,28 @@
 
 <!-- Modal for Viewing Payment Screenshot -->
 <div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-    <div class="bg-gray-800 rounded-lg p-4 max-w-md w-full mx-4"> <!-- Reduced max width and padding -->
-        <div class="flex justify-between items-center mb-3"> <!-- Reduced margin -->
-            <h3 class="text-md font-semibold text-gray-200">Payment Screenshot</h3> <!-- Smaller text -->
+    <div class="bg-gray-800 rounded-lg p-3 w-[90%] max-w-sm"> <!-- Slightly smaller width -->
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-semibold text-gray-200">Payment Screenshot</h3> <!-- Smaller heading -->
             <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <!-- Smaller icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
         <div class="flex justify-center">
             <img id="screenshotImage" src="" alt="Payment Screenshot" 
-                 class="max-w-[280px] max-h-[280px] object-contain"> <!-- Fixed smaller dimensions -->
+                 class="w-auto max-w-[220px] max-h-[220px] object-contain rounded-md shadow-md"> <!-- Smaller image -->
         </div>
-        <div class="mt-3 flex justify-center"> <!-- Centered button and reduced margin -->
+        <div class="mt-2 flex justify-center">
             <button onclick="closeScreenshotModal()" 
-                    class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm"> <!-- Smaller button -->
+                    class="bg-gray-600 text-gray-200 px-3 py-1 rounded hover:bg-gray-500 text-xs">
                 Close
             </button>
         </div>
     </div>
 </div>
+
 
 
 <script>
