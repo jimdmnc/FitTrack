@@ -233,7 +233,7 @@
             </button>
         </div>
         <div class="flex justify-center">
-            <div class="max-w-md max-h-[60vh] overflow-hidden rounded-md">
+            <div class="max-w-md max-h-[90vh] overflow-hidden rounded-md">
                 <img id="screenshotImage" src="" alt="Payment Screenshot"
                     class="w-full h-[50px] object-cover rounded-md shadow-md" />
             </div>
