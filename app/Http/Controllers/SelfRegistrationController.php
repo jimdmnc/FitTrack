@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
-use App\Http\Controllers\Log; 
 
 class SelfRegistrationController extends Controller
 {
@@ -43,7 +42,6 @@ class SelfRegistrationController extends Controller
 
             if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']])) {
                 $user = Auth::user();
-                Log::info('User logged in successfully:', ['user_id' => $user->id]);
 
                 if ($user->session_status === 'approved') {
                     return redirect()->route('self.landingProfile')->with('success', 'Login successful! Welcome back.');
@@ -52,14 +50,11 @@ class SelfRegistrationController extends Controller
                 return redirect()->route('self.waiting')->with('success', 'Login successful! Your session is pending approval.');
             }
 
-            Log::warning('Login attempt failed for email:', ['email' => $validatedData['email']]);
             return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed during login: ', ['errors' => $e->errors()]);
             return redirect()->back()->withInput()->withErrors($e->errors())->with('error', 'Login failed due to invalid input.');
         } catch (\Exception $e) {
-            Log::error('Login Error: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Login failed: ' . $e->getMessage());
         }
     }
@@ -150,7 +145,6 @@ class SelfRegistrationController extends Controller
 
                 Auth::login($existingUser);
 
-                Log::info('Existing user session updated successfully:', ['user_id' => $existingUser->id]);
 
                 return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');
             }
@@ -186,18 +180,15 @@ class SelfRegistrationController extends Controller
 
             Auth::login($user);
 
-            Log::info('New user registered successfully:', ['user_id' => $user->id]);
 
             return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            Log::error('Validation failed during registration: ', ['errors' => $e->errors()]);
             return redirect()->route('self.registration')
                 ->withInput()
                 ->withErrors($e->errors())
                 ->with('error', 'Registration failed due to invalid input.');
         } catch (\Exception $e) {
-            Log::error('Session Membership Registration Error: ' . $e->getMessage());
             return redirect()->route('self.registration')
                 ->withInput()
                 ->with('error', 'Registration failed: ' . $e->getMessage());
@@ -271,7 +262,6 @@ class SelfRegistrationController extends Controller
             return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
 
         } catch (\Exception $e) {
-            Log::error('Membership Renewal Error: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Renewal failed: ' . $e->getMessage());
