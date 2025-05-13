@@ -222,9 +222,9 @@
 
 
 <!-- Modal for Viewing Payment Screenshot -->
-<div id="screenshotModal" class="relative inset-0 flex items-center justify-center hidden z-50">
+<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-gray-800 rounded-lg p-4 max-w-md w-full mx-4">
-        <div class="flex justify-between items-center mb-3">
+        <div class="flex h-[60px] justify-between items-center mb-3">
             <h3 class="text-md font-semibold text-gray-200">Payment Screenshot</h3>
             <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -233,9 +233,9 @@
             </button>
         </div>
         <div class="flex justify-center">
-            <div class="w-[50px] h-[50px] overflow-hidden rounded-md">
+            <div class="max-w-md max-h-[90vh] overflow-hidden rounded-md">
                 <img id="screenshotImage" src="" alt="Payment Screenshot"
-                    class="w-[50px] h-[50px] object-cover rounded-md shadow-md" />
+                    class="w-full h-[50px] object-cover rounded-md shadow-md" />
             </div>
         </div>
         <div class="mt-3 flex justify-center">
