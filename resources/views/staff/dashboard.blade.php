@@ -22,6 +22,13 @@
             border-left: 8px solid #EA580C;
             transition: all 0.3s ease;
         }
+        .glass-card2 {
+            background:rgb(43, 43, 43);
+            backdrop-filter: blur(10px);
+            border-radius: 8px;
+            border-left: 8px solid #EA580C;
+            transition: all 0.3s ease;
+        }
         .glass-card1:hover { 
             box-shadow: 0 8px 20px rgba(31, 38, 135, 0.15);
             transform: translateY(-5px);
@@ -514,7 +521,7 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($announcements as $announcement)
-                            <div class="glass-card1 rounded-lg p-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                            <div class="glass-card2 rounded-lg p-5 shadow-lg hover:shadow-xl transition-shadow duration-300">
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-lg font-semibold text-gray-100 truncate">{{ $announcement->title }}</h3>
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' : ($announcement->type === 'Event' ? 'bg-green-600 text-green-100' : 'bg-orange-600 text-orange-100') }}">
