@@ -514,7 +514,7 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         @foreach ($announcements as $announcement)
-                            <div class="bg-[#262626] rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-orange-700">
+                            <div class="bg-[#262626] rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-orange-500">
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-lg font-semibold text-gray-100 truncate">{{ $announcement->title }}</h3>
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' : ($announcement->type === 'Event' ? 'bg-green-600 text-green-100' : 'bg-orange-600 text-orange-100') }}">
