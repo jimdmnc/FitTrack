@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
+use App\Http\Controllers\Log; 
 
 class SelfRegistrationController extends Controller
 {
