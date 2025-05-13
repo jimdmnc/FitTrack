@@ -41,8 +41,6 @@
         .error-border {
             border-color: #ef4444;
         }
-
-        /* Responsive form container */
         .form-container {
             max-width: 100%;
             margin: 0 auto;
@@ -62,21 +60,16 @@
                 max-width: 768px;
             }
         }
-        
-        /* Read-only field styling */
         .readonly-field {
-            background-color: #2d2319; /* Dark orange-tinted background */
-            color: #ff8a65; /* Lighter orange text */
-            border: 1px solid #3d2e22; /* Subtle border */
+            background-color: #2d2319;
+            color: #ff8a65;
+            border: 1px solid #3d2e22;
             opacity: 0.9;
             cursor: not-allowed;
         }
-
-        /* Optional: add a small lock icon to further indicate read-only status */
         .readonly-field-container {
             position: relative;
         }
-
         .readonly-icon {
             position: absolute;
             right: 12px;
@@ -85,8 +78,6 @@
             color: #ff8a65;
             pointer-events: none;
         }
-
-        /* Improved input tap targets for mobile */
         input, select, button {
             min-height: 48px;
         }
@@ -95,7 +86,6 @@
                 min-height: 56px;
             }
         }
-        /* Better spacing for mobile */
         @media (max-width: 640px) {
             .p-5 {
                 padding: 1rem;
@@ -111,14 +101,11 @@
     <div class="my-4 text-center">
         <h2 class="text-2xl md:text-4xl lg:text-5xl pb-1 font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Session Registration</h2>
     </div>
-    <!-- Header with gradient -->
     <div class="header-bg text-gray-200 p-4 md:p-5 lg:p-6 rounded-t-lg shadow border-b border-black">
         <h2 class="text-xl md:text-2xl lg:text-3xl font-bold text-gray-100">Registration</h2>
     </div>
     
-    <!-- Registration Form -->
     <div class="regform-bg p-4 md:p-5 lg:p-6 rounded-b-lg shadow">
-        <!-- Success and Error messages -->
         @if (session('success'))
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4 text-sm">
                 <i class="fas fa-check-circle mr-1"></i> {{ session('success') }}
@@ -132,9 +119,7 @@
         <form method="POST" action="{{ route('self.registration.store') }}" id="registrationForm" novalidate>
             @csrf
             <div class="space-y-4">
-                <!-- Form grid for larger screens -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- First Name -->
                     <div>
                         <label for="first_name" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             First Name <span class="text-red-500">*</span>
@@ -150,8 +135,6 @@
                                maxlength="50">
                         <div id="first_name_error" class="error-message hidden">First name must be between 2-50 characters and contain no numbers or special characters.</div>
                     </div>
-                    
-                    <!-- Last Name -->
                     <div>
                         <label for="last_name" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Last Name <span class="text-red-500">*</span>
@@ -169,7 +152,6 @@
                     </div>
                 </div>
                 
-                <!-- Email -->
                 <div>
                     <label for="email" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                         Email Address <span class="text-red-500">*</span>
@@ -185,7 +167,6 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Gender -->
                     <div>
                         <label for="gender" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">Gender <span class="text-red-500">*</span></label>
                         <select name="gender" id="gender" 
@@ -198,8 +179,6 @@
                         </select>
                         <div id="gender_error" class="error-message hidden">Please select a gender</div>
                     </div>
-
-                    <!-- Phone Number -->
                     <div>
                         <label for="phone_number" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Phone Number <span class="text-red-500">*</span>
@@ -217,10 +196,37 @@
                         <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    <!-- Membership Type (Read-Only) -->
+                    <div>
+                        <label for="password" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               id="password" 
+                               name="password" 
+                               placeholder="Enter your password"
+                               required
+                               minlength="8">
+                        <div id="password_error" class="error-message hidden">Password must be at least 8 characters</div>
+                    </div>
+                    <div>
+                        <label for="password_confirmation" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
+                            Confirm Password <span class="text-red-500">*</span>
+                        </label>
+                        <input type="password" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               id="password_confirmation" 
+                               name="password_confirmation" 
+                               placeholder="Confirm your password"
+                               required
+                               minlength="8">
+                        <div id="password_confirmation_error" class="error-message hidden">Passwords do not match</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="readonly-field-container">
                         <label for="membership_type" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Membership Type
@@ -237,8 +243,6 @@
                             <i class="fas fa-lock readonly-icon text-sm"></i>
                         </div>
                     </div>
-
-                    <!-- Amount (Read-Only) -->
                     <div class="readonly-field-container">
                         <label for="amount" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Amount
@@ -256,7 +260,6 @@
                     </div>
                 </div>
                 
-                <!-- Submit Button -->
                 <button type="submit" 
                         class="w-full orange-btn text-gray-200 p-2.5 lg:p-3 rounded-lg font-medium text-lg lg:text-xl mt-4 hover:bg-[#e64a19] focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:ring-offset-2 transition-colors">
                     Register Now
@@ -264,13 +267,11 @@
             </div>
         </form>
         
-        <!-- Bottom messaging -->
         <p class="text-center text-xs lg:text-sm text-gray-400 mt-4">
             By registering, you agree to our Terms
         </p>
     </div>
     
-    <!-- Help link -->
     <div class="mt-4 text-center">
         <a href="tel:+18005551234" class="text-sm lg:text-base font-medium flex items-center justify-center text-gray-200">
             <i class="orange-text fas fa-phone-alt mr-2"></i> Need help? Call us
@@ -282,14 +283,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registrationForm');
     
-    // Validate on submit
     form.addEventListener('submit', function(e) {
         if (!validateForm()) {
             e.preventDefault();
         }
     });
     
-    // Validate on input change
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -303,7 +302,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    
     function validateForm() {
         let isValid = true;
         const inputs = form.querySelectorAll('input:not([readonly]), select:not([style*="pointer-events: none"])');
@@ -313,41 +311,31 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Disable button if form is invalid
         document.querySelector('button[type="submit"]').disabled = !isValid;
-
         return isValid;
     }
 
-    
     function validateField(field) {
         const errorElement = document.getElementById(`${field.id}_error`);
-        if (!errorElement) return true; // Skip if no error element found
+        if (!errorElement) return true;
         
-        // Check if required field is empty
         if (field.required && !field.value.trim()) {
             showError(field, errorElement, `Please enter your ${field.labels[0].textContent.replace('*', '').trim().toLowerCase()}`);
             return false;
         }
         
-        // Validate specific fields
         switch(field.id) {
             case 'first_name':
             case 'last_name':
                 if (field.value.trim()) {
-                    // Check for length
                     if (field.value.length < 2 || field.value.length > 50) {
                         showError(field, errorElement, `Must be between 2-50 characters`);
                         return false;
                     }
-
-                    // Check for numbers
                     if (/\d/.test(field.value)) {
                         showError(field, errorElement, `Numbers are not allowed`);
                         return false;
                     }
-
-                    // Check for special characters (excluding spaces)
                     if (/[^a-zA-Z\s]/.test(field.value)) {
                         showError(field, errorElement, `Cannot contain special characters`);
                         return false;
@@ -364,13 +352,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 
             case 'phone_number':
                 if (field.value.trim()) {
-                    // Check for non-numeric characters
                     if (/[^0-9]/.test(field.value)) {
                         showError(field, errorElement, 'Phone number can only contain digits');
                         return false;
                     }
-
-                    // Check if the phone number has 11 digits and starts with 09
                     if (!/^09\d{9}$/.test(field.value)) {
                         showError(field, errorElement, 'Please enter a valid 11-digit phone number starting with 09');
                         return false;
@@ -382,6 +367,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!field.value) {
                     showError(field, errorElement, 'Please select your gender');
                     return false;
+                }
+                break;
+                
+            case 'password':
+                if (field.value.trim()) {
+                    if (field.value.length < 8) {
+                        showError(field, errorElement, 'Password must be at least 8 characters');
+                        return false;
+                    }
+                }
+                break;
+                
+            case 'password_confirmation':
+                if (field.value.trim()) {
+                    const password = document.getElementById('password').value;
+                    if (field.value !== password) {
+                        showError(field, errorElement, 'Passwords do not match');
+                        return false;
+                    }
                 }
                 break;
         }
@@ -407,17 +411,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function isValidPhone(phone) {
-        // Match 11-digit phone numbers starting with 09
         const phonePattern = /^09\d{9}$/;
         return phonePattern.test(phone);
     }
 
     function focusFirstError() {
-    const firstError = document.querySelector('.error-border');
-    if (firstError) {
-        firstError.focus();
+        const firstError = document.querySelector('.error-border');
+        if (firstError) {
+            firstError.focus();
+        }
     }
-}
 });
 </script>
 </body>
