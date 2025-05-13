@@ -21,17 +21,8 @@ class AnnouncementController extends Controller
 
     public function landing()
     {
-        try {
-            // Fetch the latest 3 announcements where schedule is in the past or now
-            $announcements = Announcement::where('schedule', '<=', now())
-                ->orderBy('schedule', 'desc')
-                ->take(3)
-                ->get();
-        } catch (\Exception $e) {
-            // Log error and set empty collection
-            $announcements = collect([]);
-        }
-    
+        $announcements = Announcement::latest()->get();
+
         return view('self.landingProfile', compact('announcements'));
     }
 
