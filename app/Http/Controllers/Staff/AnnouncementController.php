@@ -9,6 +9,37 @@ use Illuminate\Support\Facades\Log;
 
 class AnnouncementController extends Controller
 {
+
+
+
+
+
+
+
+
+
+
+    public function landing()
+    {
+        try {
+            // Fetch the latest 3 announcements where schedule is in the past or now
+            $announcements = Announcement::where('schedule', '<=', now())
+                ->orderBy('schedule', 'desc')
+                ->take(3)
+                ->get();
+            Log::info('Announcements fetched successfully', ['count' => $announcements->count()]);
+        } catch (\Exception $e) {
+            // Log error and set empty collection
+            Log::error('Failed to fetch announcements: ' . $e->getMessage());
+            $announcements = collect([]);
+        }
+    
+        return view('self.landingProfile', compact('announcements'));
+    }
+
+
+
+
     public function index()
     {
         $announcements = Announcement::latest()->get();
