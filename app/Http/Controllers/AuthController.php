@@ -81,7 +81,7 @@ class AuthController extends Controller
             ]);
 
             $validator = Validator::make($request->all(), [
-                'profile_image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
+                'profile_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'rfid_uid' => 'required|string|exists:users,rfid_uid',
             ]);
 
@@ -101,16 +101,18 @@ class AuthController extends Controller
             $filename = $user->rfid_uid . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('profiles', $filename, 'public');
 
-            // Update user with file path
-            $user->profile_image = $path;
+            // Save relative path (without storage/public)
+            $relativePath = 'profiles/' . $filename;
+            $user->profile_image = $relativePath;
             $user->save();
 
             Log::info('Profile image uploaded successfully', [
                 'rfid_uid' => $request->rfid_uid,
-                'path' => $path
+                'path' => $relativePath,
+                'full_url' => Storage::url($relativePath)
             ]);
 
-            return response()->json(['message' => 'Profile image uploaded successfully', 'path' => $path]);
+            return response()->json(['message' => 'Profile image uploaded successfully', 'path' => Storage::url($relativePath)]);
         } catch (\Exception $e) {
             Log::error('Error uploading profile image: ' . $e->getMessage(), [
                 'rfid_uid' => $request->rfid_uid,
