@@ -45,7 +45,7 @@ class UserAuthController extends Controller
         }
     
         // Add role check (only 'user' can login)
-        if ($user->role !== 'user') {
+        if ($user->role !== 'users') {
             throw ValidationException::withMessages([
                 'email' => ['Access restricted to regular users only'],
             ]);
