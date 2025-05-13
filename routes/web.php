@@ -165,7 +165,7 @@ Route::middleware('auth')->group(function () {
         })->name('dashboard');
 
         Route::resource('announcements', AnnouncementController::class);
-        Route::get('landingProfile', [SelfRegistrationController::class, 'landing'])->name('self.landingProfile');
+        Route::get('landingProfile', [AnnouncementController::class, 'landing'])->name('self.landingProfile');
 
 });
 
