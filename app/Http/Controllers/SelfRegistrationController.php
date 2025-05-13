@@ -58,16 +58,24 @@ class SelfRegistrationController extends Controller
         try {
             // Validate the necessary fields
             $validatedData = $request->validate([
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
+                'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+                'last_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
                 'phone_number' => [
                     'required',
                     'digits:11',
                     'regex:/^09\d{9}$/'
                 ],
-                'email' => 'required|email',
+                'email' => 'required|email|max:255|unique:users,email',
                 'gender' => 'required|string|in:male,female,other',
                 'membership_type' => 'required|string|in:1',
+                'amount' => 'required|numeric|in:60',
+                'password' => 'required|string|min:8|confirmed',
+            ], [
+                'first_name.regex' => 'First name cannot contain numbers or special characters.',
+                'last_name.regex' => 'Last name cannot contain numbers or special characters.',
+                'email.unique' => 'This email is already registered.',
+                'phone_number.regex' => 'Phone number must be 11 digits starting with 09.',
+                'password.confirmed' => 'Password confirmation does not match.',
             ]);
 
             // Clear timed_out flag when registering new session
@@ -76,14 +84,14 @@ class SelfRegistrationController extends Controller
             // Check if user exists by email and phone
             $existingUser = User::where(function ($query) use ($validatedData) {
                 $query->where('email', $validatedData['email'])
-                ->orWhere(function ($subQuery) use ($validatedData) {
-                    $subQuery->where('first_name', $validatedData['first_name'])
-                    ->where('last_name', $validatedData['last_name']);
-                });
+                    ->orWhere(function ($subQuery) use ($validatedData) {
+                        $subQuery->where('first_name', $validatedData['first_name'])
+                            ->where('last_name', $validatedData['last_name']);
+                    });
             })->first();
                         
             if ($existingUser) {
-                // Update user details and reset session_status
+                // Update user details, reset session_status, and update password
                 $existingUser->update([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
@@ -93,6 +101,7 @@ class SelfRegistrationController extends Controller
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
                     'needs_approval' => true,
+                    'password' => Hash::make($validatedData['password']),
                 ]);
 
                 // Add a new payment record
@@ -125,7 +134,7 @@ class SelfRegistrationController extends Controller
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
                     'rfid_uid' => $rfidUid,
-                    'password' => Hash::make('defaultpassword123'),
+                    'password' => Hash::make($validatedData['password']),
                     'needs_approval' => true,
                 ]);
 
