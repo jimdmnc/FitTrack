@@ -85,10 +85,13 @@ class DashboardController extends Controller
         $startOfLastWeek = $now->copy()->subWeek()->startOfWeek()->toDateTimeString();
         $endOfLastWeek = $now->copy()->subWeek()->endOfWeek()->toDateTimeString();
         
-        // Count new members registered **this week only**
-        $currentWeekNewMembers = User::where('role', 'user')
-            ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
-            ->count();
+        // Count new members registered this week only (both regular users and session users)
+        $currentWeekNewMembers = User::where(function($query) {
+            $query->where('role', 'user')
+                ->orWhere('role', 'userSession');
+        })
+        ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
+        ->count();
         
         // Count new members registered **last week only**
         $lastWeekNewMembers = User::where('role', 'user')
