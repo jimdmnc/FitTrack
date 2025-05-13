@@ -219,8 +219,8 @@
         <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
             <option value="" selected disabled>Select Membership Type</option>
             <option value="custom">Custom Days</option>
-            <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
-            <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
+            <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Week (7 days)</option>
+            <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days)</option>
             <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
         </select>
         
@@ -446,32 +446,36 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 2. Expiry Date Calculation
     function updateEndDate() {
-        const membershipType = document.getElementById('membershipType');
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
+    const membershipType = document.getElementById('membershipType');
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    const customDaysInput = document.getElementById('customDays'); // Ensure this exists in your HTML
 
-        if (startDateInput && startDateInput.value && membershipType && membershipType.value) {
-            const startDate = new Date(startDateInput.value);
-            let duration = 0;
-            
-            if (membershipType.value === 'custom' && customDaysInput.value) {
-                duration = parseInt(customDaysInput.value);
-            } else {
-                duration = parseInt(membershipType.value);
-            }
-            
-            if (!isNaN(duration)) {
-                startDate.setDate(startDate.getDate() + duration);
-                
-                const day = String(startDate.getDate()).padStart(2, '0');
-                const month = String(startDate.getMonth() + 1).padStart(2, '0');
-                const year = startDate.getFullYear();
-                endDateInput.value = `${day}/${month}/${year}`;
-            }
-        } else if (endDateInput) {
-            endDateInput.value = '';
+    if (startDateInput && startDateInput.value && membershipType && membershipType.value) {
+        const startDate = new Date(startDateInput.value);
+        let duration = 0;
+
+        if (membershipType.value === 'custom' && customDaysInput && customDaysInput.value) {
+            duration = parseInt(customDaysInput.value);
+        } else {
+            duration = parseInt(membershipType.value);
         }
+
+        if (!isNaN(duration) && duration > 0) {
+            // Subtract 1 to include the start date in the count
+            startDate.setDate(startDate.getDate() + duration - 1);
+
+            const day = String(startDate.getDate()).padStart(2, '0');
+            const month = String(startDate.getMonth() + 1).padStart(2, '0');
+            const year = startDate.getFullYear();
+
+            endDateInput.value = `${day}/${month}/${year}`;
+        }
+    } else if (endDateInput) {
+        endDateInput.value = '';
     }
+}
+
 
     const startDateEl = document.getElementById('startDate');
     const membershipTypeEl = document.getElementById('membershipType');
