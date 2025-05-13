@@ -68,7 +68,6 @@ class RenewalController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_reference' => null,
                 'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
