@@ -385,9 +385,9 @@
                     <!-- Mobile Navigation -->
                     <div class="flex flex-col space-y-6 text-center flex-grow">
                         <a href="#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                        <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Tutorial</a>
-                        <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">In Here</a>
-                        <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
+                        <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
+                        <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">IAbout Us</a>
+                        <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300 bg-orange-500 ">Profile</a>
                         
                         <!-- Mobile Workout Timer Display -->
                         @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
