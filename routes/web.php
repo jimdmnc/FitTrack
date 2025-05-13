@@ -16,6 +16,7 @@ use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Staff\AnnouncementController;
 use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
+use App\Http\Controllers\PriceController;
 
 // Public routes
 Route::get('/', function () {
@@ -124,6 +125,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Price list routes
+    Route::get('/profile/pricelist', [PriceController::class, 'pricelist'])->name('profile.pricelist');
+    Route::post('/profile/pricelist/update', [PriceController::class, 'updatePrice'])->name('profile.pricelist.update');;
 
     // // **📩 Email Verification Routes**
     // Route::get('/email/verify', function () {

@@ -113,7 +113,10 @@
                     <a href="{{ route('profile.edit') }}" class="group block text-xs sm:text-sm font-medium text-gray-400 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 ease-in-out hover:bg-orange-700 hover:text-white hover:translate-x-1 transform">
                         View Profile
                     </a>
-
+                    <!-- Change Price list Link -->
+                    <a href="{{ route('profile.pricelist') }}" class="group block text-xs sm:text-sm font-medium text-gray-400 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 ease-in-out hover:bg-orange-700 hover:text-white hover:translate-x-1 transform">
+                        Membership Pricing
+                    </a>
                     <!-- Logout Button -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
