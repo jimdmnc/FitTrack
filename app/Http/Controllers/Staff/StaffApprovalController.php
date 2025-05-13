@@ -10,24 +10,28 @@ use App\Models\Payment; // Add this if not already imported
 
 class StaffApprovalController extends Controller
 {
-    // Show pending users
-    public function index()
-    {
-        // Retrieve only users with session_status 'pending' and role 'user'
-        $pendingUsers = User::where('session_status', 'pending')
-            ->where('needs_approval', true)
-            ->where('role', 'user')
-            ->with(['payment' => function ($query) {
-                $query->latest(); // Assuming you want the latest payment
-            }])
-            ->get();
+   // Show pending users
+public function index()
+{
+    // Retrieve users with session_status 'pending', needs_approval true, 
+    // and either 'user' or 'userSession' role
+    $pendingUsers = User::where('session_status', 'pending')
+        ->where('needs_approval', true)
+        ->where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        })
+        ->with(['payment' => function ($query) {
+            $query->latest(); // Get the latest payment
+        }])
+        ->get();
 
-        // Get the count of pending approvals
-        $pendingApprovalCount = $pendingUsers->count();
-        
-        // Pass the count to the view
-        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
-    }
+    // Get the count of pending approvals
+    $pendingApprovalCount = $pendingUsers->count();
+    
+    // Pass the data to the view
+    return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+}
 
     // Approve New User Registration
     public function approveUser($id)
