@@ -28,22 +28,32 @@ class UserAuthController extends Controller
         return response()->json(['message' => 'User registered successfully'], 201);
     }
 
-    // User Login
     public function login(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
+    
         $user = User::where('email', $request->email)->first();
-
+    
+        // Check if user exists + password matches + has 'user' role
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages(['email' => ['Invalid credentials']]);
+            throw ValidationException::withMessages([
+                'email' => ['Invalid credentials'],
+            ]);
         }
-
+    
+        // Add role check (only 'user' can login)
+        if ($user->role !== 'user') {
+            throw ValidationException::withMessages([
+                'email' => ['Access restricted to regular users only'],
+            ]);
+        }
+    
+        // Generate token for valid user
         $token = $user->createToken('UserToken')->plainTextToken;
-
+    
         return response()->json(['token' => $token], 200);
     }
 
