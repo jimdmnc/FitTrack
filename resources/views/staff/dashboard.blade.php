@@ -512,7 +512,7 @@
                         <p class="text-sm text-gray-400">Click "Create Announcement" to add one.</p>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach ($announcements as $announcement)
                             <div class="bg-[#262626] rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-orange-500">
                                 <div class="flex justify-between items-start">
