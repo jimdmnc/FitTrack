@@ -101,11 +101,11 @@ class RenewalController extends Controller
         // Verify members_payments table schema
         $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date'];
         foreach ($requiredColumns as $column) {
-            if (!Schema::hasColumn('members_payments', $column)) {
+            if (!Schema::hasColumn('members_payment', $column)) {
                 \Log::error("Missing column in members_payments: $column");
                 return response()->json([
                     'success' => false,
-                    'message' => "Server error: Missing column '$column' in members_payments table"
+                    'message' => "Server error: Missing column '$column' in members_payment table"
                 ], 500);
             }
         }
