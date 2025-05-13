@@ -98,14 +98,13 @@ class RenewalController extends Controller
         ]);
 
         try {
-            // Verify members_payments table schema
+            // Verify members_payment table schema
             $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date'];
             foreach ($requiredColumns as $column) {
-                if (!Schema::hasColumn('members_payments', $column)) {
-                    \Log::error("Missing column in members_payments: $column");
+                if (!Schema::hasColumn('members_payment', $column)) {
                     return response()->json([
                         'success' => false,
-                        'message' => "Server error: Missing column '$column' in members_payments table"
+                        'message' => "Server error: Missing column '$column' in members_payment table"
                     ], 500);
                 }
             }
@@ -119,7 +118,7 @@ class RenewalController extends Controller
                 // Find user by RFID
                 $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
 
-                // Save to members_payments table
+                // Save to members_payment table
                 $payment = MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
                     'amount' => $request->amount,
