@@ -603,27 +603,6 @@
                         <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
                     </div>
 
-                    <!-- Announcements Section -->
-                    @if($announcements->isNotEmpty())
-                        <div class="mt-8 w-full max-w-4xl">
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-200 mb-4 text-center">Latest Announcements</h2>
-                            <div class="flex flex-col md:flex-row gap-6 overflow-x-auto pb-4">
-                                @foreach($announcements as $announcement)
-                                    <div class="announcement-card bg-gray-800 rounded-lg p-6 w-full md:w-1/3 flex-shrink-0 shadow-lg">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <h3 class="text-xl font-semibold text-orange-600">{{ $announcement->title }}</h3>
-                                            @if($announcement->type)
-                                                <span class="text-xs bg-red-600 text-white px-2 py-1 rounded-full">{{ $announcement->type }}</span>
-                                            @endif
-                                        </div>
-                                        <p class="text-gray-300 mb-4 line-clamp-3">{{ $announcement->content }}</p>
-                                        <p class="text-sm text-gray-400">Scheduled: {{ $announcement->schedule->format('M d, Y H:i') }}</p>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
                 </div>
             </div>
         </div>
