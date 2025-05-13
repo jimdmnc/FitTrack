@@ -7,13 +7,14 @@ use App\Models\UserDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
-    // ✅ User Login
+    // User Login
     public function login(Request $request)
     {
         try {
@@ -76,11 +77,11 @@ class AuthController extends Controller
         try {
             Log::info('Upload profile image request received', [
                 'rfid_uid' => $request->rfid_uid,
-                'profile_image_length' => strlen($request->profile_image ?? '')
+                'has_file' => $request->hasFile('profile_image')
             ]);
 
             $validator = Validator::make($request->all(), [
-                'profile_image' => 'required|string',
+                'profile_image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
                 'rfid_uid' => 'required|string|exists:users,rfid_uid',
             ]);
 
@@ -89,24 +90,27 @@ class AuthController extends Controller
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
 
-            // Verify base64 string
-            $base64 = $request->profile_image;
-            if (!base64_decode($base64, true)) {
-                Log::warning('Invalid base64 string format');
-                return response()->json(['error' => 'Invalid base64 image data'], 422);
-            }
-
             $user = User::where('rfid_uid', $request->rfid_uid)->first();
             if (!$user) {
                 Log::error('User not found for rfid_uid: ' . $request->rfid_uid);
                 return response()->json(['error' => 'User not found'], 404);
             }
 
-            $user->profile_image = $base64;
+            // Store the image
+            $file = $request->file('profile_image');
+            $filename = $user->rfid_uid . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('profiles', $filename, 'public');
+
+            // Update user with file path
+            $user->profile_image = $path;
             $user->save();
 
-            Log::info('Profile image uploaded successfully for rfid_uid: ' . $request->rfid_uid);
-            return response()->json(['message' => 'Profile image uploaded successfully']);
+            Log::info('Profile image uploaded successfully', [
+                'rfid_uid' => $request->rfid_uid,
+                'path' => $path
+            ]);
+
+            return response()->json(['message' => 'Profile image uploaded successfully', 'path' => $path]);
         } catch (\Exception $e) {
             Log::error('Error uploading profile image: ' . $e->getMessage(), [
                 'rfid_uid' => $request->rfid_uid,
@@ -116,7 +120,7 @@ class AuthController extends Controller
         }
     }
 
-    // ✅ Get Authenticated User
+    // Get Authenticated User
     public function user(Request $request)
     {
         $user = $request->user();
@@ -135,11 +139,11 @@ class AuthController extends Controller
             'phone_number' => $user->phone_number,
             'birthdate' => optional($user->birthdate)->format('M d, Y'),
             'session_status' => $user->session_status,
-            'profile_image' => $user->profile_image
+            'profile_image' => $user->profile_image ? Storage::url($user->profile_image) : null
         ]);
     }
 
-    // ✅ User Logout
+    // User Logout
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
