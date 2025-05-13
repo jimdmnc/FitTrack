@@ -711,10 +711,10 @@
                     <span class="inline-block w-3 h-3 mr-1 bg-orange-400 rounded-sm"></span>
                     <span>Check-ins</span>
                 </div>
-                <div class="flex items-center mt-2">
+                <!-- <div class="flex items-center mt-2">
                     <span class="inline-block w-3 h-3 mr-1 border border-dashed border-orange-200 rounded-sm"></span>
                     <span>Previous Period</span>
-                </div>
+                </div> -->
             </div>
         </div>
         
