@@ -42,7 +42,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'session_status', // ✅ must be here!
         'needs_approval',
         'revoke_reason',
-        'revoked_at'
+        'revoked_at',        
+        'profile_image',
+
     ];
 
     /**

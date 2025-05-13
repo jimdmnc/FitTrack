@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserCalorieController;
 use App\Http\Controllers\UsdaFoodController;
+use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
@@ -20,6 +21,11 @@ use App\Http\Controllers\Staff\PaymentTrackingController;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+
+
+    Route::post('/user/upload-profile-image', [UserController::class, 'uploadProfileImage']);
+
 
 
     Route::get('/user', [AuthController::class, 'user']);
