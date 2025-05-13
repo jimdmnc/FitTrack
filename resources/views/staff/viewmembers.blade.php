@@ -1230,26 +1230,28 @@
     }
     
     function updateExpirationDate() {
-        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
-        
-        const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
-        const renewalDate = ELEMENTS.startDateInput.value;
-    
-        if (renewalDate && selectedType) {
-            try {
-                const renewal = new Date(renewalDate);
-                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-    
-                renewal.setDate(renewal.getDate() + selectedType);
-                ELEMENTS.endDateInput.value = formatDate(renewal);
-            } catch (error) {
-                console.error('Error calculating expiration date:', error);
-                ELEMENTS.endDateInput.value = '';
-            }
-        } else {
+    if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+
+    const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
+    const renewalDate = ELEMENTS.startDateInput.value;
+
+    if (renewalDate && selectedType) {
+        try {
+            const renewal = new Date(renewalDate);
+            if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+
+            // Subtract 1 to include the start date in the count
+            renewal.setDate(renewal.getDate() + selectedType - 1);
+            ELEMENTS.endDateInput.value = formatDate(renewal);
+        } catch (error) {
+            console.error('Error calculating expiration date:', error);
             ELEMENTS.endDateInput.value = '';
         }
+    } else {
+        ELEMENTS.endDateInput.value = '';
     }
+}
+
     
     function updateSummaryText() {
         if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
