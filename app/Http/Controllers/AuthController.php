@@ -121,7 +121,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Failed to upload image: ' . $e->getMessage()], 500);
         }
     }
-
     // Get Authenticated User
     public function user(Request $request)
     {
