@@ -19,7 +19,11 @@ class SelfRegistrationController extends Controller
     {
         return view('self.registration');
     }
-
+    // Display the login form
+    public function login()
+    {
+        return view('self.login');
+    }
  // Handle login submission
  public function loginSubmit(Request $request)
  {
