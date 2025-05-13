@@ -39,9 +39,7 @@
                             </svg>
                             {{ $announcement->schedule ? $announcement->schedule->format('M d, Y') : 'No date' }}
                         </span>
-                        <button class="read-more-btn text-red-400 hover:text-red-300 font-medium transition-colors">
-                            Read More →
-                        </button>
+                     
                     </div>
                 </div>
             </div>
