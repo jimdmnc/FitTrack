@@ -25,7 +25,7 @@ Route::get('session-registration', [SelfRegistrationController::class, 'index'])
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
 Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])->name('self.membership.renew');
 
-Route::get('sessionLogin', [SelfRegistrationController::class, 'login'])->name('self.login');
+Route::get('sessionLogin', [SelfRegistrationController::class, 'sessionLogin'])->name('self.login');
 Route::post('sessionLogin', [SelfRegistrationController::class, 'loginSubmit'])->name('self.login.submit');
 
 
