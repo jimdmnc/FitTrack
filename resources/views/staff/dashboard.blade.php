@@ -23,7 +23,7 @@
             transition: all 0.3s ease;
         }
         .glass-card2 {
-            background:rgb(55, 55, 55);
+            background:rgb(0, 0, 0);
             backdrop-filter: blur(10px);
             border-radius: 8px;
             border-left: 8px solid #EA580C;
