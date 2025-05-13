@@ -222,7 +222,7 @@
 
 
 <!-- Modal for Viewing Payment Screenshot -->
-<div id="screenshotModal" class="relative  inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+<div id="screenshotModal" class="relative inset-0 flex items-center justify-center hidden z-50">
     <div class="bg-gray-800 rounded-lg p-4 max-w-md w-full mx-4">
         <div class="flex justify-between items-center mb-3">
             <h3 class="text-md font-semibold text-gray-200">Payment Screenshot</h3>
