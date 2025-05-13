@@ -223,159 +223,159 @@
 </head>
 <body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
     <!-- Navigation Bar -->
- <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
-    <div class="container mx-auto">
-        <!-- Alerts for Success and Error messages -->
-        @if(session('success'))
-            <div class="alert-banner success-alert mb-2 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>{{ session('success') }}</span>
-                </div>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert-banner error-alert mb-2 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
-                <div class="flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                    </svg>
-                    <span>{{ session('error') }}</span>
-                </div>
-            </div>
-        @endif
-
-        <!-- Main Navigation Content -->
-        <div class="flex justify-between items-center">
-            <!-- Logo Image -->
-            <div class="flex items-center">
-                <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
-            </div>
-
-            <!-- Workout Timer - Always Visible -->
-            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
-            <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                <span class="timer-text text-sm md:text-base" id="workout-duration">
-                    @if(isset($attendance)) 
-                        {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                    @else
-                        00:00:00
-                    @endif
-                </span>
-            </div>
-            @endif
-
-            <!-- Desktop Navigation Links --> 
-            <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
-                <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
-                <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
-                <a href="#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
-                <a href="#" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
-                
-                <!-- Action Buttons -->
-                <div class="flex items-center space-x-2">
-                    <!-- Renew Button -->
-                    <button type="button" onclick="checkRenewalEligibility()"
-                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
-                        <i class="fas fa-sync-alt mr-1"></i> Renew
-                    </button>
-
-                    <!-- TimeOut Button -->
-                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                    <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                    </button>
-                    @endif
-
-
-                    <!-- Sign Out Button -->
-                    <form method="POST" action="{{ route('logout.custom') }}">
-                        @csrf
-                        <button type="submit"
-                            class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
-                            <i class="fas fa-door-open mr-1"></i> Exit
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden flex items-center space-x-3">
-                <!-- TimeOut Button for Mobile -->
-                @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                    <button onclick="document.getElementById('timeout-modal').showModal()" 
-                        class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+        <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
+            <div class="container mx-auto">
+                <!-- Alerts for Success and Error messages -->
+                @if(session('success'))
+                    <div class="alert-banner success-alert mb-2 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                    </div>
                 @endif
-                
-                <!-- Menu Toggle Button -->
-                <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md">
-                    <i class="fas fa-bars text-xl"></i>
-                </button>
-            </div>
-        </div>
-    </div>
 
-    <!-- Mobile Menu - Full Screen Overlay -->
-    <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
-        <div class="container mx-auto px-4 py-8 flex flex-col h-full">
-            <!-- Close Button -->
-            <div class="flex justify-end mb-6">
-                <button id="close-mobile-menu" class="text-gray-300 hover:text-white">
-                    <i class="fas fa-times text-2xl"></i>
-                </button>
-            </div>
-            
-            <!-- Mobile Navigation -->
-            <div class="flex flex-col space-y-6 text-center flex-grow">
-                <a href="#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Tutorial</a>
-                <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">In Here</a>
-                <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                
-                <!-- Mobile Workout Timer Display -->
-                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
-                <div class="flex justify-center items-center py-4">
-                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                        <span id="mobile-workout-duration" class="text-lg font-medium">
-                            @if(isset($attendance))
+                @if(session('error'))
+                    <div class="alert-banner error-alert mb-2 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Main Navigation Content -->
+                <div class="flex justify-between items-center">
+                    <!-- Logo Image -->
+                    <div class="flex items-center">
+                        <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
+                    </div>
+
+                    <!-- Workout Timer - Always Visible -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                        <span class="timer-text text-sm md:text-base" id="workout-duration">
+                            @if(isset($attendance)) 
                                 {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
                             @else
                                 00:00:00
                             @endif
                         </span>
                     </div>
-                </div>
-                @endif
+                    @endif
 
+                    <!-- Desktop Navigation Links --> 
+                    <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                        <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
+                        <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
+                        <a href="#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
+                        <a href="#" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex items-center space-x-2">
+                            <!-- Renew Button -->
+                            <button type="button" onclick="checkRenewalEligibility()"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                                <i class="fas fa-sync-alt mr-1"></i> Renew
+                            </button>
+
+                            <!-- TimeOut Button -->
+                            @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                            <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                            </button>
+                            @endif
+
+
+                            <!-- Sign Out Button -->
+                            <form method="POST" action="{{ route('logout.custom') }}">
+                                @csrf
+                                <button type="submit"
+                                    class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                                    <i class="fas fa-door-open mr-1"></i> Exit
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <div class="md:hidden flex items-center space-x-3">
+                        <!-- TimeOut Button for Mobile -->
+                        @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
+                            <button onclick="document.getElementById('timeout-modal').showModal()" 
+                                class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        @endif
+                        
+                        <!-- Menu Toggle Button -->
+                        <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md">
+                            <i class="fas fa-bars text-xl"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
-            
-            <!-- Mobile Action Buttons -->
-            <div class="grid grid-cols-2 gap-4 mt-6">
-                <!-- Renew Button -->
-                <button type="button" onclick="openRenewModal(); closeMobileMenu();"
-                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
-                    <i class="fas fa-sync-alt mr-2"></i> Renew Membership
-                </button>
-                
-                <!-- Sign Out Button -->
-                <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
-                    @csrf
-                    <button type="submit"
-                        class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
-                        <i class="fas fa-door-open mr-2"></i> Sign Out
-                    </button>
-                </form>
+
+            <!-- Mobile Menu - Full Screen Overlay -->
+            <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
+                <div class="container mx-auto px-4 py-8 flex flex-col h-full">
+                    <!-- Close Button -->
+                    <div class="flex justify-end mb-6">
+                        <button id="close-mobile-menu" class="text-gray-300 hover:text-white">
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Mobile Navigation -->
+                    <div class="flex flex-col space-y-6 text-center flex-grow">
+                        <a href="#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
+                        <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Tutorial</a>
+                        <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">In Here</a>
+                        <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
+                        
+                        <!-- Mobile Workout Timer Display -->
+                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                        <div class="flex justify-center items-center py-4">
+                            <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                                <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                                <span id="mobile-workout-duration" class="text-lg font-medium">
+                                    @if(isset($attendance))
+                                        {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                                    @else
+                                        00:00:00
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+                        @endif
+
+                    </div>
+                    
+                    <!-- Mobile Action Buttons -->
+                    <div class="grid grid-cols-2 gap-4 mt-6">
+                        <!-- Renew Button -->
+                        <button type="button" onclick="openRenewModal(); closeMobileMenu();"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                            <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+                        </button>
+                        
+                        <!-- Sign Out Button -->
+                        <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
+                            @csrf
+                            <button type="submit"
+                                class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                                <i class="fas fa-door-open mr-2"></i> Sign Out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-</nav>
+        </nav>
         
         <!-- Success Alert Modal -->
             @if(session('success'))
@@ -474,6 +474,7 @@
                     }, 5000);
                 </script>
             @endif   
+            
         <!-- Time Out Confirmation Modal -->
         <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
             <div class="text-center">
@@ -497,73 +498,94 @@
         </dialog>
 
         
-        <!-- Hero Section with Parallax Effect -->
-        <section id="home" class="relative w-full h-screen overflow-hidden">
-            <!-- Fixed Background Layer - This creates the parallax effect -->
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-                style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-                id="parallax-bg">
-            </div>
-            
-            <!-- Gradient Overlay -->
-            <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-            
-            <!-- Content Layer that scrolls normally -->
-            <div class="relative h-full flex items-center">
-                <div class="container mx-auto px-6 z-10">
-                    <div class="flex flex-col items-center">
-                        <!-- Hero Text Content -->
-                        <div class="text-center max-w-2xl mb-12">
-                            <!-- Heading -->
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                                WELCOME TO <span class="text-gray-200">ROCKIES FITNESS </span>
-                            </h1>
-                            
-                            <!-- Subtitle -->
-                            <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                            </p>
+ <!-- Hero Section with Parallax Effect -->
+ <section id="home" class="relative w-full h-screen overflow-hidden">
+        <!-- Fixed Background Layer - This creates the parallax effect -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+             style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+             id="parallax-bg">
+        </div>
+        
+        <!-- Gradient Overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+        
+        <!-- Content Layer that scrolls normally -->
+        <div class="relative h-full flex items-center">
+            <div class="container mx-auto px-6 z-10">
+                <div class="flex flex-col items-center">
+                    <!-- Hero Text Content -->
+                    <div class="text-center max-w-2xl mb-12">
+                        <!-- Heading -->
+                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
+                            WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
+                        </h1>
+                        
+                        <!-- Subtitle -->
+                        <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                            Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                        </p>
 
-                            <!-- App Store Buttons -->
-                            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
-                                    Get Started
-                                </a>
-                                
-                                <!-- Google Play Store Button -->
-                                <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
-                                class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
-                                target="_blank" rel="noopener noreferrer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                                    </svg>
-                                    Download App
-                                </a>
+                        <!-- App Store Buttons -->
+                        <div class="flex flex-wrap justify-center gap-4 mb-6">
+                            <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                </svg>
+                                Get Started
+                            </a>
+                            
+                            <!-- Google Play Store Button -->
+                            <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
+                               class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
+                               target="_blank" rel="noopener noreferrer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                                    <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                                </svg>
+                                Download App
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Two Phone Image Mockups -->
+                    <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
+                        <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
+                        <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
+                    </div>
+
+                    <!-- Announcements Section -->
+                    @if($announcements->isNotEmpty())
+                        <div class="mt-8 w-full max-w-4xl">
+                            <h2 class="text-2xl md:text-3xl font-bold text-gray-200 mb-4 text-center">Latest Announcements</h2>
+                            <div class="flex flex-col md:flex-row gap-6 overflow-x-auto pb-4">
+                                @foreach($announcements as $announcement)
+                                    <div class="announcement-card bg-gray-800 rounded-lg p-6 w-full md:w-1/3 flex-shrink-0 shadow-lg">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h3 class="text-xl font-semibold text-orange-600">{{ $announcement->title }}</h3>
+                                            @if($announcement->type)
+                                                <span class="text-xs bg-red-600 text-white px-2 py-1 rounded-full">{{ $announcement->type }}</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-gray-300 mb-4 line-clamp-3">{{ $announcement->content }}</p>
+                                        <p class="text-sm text-gray-400">Scheduled: {{ $announcement->schedule->format('M d, Y H:i') }}</p>
+                                    </div>
+                                @endforeach
                             </div>
                         </div>
-                        
-                        <!-- Two Phone Image Mockups -->
-                        <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
-                            <img src="images/phone12.png" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
-                            <img src="images/phone12.png" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
-                        </div>
+                    @endif
 
-                    </div>
                 </div>
             </div>
-            
-            <!-- Scroll Indicator -->
-            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                <a href="#promotional">
+        </div>
+        
+        <!-- Scroll Indicator -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <a href="#promotional">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
-                </a>
-            </div>
-        </section>
+            </a>
+        </div>
+    </section>
 
 
         <!-- Promotional Carousel -->

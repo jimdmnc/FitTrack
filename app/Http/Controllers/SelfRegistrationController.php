@@ -14,6 +14,17 @@ use App\Models\Attendance;
 
 class SelfRegistrationController extends Controller
 {
+    public function landing()
+    {
+        // Fetch the latest 3 announcements where schedule is in the past or now, ordered by schedule
+        $announcements = Announcement::where('schedule', '<=', now())
+            ->orderBy('schedule', 'desc')
+            ->take(3)
+            ->get();
+
+        return view('self.landing', compact('announcements'));
+    }
+
     // Display the registration form for session membership
     public function index()
     {
