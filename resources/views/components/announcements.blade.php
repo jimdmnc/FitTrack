@@ -18,12 +18,15 @@
                     <div class="flex justify-between items-start mb-4">
                         <h3 class="text-xl font-bold text-white">{{ $announcement->title ?? 'Announcement' }}</h3>
                         @if($announcement->type ?? false)
-                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{ 
-                            $announcement->type === 'Important' ? 'bg-red-600 text-white' : 
-                            ($announcement->type === 'Update' ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white')
-                        }}">
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{
+                            $announcement->type === 'Event' ? 'bg-green-600 text-green-100' :
+                            ($announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' :
+                            ($announcement->type === 'Update' ? 'bg-orange-600 text-orange-100' :
+                            'bg-gray-600 text-white'))
+                            }}">
                             {{ $announcement->type }}
                         </span>
+
                         @endif
                     </div>
                     
