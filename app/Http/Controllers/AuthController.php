@@ -40,7 +40,7 @@ class AuthController extends Controller
             if ($user->role === 'userSession') {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Admin accounts are not allowed on this app'
+                    'message' => 'Not Regular members are not allowed on this app'
                 ], 403);
             }
     
