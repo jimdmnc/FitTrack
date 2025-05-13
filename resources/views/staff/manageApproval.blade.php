@@ -234,7 +234,7 @@
         </div>
         <div class="flex justify-center">
             <img id="screenshotImage" src="" alt="Payment Screenshot" 
-                 class="max-w-[280px] max-h-[280px]"> <!-- Fixed smaller dimensions -->
+                 class="max-w-[150px] max-h-[150px]"> <!-- Fixed smaller dimensions -->
         </div>
         <div class="mt-3 flex justify-center"> <!-- Centered button and reduced margin -->
             <button onclick="closeScreenshotModal()" 
