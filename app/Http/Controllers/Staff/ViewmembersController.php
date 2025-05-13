@@ -48,13 +48,20 @@ class ViewmembersController extends Controller
             $page = $request->input('page', 1); // Get current page
             
             // First update all members' status based on their end dates
-            $allMembers = User::where('role', 'user')->get();
+            $allMembers = User::where(function($query) {
+                $query->where('role', 'user')
+                      ->orWhere('role', 'userSession');
+            })->get();
+            
             foreach ($allMembers as $member) {
                 $this->updateMemberStatus($member);
             }
-
+    
             // Now build the query with filters
-            $query = User::where('role', 'user');
+            $query = User::where(function($query) {
+                $query->where('role', 'user')
+                      ->orWhere('role', 'userSession');
+            });
             
             if ($status !== 'all') {
                 $query->where('member_status', $status);
@@ -107,7 +114,7 @@ class ViewmembersController extends Controller
                     ], 500);
                 }
             }
-
+    
             // For regular requests, return the view
             return view('staff.viewmembers', [
                 'members' => $members,

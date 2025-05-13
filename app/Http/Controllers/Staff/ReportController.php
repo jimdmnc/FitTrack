@@ -217,8 +217,11 @@ class ReportController extends Controller
     
     private function generateMembersReport($period, $startDate = null, $endDate = null)
     {
-        $query = User::where('role', 'user');
-
+        $query = User::where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        });
+    
         switch ($period) {
             case 'today':
                 $query->whereDate('created_at', Carbon::today());
@@ -248,10 +251,10 @@ class ReportController extends Controller
                 }
                 break;
         }
-
+    
         $members = $query->get();
         $totalMembers = $members->count();
-
+    
         return [
             'members' => $members,
             'totalMembers' => $totalMembers,
