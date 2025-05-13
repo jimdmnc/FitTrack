@@ -22,13 +22,17 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('*', function ($view) {
-            $pendingApprovalCount = \App\Models\User::where('session_status', 'pending')
+            $pendingApprovalCount = User::where('session_status', 'pending')
                 ->where('needs_approval', true)
-                ->where('role', 'user')
+                ->where(function($query) {
+                    $query->where('role', 'user')
+                          ->orWhere('role', 'userSession');
+                })
                 ->count();
     
             $view->with('pendingApprovalCount', $pendingApprovalCount);
         });
+    
         // Keep your existing scheduled command
         $this->app->booted(function () {
             $this->app->make(\Illuminate\Console\Scheduling\Schedule::class)
