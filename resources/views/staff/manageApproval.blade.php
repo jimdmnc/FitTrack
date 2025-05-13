@@ -122,20 +122,23 @@
                         </td>
 
                         <td class="p-3 font-medium text-gray-200">
-                            @if($user->payment && $user->payment->payment_method == 'gcash')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    GCASH
-                                </span>
-                                @elseif($user->payment && $user->payment->payment_method == 'cash')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                                    CASH
-                                </span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
-                                    Unknown
-                                </span>
-                            @endif
-                        </td>
+            @if($user->payment && $user->payment->payment_method == 'gcash')
+                <button
+                    onclick="openScreenshotModal('{{ Storage::url($user->payment->payment_screenshot) }}')"
+                    class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors"
+                >
+                    GCASH
+                </button>
+            @elseif($user->payment && $user->payment->payment_method == 'cash')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
+                    CASH
+                </span>
+            @else
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
+                    Unknown
+                </span>
+            @endif
+        </td>
 
                         <td class="p-3 font-medium">
                             <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
@@ -216,7 +219,44 @@
         </form>
     </div>
 </div>
+
+
+<!-- Modal for Viewing Payment Screenshot -->
+<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-200">Payment Screenshot</h3>
+            <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex justify-center">
+            <img id="screenshotImage" src="" alt="Payment Screenshot" class="max-w-full max-h-[60vh] object-contain">
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button onclick="closeScreenshotModal()" class="bg-gray-600 text-gray-200 px-4 py-2 rounded-md hover:bg-gray-500">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+
 <script>
+        function openScreenshotModal(imageUrl) {
+        const modal = document.getElementById('screenshotModal');
+        const image = document.getElementById('screenshotImage');
+        image.src = imageUrl;
+        modal.classList.remove('hidden');
+    }
+
+    function closeScreenshotModal() {
+        const modal = document.getElementById('screenshotModal');
+        modal.classList.add('hidden');
+        document.getElementById('screenshotImage').src = '';
+    }
     function closeModal() {
         document.getElementById('rejectModal').classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
