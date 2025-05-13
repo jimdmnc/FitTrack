@@ -27,10 +27,8 @@ class AnnouncementController extends Controller
                 ->orderBy('schedule', 'desc')
                 ->take(3)
                 ->get();
-            Log::info('Announcements fetched successfully', ['count' => $announcements->count()]);
         } catch (\Exception $e) {
             // Log error and set empty collection
-            Log::error('Failed to fetch announcements: ' . $e->getMessage());
             $announcements = collect([]);
         }
     

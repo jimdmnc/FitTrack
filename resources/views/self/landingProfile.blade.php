@@ -498,61 +498,62 @@
         </dialog>
 
         
- <!-- Hero Section with Parallax Effect -->
- <section id="home" class="relative w-full h-screen overflow-hidden">
-        <!-- Fixed Background Layer - This creates the parallax effect -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-             style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-             id="parallax-bg">
-        </div>
-        
-        <!-- Gradient Overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-        
-        <!-- Content Layer that scrolls normally -->
-        <div class="relative h-full flex items-center">
-            <div class="container mx-auto px-6 z-10">
-                <div class="flex flex-col items-center">
-                    <!-- Hero Text Content -->
-                    <div class="text-center max-w-2xl mb-12">
-                        <!-- Heading -->
-                        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                            WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
-                        </h1>
-                        
-                        <!-- Subtitle -->
-                        <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                            Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                        </p>
-
-                        <!-- App Store Buttons -->
-                        <div class="flex flex-wrap justify-center gap-4 mb-6">
-                            <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                </svg>
-                                Get Started
-                            </a>
-                            
-                            <!-- Google Play Store Button -->
-                            <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
-                               class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
-                               target="_blank" rel="noopener noreferrer">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                    <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                                </svg>
-                                Download App
-                            </a>
-                        </div>
-                    </div>
+<!-- Hero Section with Parallax Effect -->
+<section id="home" class="relative w-full h-screen overflow-hidden">
+    <!-- Fixed Background Layer - This creates the parallax effect -->
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+         id="parallax-bg">
+    </div>
+    
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+    
+    <!-- Content Layer that scrolls normally -->
+    <div class="relative h-full flex items-center">
+        <div class="container mx-auto px-6 z-10">
+            <div class="flex flex-col items-center">
+                <!-- Hero Text Content -->
+                <div class="text-center max-w-2xl mb-12">
+                    <!-- Heading -->
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
+                        WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
+                    </h1>
                     
-                    <!-- Two Phone Image Mockups -->
-                    <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
-                        <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
-                        <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
-                    </div>
+                    <!-- Subtitle -->
+                    <p class="text-sm md:text-2xl text-gray-300 mb-8">
+                        Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                    </p>
 
-                    <!-- Announcements Section -->
+                    <!-- App Store Buttons -->
+                    <div class="flex flex-wrap justify-center gap-4 mb-6">
+                        <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                            Get Started
+                        </a>
+                        
+                        <!-- Google Play Store Button -->
+                        <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
+                           class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
+                           target="_blank" rel="noopener noreferrer">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
+                                <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
+                            </svg>
+                            Download App
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Two Phone Image Mockups -->
+                <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
+                    <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
+                    <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
+                </div>
+
+                <!-- Announcements Section with Safe Checking -->
+                @isset($announcements)
                     @if($announcements->isNotEmpty())
                         <div class="mt-8 w-full max-w-4xl">
                             <h2 class="text-2xl md:text-3xl font-bold text-gray-200 mb-4 text-center">Latest Announcements</h2>
@@ -560,32 +561,43 @@
                                 @foreach($announcements as $announcement)
                                     <div class="announcement-card bg-gray-800 rounded-lg p-6 w-full md:w-1/3 flex-shrink-0 shadow-lg">
                                         <div class="flex items-center justify-between mb-2">
-                                            <h3 class="text-xl font-semibold text-orange-600">{{ $announcement->title }}</h3>
-                                            @if($announcement->type)
+                                            <h3 class="text-xl font-semibold text-orange-600">{{ $announcement->title ?? 'No Title' }}</h3>
+                                            @isset($announcement->type)
                                                 <span class="text-xs bg-red-600 text-white px-2 py-1 rounded-full">{{ $announcement->type }}</span>
-                                            @endif
+                                            @endisset
                                         </div>
-                                        <p class="text-gray-300 mb-4 line-clamp-3">{{ $announcement->content }}</p>
-                                        <p class="text-sm text-gray-400">Scheduled: {{ $announcement->schedule->format('M d, Y H:i') }}</p>
+                                        <p class="text-gray-300 mb-4 line-clamp-3">{{ $announcement->content ?? 'No content available' }}</p>
+                                        @isset($announcement->schedule)
+                                            <p class="text-sm text-gray-400">Scheduled: {{ $announcement->schedule->format('M d, Y H:i') }}</p>
+                                        @endisset
                                     </div>
                                 @endforeach
                             </div>
                         </div>
+                    @else
+                        <div class="mt-8 text-gray-400 text-center">
+                            No announcements available at this time.
+                        </div>
                     @endif
+                @else
+                    <div class="mt-8 text-gray-400 text-center">
+                        Announcements could not be loaded.
+                    </div>
+                @endisset
 
-                </div>
             </div>
         </div>
-        
-        <!-- Scroll Indicator -->
-        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-            <a href="#promotional">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-            </a>
-        </div>
-    </section>
+    </div>
+    
+    <!-- Scroll Indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#promotional">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </a>
+    </div>
+</section>
 
 
         <!-- Promotional Carousel -->
