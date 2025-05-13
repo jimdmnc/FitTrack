@@ -68,7 +68,6 @@ class RenewalController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_reference' => null,
                 'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
@@ -100,7 +99,7 @@ class RenewalController extends Controller
 
         try {
             // Verify members_payments table schema
-            $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date', 'payment_reference'];
+            $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date'];
             foreach ($requiredColumns as $column) {
                 if (!Schema::hasColumn('members_payments', $column)) {
                     \Log::error("Missing column in members_payments: $column");
@@ -128,7 +127,6 @@ class RenewalController extends Controller
                     'payment_screenshot' => $path,
                     'status' => 'pending',
                     'payment_date' => now(),
-                    'payment_reference' => null,
                 ]);
 
                 // Update renewals table
