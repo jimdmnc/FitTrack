@@ -236,7 +236,7 @@
 
         <!-- Image Container -->
         <div class="flex justify-center">
-            <div class="max-w-[320px] max-h-[220px] w-full h-auto overflow-hidden rounded-md bg-gray-700">
+            <div class="max-w-[320px] max-h-[220px] w-full h-sm overflow-hidden rounded-md bg-gray-700">
                 <img id="screenshotImage" src="" alt="Payment Screenshot"
                      class="w-full h-md object-contain rounded-md" />
             </div>
