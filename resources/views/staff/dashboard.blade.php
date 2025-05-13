@@ -504,7 +504,7 @@
             </div>
             <div class="p-6">
                 @if ($announcements->isEmpty())
-                    <div class="bg-[#2a2a2a] rounded-lg p-6 text-center text-gray-300">
+                    <div class="bg-gray-800 rounded-lg p-6 text-center text-gray-300">
                         <svg class="w-12 h-12 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m-3-6v6m-9 3h18"></path>
                         </svg>
@@ -514,7 +514,7 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         @foreach ($announcements as $announcement)
-                            <div class="bg-gray-800 rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-700">
+                            <div class="bg-[#2a2a2a] rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-700">
                                 <div class="flex justify-between items-start">
                                     <h3 class="text-lg font-semibold text-gray-100 truncate">{{ $announcement->title }}</h3>
                                     <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' : ($announcement->type === 'Event' ? 'bg-green-600 text-green-100' : 'bg-orange-600 text-orange-100') }}">
