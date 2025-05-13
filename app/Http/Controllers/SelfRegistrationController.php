@@ -21,7 +21,7 @@ class SelfRegistrationController extends Controller
     }
 
     // Display the login form
-    public function logins()
+    public function login()
     {
         return view('self.login');
     }
