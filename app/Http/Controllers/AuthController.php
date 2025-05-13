@@ -96,13 +96,13 @@ class AuthController extends Controller
                 return response()->json(['error' => 'User not found'], 404);
             }
 
-            // Store the image
+            // Store the image in public/profiles
             $file = $request->file('profile_image');
             $filename = $user->rfid_uid . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('profiles', $filename, 'public');
+            $path = $file->storeAs('public/profiles', $filename, 'public');
 
-            // Save relative path (without storage/public)
-            $relativePath = 'profiles/' . $filename;
+            // Save relative path
+            $relativePath = 'public/profiles/' . $filename;
             $user->profile_image = $relativePath;
             $user->save();
 
