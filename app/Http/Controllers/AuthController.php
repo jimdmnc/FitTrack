@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\UserDetails;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+
 class AuthController extends Controller
 {
     // ✅ User Login
@@ -27,7 +29,7 @@ class AuthController extends Controller
                     'success' => false,
                     'message' => 'Invalid credentials',
                     'errors' => ['email' => ['Invalid credentials']]
-                ], 401); // HTTP 401 for unauthorized
+                ], 401);
             }
     
             if ($user->role === 'admin') {
@@ -59,8 +61,8 @@ class AuthController extends Controller
                 'token' => $token,
                 'rfid_uid' => $user->rfid_uid
             ]);
-    
         } catch (\Exception $e) {
+            Log::error('Login error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred during login',
@@ -69,58 +71,92 @@ class AuthController extends Controller
         }
     }
 
+    public function uploadProfileImage(Request $request)
+    {
+        try {
+            Log::info('Upload profile image request received', [
+                'rfid_uid' => $request->rfid_uid,
+                'profile_image_length' => strlen($request->profile_image ?? '')
+            ]);
+
+            $validator = Validator::make($request->all(), [
+                'profile_image' => 'required|string',
+                'rfid_uid' => 'required|string|exists:users,rfid_uid',
+            ]);
+
+            if ($validator->fails()) {
+                Log::warning('Validation failed: ' . $validator->errors()->first());
+                return response()->json(['error' => $validator->errors()->first()], 422);
+            }
+
+            // Verify base64 string
+            $base64 = $request->profile_image;
+            if (!base64_decode($base64, true)) {
+                Log::warning('Invalid base64 string format');
+                return response()->json(['error' => 'Invalid base64 image data'], 422);
+            }
+
+            $user = User::where('rfid_uid', $request->rfid_uid)->first();
+            if (!$user) {
+                Log::error('User not found for rfid_uid: ' . $request->rfid_uid);
+                return response()->json(['error' => 'User not found'], 404);
+            }
+
+            $user->profile_image = $base64;
+            $user->save();
+
+            Log::info('Profile image uploaded successfully for rfid_uid: ' . $request->rfid_uid);
+            return response()->json(['message' => 'Profile image uploaded successfully']);
+        } catch (\Exception $e) {
+            Log::error('Error uploading profile image: ' . $e->getMessage(), [
+                'rfid_uid' => $request->rfid_uid,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json(['error' => 'Failed to upload image: ' . $e->getMessage()], 500);
+        }
+    }
+
     // ✅ Get Authenticated User
     public function user(Request $request)
     {
-        $user = $request->user(); // Get the authenticated user
+        $user = $request->user();
         
-        // Add null checks for dates using optional() helper
         return response()->json([
             'id' => $user->id,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
-            // 'full_name' => $user->first_name . ' ' . $user->last_name,
             'email' => $user->email,
             'membership_type' => $user->membership_type,
             'member_status' => $user->member_status,
-            'start_date' => $user->start_date, // Will output "2025-04-07" (MySQL format)
+            'start_date' => $user->start_date,
             'end_date' => $user->end_date,
             'rfid_uid' => $user->rfid_uid,
-            // Add any other fields you need from your users table
             'gender' => $user->gender,
             'phone_number' => $user->phone_number,
             'birthdate' => optional($user->birthdate)->format('M d, Y'),
-            'session_status' => $user->session_status
+            'session_status' => $user->session_status,
+            'profile_image' => $user->profile_image
         ]);
     }
 
-
-
-
-    
     // ✅ User Logout
     public function logout(Request $request)
     {
-        $request->user()->tokens()->delete(); // Delete all tokens for the user
+        $request->user()->tokens()->delete();
         return response()->json(['message' => 'Logged out successfully']);
     }
-
-
 
     public function changePassword(Request $request)
     {
         try {
-            // Validate the request
             $validated = $request->validate([
                 'current_password' => 'required|string',
                 'new_password' => 'required|string|min:8|confirmed',
                 'new_password_confirmation' => 'required|string|same:new_password',
             ]);
     
-            // Get the authenticated user
             $user = $request->user();
             
-            // Check if user has a password set (since password field is nullable)
             if (empty($user->password)) {
                 return response()->json([
                     'message' => 'No password set for this account',
@@ -130,20 +166,17 @@ class AuthController extends Controller
                 ], 422);
             }
     
-            // Verify current password
             if (!Hash::check($validated['current_password'], $user->password)) {
                 throw ValidationException::withMessages([
                     'current_password' => ['The provided password does not match our records']
                 ]);
             }
     
-            // Update password and clear remember token (security best practice)
             $user->update([
                 'password' => Hash::make($validated['new_password']),
                 'remember_token' => null,
             ]);
     
-            // Revoke all other tokens (security measure)
             $user->tokens()->delete();
     
             return response()->json([
@@ -200,7 +233,6 @@ class AuthController extends Controller
         try {
             $user->update($validator->validated());
             
-            // Refresh the user model to get updated data
             $user->refresh();
             
             return response()->json([
@@ -232,4 +264,3 @@ class AuthController extends Controller
         }
     }
 }
-
