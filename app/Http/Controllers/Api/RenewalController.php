@@ -128,7 +128,6 @@ class RenewalController extends Controller
                     'payment_screenshot' => $path,
                     'status' => 'pending',
                     'payment_date' => now(),
-                    'payment_reference' => null,
                 ]);
 
                 // Update renewals table
