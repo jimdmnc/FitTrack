@@ -150,16 +150,12 @@
             </div>
             
             <!-- Navigation Links -->
-            <div class="hidden md:flex space-x-8">
+            <div class="hidden md:flex items-center space-x-8">
                 <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
                 <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
                 <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-            
+                <a href="{{ route('self.login') }}" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300">Login</a>
             </div>
-
-        
-
-      
 
             <!-- Mobile Menu Button -->
             <div class="md:hidden">
@@ -174,8 +170,7 @@
             <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
             <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
             <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-  
-      
+            <a href="{{ route('self.login') }}" class="block py-2 text-center bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded hover:from-orange-700 hover:to-orange-800 transition duration-300">Login</a>
         </div>
     </nav>
        

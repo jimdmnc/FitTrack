@@ -20,6 +20,44 @@ class SelfRegistrationController extends Controller
         return view('self.registration');
     }
 
+ // Handle login submission
+ public function loginSubmit(Request $request)
+ {
+     try {
+         $validatedData = $request->validate([
+             'email' => 'required|email|max:255',
+             'password' => 'required|string|min:8',
+         ], [
+             'email.required' => 'Please enter your email address.',
+             'email.email' => 'Please enter a valid email address.',
+             'password.required' => 'Please enter your password.',
+             'password.min' => 'Password must be at least 8 characters.',
+         ]);
+
+         if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']])) {
+             $user = Auth::user();
+             Log::info('User logged in successfully:', ['user_id' => $user->id]);
+
+             if ($user->session_status === 'approved') {
+                 return redirect()->route('self.landingProfile')->with('success', 'Login successful! Welcome back.');
+             }
+
+             return redirect()->route('self.waiting')->with('success', 'Login successful! Your session is pending approval.');
+         }
+
+         Log::warning('Login attempt failed for email:', ['email' => $validatedData['email']]);
+         return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
+
+     } catch (\Illuminate\Validation\ValidationException $e) {
+         Log::error('Validation failed during login: ', ['errors' => $e->errors()]);
+         return redirect()->back()->withInput()->withErrors($e->errors())->with('error', 'Login failed due to invalid input.');
+     } catch (\Exception $e) {
+         Log::error('Login Error: ' . $e->getMessage());
+         return redirect()->back()->withInput()->with('error', 'Login failed: ' . $e->getMessage());
+     }
+ }
+
+
     // Check approval status via AJAX
     public function checkApproval()
     {
