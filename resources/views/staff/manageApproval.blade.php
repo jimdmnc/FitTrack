@@ -233,9 +233,12 @@
             </button>
         </div>
         <div class="flex justify-center">
-            <img id="screenshotImage" src="" alt="Payment Screenshot" 
-                 class="max-w-[150px] max-h-[150px]"> <!-- Fixed smaller dimensions -->
+            <div class="w-[250px] h-[250px] overflow-hidden rounded-md">
+                <img id="screenshotImage" src="" alt="Payment Screenshot"
+                    class="w-full h-full object-contain rounded-md shadow-md" />
+            </div>
         </div>
+
         <div class="mt-3 flex justify-center"> <!-- Centered button and reduced margin -->
             <button onclick="closeScreenshotModal()" 
                     class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm"> <!-- Smaller button -->
