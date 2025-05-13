@@ -97,7 +97,8 @@ class AuthController extends Controller
             }
 
             // Store the image in public/profiles
-            $file = $request->file('profile_image');
+            // Example: Save directly to public/profiles/
+            $request->file('image')->move(public_path('profiles'), $filename);
             $filename = $user->rfid_uid . '_' . time() . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('public/profiles', $filename, 'public');
 
