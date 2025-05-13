@@ -222,7 +222,7 @@
 
 
 <!-- Modal for Viewing Payment Screenshot -->
-<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+<div id="screenshotModal" class="sticky inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
     <div class="bg-gray-800 rounded-lg p-4 w-full max-w-sm mx-4">
         <!-- Modal Header -->
         <div class="flex h-[50px] justify-between items-center mb-3">
