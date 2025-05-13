@@ -233,9 +233,9 @@
             </button>
         </div>
         <div class="flex justify-center">
-            <div class="w-[250px] h-[250px] overflow-hidden rounded-md">
+            <div class="w-[50px] h-[50px] overflow-hidden rounded-md">
                 <img id="screenshotImage" src="" alt="Payment Screenshot"
-                    class="w-[250px] h-[250px] object-cover rounded-md shadow-md" />
+                    class="w-[50px] h-[50px] object-cover rounded-md shadow-md" />
             </div>
         </div>
         <div class="mt-3 flex justify-center">
