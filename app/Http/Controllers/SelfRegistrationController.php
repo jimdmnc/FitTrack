@@ -19,68 +19,66 @@ class SelfRegistrationController extends Controller
     {
         return view('self.registration');
     }
+
     // Display the login form
     public function login()
     {
         return view('self.login');
     }
- // Handle login submission
- public function loginSubmit(Request $request)
- {
-     try {
-         $validatedData = $request->validate([
-             'email' => 'required|email|max:255',
-             'password' => 'required|string|min:8',
-         ], [
-             'email.required' => 'Please enter your email address.',
-             'email.email' => 'Please enter a valid email address.',
-             'password.required' => 'Please enter your password.',
-             'password.min' => 'Password must be at least 8 characters.',
-         ]);
 
-         if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']])) {
-             $user = Auth::user();
-             Log::info('User logged in successfully:', ['user_id' => $user->id]);
+    // Handle login submission
+    public function loginSubmit(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'email' => 'required|email|max:255',
+                'password' => 'required|string|min:8',
+            ], [
+                'email.required' => 'Please enter your email address.',
+                'email.email' => 'Please enter a valid email address.',
+                'password.required' => 'Please enter your password.',
+                'password.min' => 'Password must be at least 8 characters.',
+            ]);
 
-             if ($user->session_status === 'approved') {
-                 return redirect()->route('self.landingProfile')->with('success', 'Login successful! Welcome back.');
-             }
+            if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']])) {
+                $user = Auth::user();
+                Log::info('User logged in successfully:', ['user_id' => $user->id]);
 
-             return redirect()->route('self.waiting')->with('success', 'Login successful! Your session is pending approval.');
-         }
+                if ($user->session_status === 'approved') {
+                    return redirect()->route('self.landingProfile')->with('success', 'Login successful! Welcome back.');
+                }
 
-         Log::warning('Login attempt failed for email:', ['email' => $validatedData['email']]);
-         return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
+                return redirect()->route('self.waiting')->with('success', 'Login successful! Your session is pending approval.');
+            }
 
-     } catch (\Illuminate\Validation\ValidationException $e) {
-         Log::error('Validation failed during login: ', ['errors' => $e->errors()]);
-         return redirect()->back()->withInput()->withErrors($e->errors())->with('error', 'Login failed due to invalid input.');
-     } catch (\Exception $e) {
-         Log::error('Login Error: ' . $e->getMessage());
-         return redirect()->back()->withInput()->with('error', 'Login failed: ' . $e->getMessage());
-     }
- }
+            Log::warning('Login attempt failed for email:', ['email' => $validatedData['email']]);
+            return redirect()->back()->withInput()->with('error', 'Invalid email or password.');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed during login: ', ['errors' => $e->errors()]);
+            return redirect()->back()->withInput()->withErrors($e->errors())->with('error', 'Login failed due to invalid input.');
+        } catch (\Exception $e) {
+            Log::error('Login Error: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Login failed: ' . $e->getMessage());
+        }
+    }
 
     // Check approval status via AJAX
     public function checkApproval()
     {
         $user = auth()->user();
 
-        // Check if user is approved
         if ($user->session_status === 'approved') {
             return response()->json(['approved' => true]);
         }
 
-        // Check if user is rejected
         if ($user->session_status === 'rejected') {
             return response()->json([
                 'rejected' => true,
-                'reason' => $user->rejection_reason // Pass rejection reason if available
+                'reason' => $user->rejection_reason
             ]);
         }
 
-        // Default case, still pending
         return response()->json(['approved' => false]);
     }
 
@@ -98,7 +96,6 @@ class SelfRegistrationController extends Controller
     public function store(Request $request)
     {
         try {
-            // Validate the necessary fields
             $validatedData = $request->validate([
                 'first_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
                 'last_name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
@@ -110,43 +107,39 @@ class SelfRegistrationController extends Controller
                 'email' => 'required|email|max:255|unique:users,email',
                 'gender' => 'required|string|in:male,female,other',
                 'membership_type' => 'required|string|in:1',
-                'amount' => 'required|numeric|in:60',
                 'password' => 'required|string|min:8|confirmed',
             ], [
                 'first_name.regex' => 'First name cannot contain numbers or special characters.',
                 'last_name.regex' => 'Last name cannot contain numbers or special characters.',
                 'email.unique' => 'This email is already registered.',
                 'phone_number.regex' => 'Phone number must be 11 digits starting with 09.',
+                'password.min' => 'Password must be at least 8 characters.',
                 'password.confirmed' => 'Password confirmation does not match.',
             ]);
 
-            // Clear timed_out flag when registering new session
             $request->session()->forget('timed_out');
 
-            // Check if user exists by email and phone
             $existingUser = User::where(function ($query) use ($validatedData) {
                 $query->where('email', $validatedData['email'])
-                    ->orWhere(function ($subQuery) use ($validatedData) {
-                        $subQuery->where('first_name', $validatedData['first_name'])
-                            ->where('last_name', $validatedData['last_name']);
-                    });
+                      ->orWhere(function ($subQuery) use ($validatedData) {
+                          $subQuery->where('first_name', $validatedData['first_name'])
+                                   ->where('last_name', $validatedData['last_name']);
+                      });
             })->first();
-                        
+
             if ($existingUser) {
-                // Update user details, reset session_status, and update password
                 $existingUser->update([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
                     'gender' => $validatedData['gender'],
                     'membership_type' => $validatedData['membership_type'],
+                    'password' => Hash::make($validatedData['password']),
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
                     'needs_approval' => true,
-                    'password' => Hash::make($validatedData['password']),
                 ]);
 
-                // Add a new payment record
                 MembersPayment::create([
                     'rfid_uid' => $existingUser->rfid_uid,
                     'amount' => 60,
@@ -156,13 +149,13 @@ class SelfRegistrationController extends Controller
 
                 Auth::login($existingUser);
 
+                Log::info('Existing user session updated successfully:', ['user_id' => $existingUser->id]);
+
                 return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');
             }
 
-            // If user doesn't exist, generate a new RFID UID
             $rfidUid = 'DAILY' . strtoupper(Str::random(5));
 
-            // Create the user and payment inside a transaction
             $user = DB::transaction(function () use ($validatedData, $rfidUid) {
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
@@ -171,7 +164,7 @@ class SelfRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'membership_type' => $validatedData['membership_type'],
-                    'role' => 'userSession',
+                    'role' => 'user',
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
@@ -192,10 +185,18 @@ class SelfRegistrationController extends Controller
 
             Auth::login($user);
 
+            Log::info('New user registered successfully:', ['user_id' => $user->id]);
+
             return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
 
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation failed during registration: ', ['errors' => $e->errors()]);
+            return redirect()->route('self.registration')
+                ->withInput()
+                ->withErrors($e->errors())
+                ->with('error', 'Registration failed due to invalid input.');
         } catch (\Exception $e) {
-            logger()->error('Session Membership Registration Error: ' . $e->getMessage());
+            Log::error('Session Membership Registration Error: ' . $e->getMessage());
             return redirect()->route('self.registration')
                 ->withInput()
                 ->with('error', 'Registration failed: ' . $e->getMessage());
@@ -210,14 +211,12 @@ class SelfRegistrationController extends Controller
             return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
         }
 
-        // Get the latest attendance record
         $attendance = DB::table('attendances')
             ->where('rfid_uid', $user->rfid_uid)
             ->whereDate('time_in', today())
             ->orderBy('time_in', 'desc')
             ->first();
 
-        // Clear timed_out flag if user has a new attendance record with no time_out
         $attendance = Attendance::where('rfid_uid', auth()->user()->rfid_uid)
                 ->whereNull('time_out')
                 ->first();
@@ -232,14 +231,12 @@ class SelfRegistrationController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Redirect to your landing page route
         return redirect()->route('self.landing');
     }
 
     public function renew(Request $request)
     {
         try {
-            // Validate the request
             $request->validate([
                 'rfid_uid' => 'required|string',
                 'membership_type' => 'required|string|in:1,3,6,12',
@@ -248,13 +245,10 @@ class SelfRegistrationController extends Controller
                 'amount' => 'required|numeric',
             ]);
 
-            // Clear timed_out flag when renewing
             $request->session()->forget('timed_out');
 
-            // Find the user
             $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
 
-            // Update user membership
             $user->update([
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -263,14 +257,12 @@ class SelfRegistrationController extends Controller
                 'needs_approval' => true,
             ]);
 
-            // Create payment record
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'payment_date' => now(),
             ]);
 
-            // Optionally log in the user if not already
             if (!Auth::check()) {
                 Auth::login($user);
             }
@@ -278,7 +270,7 @@ class SelfRegistrationController extends Controller
             return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
 
         } catch (\Exception $e) {
-            logger()->error('Membership Renewal Error: ' . $e->getMessage());
+            Log::error('Membership Renewal Error: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Renewal failed: ' . $e->getMessage());
