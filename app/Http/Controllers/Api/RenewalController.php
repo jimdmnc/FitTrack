@@ -11,13 +11,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
 
-
 class RenewalController extends Controller
 {
-
-
-
-
     public function renewMembershipApp(Request $request)
     {
         // Validate request
@@ -30,31 +25,31 @@ class RenewalController extends Controller
             'amount' => 'required|numeric|min:0',
             'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
         ]);
-    
+
         // Find user by RFID
         $user = User::where('rfid_uid', $request->rfid_uid)->first();
-    
+
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'User not found'
             ], 404);
         }
-    
+
         try {
             // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
-                'member_status' => 'expired', 
+                'member_status' => 'expired',
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
-    
+
             // Process payment screenshot if provided
             $paymentScreenshotPath = $request->payment_screenshot;
-    
+
             // Create Renewal and Payment records
             $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
@@ -66,7 +61,7 @@ class RenewalController extends Controller
                 'payment_reference' => null,
                 'payment_screenshot' => $paymentScreenshotPath,
             ]);
-    
+
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
@@ -76,65 +71,86 @@ class RenewalController extends Controller
                 'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Renewal request submitted. Waiting for staff approval.',
                 'user' => $user,
             ]);
-    
+
         } catch (\Exception $e) {
+            \Log::error('Renewal error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Renewal failed: ' . $e->getMessage(),
             ], 400);
         }
     }
-    
-
-
-
 
     public function uploadPayment(Request $request)
     {
+        // Validate the request
         $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-         
+            'payment_screenshot' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+            'amount' => 'required|numeric|min:0',
+            'membership_type' => 'required|string',
         ]);
-    
+
         try {
-            // Store the image
-            $path = $request->file('image')->store('payment_screenshots', 'public');
-    
-            // Get user ID from RFID
-            $user = User::where('rfid_uid', $request->rfid)->firstOrFail();
-    
-            // Save to database
-            $payment = MembersPayment::create([
-                'rfid_uid' => $user->rfid_uid,
-                'amount' => $request->amount,
-                'payment_method' => $request->payment_method,
-                'payment_screenshot' => $path,
-                'status' => 'pending',
-                'payment_date' => now(),
-            ]);
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Payment uploaded successfully',
-                'data' => $payment
-            ]);
-    
-        } catch (\Exception $e) {
+            // Handle the image upload
+            if ($request->hasFile('payment_screenshot')) {
+                $file = $request->file('payment_screenshot');
+                $filename = 'payment_' . Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs('uploads/payments', $filename, 'public');
+
+                // Find user by RFID
+                $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+                // Save to members_payments table
+                $payment = MembersPayment::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'amount' => $request->amount,
+                    'payment_method' => 'gcash', // Hardcoded as GCash since this is for screenshot uploads
+                    'payment_screenshot' => $path,
+                    'status' => 'pending',
+                    'payment_date' => now(),
+                    'payment_reference' => null,
+                ]);
+
+                // Optionally, link to renewals table if needed
+                $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
+                    ->where('status', 'pending')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+
+                if ($renewal) {
+                    $renewal->update([
+                        'payment_screenshot' => $path,
+                        'payment_method' => 'gcash',
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment screenshot uploaded successfully',
+                    'data' => [
+                        'payment_id' => $payment->id,
+                        'screenshot_path' => $path,
+                    ]
+                ], 200);
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to upload payment: ' . $e->getMessage()
+                'message' => 'No screenshot provided'
+            ], 400);
+        } catch (\Exception $e) {
+            \Log::error('Error uploading payment screenshot: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to upload payment screenshot: ' . $e->getMessage()
             ], 500);
         }
     }
-    
-
-
-
-
 }
