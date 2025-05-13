@@ -491,71 +491,83 @@
 
 
 
-    <!-- Announcements List -->
-    <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
-        <div class="flex flex-col md:flex-row justify-between items-center">
-            <h2 class="text-2xl font-semibold p-5 text-gray-100 border-b border-gray-800">Announcements</h2>
-                <!-- Right Section: Search, Feedback, Notifications, and Create Announcement -->
-                <div class="flex items-center space-x-2">
-                    <button id="openModalBtn" class="bg-orange-600 text-white border border-[#e64a19] px-4 py-2 rounded-full hover:bg-transparent hover:text-orange-700 transition-all duration-300">
-                        Create Announcement
-                    </button>
-                </div>
-        </div>
-        <table class="min-w-full">
-            <thead class="bg-gray-600">
-                <tr>
-                    <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
-                    <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Type</th>
-                    <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Schedule</th>
-                    <th class="py-3 px-5 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-800">
-                @foreach ($announcements as $announcement)
-                    <tr class="hover:bg-gray-800 transition duration-150 ease-in-out">
-                        <td class="px-5 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-100">{{ $announcement->title }}</div>
-                        </td>
-                        <td class="px-5 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-300">
-                                {{ $announcement->type }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-400">
-                            @if ($announcement->schedule)
-                                {{ $announcement->schedule instanceof \Carbon\Carbon ? $announcement->schedule->format('Y-m-d H:i') : \Carbon\Carbon::parse($announcement->schedule)->format('Y-m-d H:i') }}
-                            @else
-                                N/A
-                            @endif
-                        </td>
-                        <td class="px-5 py-4 whitespace-nowrap text-sm font-medium">
-                                <button type="button" class="text-blue-400 hover:text-blue-300 mr-3 openEditModalBtn" 
-                                        data-id="{{ $announcement->id }}"
-                                        data-title="{{ $announcement->title }}"
-                                        data-content="{{ $announcement->content }}"
-                                        data-schedule="{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d\TH:i') : '' }}"
-                                        data-type="{{ $announcement->type }}">Edit</button>
-                                <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-400 hover:text-red-300">Delete</button>
-                                </form>
-                            </td>
-                    </tr>
-                @endforeach
+<!-- Announcements List (Card-Based) -->
+<div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+            <div class="flex flex-col md:flex-row justify-between items-center p-5 border-b border-gray-800">
+                <h2 class="text-2xl font-semibold text-gray-100">Announcements</h2>
+                <button id="openModalBtn" class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition-all duration-300 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Create Announcement
+                </button>
+            </div>
+            <div class="p-6">
                 @if ($announcements->isEmpty())
-                    <tr>
-                        <td colspan="4" class="px-5 py-4 text-center text-gray-500">
-                            <div class="bg-gray-800 rounded-lg p-4 text-gray-300">
-                                No announcements found.
+                    <div class="bg-gray-800 rounded-lg p-6 text-center text-gray-300">
+                        <svg class="w-12 h-12 mx-auto mb-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6h6v6m-3-6v6m-9 3h18"></path>
+                        </svg>
+                        <p class="text-lg">No announcements found.</p>
+                        <p class="text-sm text-gray-400">Click "Create Announcement" to add one.</p>
+                    </div>
+                @else
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach ($announcements as $announcement)
+                            <div class="bg-gray-800 rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-700">
+                                <div class="flex justify-between items-start">
+                                    <h3 class="text-lg font-semibold text-gray-100 truncate">{{ $announcement->title }}</h3>
+                                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' : ($announcement->type === 'Event' ? 'bg-green-600 text-green-100' : 'bg-orange-600 text-orange-100') }}">
+                                        {{ $announcement->type }}
+                                    </span>
+                                </div>
+                                <p class="text-sm text-gray-400 mt-2">
+                                    @if ($announcement->schedule)
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            {{ $announcement->schedule instanceof \Carbon\Carbon ? $announcement->schedule->format('Y-m-d H:i') : \Carbon\Carbon::parse($announcement->schedule)->format('Y-m-d H:i') }}
+                                        </span>
+                                    @else
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            N/A
+                                        </span>
+                                    @endif
+                                </p>
+                                <p class="text-sm text-gray-300 mt-2 line-clamp-2">{{ $announcement->content }}</p>
+                                <div class="mt-4 flex justify-end space-x-2">
+                                    <button type="button" class="openEditModalBtn text-blue-400 hover:text-blue-300 flex items-center"
+                                            data-id="{{ $announcement->id }}"
+                                            data-title="{{ $announcement->title }}"
+                                            data-content="{{ $announcement->content }}"
+                                            data-schedule="{{ $announcement->schedule ? $announcement->schedule->format('Y-m-d\TH:i') : '' }}"
+                                            data-type="{{ $announcement->type }}">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
+                                        Edit
+                                    </button>
+                                    <form action="{{ route('announcements.destroy', $announcement) }}" method="POST" class="inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-400 hover:text-red-300 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m4-12v12"></path>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </td>
-                    </tr>
+                        @endforeach
+                    </div>
                 @endif
-            </tbody>
-        </table>
-    </div>
+            </div>
+        </div>
 
 
     <!-- Edit Announcement Modal -->
