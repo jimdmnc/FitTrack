@@ -93,10 +93,13 @@ class DashboardController extends Controller
         ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
         ->count();
         
-        // Count new members registered **last week only**
-        $lastWeekNewMembers = User::where('role', 'user')
-            ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
-            ->count();
+        // Count new members registered last week only (both regular users and session users)
+        $lastWeekNewMembers = User::where(function($query) {
+            $query->where('role', 'user')
+                ->orWhere('role', 'userSession');
+        })
+        ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
+        ->count();
         
         // Calculate percentage change (Max 100%)
         $percentageChange = 0;
@@ -349,35 +352,38 @@ public function getPeakHours()
 
 
 // pie grpah for membership type===============================
-    private function getMembershipTypeData()
-    {
-        // Fetch the membership data for active users only, grouped by membership type
-        $membershipData = User::where('role', 'user')
-            // ->where('member_status', 'active')  // Only include active users
-            ->selectRaw('membership_type, COUNT(*) as count')
-            ->groupBy('membership_type')
-            ->get();
+private function getMembershipTypeData()
+{
+    // Fetch the membership data for active users only, grouped by membership type
+    $membershipData = User::where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        })
+        // ->where('member_status', 'active')  // Uncomment if you want only active users
+        ->selectRaw('membership_type, COUNT(*) as count')
+        ->groupBy('membership_type')
+        ->get();
 
-        // Prepare the data for the chart
-        $labels = [];
-        $data = [];
+    // Prepare the data for the chart
+    $labels = [];
+    $data = [];
 
-        // Loop through each data point and map the numeric membership type to its label
-        foreach ($membershipData as $dataPoint) {
-            // Get the label for the membership type using the predefined MEMBERSHIP_TYPES constant
-            $membershipLabel = User::MEMBERSHIP_TYPES[$dataPoint->membership_type] ?? 'Unknown';
+    // Loop through each data point and map the numeric membership type to its label
+    foreach ($membershipData as $dataPoint) {
+        // Get the label for the membership type using the predefined MEMBERSHIP_TYPES constant
+        $membershipLabel = User::MEMBERSHIP_TYPES[$dataPoint->membership_type] ?? 'Unknown';
 
-            // Add the label and count to the arrays
-            $labels[] = $membershipLabel;
-            $data[] = $dataPoint->count;
-        }
-
-        // Return the data in a format that can be used by the chart
-        return [
-            'labels' => $labels,
-            'data' => $data,
-        ];
+        // Add the label and count to the arrays
+        $labels[] = $membershipLabel;
+        $data[] = $dataPoint->count;
     }
+
+    // Return the data in a format that can be used by the chart
+    return [
+        'labels' => $labels,
+        'data' => $data,
+    ];
+}
 // pie grpah for membership type===============================
 
 
@@ -385,25 +391,28 @@ public function getPeakHours()
 
 
 // table for top 10 active membbers==========================
-    public function getTopActiveMembers()
-    {
-        return User::where('role', 'user')
-            ->where('member_status', 'active')
-            ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
-            ->select(
-                'users.id', 
-                'users.rfid_uid', // Include RFID UID
-                'users.first_name', 
-                'users.last_name', 
-                'users.membership_type', // Include membership type
-                'users.member_status', // Include member status
-                \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
-            )
-            ->groupBy('users.id', 'users.rfid_uid', 'users.first_name', 'users.last_name', 'users.membership_type', 'users.member_status') // Add to GROUP BY
-            ->orderByDesc('check_ins_count')
-            ->limit(10)
-            ->get();
-    }
+public function getTopActiveMembers()
+{
+    return User::where('member_status', 'active')
+        ->where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        })
+        ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
+        ->select(
+            'users.id', 
+            'users.rfid_uid', // Include RFID UID
+            'users.first_name', 
+            'users.last_name', 
+            'users.membership_type', // Include membership type
+            'users.member_status', // Include member status
+            \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
+        )
+        ->groupBy('users.id', 'users.rfid_uid', 'users.first_name', 'users.last_name', 'users.membership_type', 'users.member_status')
+        ->orderByDesc('check_ins_count')
+        ->limit(10)
+        ->get();
+}
 // table for top 10 active membbers==========================
 
 
