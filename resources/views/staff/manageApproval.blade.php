@@ -93,91 +93,116 @@
                 </thead>
 
                 <tbody class="divide-y divide-black">
-                    @forelse($pendingUsers as $user)
-                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                        <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
-                        <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
-                        <td class="p-3 font-medium text-gray-200">
-                            @if($user->membership_type == '7')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    Weekly
-                                </span>
-                            @elseif($user->membership_type == '1')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                                    Session
-                                </span>
-                            @elseif($user->membership_type == '30')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">
-                                    Monthly
-                                </span>
-                            @elseif($user->membership_type == '365')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold  bg-purple-900 text-purple-200">
-                                    Annual
-                                </span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    {{ $user->membership_type ?? 'N/A' }}
-                                </span>
-                            @endif
-                        </td>
+    @forelse($pendingUsers as $user)
+    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+        <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
+        <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
+        <td class="p-3 font-medium text-gray-200">
+            @if($user->membership_type == '7')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
+                    Weekly
+                </span>
+            @elseif($user->membership_type == '1')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
+                    Session
+                </span>
+            @elseif($user->membership_type == '30')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">
+                    Monthly
+                </span>
+            @elseif($user->membership_type == '365')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">
+                    Annual
+                </span>
+            @else
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
+                    {{ $user->membership_type ?? 'N/A' }}
+                </span>
+            @endif
+        </td>
 
-                        <td class="p-3 font-medium text-gray-200">
-                            @if($user->payment && $user->payment->payment_method == 'gcash')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    GCASH
-                                </span>
-                                @elseif($user->payment && $user->payment->payment_method == 'cash')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                                    CASH
-                                </span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
-                                    Unknown
-                                </span>
-                            @endif
-                        </td>
+        <td class="p-3 font-medium text-gray-200">
+            @if($user->payment && $user->payment->payment_method == 'gcash')
+                <button
+                    onclick="openScreenshotModal('{{ Storage::url($user->payment->payment_screenshot) }}')"
+                    class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors"
+                >
+                    GCASH
+                </button>
+            @elseif($user->payment && $user->payment->payment_method == 'cash')
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
+                    CASH
+                </span>
+            @else
+                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
+                    Unknown
+                </span>
+            @endif
+        </td>
 
-                        <td class="p-3 font-medium">
-                            <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
-                            <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
-                        </td>
+        <td class="p-3 font-medium">
+            <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
+            <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
+        </td>
 
-                        <td class="p-3 text-center">
-                            <div class="flex justify-center gap-2">
-                                <form action="{{route('staff.approveUser', $user->id)}}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="bg-green-100 text-green-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                        </svg>
-                                        Approve
-                                    </button>
-                                </form>
+        <td class="p-3 text-center">
+            <div class="flex justify-center gap-2">
+                <form action="{{ route('staff.approveUser', $user->id) }}" method="POST" class="inline-block">
+                    @csrf
+                    @method('PUT')
+                    <button type="submit" class="bg-green-100 text-green-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        Approve
+                    </button>
+                </form>
 
-                                <button onclick="rejectUser({{ $user->id }})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Reject
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="py-10 text-center">
-                            <div class="flex flex-col items-center justify-center text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
-                                <p class="text-gray-300 mt-1">All membership requests have been processed</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
+                <button onclick="rejectUser({{ $user->id }})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                    Reject
+                </button>
+            </div>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="5" class="py-10 text-center">
+            <div class="flex flex-col items-center justify-center text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
+                <p class="text-gray-300 mt-1">All membership requests have been processed</p>
+            </div>
+        </td>
+    </tr>
+    @endforelse
+</tbody>
+
+<!-- Modal for Viewing Payment Screenshot -->
+<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-gray-800 rounded-lg p-6 max-w-2xl w-full">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-200">Payment Screenshot</h3>
+            <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="flex justify-center">
+            <img id="screenshotImage" src="" alt="Payment Screenshot" class="max-w-full max-h-[60vh] object-contain">
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button onclick="closeScreenshotModal()" class="bg-gray-600 text-gray-200 px-4 py-2 rounded-md hover:bg-gray-500">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
 
             </div>
 
@@ -216,6 +241,20 @@
         </form>
     </div>
 </div>
+
+<script>
+    function openScreenshotModal(imageUrl) {
+        const modal = document.getElementById('screenshotModal');
+        const image = document.getElementById('screenshotImage');
+        image.src = imageUrl;
+        modal.classList.remove('hidden');
+    }
+
+    function closeScreenshotModal() {
+        const modal = document.getElementById('screenshotModal');
+        modal.classList.add('hidden');
+        document.getElementById('screenshotImage').src = '';
+    }
 <script>
     function closeModal() {
         document.getElementById('rejectModal').classList.add('hidden');
