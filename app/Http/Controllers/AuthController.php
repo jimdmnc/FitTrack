@@ -79,41 +79,58 @@ class AuthController extends Controller
                 'rfid_uid' => $request->rfid_uid,
                 'has_file' => $request->hasFile('profile_image')
             ]);
-
+    
             $validator = Validator::make($request->all(), [
                 'profile_image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
                 'rfid_uid' => 'required|string|exists:users,rfid_uid',
             ]);
-
+    
             if ($validator->fails()) {
                 Log::warning('Validation failed: ' . $validator->errors()->first());
                 return response()->json(['error' => $validator->errors()->first()], 422);
             }
-
+    
             $user = User::where('rfid_uid', $request->rfid_uid)->first();
             if (!$user) {
                 Log::error('User not found for rfid_uid: ' . $request->rfid_uid);
                 return response()->json(['error' => 'User not found'], 404);
             }
-
-            // Store the image in public/profiles
-            // Example: Save directly to public/profiles/
-            $request->file('image')->move(public_path('profiles'), $filename);
+    
+            // Get the uploaded file
+            $file = $request->file('profile_image');
+            
+            // Generate unique filename
             $filename = $user->rfid_uid . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('public/profiles', $filename, 'public');
-
-            // Save relative path
-            $relativePath = 'public/profiles/' . $filename;
+            
+            // Create profiles directory if it doesn't exist
+            $uploadPath = public_path('profiles');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+    
+            // Move the file to public/profiles
+            $file->move($uploadPath, $filename);
+            
+            // Save relative path (without 'public/' prefix)
+            $relativePath = 'profiles/' . $filename;
             $user->profile_image = $relativePath;
             $user->save();
-
+    
+            // Generate full URL
+            $fullUrl = url('/' . $relativePath);
+    
             Log::info('Profile image uploaded successfully', [
                 'rfid_uid' => $request->rfid_uid,
                 'path' => $relativePath,
-                'full_url' => Storage::url($relativePath)
+                'full_url' => $fullUrl
             ]);
-
-            return response()->json(['message' => 'Profile image uploaded successfully', 'path' => Storage::url($relativePath)]);
+    
+            return response()->json([
+                'message' => 'Profile image uploaded successfully',
+                'path' => $relativePath,
+                'url' => $fullUrl
+            ]);
+            
         } catch (\Exception $e) {
             Log::error('Error uploading profile image: ' . $e->getMessage(), [
                 'rfid_uid' => $request->rfid_uid,
