@@ -491,9 +491,9 @@
 
 
 
-<!-- Announcements List (Card-Based) -->
-<div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
-            <div class="flex flex-col md:flex-row justify-between items-center p-5 border-b border-gray-800">
+        <!-- Announcements List (Card-Based) -->
+        <div class="bg-[#1e1e1e] shadow-lg rounded-xl overflow-hidden border border-gray-800 mb-8 mt-8">
+                <div class="flex flex-col md:flex-row justify-between items-center p-5 border-b border-gray-800">
                 <h2 class="text-2xl font-semibold text-gray-100">Announcements</h2>
                 <button id="openModalBtn" class="bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition-all duration-300 flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -512,7 +512,7 @@
                         <p class="text-sm text-gray-400">Click "Create Announcement" to add one.</p>
                     </div>
                 @else
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         @foreach ($announcements as $announcement)
                             <div class="bg-gray-800 rounded-lg p-5 shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-700">
                                 <div class="flex justify-between items-start">
