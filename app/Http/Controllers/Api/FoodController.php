@@ -34,21 +34,25 @@ class FoodController extends Controller {
         ], 500);
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $user = auth('sanctum')->user();
         if (!$user) {
             return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
-    
+
         $validator = Validator::make($request->all(), [
-            'food_name' => ['required', 'string', 'max:255'],
+            'food_id' => ['required', 'integer', 'exists:foods,id'],
+            'rfid_uid' => ['required', 'string', 'max:255'],
+            'meal_type' => ['required', 'string', 'in:Breakfast,Lunch,Dinner,Snacks'],
+            'quantity' => ['required', 'numeric', 'min:0.01'],
+            'date' => ['required', 'date'],
             'consumed_calories' => ['required', 'numeric', 'min:0'],
             'consumed_protein' => ['required', 'numeric', 'min:0'],
             'consumed_fats' => ['required', 'numeric', 'min:0'],
             'consumed_carbs' => ['required', 'numeric', 'min:0'],
-            'grams' => ['required', 'numeric', 'min:0.01'],
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
@@ -56,31 +60,27 @@ class FoodController extends Controller {
                 'errors' => $validator->errors()
             ], 422);
         }
-    
+
         try {
-            $food = Food::create([
-                'food_name' => $request->food_name,
+            $foodLog = FoodLog::create([
+                'food_id' => $request->food_id,
+                'rfid_uid' => $request->rfid_uid,
+                'meal_type' => $request->meal_type,
+                'quantity' => $request->quantity,
+                'date' => $request->date,
                 'consumed_calories' => $request->consumed_calories,
                 'consumed_protein' => $request->consumed_protein,
                 'consumed_fats' => $request->consumed_fats,
                 'consumed_carbs' => $request->consumed_carbs,
-                'grams' => $request->grams,
             ]);
-    
+
             return response()->json([
                 'success' => true,
-                'data' => [
-                    'id' => $food->id,
-                    'food_name' => $food->food_name,
-                    'consumed_calories' => (float)$food->consumed_calories,
-                    'consumed_protein' => (float)$food->consumed_protein,
-                    'consumed_fats' => (float)$food->consumed_fats,
-                    'consumed_carbs' => (float)$food->consumed_carbs,
-                    'grams' => (float)$food->grams,
-                ]
+                'message' => 'Food log created successfully',
+                'data' => $foodLog
             ], 201);
         } catch (\Exception $e) {
-            Log::error('FoodController error', [
+            Log::error('FoodLogController error', [
                 'error' => $e->getMessage(),
                 'stack' => $e->getTraceAsString(),
                 'request' => $request->all(),
