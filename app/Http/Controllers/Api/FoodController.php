@@ -16,12 +16,23 @@ class FoodController extends Controller
             'protein' => 'required|numeric',
             'fats' => 'required|numeric',
             'carbs' => 'required|numeric',
-            'grams' => 'required|numeric',
+            'grams' => 'required|integer',
         ]);
 
         $food = Food::create($validated);
 
-        return response()->json($food, 201);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $food->id,
+                'foodName' => $food->foodName,
+                'calories' => $food->calories,
+                'protein' => $food->protein,
+                'fats' => $food->fats,
+                'carbs' => $food->carbs,
+                'grams' => $food->grams,
+            ]
+        ], 201);
     }
 
     public function index(Request $request)

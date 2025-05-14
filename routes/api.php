@@ -103,7 +103,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/foods/search', [FoodController::class, 'search']);
 
 
-
+    Route::post('/foods', [FoodController::class, 'store']);
 
 });
 
