@@ -57,7 +57,7 @@ class FoodController extends Controller {
         }
 
         $validator = Validator::make($request->all(), [
-            'food_name' => ['required', 'string', 'max:255'],
+            'foodName' => ['required', 'string', 'max:255'],
             'rfid_uid' => ['required', 'string', 'max:255'],
             'meal_type' => ['required', 'string', 'in:Breakfast,Lunch,Dinner,Snacks'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
@@ -74,7 +74,7 @@ class FoodController extends Controller {
 
         try {
             $foodLog = FoodLog::create([
-                'food_name' => $request->food_name,
+                'foodName' => $request->foodName,
                 'rfid_uid' => $request->rfid_uid,
                 'meal_type' => $request->meal_type,
                 'quantity' => $request->quantity,
@@ -127,4 +127,50 @@ class FoodController extends Controller {
             return $this->serverErrorResponse($e);
         }
     }
+
+
+
+    public function getFoodLogsByDate(Request $request) {
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return $this->unauthorizedResponse();
+        }
+
+        $date = $request->query('date', now()->format('Y-m-d'));
+
+        $validator = Validator::make(['date' => $date, 'rfid_uid' => $request->rfid_uid], [
+            'date' => ['required', 'date'],
+            'rfid_uid' => ['required', 'string', 'max:255'],
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationErrorResponse($validator);
+        }
+
+        try {
+            $logs = FoodLog::where('rfid_uid', $request->rfid_uid)
+                ->whereDate('date', $date)
+                ->get();
+
+            $formattedLogs = $logs->map(function ($log) {
+                return [
+                    'id' => $log->id,
+                    'foodName' => $log->foodName,
+                    'mealType' => $log->meal_type,
+                    'quantity' => (float)$log->quantity,
+                    'consumedCalories' => (float)$log->consumed_calories,
+                    'consumedProtein' => (float)$log->consumed_protein,
+                    'consumedFats' => (float)$log->consumed_fats,
+                    'consumedCarbs' => (float)$log->consumed_carbs,
+                    'date' => $log->date->format('Y-m-d'),
+                ];
+            });
+
+            return response()->json($formattedLogs);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse($e);
+        }
+    }
+
+
 }
