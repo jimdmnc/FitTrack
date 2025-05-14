@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Price;
+
 
 class ProfileController extends Controller
 {
@@ -19,6 +21,24 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         return view('profile.edit', ['user' => $request->user()]);
+    }
+
+    public function pricelist(Request $request): View
+    {
+        $prices = Price::all();
+        return view('profile.pricelist', [
+            'user' => $request->user(),
+            'prices' => $prices,
+        ]);
+    }
+
+    public function updatePrice(Request $request)
+    {
+        foreach ($request->prices as $id => $amount) {
+            Price::where('id', $id)->update(['amount' => $amount]);
+        }
+
+        return redirect()->route('profile.pricelist')->with('success', 'Prices updated successfully!');
     }
 
     /**

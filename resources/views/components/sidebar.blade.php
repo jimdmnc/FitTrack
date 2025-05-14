@@ -89,7 +89,7 @@
             </a>
 
             <!-- Profile Section -->
-            <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Profile</span>
+            <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Settings</span>
 
             <!-- Profile Dropdown -->
             <div x-data="{ open: false }" class="mt-1">
@@ -99,7 +99,7 @@
                     <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ request()->routeIs('profile.edit') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-                    <span>My Profile</span>
+                    <span>Account Settings</span>
 
                     <!-- Dropdown Arrow -->
                     <svg :class="{'rotate-90': open, 'rotate-0': !open}" class="w-3 h-3 sm:w-4 sm:h-4 ml-auto transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -113,7 +113,10 @@
                     <a href="{{ route('profile.edit') }}" class="group block text-xs sm:text-sm font-medium text-gray-400 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 ease-in-out hover:bg-orange-700 hover:text-white hover:translate-x-1 transform">
                         View Profile
                     </a>
-
+                    <!-- Change Price list Link -->
+                    <a href="{{ route('profile.pricelist') }}" class="group block text-xs sm:text-sm font-medium text-gray-400 rounded-md px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 ease-in-out hover:bg-orange-700 hover:text-white hover:translate-x-1 transform">
+                        Membership Pricing
+                    </a>
                     <!-- Logout Button -->
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

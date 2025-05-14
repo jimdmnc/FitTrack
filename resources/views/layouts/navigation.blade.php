@@ -58,17 +58,30 @@
         
 </nav>
 <script>
-function updateTime() {
-  const now = new Date();
-  const hours = now.getHours();
-  const minutes = now.getMinutes().toString().padStart(2, '0');
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-  const formattedHours = (hours % 12) || 12; // Convert to 12-hour format
-  
-  document.getElementById('time-text').textContent = `${formattedHours}:${minutes} ${ampm}`;
+async function updateInternetTime() {
+    try {
+        const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Manila');
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+
+        const date = new Date(data.dateTime);
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = (hours % 12) || 12;
+
+        document.getElementById('time-text').textContent = `${formattedHours}:${minutes} ${ampm}`;
+    } catch (error) {
+        console.error('Error fetching internet time:', error);
+        document.getElementById('time-text').textContent = 'Time unavailable';
+    }
 }
 
-// Update time immediately and then every second
-updateTime();
-setInterval(updateTime, 1000);
+// Call once immediately
+updateInternetTime();
+
+// Update every minute
+setInterval(updateInternetTime, 60000);
 </script>
