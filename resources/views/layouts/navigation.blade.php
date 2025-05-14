@@ -26,7 +26,7 @@
                 <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
             </span>
-            <span id="time-text">12:00 PM</span>
+            <span id="time-text">Loading time...</span>
         </div>
 
         <!-- Right Section: Search, Feedback and Notifications -->
@@ -58,30 +58,83 @@
         
 </nav>
 <script>
-async function updateInternetTime() {
+    // Using a reliable time API with multiple endpoints as fallback
+const TIME_API_ENDPOINTS = [
+    'https://worldtimeapi.org/api/timezone/Asia/Manila',
+    'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Manila',
+    'https://www.timeapi.io/api/Time/current/zone?timeZone=Asia/Manila'
+];
+
+async function fetchTimeFromAPI(endpoint) {
     try {
-        const response = await fetch('https://timeapi.io/api/Time/current/zone?timeZone=Asia/Manila');
-        if (!response.ok) throw new Error('Network response was not ok');
-
+        const response = await fetch(endpoint, {
+            cache: 'no-store',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) throw new Error(`API response not OK: ${response.status}`);
+        
         const data = await response.json();
-
-        const date = new Date(data.dateTime);
-
-        const hours = date.getHours();
-        const minutes = date.getMinutes().toString().padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const formattedHours = (hours % 12) || 12;
-
-        document.getElementById('time-text').textContent = `${formattedHours}:${minutes} ${ampm}`;
+        return new Date(data.datetime || data.dateTime || data.currentDateTime);
     } catch (error) {
-        console.error('Error fetching internet time:', error);
-        document.getElementById('time-text').textContent = 'Time unavailable';
+        console.error(`Failed to fetch from ${endpoint}:`, error);
+        return null;
     }
 }
 
-// Call once immediately
-updateInternetTime();
+async function getInternetTime() {
+    // Try each API endpoint in sequence
+    for (const endpoint of TIME_API_ENDPOINTS) {
+        const date = await fetchTimeFromAPI(endpoint);
+        if (date) return date;
+    }
+    
+    throw new Error('All time APIs failed');
+}
 
-// Update every minute
-setInterval(updateInternetTime, 60000);
-</script>
+function formatTime(date) {
+    const hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = (hours % 12) || 12;
+    
+    return `${formattedHours}:${minutes} ${ampm}`;
+}
+
+function updateTimeDisplay(date) {
+    const timeElement = document.getElementById('time-text');
+    if (timeElement) {
+        timeElement.textContent = formatTime(date);
+    }
+}
+
+async function updateInternetTime() {
+    try {
+        const date = await getInternetTime();
+        updateTimeDisplay(date);
+    } catch (error) {
+        console.error('Failed to get internet time:', error);
+        const timeElement = document.getElementById('time-text');
+        if (timeElement) {
+            timeElement.textContent = 'Time unavailable';
+            timeElement.classList.add('text-red-500');
+        }
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // First update
+    updateInternetTime();
+    
+    // Update every minute (60000ms)
+    setInterval(updateInternetTime, 60000);
+    
+    // Also update immediately every second for the first 10 seconds
+    // to ensure we get a time display quickly
+    const quickUpdateInterval = setInterval(updateInternetTime, 1000);
+    setTimeout(() => clearInterval(quickUpdateInterval), 10000);
+});
+</script>   

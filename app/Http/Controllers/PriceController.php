@@ -59,4 +59,17 @@ class PriceController extends Controller
         $prices = Price::orderBy('id')->get();
         return view('profile.pricelist', compact('prices'));
     }
+    
+    /**
+     * Update prices from the profile section.
+     * This is an alias to the update method to maintain route consistency.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function updatePrice(Request $request)
+    {
+        // Simply call the existing update method
+        return $this->update($request);
+    }
 }

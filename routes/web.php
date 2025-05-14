@@ -128,7 +128,15 @@ Route::middleware('auth')->group(function () {
 
     // Price list routes
     Route::get('/profile/pricelist', [PriceController::class, 'pricelist'])->name('profile.pricelist');
-    Route::post('/profile/pricelist/update', [PriceController::class, 'updatePrice'])->name('profile.pricelist.update');;
+    Route::post('/profile/pricelist/update', [PriceController::class, 'update'])->name('profile.pricelist.update');
+
+    Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'staff'], function () {
+        Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
+        Route::get('/membership-prices', [ViewmembersController::class, 'membershipPrices'])->name('staff.membership.prices');
+        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])->name('renew.membership');
+        Route::post('/revoke-member', [ViewmembersController::class, 'revokeMember'])->name('revoke.member');
+        Route::post('/restore-member', [ViewmembersController::class, 'restoreMember'])->name('restore.member');
+    });
 
     // // **📩 Email Verification Routes**
     // Route::get('/email/verify', function () {
