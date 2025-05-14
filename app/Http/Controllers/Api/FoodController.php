@@ -57,7 +57,7 @@ class FoodController extends Controller {
         }
 
         $validator = Validator::make($request->all(), [
-            'foodName' => ['required', 'string', 'max:255'],
+            'food_name' => ['required', 'string', 'max:255'],
             'rfid_uid' => ['required', 'string', 'max:255'],
             'meal_type' => ['required', 'string', 'in:Breakfast,Lunch,Dinner,Snacks'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
@@ -74,7 +74,7 @@ class FoodController extends Controller {
 
         try {
             $foodLog = FoodLog::create([
-                'foodName' => $request->foodName,
+                'food_name' => $request->food_name,
                 'rfid_uid' => $request->rfid_uid,
                 'meal_type' => $request->meal_type,
                 'quantity' => $request->quantity,
@@ -130,7 +130,7 @@ class FoodController extends Controller {
 
 
 
-    public function getFoodLogsByDate(Request $request) {
+public function getFoodLogsByDate(Request $request) {
         $user = auth('sanctum')->user();
         if (!$user) {
             return $this->unauthorizedResponse();
@@ -155,7 +155,7 @@ class FoodController extends Controller {
             $formattedLogs = $logs->map(function ($log) {
                 return [
                     'id' => $log->id,
-                    'foodName' => $log->foodName,
+                    'food_name' => $log->food_name,
                     'mealType' => $log->meal_type,
                     'quantity' => (float)$log->quantity,
                     'consumedCalories' => (float)$log->consumed_calories,
