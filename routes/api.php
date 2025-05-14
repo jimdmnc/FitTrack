@@ -100,10 +100,21 @@ Route::middleware('auth:sanctum')->group(function () {
 // routes/api.php
     // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
     // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
+    // Route::get('/foods/search', [FoodController::class, 'search']);
+
+
+    // Route::post('/foods', [FoodController::class, 'store']);
+
+
+    // Food routes
+    Route::post('/foods', [FoodController::class, 'store']);
     Route::get('/foods/search', [FoodController::class, 'search']);
 
-
-    Route::post('/foods', [FoodController::class, 'store']);
+    // Food log routes
+    Route::post('/food_logs', [FoodLogController::class, 'logFood']);
+    Route::get('/food_logs', [FoodLogController::class, 'getFoodLogsByDate']);
+    Route::delete('/food_logs/{id}', [FoodLogController::class, 'destroy']);
+    Route::get('/food_logs/all', [FoodLogController::class, 'getAllFoodLogs']);
 
 });
 

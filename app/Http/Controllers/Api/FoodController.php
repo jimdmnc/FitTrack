@@ -5,70 +5,89 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Food;
+use Illuminate\Support\Facades\Log;
 
 class FoodController extends Controller
 {
-    public function store(Request $request)
+    // Helper for consistent error responses
+    protected function serverErrorResponse(\Exception $e)
     {
-        $validated = $request->validate([
-            'foodName' => 'required|string|max:255',
-            'calories' => 'required|numeric',
-            'protein' => 'required|numeric',
-            'fats' => 'required|numeric',
-            'carbs' => 'required|numeric',
-            'grams' => 'required|integer',
+        Log::error('FoodController error', [
+            'error' => $e->getMessage(),
+            'stack' => $e->getTraceAsString(),
+            'request' => request()->all(),
         ]);
 
-        $food = Food::create($validated);
-
         return response()->json([
-            'success' => true,
-            'data' => [
-                'id' => $food->id,
-                'foodName' => $food->foodName,
-                'calories' => $food->calories,
-                'protein' => $food->protein,
-                'fats' => $food->fats,
-                'carbs' => $food->carbs,
-                'grams' => $food->grams,
-            ]
-        ], 201);
+            'success' => false,
+            'message' => 'Server error',
+            'error' => $e->getMessage()
+        ], 500);
     }
 
-    public function index(Request $request)
+    public function store(Request $request)
     {
-        $query = $request->query('query');
-        
-        $foods = Food::when($query, function($q) use ($query) {
-            return $q->where('foodName', 'like', '%'.$query.'%');
-        })->get();
+        try {
+            $validated = $request->validate([
+                'foodName' => 'required|string|max:255',
+                'consumed_calories' => 'required|numeric',
+                'consumed_protein' => 'required|numeric',
+                'consumed_fats' => 'required|numeric',
+                'consumed_carbs' => 'required|numeric',
+                'grams' => 'required|integer',
+            ]);
 
-        return response()->json($foods);
+            $food = Food::create($validated);
+
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'id' => $food->id,
+                    'foodName' => $food->foodName,
+                    'consumedCalories' => $food->consumed_calories,
+                    'consumedProtein' => $food->consumed_protein,
+                    'consumedFats' => $food->consumed_fats,
+                    'consumedCarbs' => $food->consumed_carbs,
+                    'grams' => $food->grams,
+                ]
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse($e);
+        }
     }
-    
-
 
     public function search(Request $request)
     {
         try {
-            $request->validate([
-                'query' => 'required|string|min:3'
-            ]);
-    
-            $foods = Food::where('foodName', 'like', '%'.$request->input('query').'%')
-                            ->get();
-    
+            $query = $request->query('query');
+
+            if (!$query || strlen($query) < 3) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Query must be at least 3 characters long'
+                ], 400);
+            }
+
+            $foods = Food::where('foodName', 'like', '%' . $query . '%')->get();
+
+            $formattedFoods = $foods->map(function ($food) {
+                return [
+                    'id' => $food->id,
+                    'foodName' => $food->foodName,
+                    'consumedCalories' => $food->consumed_calories,
+                    'consumedProtein' => $food->consumed_protein,
+                    'consumedFats' => $food->consumed_fats,
+                    'consumedCarbs' => $food->consumed_carbs,
+                    'grams' => $food->grams,
+                ];
+            });
+
             return response()->json([
                 'success' => true,
-                'data' => $foods
+                'data' => $formattedFoods
             ]);
-            
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Search failed',
-                'error' => $e->getMessage()
-            ], 500);
+            return $this->serverErrorResponse($e);
         }
     }
 }
