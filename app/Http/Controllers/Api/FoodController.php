@@ -43,7 +43,7 @@ class FoodController extends Controller {
 
         $validator = Validator::make($request->all(), [
             'food_id' => ['required_without:food_name', 'integer', 'exists:foods,id'],
-            'food_name' => ['required_without:food_id', 'string', 'max:255'],
+            'foodName' => ['required_without:food_id', 'string', 'max:255'],
             'rfid_uid' => ['required', 'string', 'max:255'],
             'meal_type' => ['required', 'string', 'in:Breakfast,Lunch,Dinner,Snacks'],
             'quantity' => ['required', 'numeric', 'min:0.01'],
@@ -62,7 +62,7 @@ class FoodController extends Controller {
             $foodId = $request->food_id;
             if ($request->food_name) {
                 $food = Food::firstOrCreate(
-                    ['food_name' => $request->food_name],
+                    ['foodName' => $request->food_name],
                     [
                         'consumed_calories' => $request->consumed_calories,
                         'consumed_protein' => $request->consumed_protein,
