@@ -128,7 +128,7 @@ Route::middleware('auth')->group(function () {
 
     // Price list routes
     Route::get('/profile/pricelist', [PriceController::class, 'pricelist'])->name('profile.pricelist');
-    Route::post('/profile/pricelist/update', [PriceController::class, 'updatePrice'])->name('profile.pricelist.update');;
+    Route::post('/profile/pricelist/update', [PriceController::class, 'update'])->name('profile.pricelist.update');;
 
     // // **📩 Email Verification Routes**
     // Route::get('/email/verify', function () {
