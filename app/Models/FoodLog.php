@@ -7,15 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class FoodLog extends Model
 {
     protected $fillable = [
-        'food_id',
-        'rfid_uid',
-        'meal_type',
-        'quantity',
-        'date',
-        'total_calories',
-        'total_protein',
-        'total_fats',
-        'total_carbs'
+        'food_name', 'rfid_uid', 'meal_type', 'quantity', 'date',
+        'consumed_calories', 'consumed_protein', 'consumed_fats', 'consumed_carbs'
     ];
 
     protected $casts = [

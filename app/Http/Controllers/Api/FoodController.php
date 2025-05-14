@@ -68,7 +68,44 @@ class FoodController extends Controller {
                 'consumed_carbs' => $request->consumed_carbs,
             ]);
 
-            return response()->json(['success' => true, 'message' => 'Food log created'], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Food log created',
+                'data' => $foodLog
+            ], 201);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse($e);
+        }
+    }
+
+    public function destroyFoodLog(Request $request, $id) {
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return $this->unauthorizedResponse();
+        }
+
+        try {
+            $foodLog = FoodLog::find($id);
+            if (!$foodLog) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Food log not found'
+                ], 404);
+            }
+
+            if ($foodLog->rfid_uid !== $request->rfid_uid) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to delete this food log'
+                ], 403);
+            }
+
+            $foodLog->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Food log deleted'
+            ], 200);
         } catch (\Exception $e) {
             return $this->serverErrorResponse($e);
         }
