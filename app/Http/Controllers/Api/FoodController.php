@@ -33,6 +33,23 @@ class FoodController extends Controller {
         ], 500);
     }
 
+    public function index(Request $request) {
+        $user = auth('sanctum')->user();
+        if (!$user) {
+            return $this->unauthorizedResponse();
+        }
+
+        try {
+            $foodLogs = FoodLog::where('rfid_uid', $request->rfid_uid)->get();
+            return response()->json([
+                'success' => true,
+                'data' => $foodLogs
+            ], 200);
+        } catch (\Exception $e) {
+            return $this->serverErrorResponse($e);
+        }
+    }
+
     public function storeFoodLog(Request $request) {
         $user = auth('sanctum')->user();
         if (!$user) {

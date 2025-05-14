@@ -112,6 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Food log routes
     Route::post('/food_logs', [FoodLogController::class, 'logFood']);
+    Route::get('/food_logs', [FoodController::class, 'index']);
     Route::post('/food_logs', [FoodController::class, 'storeFoodLog']);
     Route::delete('/food_logs/{id}', [FoodController::class, 'destroyFoodLog']);
     Route::get('/food_logs/all', [FoodLogController::class, 'getAllFoodLogs']);
