@@ -119,7 +119,7 @@ class FoodLogController extends Controller
             $formattedLogs = $logs->map(function ($log) {
                 return [
                     'id' => $log->id,
-                    'foodName' => $log->food ? $log->food->foodName : null,
+                    'food_name' => $log->food ? $log->food->foodName : null,
                     'mealType' => $log->meal_type,
                     'quantity' => (float)$log->quantity,
                     'consumedCalories' => (float)$log->consumed_calories,
