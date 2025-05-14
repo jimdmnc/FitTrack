@@ -37,9 +37,9 @@ class FoodController extends Controller {
     public function store(Request $request) {
         $user = auth('sanctum')->user();
         if (!$user) {
-            return $this->unauthorizedResponse();
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
         }
-
+    
         $validator = Validator::make($request->all(), [
             'food_name' => ['required', 'string', 'max:255'],
             'consumed_calories' => ['required', 'numeric', 'min:0'],
@@ -48,11 +48,15 @@ class FoodController extends Controller {
             'consumed_carbs' => ['required', 'numeric', 'min:0'],
             'grams' => ['required', 'numeric', 'min:0.01'],
         ]);
-
+    
         if ($validator->fails()) {
-            return $this->validationErrorResponse($validator);
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
-
+    
         try {
             $food = Food::create([
                 'food_name' => $request->food_name,
@@ -62,7 +66,7 @@ class FoodController extends Controller {
                 'consumed_carbs' => $request->consumed_carbs,
                 'grams' => $request->grams,
             ]);
-
+    
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -76,7 +80,16 @@ class FoodController extends Controller {
                 ]
             ], 201);
         } catch (\Exception $e) {
-            return $this->serverErrorResponse($e);
+            Log::error('FoodController error', [
+                'error' => $e->getMessage(),
+                'stack' => $e->getTraceAsString(),
+                'request' => $request->all(),
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }
