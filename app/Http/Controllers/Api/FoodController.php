@@ -27,33 +27,28 @@ class FoodController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'foodName' => 'required|string|max:255',
-                'consumed_calories' => 'required|numeric',
-                'consumed_protein' => 'required|numeric',
-                'consumed_fats' => 'required|numeric',
-                'consumed_carbs' => 'required|numeric',
-                'grams' => 'required|integer',
-            ]);
-
-            $food = Food::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $food->id,
-                    'foodName' => $food->foodName,
-                    'consumedCalories' => $food->consumed_calories,
-                    'consumedProtein' => $food->consumed_protein,
-                    'consumedFats' => $food->consumed_fats,
-                    'consumedCarbs' => $food->consumed_carbs,
-                    'grams' => $food->grams,
-                ]
-            ], 201);
-        } catch (\Exception $e) {
-            return $this->serverErrorResponse($e);
-        }
+        $validated = $request->validate([
+            'foodName' => 'required|string|max:255',
+            'consumedCalories' => 'required|numeric',
+            'consumedProtein' => 'required|numeric',
+            'consumedFats' => 'required|numeric',
+            'consumedCarbs' => 'required|numeric',
+            'grams' => 'required|numeric',
+        ]);
+    
+        $food = Food::create($validated);
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $food->id,
+                'foodName' => $food->foodName,
+                'consumedCalories' => $food->consumedCalories,
+                'consumedProtein' => $food->consumedProtein,
+                'consumedFats' => $food->consumedFats,
+                'consumedCarbs' => $food->consumedCarbs,
+                'grams' => $food->grams,
+            ],
+        ]);
     }
 
     public function search(Request $request)
