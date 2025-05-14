@@ -39,14 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/calories', [UserCalorieController::class, 'getCalories']);
 
-    Route::get('/foods', [FoodController::class, 'index']);
 
-    Route::post('/log-food', [FoodLogController::class, 'logFood']); // Log food
-    // Route to get food logs by date
-    Route::get('/food-logs', [FoodLogController::class, 'getFoodLogsByDate']);
-    Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy'])
-    ->name('food-logs.destroy');
-    Route::get('/food-logs/all', [FoodLogController::class, 'getAllFoodLogs']);
 
 
     // Route::get('/attendance/{rfid_uid}', [AttendanceController::class, 'getUserAttendance']);
@@ -95,15 +88,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
-    // Route::get('/foods/search', [FoodController::class, 'search']);
-    // In routes/api.php
-// routes/api.php
-    // Route::get('/usda/search', [UsdaFoodController::class, 'search']);
-    // Route::post('/usda/save', [UsdaFoodController::class, 'save']);
-    // Route::get('/foods/search', [FoodController::class, 'search']);
-
-
-    // Route::post('/foods', [FoodController::class, 'store']);
+   
 
 
     // Food routes
@@ -112,10 +97,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Food log routes
     Route::post('/food_logs', [FoodLogController::class, 'logFood']);
-    Route::get('/food_logs', [FoodController::class, 'index']);
+    // Route::get('/food_logs', [FoodController::class, 'index']);
     Route::post('/food_logs', [FoodController::class, 'storeFoodLog']);
     Route::delete('/food_logs/{id}', [FoodController::class, 'destroyFoodLog']);
     Route::get('/food_logs/all', [FoodLogController::class, 'getAllFoodLogs']);
+
+
+    // Route::get('/foods', [FoodController::class, 'index']);
+
+    Route::post('/log-food', [FoodLogController::class, 'logFood']); // Log food
+    // Route to get food logs by date
+    Route::get('/food_logs', [FoodLogController::class, 'getFoodLogsByDate']);
+    // Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy'])
+    // ->name('food-logs.destroy');
+    Route::get('/food-logs/all', [FoodLogController::class, 'getAllFoodLogs']);
+
+
 
 });
 
