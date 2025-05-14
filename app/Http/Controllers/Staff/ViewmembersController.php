@@ -6,32 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Renewal;
 use App\Models\MembersPayment;
+use App\Models\Price;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
 
 class ViewmembersController extends Controller
 {
     /**
      * Check and update member status based on expiration date
-     * 
+     *
      * @param User $member
      * @return void
      */
     private function updateMemberStatus(User $member)
     {
         $currentDate = Carbon::now();
-        
-        // Check if member has an end date and it's in the past
+
         if ($member->end_date && Carbon::parse($member->end_date)->lt($currentDate)) {
-            // Only update if current status is not already expired or revoked
-            if ($member->member_status !== 'expired' && $member->member_status !== 'revoked') {
+            if (!in_array($member->member_status, ['expired', 'revoked'])) {
                 $member->member_status = 'expired';
                 $member->save();
             }
         } elseif ($member->end_date && Carbon::parse($member->end_date)->gt($currentDate)) {
-            // If end date is in the future and status is expired, set back to active
             if ($member->member_status === 'expired') {
                 $member->member_status = 'active';
                 $member->save();
@@ -39,60 +37,45 @@ class ViewmembersController extends Controller
         }
     }
 
+    /**
+     * Display the members list with search and status filters
+     */
     public function index(Request $request)
     {
         try {
-            // Get search and status filter parameters
             $searchQuery = $request->input('search');
             $status = $request->input('status', 'all');
-            $page = $request->input('page', 1); // Get current page
-            
-            // First update all members' status based on their end dates
-            $allMembers = User::where(function($query) {
-                $query->where('role', 'user')
-                      ->orWhere('role', 'userSession');
-            })->get();
-            
+
+            // Update status for all relevant members
+            $allMembers = User::whereIn('role', ['user', 'userSession'])->get();
             foreach ($allMembers as $member) {
                 $this->updateMemberStatus($member);
             }
-    
-            // Now build the query with filters
-            $query = User::where(function($query) {
-                $query->where('role', 'user')
-                      ->orWhere('role', 'userSession');
-            });
-            
+
+            // Build query
+            $query = User::whereIn('role', ['user', 'userSession']);
+
             if ($status !== 'all') {
                 $query->where('member_status', $status);
             }
-            
+
             if ($searchQuery) {
-                $query->where(function($q) use ($searchQuery) {
+                $query->where(function ($q) use ($searchQuery) {
                     $q->where('first_name', 'like', "%{$searchQuery}%")
-                    ->orWhere('last_name', 'like', "%{$searchQuery}%")
-                    ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
+                      ->orWhere('last_name', 'like', "%{$searchQuery}%")
+                      ->orWhere('rfid_uid', 'like', "%{$searchQuery}%");
                 });
             }
-            
-            // Apply default order - using registration date descending
+
             $query->orderBy('start_date', 'desc');
-            
-            // IMPORTANT: Always append ALL current query parameters to maintain state
             $members = $query->paginate(10)->appends($request->all());
-            
-            // For AJAX requests, return JSON response
+
             if ($request->ajax()) {
                 try {
-                    // Make sure our view exists and can be rendered
                     $tableView = view('partials.members_table', [
                         'members' => $members
                     ])->render();
-                    
-                    // Create pagination HTML
                     $paginationView = $members->links()->render();
-                    
-                    // Return successful JSON response with needed parameters
                     return response()->json([
                         'table' => $tableView,
                         'pagination' => $paginationView,
@@ -100,32 +83,23 @@ class ViewmembersController extends Controller
                         'lastPage' => $members->lastPage(),
                         'total' => $members->total()
                     ]);
-                } catch (\Exception $e) {         
-                    // Log the error but don't expose details to the client
-                    \Log::error('Error rendering members table: ' . $e->getMessage());
-                    
-                    // Return a user-friendly error message
+                } catch (\Exception $e) {
+                    Log::error('Error rendering members table: ' . $e->getMessage());
                     return response()->json([
-                        'table' => '<div class="text-center py-8 text-gray-500">
-                            <p>Unable to load members data. Please try again later.</p>
-                        </div>',
+                        'table' => '<div class="text-center py-8 text-gray-500"><p>Unable to load members data. Please try again later.</p></div>',
                         'pagination' => '',
                         'error' => true
                     ], 500);
                 }
             }
-    
-            // For regular requests, return the view
+
             return view('staff.viewmembers', [
                 'members' => $members,
                 'query' => $searchQuery,
                 'status' => $status
             ]);
         } catch (\Exception $e) {
-            // Log the error
-            \Log::error('Member listing error: ' . $e->getMessage());
-            
-            // Return a view with a user-friendly error message
+            Log::error('Member listing error: ' . $e->getMessage());
             $members = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
             return view('staff.viewmembers', [
                 'members' => $members,
@@ -135,138 +109,185 @@ class ViewmembersController extends Controller
             ]);
         }
     }
-   /**
-     * Handle membership renewal.
+
+    /**
+     * Return membership prices for AJAX requests
+     */
+    public function membershipPrices(Request $request)
+    {
+        try {
+            $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])
+                ->get()
+                ->keyBy('type')
+                ->mapWithKeys(function ($price) {
+                    return [$price->type => floatval($price->amount)];
+                })->toArray();
+
+            return response()->json([
+                'session' => $prices['session'] ?? 0,
+                'weekly' => $prices['weekly'] ?? 0,
+                'monthly' => $prices['monthly'] ?? 0,
+                'annual' => $prices['annual'] ?? 0,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching membership prices: ' . $e->getMessage());
+            return response()->json(['error' => 'Failed to load membership prices'], 500);
+        }
+    }
+
+    /**
+     * Handle membership renewal
      */
     public function renewMembership(Request $request)
     {
         $request->validate([
             'rfid_uid' => 'required|exists:users,rfid_uid',
-            'membership_type' => 'required',
-            'start_date' => 'required|date',
+            'membership_type' => 'required|in:custom,7,30,365',
+            'custom_days' => 'required_if:membership_type,custom|nullable|integer|min:1|max:365',
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
+        ], [
+            'rfid_uid.exists' => 'The selected member ID is invalid.',
+            'membership_type.in' => 'Please select a valid membership type.',
+            'custom_days.required_if' => 'Please specify the number of days for a custom membership.',
+            'custom_days.integer' => 'The number of days must be a valid integer.',
+            'custom_days.min' => 'The number of days must be at least 1.',
+            'custom_days.max' => 'The number of days cannot exceed 365.',
+            'start_date.after_or_equal' => 'The renewal date cannot be in the past.',
+            'end_date.after' => 'The expiration date must be after the renewal date.',
         ]);
-    
-        // Find user by RFID
-        $user = User::where('rfid_uid', $request->rfid_uid)->first();
-    
-        if (!$user) {
-            return redirect()->back()->with('error', 'User not found!');
+
+        try {
+            $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+            $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])
+                ->get()
+                ->keyBy('type');
+
+            $requiredPriceType = match ($request->membership_type) {
+                'custom' => 'session',
+                '7' => 'weekly',
+                '30' => 'monthly',
+                '365' => 'annual',
+                default => throw new \Exception('Invalid membership type selected.'),
+            };
+
+            if (!$prices->has($requiredPriceType)) {
+                throw new \Exception("Price for {$requiredPriceType} membership is not configured.");
+            }
+
+            $price = $prices[$requiredPriceType];
+
+            $membershipDays = match ($request->membership_type) {
+                'custom' => (int) $request->custom_days,
+                '7' => 7,
+                '30' => 30,
+                '365' => 365,
+                default => throw new \Exception('Invalid membership type selected.'),
+            };
+
+            $paymentAmount = match ($request->membership_type) {
+                'custom' => (int) $request->custom_days * $price->amount,
+                '7', '30', '365' => $price->amount,
+                default => throw new \Exception('Invalid membership type selected.'),
+            };
+
+            DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays) {
+                $user->update([
+                    'membership_type' => $request->membership_type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'member_status' => 'active',
+                ]);
+
+                Renewal::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'membership_type' => $request->membership_type,
+                    'start_date' => $request->start_date,
+                    'end_date' => $request->end_date,
+                    'days' => $membershipDays,
+                    'amount' => $paymentAmount,
+                ]);
+
+                MembersPayment::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'amount' => $paymentAmount,
+                    'payment_method' => 'cash',
+                    'payment_date' => now(),
+                ]);
+            });
+
+            return redirect()->route('staff.viewmembers')
+                ->with('success', 'Member renewed successfully!');
+        } catch (\Exception $e) {
+            Log::error('Membership renewal error: ' . $e->getMessage());
+            return redirect()->route('staff.viewmembers')
+                ->with('error', 'Failed to renew membership: ' . $e->getMessage());
         }
-    
-        // Update user table
-        $updated = $user->update([
-            'membership_type' => $request->membership_type,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'member_status' => 'active',
-        ]);
-    
-        if (!$updated) {
-            return redirect()->back()->with('error', 'User update failed!');
-        }
-    
-        // Save renewal history
-        Renewal::create([
-            'rfid_uid' => $user->rfid_uid,
-            'membership_type' => $request->membership_type,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date
-        ]);
-    
-        return redirect()->route('staff.viewmembers')
-            ->with('success', 'Member renewal successfully!');    
-        
     }
-  
+
     /**
      * Revoke a member's access
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function revokeMember(Request $request)
     {
         $request->validate([
-            'rfid_uid' => 'required',
+            'rfid_uid' => 'required|exists:users,rfid_uid',
             'reason' => 'nullable|string|max:255',
+        ], [
+            'rfid_uid.exists' => 'The selected member ID is invalid.',
         ]);
 
         try {
-            // Find the member by RFID UID
-            $member = User::where('rfid_uid', $request->rfid_uid)->first();
-            
-            if (!$member) {
-                return redirect()->back()->with('error', 'Member not found.');
+            $member = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+            if ($member->member_status === 'revoked') {
+                return redirect()->back()->with('error', 'This member is already revoked.');
             }
 
-            // Even if the member's status is expired, we should allow revocation
-            $member->member_status = 'revoked';  // Update status to revoked
-            $member->revoke_reason = $request->reason; // Set the revoke reason (if provided)
-            $member->revoked_at = now(); // Set the date/time of revocation
-            $member->save();  // Save the changes
+            $member->update([
+                'member_status' => 'revoked',
+                'revoke_reason' => $request->reason,
+                'revoked_at' => now(),
+            ]);
 
-            // Add a log entry if you have a logs table
-            // ActivityLog::create([
-            //     'user_id' => auth()->id(),
-            //     'action' => 'Revoked membership for ' . $member->first_name . ' ' . $member->last_name,
-            //     'description' => 'Reason: ' . ($request->reason ?? 'No reason provided'),
-            // ]);
-
-            return redirect()->back()->with('success', 'Member has been revoked successfully.');
+            return redirect()->back()->with('success', 'Member revoked successfully.');
         } catch (\Exception $e) {
+            Log::error('Member revocation error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to revoke member: ' . $e->getMessage());
         }
     }
 
     /**
      * Restore a revoked member
-     *
-     * @param  Request  $request
-     * @return \Illuminate\Http\Response
      */
     public function restoreMember(Request $request)
     {
         $request->validate([
-            'rfid_uid' => 'required',
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+        ], [
+            'rfid_uid.exists' => 'The selected member ID is invalid.',
         ]);
 
         try {
-            // Find the member by RFID UID
-            $member = User::where('rfid_uid', $request->rfid_uid)->first();
-            
-            if (!$member) {
-                return redirect()->back()->with('error', 'Member not found.');
-            }
+            $member = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
 
-            // Check if the member was actually revoked
             if ($member->member_status !== 'revoked') {
                 return redirect()->back()->with('error', 'This member is not revoked.');
             }
 
-            // After restoring, check the end date to determine the correct status
             $currentDate = Carbon::now();
-            
-            if ($member->end_date && Carbon::parse($member->end_date)->lt($currentDate)) {
-                $member->member_status = 'expired';
-            } else {
-                $member->member_status = 'active';
-            }
+            $member->member_status = $member->end_date && Carbon::parse($member->end_date)->lt($currentDate)
+                ? 'expired'
+                : 'active';
 
-            // Reset revoke reason and revoke date
             $member->revoke_reason = null;
             $member->revoked_at = null;
             $member->save();
 
-            // Optionally add a log entry (if using activity logging)
-            // ActivityLog::create([
-            //     'user_id' => auth()->id(),
-            //     'action' => 'Restored membership for ' . $member->first_name . ' ' . $member->last_name,
-            //     'description' => 'Member was restored from revoked status',
-            // ]);
-
-            return redirect()->back()->with('success', 'Member has been restored successfully.');
+            return redirect()->back()->with('success', 'Member restored successfully.');
         } catch (\Exception $e) {
+            Log::error('Member restoration error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to restore member: ' . $e->getMessage());
         }
     }

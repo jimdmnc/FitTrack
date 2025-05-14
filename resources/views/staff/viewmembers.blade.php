@@ -510,31 +510,50 @@
                 
                 <!-- Membership Type -->
                 <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type</label>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                     <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                         <option value="" selected disabled>Select Membership Type</option>
-                        <option value="1">Session (1 day)</option>
-                        <option value="7">Weekly (7 days)</option>
-                        <option value="30">Monthly (30 days)</option>
-                        <option value="365">Annual (365 days)</option>
+                        <option value="custom" data-price="0">Custom Days (Loading price...)</option>
+                        <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
+                        <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
+                        <option value="365" data-price="0">Annual (365 days, Loading...)</option>
                     </select>
+                    <div id="membershipTypeError" class="text-red-500 text-xs mt-1 hidden">Failed to load membership prices. Please try again.</div>
+                    @error('membership_type')
+                        <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                    @enderror
+                </div>
+                
+                <!-- Custom Days -->
+                <div class="w-full hidden" id="customDaysContainer">
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
+                    <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
+                    @error('custom_days')
+                        <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                    @enderror
                 </div>
                 
                 <!-- Renewal Date -->
                 <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date</label>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date <span class="text-red-500">*</span></label>
                     <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                    @error('start_date')
+                        <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                    @enderror
                 </div>
                 
                 <!-- Expiration Date -->
                 <div class="w-full">
                     <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
                     <input type="text" id="endDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                    @error('end_date')
+                        <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <!-- Membership Fee -->
                 <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Base Fee</label>
+                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
                     <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                 </div>
             </div>
@@ -554,7 +573,7 @@
                 <button type="button" onclick="closeRenewModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
                     Cancel
                 </button>
-                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm">
+                <button type="submit" id="submitRenewal" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -886,7 +905,7 @@
 <!-- End Restore Member Modal -->
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
     const ELEMENTS = {
         searchInput: document.querySelector('input[name="search"]'),
@@ -895,10 +914,14 @@
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
+        customDaysInput: document.getElementById('customDays'),
+        customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
-        summaryText: document.getElementById('membershipSummaryText')
+        summaryText: document.getElementById('membershipSummaryText'),
+        membershipTypeError: document.getElementById('membershipTypeError'),
+        submitButton: document.getElementById('submitRenewal')
     };
 
     // Get URL parameters
@@ -907,20 +930,13 @@
     const today = new Date();
     const todayFormatted = formatDate(today);
     let searchTimeout;
-
-    // Membership type data configuration
-    const MEMBERSHIP_DATA = {
-        '1': { fee: 60, name: 'Session (1 day)' },
-        '7': { fee: 300, name: 'Weekly (7 days)' },
-        '30': { fee: 850, name: 'Monthly (30 days)' },
-        '365': { fee: 10000, name: 'Annual (365 days)' }
-    };
+    let MEMBERSHIP_DATA = {};
 
     // Status badge style mapping
     const STATUS_STYLES = {
         active: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-green-900 text-green-200",
         revoked: "inline-block px-3 py-1 text-sm font-semibold rounded-full bg-red-900 text-red-200"
-    }
+    };
 
     // ======== INITIALIZATION ========
     function initialize() {
@@ -928,35 +944,92 @@
         initializeFormDefaults();
         toggleClearButtonVisibility();
         ensureRevokedStatusOption();
-        
-        // Make sure to re-attach pagination listeners when page loads
         attachPaginationListeners();
+        fetchMembershipPrices();
+    }
+
+    // Fetch membership prices via AJAX
+    function fetchMembershipPrices() {
+        fetch('{{ route('staff.membership.prices') }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to fetch prices');
+            return response.json();
+        })
+        .then(data => {
+            MEMBERSHIP_DATA = {
+                'custom': { 
+                    fee: data.session || 0, 
+                    name: 'Custom Days', 
+                    perDay: true 
+                },
+                '7': { 
+                    fee: data.weekly || 0, 
+                    name: 'Weekly (7 days)' 
+                },
+                '30': { 
+                    fee: data.monthly || 0, 
+                    name: 'Monthly (30 days)' 
+                },
+                '365': { 
+                    fee: data.annual || 0, 
+                    name: 'Annual (365 days)' 
+                }
+            };
+
+            updateMembershipTypeOptions(data);
+            updateAllDetails();
+            ELEMENTS.submitButton.disabled = Object.values(data).some(price => price === 0);
+            ELEMENTS.membershipTypeError.classList.toggle('hidden', !ELEMENTS.submitButton.disabled);
+        })
+        .catch(error => {
+            console.error('Error fetching membership prices:', error);
+            ELEMENTS.membershipTypeError.classList.remove('hidden');
+            ELEMENTS.submitButton.disabled = true;
+        });
+    }
+
+    function updateMembershipTypeOptions(prices) {
+        const options = ELEMENTS.membershipTypeSelect.options;
+        if (prices.session) {
+            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+            options[1].setAttribute('data-price', prices.session);
+        }
+        if (prices.weekly) {
+            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.weekly);
+        }
+        if (prices.monthly) {
+            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.monthly);
+        }
+        if (prices.annual) {
+            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[4].setAttribute('data-price', prices.annual);
+        }
     }
 
     // Helper function to parse dates in various formats
     function parseDate(dateStr) {
         if (!dateStr) return null;
         
-        // Try standard date parsing first
         let date = new Date(dateStr);
         if (!isNaN(date.getTime())) return date;
         
-        // Try to handle common date formats
         const formats = [
-            // MM/DD/YYYY
             /(\d{1,2})\/(\d{1,2})\/(\d{4})/,
-            // DD/MM/YYYY
             /(\d{1,2})\/(\d{1,2})\/(\d{4})/,
-            // YYYY-MM-DD
             /(\d{4})-(\d{1,2})-(\d{1,2})/,
-            // Month DD, YYYY (e.g., January 1, 2023)
             /([A-Za-z]+)\s+(\d{1,2}),\s+(\d{4})/
         ];
         
         for (const format of formats) {
             const match = dateStr.match(format);
             if (match) {
-                // Different handling based on format
                 if (format === formats[0]) return new Date(match[3], match[1]-1, match[2]);
                 if (format === formats[1]) return new Date(match[3], match[2]-1, match[1]);
                 if (format === formats[2]) return new Date(match[1], match[2]-1, match[3]);
@@ -969,16 +1042,14 @@
             }
         }
         
-        // Return null if no formats matched
-        console.log(`Failed to parse date: ${dateStr}`); // Debug logging
+        console.log(`Failed to parse date: ${dateStr}`);
         return null;
     }
 
     function initializeFormDefaults() {
-        // Set today's date as default for start date
         if (ELEMENTS.startDateInput) {
             ELEMENTS.startDateInput.value = todayFormatted;
-            ELEMENTS.startDateInput.min = todayFormatted; // Prevent past dates
+            ELEMENTS.startDateInput.min = todayFormatted;
         }
     }
 
@@ -990,17 +1061,12 @@
             const option = document.createElement('option');
             option.value = 'revoked';
             option.textContent = 'Revoked Members';
-            
-            // Check URL parameters for preselection
-            const urlParams = new URLSearchParams(window.location.search);
             option.selected = urlParams.get('status') === 'revoked';
-            
             ELEMENTS.statusSelect.appendChild(option);
         }
     }
 
     function initializeEventListeners() {
-        // Search input debounced event
         if (ELEMENTS.searchInput) {
             ELEMENTS.searchInput.addEventListener('input', () => {
                 toggleClearButtonVisibility();
@@ -1008,7 +1074,6 @@
             });
         }
 
-        // Clear search button
         if (ELEMENTS.clearSearchButton) {
             ELEMENTS.clearSearchButton.addEventListener('click', () => {
                 ELEMENTS.searchInput.value = '';
@@ -1017,27 +1082,30 @@
             });
         }
         
-        // Status filter change - FIX: Use event handler instead of direct onchange attribute
         if (ELEMENTS.statusSelect) {
             ELEMENTS.statusSelect.addEventListener('change', function(e) {
-                e.preventDefault(); // Prevent default form submission
-                
-                // Create new URL with status parameter
+                e.preventDefault();
                 const currentUrl = new URL(window.location.href);
                 currentUrl.searchParams.set('status', this.value);
-                currentUrl.searchParams.set('page', '1'); // Reset to page 1 when filter changes
-                
-                // Update URL without reloading page
+                currentUrl.searchParams.set('page', '1');
                 window.history.pushState({}, '', currentUrl.toString());
-                
-                // Fetch members with new status filter
                 fetchMembers();
             });
         }
         
-        // Membership renewal events
         if (ELEMENTS.membershipTypeSelect) {
-            ELEMENTS.membershipTypeSelect.addEventListener('change', updateAllDetails);
+            ELEMENTS.membershipTypeSelect.addEventListener('change', function() {
+                toggleCustomDays();
+                updateAllDetails();
+            });
+        }
+        
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.addEventListener('input', function() {
+                if (this.value < 1) this.value = 1;
+                if (this.value > 365) this.value = 365;
+                updateAllDetails();
+            });
         }
         
         if (ELEMENTS.startDateInput) {
@@ -1053,41 +1121,39 @@
             });
         }
         
-        // Then, attach pagination links handlers
         attachPaginationListeners();
     }
 
-    // Separate function for pagination listeners
+    function toggleCustomDays() {
+        if (!ELEMENTS.customDaysContainer || !ELEMENTS.membershipTypeSelect) return;
+        
+        if (ELEMENTS.membershipTypeSelect.value === 'custom') {
+            ELEMENTS.customDaysContainer.classList.remove('hidden');
+            ELEMENTS.customDaysInput.setAttribute('required', 'required');
+        } else {
+            ELEMENTS.customDaysContainer.classList.add('hidden');
+            ELEMENTS.customDaysInput.removeAttribute('required');
+            ELEMENTS.customDaysInput.value = '';
+        }
+    }
+
     function attachPaginationListeners() {
-        // Use setTimeout to ensure the DOM is fully updated
         setTimeout(() => {
             const paginationLinks = document.querySelectorAll('.pagination a');
-            
             paginationLinks.forEach(link => {
-                // Remove old event listeners if they exist
                 const oldLink = link.cloneNode(true);
                 link.parentNode.replaceChild(oldLink, link);
                 
                 oldLink.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
-                    // Get the base URL from the link
                     const url = new URL(this.href, window.location.origin);
-                    
-                    // Preserve search query if exists
                     if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
                         url.searchParams.set('search', ELEMENTS.searchInput.value.trim());
                     }
-                    
-                    // Preserve status filter if not 'all'
                     if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
                         url.searchParams.set('status', ELEMENTS.statusSelect.value);
                     }
-                    
-                    // Update browser URL
                     window.history.pushState({}, '', url.toString());
-                    
-                    // Fetch members with the complete URL
                     fetchMembers(url.toString());
                 });
             });
@@ -1121,34 +1187,24 @@
 
     // ======== DATA OPERATIONS ========
     function fetchMembers(url = null) {
-        // Show loading indicator
         if (ELEMENTS.tableContainer) {
             ELEMENTS.tableContainer.innerHTML = '<div class="flex justify-center items-center h-32"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div>';
         }
         
-        // Construct URL with parameters if none provided
         if (!url) {
             const params = new URLSearchParams();
-            
-            // Add search filter if exists
             if (ELEMENTS.searchInput && ELEMENTS.searchInput.value.trim()) {
                 params.append('search', ELEMENTS.searchInput.value.trim());
             }
-            
-            // Add status filter if not 'all'
             if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
                 params.append('status', ELEMENTS.statusSelect.value);
             }
-            
-            // Get current page from URL or default to 1
             const urlObj = new URL(window.location.href);
             const currentPage = urlObj.searchParams.get('page') || 1;
             params.append('page', currentPage);
-            
             url = `${window.location.pathname}?${params.toString()}`;
         }
         
-        // Fetch data with AJAX
         fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -1156,31 +1212,21 @@
             }
         })
         .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
-            // Update table content
             if (ELEMENTS.tableContainer) {
                 ELEMENTS.tableContainer.innerHTML = data.table;
             }
-            
-            // Update pagination
             if (ELEMENTS.paginationContainer && data.pagination) {
                 ELEMENTS.paginationContainer.innerHTML = data.pagination;
-                // Re-attach pagination listeners after content update
                 attachPaginationListeners();
             } else if (ELEMENTS.paginationContainer) {
                 ELEMENTS.paginationContainer.innerHTML = '';
             }
-            
-            // Update browser URL with all current parameters
             const newUrl = new URL(url, window.location.origin);
             window.history.replaceState({}, '', newUrl.toString());
-            
-            // Re-attach event listeners
             setTimeout(() => {
                 attachTableEventListeners();
                 if (typeof updateSortIcons === 'function') {
@@ -1190,8 +1236,6 @@
         })
         .catch(error => {
             console.error('Error fetching members:', error);
-            
-            // Show error message in table container
             if (ELEMENTS.tableContainer) {
                 ELEMENTS.tableContainer.innerHTML = `
                     <div class="flex flex-col items-center justify-center h-32 text-center">
@@ -1207,11 +1251,8 @@
         });
     }
 
-    // Fix: Add missing attachTableEventListeners function
     function attachTableEventListeners() {
-        // This function would attach any event listeners to table elements
-        // For now it's empty since we don't have specific table interactions defined
-        // But it's called in the code, so we need to define it
+        // Placeholder for table interactions
     }
 
     // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
@@ -1225,33 +1266,45 @@
         if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
         
         const selectedType = ELEMENTS.membershipTypeSelect.value;
-        ELEMENTS.membershipFeeInput.value = selectedType ? 
-            MEMBERSHIP_DATA[selectedType].fee.toFixed(2) : '0.00';
+        let fee = 0;
+        
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
+            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
+        } else {
+            fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
+        }
+        
+        ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
     }
     
     function updateExpirationDate() {
-    if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
 
-    const selectedType = parseInt(ELEMENTS.membershipTypeSelect.value);
-    const renewalDate = ELEMENTS.startDateInput.value;
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        const renewalDate = ELEMENTS.startDateInput.value;
 
-    if (renewalDate && selectedType) {
-        try {
-            const renewal = new Date(renewalDate);
-            if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+        if (renewalDate && selectedType) {
+            try {
+                const renewal = new Date(renewalDate);
+                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
 
-            // Subtract 1 to include the start date in the count
-            renewal.setDate(renewal.getDate() + selectedType - 1);
-            ELEMENTS.endDateInput.value = formatDate(renewal);
-        } catch (error) {
-            console.error('Error calculating expiration date:', error);
+                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
+                    ? parseInt(ELEMENTS.customDaysInput.value) 
+                    : parseInt(selectedType);
+                
+                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+
+                renewal.setDate(renewal.getDate() + duration - 1);
+                ELEMENTS.endDateInput.value = formatDate(renewal);
+            } catch (error) {
+                console.error('Error calculating expiration date:', error);
+                ELEMENTS.endDateInput.value = '';
+            }
+        } else {
             ELEMENTS.endDateInput.value = '';
         }
-    } else {
-        ELEMENTS.endDateInput.value = '';
     }
-}
-
     
     function updateSummaryText() {
         if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
@@ -1261,13 +1314,21 @@
         const renewalDate = ELEMENTS.startDateInput.value;
         const endDate = ELEMENTS.endDateInput.value;
     
-        if (!selectedType) {
+        if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
             ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
             return;
         }
     
-        const typeName = MEMBERSHIP_DATA[selectedType].name;
-        const fee = MEMBERSHIP_DATA[selectedType].fee.toFixed(2);
+        let typeName = MEMBERSHIP_DATA[selectedType].name;
+        let fee = MEMBERSHIP_DATA[selectedType].fee;
+        
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
+            typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
+            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
+        }
+    
+        fee = fee.toFixed(2);
     
         if (renewalDate && endDate) {
             const formattedStart = formatDisplayDate(new Date(renewalDate));
@@ -1281,20 +1342,18 @@
     }
 
     // ======== MODAL FUNCTIONS ========
-    // View Member Modal
     function openViewModal(memberID, name, membershipType, startDate, status) {
-        // Set modal data
         document.getElementById('viewMemberName').textContent = name;
         document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
         document.getElementById('viewMembershipType').textContent = membershipType;
         document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-        // Calculate and set expiration date based on membership type
         const start = new Date(startDate);
         let endDate = new Date(start);
 
         switch(membershipType.toLowerCase()) {
             case 'session':
+            case 'custom':
                 endDate.setDate(start.getDate() + 1);
                 break;
             case 'week':
@@ -1313,12 +1372,10 @@
         document.getElementById('viewEndDate').textContent = 
             typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
 
-        // Change status color based on status
         const statusBadge = document.getElementById('viewStatus');
         statusBadge.textContent = status;
         statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
 
-        // Show modal with animation
         animateModalOpen('viewMemberModal', 'viewModalContent');
     }
 
@@ -1326,13 +1383,10 @@
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    // Renew Member Modal
     function openRenewModal(memberID, name, email, phone, endDate) {
-        // Set form values
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
         
-        // If we have email and phone, set those too
         if (document.getElementById("editEmail") && email) {
             document.getElementById("editEmail").value = email;
         }
@@ -1341,38 +1395,29 @@
             document.getElementById("editPhone").value = phone;
         }
 
-        // Initialize date fields with current values if available
         if (document.getElementById("startDate")) {
             document.getElementById("startDate").value = todayFormatted;
         }
 
-        // Show modal with animation
-        animateModalOpen('renewMemberModal', 'editModalContent');
-        
-        // Update the summary and pricing
-        if (ELEMENTS.membershipTypeSelect) {
-            updateAllDetails();
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.value = '';
         }
+
+        toggleCustomDays();
+        animateModalOpen('renewMemberModal', 'editModalContent');
+        updateAllDetails();
     }
 
     function closeRenewModal() {
         animateModalClose('renewMemberModal', 'editModalContent');
     }
     
-    // Revoke Member Modal
     function openRevokeModal(memberID, memberName) {
-        // Set form values
         document.getElementById("revokeMemberID").value = memberID;
         document.getElementById("revokeConfirmName").value = memberName;
-        
-        // Clear reason field
         document.getElementById("revokeReason").value = '';
-
-        // Make sure we're showing the form view, not the confirmation view
         document.getElementById('revokeFormView').classList.remove('hidden');
         document.getElementById('confirmationView').classList.add('hidden');
-
-        // Show modal with animation
         animateModalOpen('revokeMemberModal', 'revokeModalContent');
     }
 
@@ -1380,13 +1425,9 @@
         animateModalClose('revokeMemberModal', 'revokeModalContent');
     }
 
-    // Restore Member Modal
     function openRestoreModal(memberID, memberName) {
-        // Set form values
         document.getElementById("restoreMemberID").value = memberID;
         document.getElementById("restoreConfirmName").value = memberName;
-
-        // Show modal with animation
         animateModalOpen('restoreMemberModal', 'restoreModalContent');
     }
 
@@ -1394,12 +1435,8 @@
         animateModalClose('restoreMemberModal', 'restoreModalContent');
     }
 
-    // Revocation Reason Modal
     function openRevokedReasonModal(memberId, reason) {
-        // Set the revocation reason inside the modal
         document.getElementById('revocationReason').textContent = reason || 'No reason provided';
-
-        // Show modal with animation
         animateModalOpen('viewReasonModal', 'viewReasonModalContent');
     }
 
@@ -1407,7 +1444,6 @@
         animateModalClose('viewReasonModal', 'viewReasonModalContent');
     }
 
-    // General modal animation helpers
     function animateModalOpen(modalId, contentId) {
         const modal = document.getElementById(modalId);
         const modalContent = document.getElementById(contentId);
@@ -1435,13 +1471,9 @@
         }, 300);
     }
 
-    // ======== REVOCATION CONFIRMATION FUNCTIONS ========
     function showConfirmation() {
-        // Get the member name and set it in the confirmation view
         const memberName = document.getElementById('revokeConfirmName').value;
         document.getElementById('confirmMemberName').textContent = memberName;
-        
-        // Hide the form view and show the confirmation view
         document.getElementById('revokeFormView').classList.add('hidden');
         document.getElementById('confirmationView').classList.remove('hidden');
     }
@@ -1452,11 +1484,9 @@
     }
 
     function confirmRevoke() {
-        // Submit the form
         document.getElementById('revokeForm').submit();
     }
 
-    // Export functions to global scope for HTML onclick handlers
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
@@ -1471,12 +1501,10 @@
     window.backToForm = backToForm;
     window.confirmRevoke = confirmRevoke;
 
-    // Handle browser back/forward navigation
     window.addEventListener('popstate', function() {
         fetchMembers();
     });
 
-    // Initialize everything
     initialize();
 });
 </script>
