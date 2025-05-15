@@ -110,7 +110,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/food_logs', [FoodController::class, 'getFoodLogsByDate']);
     // Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy'])
     // ->name('food-logs.destroy');
-    Route::get('/food-logs/all', [FoodLogController::class, 'getAllFoodLogs']);
+    // Route::get('/food-logs/all', [FoodLogController::class, 'getAllFoodLogs']);
 
 
 
