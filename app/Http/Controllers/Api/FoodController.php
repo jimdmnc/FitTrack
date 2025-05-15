@@ -76,7 +76,7 @@ class FoodController extends Controller {
             $foodLog = FoodLog::create([
                 'food_name' => $request->food_name,
                 'rfid_uid' => $request->rfid_uid,
-                'meal_type' => $request->meal_type,
+                'mealType' => $request->meal_type,
                 'quantity' => $request->quantity,
                 'date' => $request->date,
                 'consumed_calories' => $request->consumed_calories,
