@@ -76,7 +76,7 @@ class FoodController extends Controller {
             $foodLog = FoodLog::create([
                 'food_name' => $request->food_name,
                 'rfid_uid' => $request->rfid_uid,
-                'mealType' => $request->meal_type,
+                'meal_type' => $request->meal_type,
                 'quantity' => $request->quantity,
                 'date' => $request->date,
                 'consumed_calories' => $request->consumed_calories,
@@ -95,38 +95,38 @@ class FoodController extends Controller {
         }
     }
 
-    public function destroyFoodLog(Request $request, $id) {
-        $user = auth('sanctum')->user();
-        if (!$user) {
-            return $this->unauthorizedResponse();
-        }
+    // public function destroyFoodLog(Request $request, $id) {
+    //     $user = auth('sanctum')->user();
+    //     if (!$user) {
+    //         return $this->unauthorizedResponse();
+    //     }
 
-        try {
-            $foodLog = FoodLog::find($id);
-            if (!$foodLog) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Food log not found'
-                ], 404);
-            }
+    //     try {
+    //         $foodLog = FoodLog::find($id);
+    //         if (!$foodLog) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Food log not found'
+    //             ], 404);
+    //         }
 
-            if ($foodLog->rfid_uid !== $request->rfid_uid) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized to delete this food log'
-                ], 403);
-            }
+    //         if ($foodLog->rfid_uid !== $request->rfid_uid) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Unauthorized to delete this food log'
+    //             ], 403);
+    //         }
 
-            $foodLog->delete();
+    //         $foodLog->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Food log deleted'
-            ], 200);
-        } catch (\Exception $e) {
-            return $this->serverErrorResponse($e);
-        }
-    }
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Food log deleted'
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return $this->serverErrorResponse($e);
+    //     }
+    // }
 
 
 
@@ -156,7 +156,7 @@ public function getFoodLogsByDate(Request $request) {
                 return [
                     'id' => $log->id,
                     'food_name' => $log->food_name,
-                    'mealType' => $log->meal_type,
+                    'meal_type' => $log->meal_type,
                     'quantity' => (float)$log->quantity,
                     'consumed_calories' => (float)$log->consumed_calories,
                     'consumed_protein' => (float)$log->consumed_protein,
