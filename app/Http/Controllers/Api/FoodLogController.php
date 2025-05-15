@@ -179,15 +179,15 @@ class FoodLogController extends Controller
 
             $formattedLogs = $foodLogs->map(function ($log) {
                 return [
-                'food_name' => $request->food_name,
-                'rfid_uid' => $request->rfid_uid,
-                'meal_type' => $request->meal_type,
-                'quantity' => $request->quantity,
-                'date' => $request->date,
-                'consumed_calories' => $request->consumed_calories,
-                'consumed_protein' => $request->consumed_protein,
-                'consumed_fats' => $request->consumed_fats,
-                'consumed_carbs' => $request->consumed_carbs,
+                    'id' => $log->id,
+                    'food_name' => $log->food ? $log->food->foodName : null,
+                    'mealType' => $log->meal_type,
+                    'quantity' => (float)$log->quantity,
+                    'consumedCalories' => (float)$log->consumed_calories,
+                    'consumedProtein' => (float)$log->consumed_protein,
+                    'consumedFats' => (float)$log->consumed_fats,
+                    'consumedCarbs' => (float)$log->consumed_carbs,
+                    'date' => $log->date->format('Y-m-d'),
                 ];
             });
 
