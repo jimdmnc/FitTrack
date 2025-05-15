@@ -273,6 +273,14 @@
     </style>
 </head>
 <body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
+
+<!-- Add this temporarily to debug -->
+<div style="display:none">
+    Auth: {{ auth()->check() ? 'Yes' : 'No' }}
+    RFID: {{ auth()->check() && auth()->user()->rfid_uid ? auth()->user()->rfid_uid : 'None' }}
+    Attendance Set: {{ isset($attendance) ? 'Yes' : 'No' }}
+    Time Out: {{ isset($attendance) && !$attendance->time_out ? 'Not timed out' : 'Timed out or no attendance' }}
+</div>
     <!-- Navigation Bar -->
         <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
             <div class="container mx-auto">
@@ -306,19 +314,34 @@
                         <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
                     </div>
 
-                    <!-- Workout Timer - Always Visible -->
-                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                    <!-- Inside the navigation bar, replace the workout-timer section -->
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
                     <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
                         <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                        <span class="timer-text text-sm md:text-base" id="workout-duration">
-                            @if(isset($attendance)) 
-                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                            @else
-                                00:00:00
-                            @endif
-                        </span>
+                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                     </div>
-                    @endif
+                @endif
+
+                <!-- Mobile workout timer -->
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                    <div class="flex justify-center items-center py-4">
+                        <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                            <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                            <span id="mobile-workout-duration" class="text-lg font-medium">00:00:00</span>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- Time Out Button (Desktop and Mobile) -->
+                @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                    <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                    </button>
+                    <!-- Mobile Timeout Button -->
+                    <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                @endif
 
                     <!-- Desktop Navigation Links --> 
                     <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -951,27 +974,27 @@
 <script>
 
 
-// Add this to your main JS file or in a <script> tag
-document.addEventListener('DOMContentLoaded', function() {
-    // Read more functionality
-    document.querySelectorAll('.read-more-btn').forEach(button => {
-        button.addEventListener('click', function() {
-            const card = this.closest('.announcement-card');
-            const content = card.querySelector('p');
-            content.classList.toggle('line-clamp-4');
-            this.textContent = content.classList.contains('line-clamp-4') ? 'Read More →' : 'Show Less';
+    // Add this to your main JS file or in a <script> tag
+    document.addEventListener('DOMContentLoaded', function() {
+        // Read more functionality
+        document.querySelectorAll('.read-more-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const card = this.closest('.announcement-card');
+                const content = card.querySelector('p');
+                content.classList.toggle('line-clamp-4');
+                this.textContent = content.classList.contains('line-clamp-4') ? 'Read More →' : 'Show Less';
+            });
         });
-    });
 
-    // Parallax effect for the section
-    const announcementSection = document.querySelector('.announcements-section');
-    if (announcementSection) {
-        window.addEventListener('scroll', function() {
-            const scrollPosition = window.pageYOffset;
-            announcementSection.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
-        });
-    }
-});
+        // Parallax effect for the section
+        const announcementSection = document.querySelector('.announcements-section');
+        if (announcementSection) {
+            window.addEventListener('scroll', function() {
+                const scrollPosition = window.pageYOffset;
+                announcementSection.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+            });
+        }
+    });
 
 
 
@@ -986,6 +1009,7 @@ document.addEventListener('DOMContentLoaded', function() {
         initTimeoutHandling();
         initModals();
         initTimeoutHandlingComplete();
+        // This condition controls timer initialization
         @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
         initWorkoutTimer();
         @endif
@@ -1412,108 +1436,40 @@ document.addEventListener('DOMContentLoaded', function() {
      * Workout timer functionality
      */
     function initWorkoutTimer() {
-        // Check if we have the necessary elements
         const timerElement = document.getElementById('workout-duration');
         const mobileTimerElement = document.getElementById('mobile-workout-duration');
-        
         if (!timerElement && !mobileTimerElement) return;
-        
-        // Get the initial time from server (passed from controller)
-        let timeIn = new Date("{{ $attendance->time_in ?? '' }}").getTime();
-        let timeOut = null;
-        
-        let timerInterval;
-        
-        // Format time as HH:MM:SS
-        function formatTime(totalSeconds) {
-            const hours = Math.floor(totalSeconds / 3600);
-            const minutes = Math.floor((totalSeconds % 3600) / 60);
-            const seconds = Math.floor(totalSeconds % 60);
-            
-            return [
-                hours.toString().padStart(2, '0'),
-                minutes.toString().padStart(2, '0'),
-                seconds.toString().padStart(2, '0')
-            ].join(':');
+
+        // Safely handle if $attendance is undefined or null
+        let startTime = @json(isset($attendance) && $attendance ? $attendance->time_in : null);
+        startTime = startTime ? new Date(startTime).getTime() : null;
+        let intervalId;
+
+        function updateTimer() {
+            if (!startTime) {
+                if (timerElement) timerElement.textContent = '00:00:00';
+                if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
+                return;
+            }
+
+            const now = new Date().getTime();
+            const distance = Math.floor((now - startTime) / 1000);
+            const hours = Math.floor(distance / 3600);
+            const minutes = Math.floor((distance % 3600) / 60);
+            const seconds = Math.floor(distance % 60);
+            const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+            if (timerElement) timerElement.textContent = formattedTime;
+            if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
         }
-        
-        // Update timer display
-        function updateTimerDisplay() {
-            const currentTime = new Date().getTime();
-            let elapsedTime;
-            
-            if (timeOut) {
-                // If session is completed (has time_out)
-                elapsedTime = Math.floor((timeOut - timeIn) / 1000);
-            } else if (timeIn) {
-                // Session is still active
-                elapsedTime = Math.floor((currentTime - timeIn) / 1000);
-            } else {
-                // No active session
-                elapsedTime = 0;
-            }
-            
-            const formattedTime = formatTime(elapsedTime);
-            
-            // Update display
-            if (timerElement) {
-                timerElement.textContent = formattedTime;
-                
-                // Highlight duration if it's over 2 hours
-                if (elapsedTime >= 7200) { // 2 hours = 7200 seconds
-                    timerElement.classList.add('text-red-400');
-                } else {
-                    timerElement.classList.remove('text-red-400');
-                }
-            }
-            
-            if (mobileTimerElement) {
-                mobileTimerElement.textContent = formattedTime;
-                
-                if (elapsedTime >= 7200) {
-                    mobileTimerElement.classList.add('text-red-400');
-                } else {
-                    mobileTimerElement.classList.remove('text-red-400');
-                }
-            }
+
+        updateTimer();
+        if (startTime) {
+            intervalId = setInterval(updateTimer, 1000);
         }
-        
-        // Only initialize timer if we have valid time_in and not timed out
-        if (timeIn) {
-            // Initial update
-            updateTimerDisplay();
-            
-            // Continue updating if session is active
-            if (!timeOut) {
-                timerInterval = setInterval(updateTimerDisplay, 1000);
-            }
-        } else {
-            // Display 00:00:00 for timed out or no attendance
-            if (timerElement) timerElement.textContent = '00:00:00';
-            if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
-        }
-        
-        // Clean up on page unload
-        window.addEventListener('beforeunload', function() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-            }
-        });
-        
-        // Expose stopWorkoutTimer function globally
+
         window.stopWorkoutTimer = function() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-            }
-            
-            // Set timeOut to current time to freeze the timer
-            timeOut = new Date().getTime();
-            
-            // Final update
-            updateTimerDisplay();
-            
-            // NOTE: We've removed the lines that hide timer elements here
-            // Instead, we hide them only after successful confirmation in the timeout form handler
+            clearInterval(intervalId);
         };
     }
 
@@ -1697,6 +1653,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Make sure we expose necessary functions to the global scope
     window.showNotification = showNotification;
+
+    
 </script>
 </body>
 </html>

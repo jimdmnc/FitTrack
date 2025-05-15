@@ -67,13 +67,27 @@ class SelfRegistrationController extends Controller
         $user = auth()->user();
 
         if ($user->session_status === 'approved') {
+            $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
+                ->whereNull('time_out')
+                ->first();
+
+            if (!$attendance) {
+                Attendance::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'attendance_date' => now(),
+                    'time_in' => now(),
+                    'status' => 'present',
+                    'check_in_method' => 'auto',
+                ]);
+            }
+
             return response()->json(['approved' => true]);
         }
 
         if ($user->session_status === 'rejected') {
             return response()->json([
                 'rejected' => true,
-                'reason' => $user->rejection_reason
+                'reason' => $user->rejection_reason ?? 'Your request could not be approved at this time.'
             ]);
         }
 
@@ -205,15 +219,10 @@ class SelfRegistrationController extends Controller
             return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
         }
 
-        $attendance = DB::table('attendances')
-            ->where('rfid_uid', $user->rfid_uid)
-            ->whereDate('time_in', today())
-            ->orderBy('time_in', 'desc')
+        $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
+            ->whereNull('time_out')
+            ->latest('time_in')
             ->first();
-
-        $attendance = Attendance::where('rfid_uid', auth()->user()->rfid_uid)
-                ->whereNull('time_out')
-                ->first();
 
         return view('self.landingProfile', compact('user', 'attendance'));
     }
@@ -268,5 +277,25 @@ class SelfRegistrationController extends Controller
                 ->withInput()
                 ->with('error', 'Renewal failed: ' . $e->getMessage());
         }
+    }
+
+    public function timeout(Request $request)
+    {
+        $request->validate(['rfid_uid' => 'required|string']);
+
+        $attendance = Attendance::where('rfid_uid', $request->rfid_uid)
+            ->whereNull('time_out')
+            ->latest('time_in')
+            ->first();
+
+        if ($attendance) {
+            $attendance->update([
+                'time_out' => now(),
+                'status' => 'completed',
+            ]);
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false, 'message' => 'No active session found']);
     }
 }

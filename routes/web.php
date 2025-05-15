@@ -38,6 +38,10 @@ Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->na
 Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
     ->middleware('approved.user')  // Apply the middleware
     ->name('self.landingProfile');
+    
+Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
+    ->name('self.landingProfile')
+    ->middleware('auth');
 
 Route::get('/landing', function () {
     return view('self.landing');
@@ -77,6 +81,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/attendance/timeout', [AttendanceController::class, 'timeout'])->name('attendance.timeout');
         // In web.php or api.php
         Route::post('/attendance/timeout', [AttendanceController::class, 'timeout']);
+        Route::post('/attendance/timeout', [SelfRegistrationController::class, 'timeout'])->name('attendance.timeout')->middleware('auth');
+        
 
 
         Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
