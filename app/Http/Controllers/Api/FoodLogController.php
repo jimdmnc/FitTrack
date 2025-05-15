@@ -183,10 +183,10 @@ class FoodLogController extends Controller
                     'food_name' => $log->food ? $log->food->foodName : null,
                     'mealType' => $log->meal_type,
                     'quantity' => (float)$log->quantity,
-                    'consumedCalories' => (float)$log->consumed_calories,
-                    'consumedProtein' => (float)$log->consumed_protein,
-                    'consumedFats' => (float)$log->consumed_fats,
-                    'consumedCarbs' => (float)$log->consumed_carbs,
+                    'consumed_calories' => (float)$log->consumed_calories,
+                    'consumed_protein' => (float)$log->consumed_protein,
+                    'consumed_fats' => (float)$log->consumed_fats,
+                    'consumed_carbs' => (float)$log->consumed_carbs,
                     'date' => $log->date->format('Y-m-d'),
                 ];
             });
