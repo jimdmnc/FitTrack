@@ -182,7 +182,7 @@ class FoodLogController extends Controller
                     'id' => $log->id,
                     'food_name' => $log->food_name,
                     'mealType' => $log->meal_type,
-                    'quantity' => (float)$log->quantity,
+                    'quantity' => $log->quantity,
                     'consumed_calories' => (float)$log->consumed_calories,
                     'consumed_protein' => (float)$log->consumed_protein,
                     'consumed_fats' => (float)$log->consumed_fats,
