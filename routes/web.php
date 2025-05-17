@@ -179,9 +179,9 @@ Route::middleware('auth')->group(function () {
 
 
 
-        // Route::get('dashboard', function () {
-        //     return view('dashboard');
-        // })->name('dashboard');
+        Route::get('dashboard', function () {
+            return view('dashboard');
+        })->name('dashboard');
 
         Route::resource('announcements', AnnouncementController::class);
         Route::get('landingProfile', [AnnouncementController::class, 'landing'])->name('self.landingProfile');
