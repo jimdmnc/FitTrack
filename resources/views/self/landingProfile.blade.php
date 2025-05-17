@@ -273,16 +273,6 @@
     </style>
 </head>
 <body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
-
-<div>
-    Auth: {{ auth()->check() ? 'Yes' : 'No' }}
-    RFID: {{ auth()->check() && auth()->user()->rfid_uid ? auth()->user()->rfid_uid : 'None' }}
-    Session Status: {{ auth()->check() ? auth()->user()->session_status : 'N/A' }}
-    Attendance Set: {{ isset($attendance) ? 'Yes' : 'No' }}
-    Attendance Raw: {{ json_encode($attendance) }}
-    Time Out: {{ isset($attendance) && !$attendance->time_out ? 'Not timed out' : 'Timed out or no attendance' }}
-    Logout Route: {{ route('logout.custom') }}
-</div>
     <!-- Navigation Bar -->
         <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
             <div class="container mx-auto">
@@ -313,39 +303,38 @@
                 <div class="flex justify-between items-center">
                     <!-- Logo Image -->
                     <div class="flex items-center">
-                        <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
+                        <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full" loading="lazy">
                     </div>
-
 
                     <!-- Workout Timer (Desktop) -->
-                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
-                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                    </div>
-                @endif
+                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
+                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                        </div>
+                    @endif
 
-                <!-- Time Out Button (Desktop and Mobile) -->
-                @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                    <!-- Desktop Timeout Button (hidden on small screens) -->
-                    <button
-                        id="timeout-button"
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300"
-                    >
-                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                    </button>
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button (hidden on small screens) -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
 
-                    <!-- Mobile Timeout Button (hidden on medium and larger screens) -->
-                    <button
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="inline-flex md:hidden bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300"
-                    >
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                @endif
+                        <!-- Mobile Timeout Button (hidden on medium and larger screens) -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
 
-                    <!-- Desktop Navigation Links --> 
+                    <!-- Desktop Navigation Links -->
                     <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
                         <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
                         <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
@@ -356,7 +345,7 @@
                         <div class="flex items-center space-x-2">
                             <!-- Renew Button -->
                             <button type="button" onclick="checkRenewalEligibility()"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                                 <i class="fas fa-sync-alt mr-1"></i> Renew
                             </button>
 
@@ -364,7 +353,7 @@
                             <form method="POST" action="{{ route('logout.custom') }}">
                                 @csrf
                                 <button type="submit"
-                                    class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300">
+                                    class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                                     <i class="fas fa-door-open mr-1"></i> Exit
                                 </button>
                             </form>
@@ -374,7 +363,7 @@
                     <!-- Mobile Menu Button -->
                     <div class="md:hidden flex items-center space-x-3">
                         <!-- Menu Toggle Button -->
-                        <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md">
+                        <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md min-h-[44px] min-w-[44px]" aria-label="Toggle mobile menu" aria-expanded="false">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
                     </div>
@@ -386,7 +375,7 @@
                 <div class="container mx-auto px-4 py-8 flex flex-col h-full">
                     <!-- Close Button -->
                     <div class="flex justify-end mb-6">
-                        <button id="close-mobile-menu" class="text-gray-300 hover:text-white">
+                        <button id="close-mobile-menu" class="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]" aria-label="Close mobile menu">
                             <i class="fas fa-times text-2xl"></i>
                         </button>
                     </div>
@@ -413,14 +402,13 @@
                             </div>
                         </div>
                         @endif
-
                     </div>
                     
                     <!-- Mobile Action Buttons -->
                     <div class="grid grid-cols-2 gap-4 mt-6">
                         <!-- Renew Button -->
                         <button type="button" onclick="openRenewModal(); closeMobileMenu();"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-2"></i> Renew Membership
                         </button>
                         
@@ -428,7 +416,7 @@
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
-                                class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300">
+                                class="w-full bg-gray-700 colocou:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                                 <i class="fas fa-door-open mr-2"></i> Sign Out
                             </button>
                         </form>
@@ -748,7 +736,9 @@
                         <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
                         <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
                         <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
+                        
                         <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+
                         <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
                     </div>
                     
@@ -1008,19 +998,35 @@
         // Mobile menu toggle
         const mobileMenuButton = document.getElementById('mobile-menu-button');
         const mobileMenu = document.getElementById('mobile-menu');
-        
+        const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+
+        // Open mobile menu
         if (mobileMenuButton && mobileMenu) {
             mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-                mobileMenu.classList.toggle('animate-slideDown');
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('animate-slideDown');
+                mobileMenuButton.setAttribute('aria-expanded', 'true');
             });
         }
-        
+
+        // Close mobile menu
+        if (closeMobileMenuButton && mobileMenu) {
+            closeMobileMenuButton.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        }
+
+        // Close menu when clicking navigation links
+        mobileMenu?.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+
         // Smooth scroll for all anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 const href = this.getAttribute('href');
-                // Skip if href is just '#' or empty
                 if (!href || href === '#') return;
 
                 e.preventDefault();
@@ -1030,14 +1036,22 @@
                         behavior: 'smooth',
                         block: 'start'
                     });
-                    
-                    // Close mobile menu if open
-                    if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                        mobileMenu.classList.add('hidden');
-                    }
                 }
             });
         });
+    }
+
+    function closeMobileMenu() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        
+        if (mobileMenu) {
+            mobileMenu.classList.add('hidden');
+            mobileMenu.classList.remove('animate-slideDown');
+            if (mobileMenuButton) {
+                mobileMenuButton.setAttribute('aria-expanded', 'false');
+            }
+        }
     }
 
     /**
