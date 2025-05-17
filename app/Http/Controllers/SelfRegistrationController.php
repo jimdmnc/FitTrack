@@ -175,7 +175,7 @@ class SelfRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'membership_type' => $validatedData['membership_type'],
-                    'role' => 'user',
+                    'role' => 'userSession',
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
