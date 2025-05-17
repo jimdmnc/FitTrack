@@ -299,28 +299,40 @@
             ${message}
         `;
         notification.classList.remove('hidden');
-        setTimeout(() => notification.classList.add('hidden'), 5000);
+        setTimeout(() => {
+            if (notification) notification.classList.add('hidden');
+        }, 5000);
     }
 
     function displayFormErrors(formId, errors) {
         const errorContainer = document.getElementById(`${formId}_error_container`);
         if (!errorContainer) {
-            console.error(`Error container for ${formId} not found`);
+            console.error(`Error container for ${formId} not found`, { errors });
             showNotification('Cannot display errors: Form error container missing', 'error');
             return;
         }
         errorContainer.innerHTML = '';
         errorContainer.classList.remove('hidden');
+        if (!errors || typeof errors !== 'object') {
+            console.error(`Invalid errors format for ${formId}`, { errors });
+            showNotification('Cannot display errors: Invalid error format', 'error');
+            return;
+        }
         for (const [field, messages] of Object.entries(errors)) {
-            const errorDiv = document.createElement('div');
-            errorDiv.className = 'text-red-500 text-sm';
-            errorDiv.textContent = messages[0];
-            errorContainer.appendChild(errorDiv);
-            const input = document.querySelector(`#${formId} [name="${field}"]`);
-            if (input) {
-                input.classList.add('border-red-500');
-                input.addEventListener('input', () => input.classList.remove('border-red-500'), { once: true });
+            if (Array.isArray(messages) && messages.length > 0) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'text-red-500 text-sm';
+                errorDiv.textContent = messages[0];
+                errorContainer.appendChild(errorDiv);
+                const input = document.querySelector(`#${formId} [name="${field}"]`);
+                if (input) {
+                    input.classList.add('border-red-500');
+                    input.addEventListener('input', () => input.classList.remove('border-red-500'), { once: true });
+                }
             }
+        }
+        if (errorContainer.innerHTML === '') {
+            errorContainer.classList.add('hidden');
         }
     }
 
@@ -332,7 +344,7 @@
             return;
         }
         tbody.innerHTML = '';
-        if (!staffs || staffs.length === 0) {
+        if (!staffs || !Array.isArray(staffs) || staffs.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="5" class="py-10 text-center">
@@ -470,7 +482,8 @@
             document.getElementById('edit_role').value = data.staff.role || 'admin';
             document.getElementById('edit_password').value = '';
             document.getElementById('edit_password_confirmation').value = '';
-            document.getElementById('edit_error_container').classList.add('hidden');
+            const errorContainer = document.getElementById('edit_error_container');
+            if (errorContainer) errorContainer.classList.add('hidden');
             document.getElementById('editModal').classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         })
@@ -514,7 +527,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        if (!csrfToken) {
+            console.error('CSRF token not found');
+            showNotification('Error: CSRF token missing', 'error');
+            return;
+        }
 
         const filterOptions = document.getElementById('filterOptions');
         if (filterOptions) {
@@ -620,7 +638,7 @@
                 const formData = new FormData(editForm);
                 const staffId = editForm.dataset.staffId;
                 fetch('{{ route('staff.updateStaff', ':id') }}'.replace(':id', staffId), {
-                    method: 'PUT',
+                    method: 'POST', // Laravel handles @method('PUT') via _method field
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
@@ -628,7 +646,12 @@
                         'X-CSRF-TOKEN': csrfToken,
                     },
                 })
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     console.log('Update staff response:', data);
                     if (data.success && data.staff) {
@@ -639,11 +662,17 @@
                         showNotification(data.message || 'Validation errors occurred.', 'error');
                         if (data.errors) {
                             displayFormErrors('editStaffForm', data.errors);
+                        } else {
+                            console.warn('No errors provided in response:', data);
                         }
                     }
                 })
                 .catch(error => {
-                    console.error('Fetch error:', error);
+                    console.error('Update staff error:', {
+                        message: error.message,
+                        stack: error.stack,
+                        response: error.response || 'No response data'
+                    });
                     showNotification('Error updating staff: ' + error.message, 'error');
                 })
                 .finally(() => {
