@@ -60,7 +60,7 @@ class StaffController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:admin,super_admin',
             'session_status' => 'required|in:approved,rejected',
-            'rfid_uid' => 'required|string|max:255|unique:users',
+            'rfid_uid' => 'nullable|string|max:255|unique:users',
         ]);
 
         User::create([
