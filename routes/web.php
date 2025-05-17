@@ -160,9 +160,9 @@ Route::middleware('auth')->group(function () {
     })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     // Member routes
-    Route::prefix('member')->group(function () {
-        Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
-    });
+    // Route::prefix('member')->group(function () {
+    //     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
+    // });
     
 
 
