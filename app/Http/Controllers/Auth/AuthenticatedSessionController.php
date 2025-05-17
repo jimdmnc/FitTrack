@@ -41,9 +41,7 @@ class AuthenticatedSessionController extends Controller
                 return back()->withErrors([
                     'email' => 'The provided credentials do not match our records.',
                 ]);
-            } else {
-                return redirect()->route('members.dashboard');
-            }
+            } 
         }
 
         return back()->withErrors([
