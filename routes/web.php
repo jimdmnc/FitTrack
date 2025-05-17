@@ -175,6 +175,32 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
 
+
+
+
+
+
+
+
+
+
+    Route::get('/staff/manage-staffs', [StaffController::class, 'manageStaffs'])->name('staff.manageStaffs');
+    Route::get('/staff/create-staff', [StaffController::class, 'createStaff'])->name('staff.createStaff');
+    Route::post('/staff/store-staff', [StaffController::class, 'storeStaff'])->name('staff.storeStaff');
+    Route::get('/staff/edit-staff/{id}', [StaffController::class, 'editStaff'])->name('staff.editStaff');
+    Route::put('/staff/update-staff/{id}', [StaffController::class, 'updateStaff'])->name('staff.updateStaff');
+    Route::delete('/staff/delete-staff/{id}', [StaffController::class, 'deleteStaff'])->name('staff.deleteStaff');
+
+
+
+
+
+
+
+
+    
+    
+
     Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
 
 
