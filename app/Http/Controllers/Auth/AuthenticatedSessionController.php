@@ -37,11 +37,9 @@ class AuthenticatedSessionController extends Controller
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->route('staff.dashboard');
-            } else if ($user->role === 'user' || $user->role === 'userSession') {
-                return back()->withErrors([
-                    'email' => 'The provided credentials do not match our records.',
-                ]);
-            } 
+            } else {
+                return redirect()->route('members.dashboard');
+            }
         }
 
         return back()->withErrors([
@@ -53,27 +51,27 @@ class AuthenticatedSessionController extends Controller
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
-    {
-        // Destroy all sessions
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
-        // Completely wipe the session storage
-        session()->flush();
-        
-        // Create a redirect response with nuclear cache headers
-        $response = redirect('/login');
-        
-        // Set extreme cache prevention headers
-        $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-        $response->headers->set('Pragma', 'no-cache');
-        $response->headers->set('Expires', '0');
-        $response->headers->set('X-Accel-Expires', '0'); 
-        
-        // Add security headers
-        $response->headers->set('Clear-Site-Data', '"cache", "cookies", "storage"');
-        
-        return $response;
-    }
+{
+    // Destroy all sessions
+    Auth::guard('web')->logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    
+    // Completely wipe the session storage
+    session()->flush();
+    
+    // Create a redirect response with nuclear cache headers
+    $response = redirect('/login');
+    
+    // Set extreme cache prevention headers
+    $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+    $response->headers->set('Pragma', 'no-cache');
+    $response->headers->set('Expires', '0');
+    $response->headers->set('X-Accel-Expires', '0'); 
+    
+    // Add security headers
+    $response->headers->set('Clear-Site-Data', '"cache", "cookies", "storage"');
+    
+    return $response;
+}
 }
