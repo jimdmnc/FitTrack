@@ -14,7 +14,7 @@ use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Staff\AnnouncementController;
-use App\Http\Controllers\Member\MemberDashboardController;
+// use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
 use App\Http\Controllers\PriceController;
 
