@@ -70,7 +70,7 @@
                 </thead>
                 <tbody class="divide-y divide-black" id="staffTableBody">
                     @forelse($staffs as $staff)
-                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="{{ $staff->id }}">
                         <td class="p-3 font-medium text-gray-200">{{ $staff->first_name }} {{ $staff->last_name }}</td>
                         <td class="p-3 font-medium text-gray-200">{{ $staff->email }}</td>
                         <td class="p-3 font-medium text-gray-200">
@@ -149,8 +149,345 @@
                 </div>
                 <div>
                     <label for="create_last_name" class="block text-sm font-medium text-gray-200">Last Name</label>
-                    <input type="text" name="last_name" id="create_last_name" class="mt-1 block w-full bg-[#2c2c2c] text علیه: 'center' });
-    });
+                    <input type="text" name="last_name" id="create_last_name" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="create_gender" class="block text-sm font-medium text-gray-200">Gender</label>
+                    <select name="gender" id="create_gender" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="create_phone_number" class="block text-sm font-medium text-gray-200">Phone Number</label>
+                    <input type="text" name="phone_number" id="create_phone_number" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="create_email" class="block text-sm font-medium text-gray-200">Email</label>
+                    <input type="email" name="email" id="create_email" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="create_role" class="block text-sm font-medium text-gray-200">Role</label>
+                    <select name="role" id="create_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="admin">Admin</option>
+                        <option value="super_admin">Super Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="create_session_status" class="block text-sm font-medium text-gray-200">Status</label>
+                    <select name="session_status" id="create_session_status" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="create_password" class="block text-sm font-medium text-gray-200">Password</label>
+                    <input type="password" name="password" id="create_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="create_password_confirmation" class="block text-sm font-medium text-gray-200">Confirm Password</label>
+                    <input type="password" name="password_confirmation" id="create_password_confirmation" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+            </div>
+            <div id="create_error_container" class="mt-4 hidden"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeCreateModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Create Staff
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Staff Modal -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-200">Edit Staff</h3>
+            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <form id="editStaffForm" method="POST" class="bg-[#212121] p-6 rounded-lg">
+            @csrf
+            @method('PUT')
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="edit_first_name" class="block text-sm font-medium text-gray-200">First Name</label>
+                    <input type="text" name="first_name" id="edit_first_name" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="edit_last_name" class="block text-sm font-medium text-gray-200">Last Name</label>
+                    <input type="text" name="last_name" id="edit_last_name" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="edit_gender" class="block text-sm font-medium text-gray-200">Gender</label>
+                    <select name="gender" id="edit_gender" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_phone_number" class="block text-sm font-medium text-gray-200">Phone Number</label>
+                    <input type="text" name="phone_number" id="edit_phone_number" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="edit_email" class="block text-sm font-medium text-gray-200">Email</label>
+                    <input type="email" name="email" id="edit_email" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
+                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="edit_role" class="block text-sm font-medium text-gray-200">Role</label>
+                    <select name="role" id="edit_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="admin">Admin</option>
+                        <option value="super_admin">Super Admin</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_session_status" class="block text-sm font-medium text-gray-200">Status</label>
+                    <select name="session_status" id="edit_session_status" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="edit_password" class="block text-sm font-medium text-gray-200">Password (Leave blank to keep current)</label>
+                    <input type="password" name="password" id="edit_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]">
+                </div>
+                <div>
+                    <label for="edit_password_confirmation" class="block text-sm font-medium text-gray-200">Confirm Password</label>
+                    <input type="password" name="password_confirmation" id="edit_password_confirmation" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]">
+                </div>
+            </div>
+            <div id="edit_error_container" class="mt-4 hidden"></div>
+            <div class="mt-6 flex justify-end gap-3">
+                <button type="button" onclick="closeEditModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Update Staff
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Staff Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-200">Delete Staff Account</h3>
+            <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <p class="text-gray-400 mb-4">Are you sure you want to delete this staff account? This action cannot be undone.</p>
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="flex justify-end gap-3 mt-3">
+                <button type="button" onclick="closeDeleteModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
+                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                    Delete
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function showNotification(message, type) {
+        const notification = document.getElementById('notification');
+        notification.className = `p-4 rounded-md mb-4 flex items-center ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+        notification.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                ${type === 'success' ? '<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />' : '<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />'}
+            </svg>
+            ${message}
+        `;
+        notification.classList.remove('hidden');
+        setTimeout(() => notification.classList.add('hidden'), 5000);
+    }
+
+    function displayFormErrors(formId, errors) {
+        const errorContainer = document.getElementById(`${formId}_error_container`);
+        errorContainer.innerHTML = '';
+        errorContainer.classList.remove('hidden');
+        for (const [field, messages] of Object.entries(errors)) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'text-red-500 text-sm';
+            errorDiv.textContent = messages[0];
+            errorContainer.appendChild(errorDiv);
+            const input = document.querySelector(`#${formId} [name="${field}"]`);
+            if (input) {
+                input.classList.add('border-red-500');
+                input.addEventListener('input', () => input.classList.remove('border-red-500'), { once: true });
+            }
+        }
+    }
+
+    function updateStaffTable(staffs) {
+        const tbody = document.getElementById('staffTableBody');
+        tbody.innerHTML = '';
+        if (staffs.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-10 text-center">
+                        <div class="flex flex-col items-center justify-center text-gray-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                            <h3 class="mt-3 text-lg font-medium text-gray-200">No Staff Found</h3>
+                            <p class="text-gray-300 mt-1">No staff members match the selected filter</p>
+                        </div>
+                    </td>
+                </tr>`;
+        } else {
+            staffs.forEach(staff => updateStaffTableRow(staff, true));
+        }
+    }
+
+    function updateStaffTableRow(staff, isNew = false) {
+        const tbody = document.getElementById('staffTableBody');
+        const existingRow = document.querySelector(`tr[data-staff-id="${staff.id}"]`);
+        const roleBadge = staff.role === 'super_admin'
+            ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>'
+            : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">Admin</span>';
+        const statusBadge = staff.session_status === 'approved'
+            ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">Approved</span>'
+            : staff.session_status === 'rejected'
+            ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">Rejected</span>'
+            : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>';
+        const rowHtml = `
+            <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="${staff.id}">
+                <td class="p-3 font-medium text-gray-200">${staff.first_name} ${staff.last_name}</td>
+                <td class="p-3 font-medium text-gray-200">${staff.email}</td>
+                <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
+                <td class="p-3 font-medium text-gray-200">${statusBadge}</td>
+                <td class="p-3 font-medium">
+                    <span class="text-gray-200">${new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span class="text-gray-400 text-sm">${new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
+                </td>
+                <td class="p-3 text-center">
+                    <div class="flex justify-center gap-2">
+                        <button onclick="openEditModal(${staff.id})" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                        </button>
+                        <button onclick="openDeleteModal(${staff.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Delete
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        if (existingRow && !isNew) {
+            existingRow.outerHTML = rowHtml;
+        } else {
+            tbody.insertAdjacentHTML('afterbegin', rowHtml);
+        }
+    }
+
+    function openCreateModal() {
+        fetch('{{ route('staff.createStaff') }}', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('create_first_name').value = data.form.first_name;
+            document.getElementById('create_last_name').value = data.form.last_name;
+            document.getElementById('create_gender').value = data.form.gender;
+            document.getElementById('create_phone_number').value = data.form.phone_number;
+            document.getElementById('create_email').value = data  .form.email;
+            document.getElementById('create_role').value = data.form.role;
+            document.getElementById('create_session_status').value = data.form.session_status;
+            document.getElementById('create_password').value = '';
+            document.getElementById('create_password_confirmation').value = '';
+            document.getElementById('create_error_container').classList.add('hidden');
+            document.getElementById('createModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        })
+        .catch(error => showNotification('Error loading create form: ' + error.message, 'error'));
+    }
+
+    function closeCreateModal() {
+        document.getElementById('createModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        document.getElementById('createStaffForm').reset();
+        document.getElementById('create_error_container').classList.add('hidden');
+        document.querySelectorAll('#createStaffForm .border-red-500').forEach(el => el.classList.remove('border-red-500'));
+    }
+
+    function openEditModal(id) {
+        fetch('{{ route('staff.editStaff', ':id') }}'.replace(':id', id), {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('editStaffForm').dataset.staffId = id;
+            document.getElementById('edit_first_name').value = data.staff.first_name;
+            document.getElementById('edit_last_name').value = data.staff.last_name;
+            document.getElementById('edit_gender').value = data.staff.gender;
+            document.getElementById('edit_phone_number').value = data.staff.phone_number;
+            document.getElementById('edit_email').value = data.staff.email;
+            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
+            document.getElementById('edit_role').value = data.staff.role;
+            document.getElementById('edit_session_status').value = data.staff.session_status;
+            document.getElementById('edit_password').value = '';
+            document.getElementById('edit_password_confirmation').value = '';
+            document.getElementById('edit_error_container').classList.add('hidden');
+            document.getElementById('editModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        })
+        .catch(error => showNotification('Error loading edit form: ' + error.message, 'error'));
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        document.getElementById('editStaffForm').reset();
+        document.getElementById('edit_error_container').classList.add('hidden');
+        document.querySelectorAll('#editStaffForm .border-red-500').forEach(el => el.classList.remove('border-red-500'));
+    }
+
+    function openDeleteModal(id) {
+        const form = document.getElementById('deleteForm');
+        form.dataset.staffId = id;
+        document.getElementById('deleteModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+    }
 
     document.addEventListener('DOMContentLoaded', function() {
         // Filter functionality
