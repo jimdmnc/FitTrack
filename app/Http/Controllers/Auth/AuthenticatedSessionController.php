@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
             // Redirect based on role
             if ($user->role === 'admin') {
                 return redirect()->route('staff.dashboard');
-            } else if ($user->role === 'user' || $user->role === 'userSession') {
+            } else {
                 return back()->withErrors([
                     'email' => 'The provided credentials do not match our records.',
                 ]);
