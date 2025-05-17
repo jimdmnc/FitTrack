@@ -60,7 +60,6 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Email</th>
-                        <th class="p-3 text-left">RFID UID</th>
                         <th class="p-3 text-left">Role</th>
                         <th class="p-3 text-left">Created At</th>
                         <th class="p-3 text-center">Actions</th>
@@ -71,9 +70,6 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="{{ $staff->id }}">
                         <td class="p-3 font-medium text-gray-200">{{ $staff->first_name }} {{ $staff->last_name }}</td>
                         <td class="p-3 font-medium text-gray-200">{{ $staff->email }}</td>
-                        <td class="p-3 font-medium text-gray-200">
-                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-700 text-gray-200">{{ $staff->rfid_uid }}</span>
-                        </td>
                         <td class="p-3 font-medium text-gray-200">
                             @if($staff->role == 'super_admin')
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>
@@ -104,7 +100,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-10 text-center">
+                        <td colspan="5" class="py-10 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -167,17 +163,6 @@
                     </select>
                 </div>
                 <div>
-                    <label for="create_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
-                    <div class="flex items-center mt-1">
-                        <input type="text" name="rfid_uid" id="create_rfid_uid" class="block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" value="STAFF{{ strtoupper(Str::random(5)) }}" readonly>
-                        <button type="button" onclick="generateNewRfid('create')" class="ml-2 bg-[#ff5722] text-white p-2 rounded-md hover:bg-[#e64a19] transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                <div>
                     <label for="create_password" class="block text-sm font-medium text-gray-200">Password</label>
                     <input type="password" name="password" id="create_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                 </div>
@@ -189,7 +174,7 @@
             <div id="create_error_container" class="mt-4 hidden"></div>
             <div class="mt-6 flex justify-end gap-3">
                 <button type="button" onclick="closeCreateModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+                <button type="submit" id="createSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -247,10 +232,6 @@
                     </select>
                 </div>
                 <div>
-                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
-                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" readonly>
-                </div>
-                <div>
                     <label for="edit_password" class="block text-sm font-medium text-gray-200">Password (Leave blank to keep current)</label>
                     <input type="password" name="password" id="edit_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]">
                 </div>
@@ -262,7 +243,7 @@
             <div id="edit_error_container" class="mt-4 hidden"></div>
             <div class="mt-6 flex justify-end gap-3">
                 <button type="button" onclick="closeEditModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+                <button type="submit" id="editSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -290,7 +271,7 @@
             @method('DELETE')
             <div class="flex justify-end gap-3 mt-3">
                 <button type="button" onclick="closeDeleteModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
+                <button type="submit" id="deleteSubmitBtn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
@@ -302,10 +283,7 @@
 </div>
 
 <script>
-    function generateNewRfid(formType) {
-        const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-        document.getElementById(`${formType}_rfid_uid`).value = `STAFF${randomPart}`;
-    }
+    let isSubmitting = false;
 
     function showNotification(message, type) {
         const notification = document.getElementById('notification');
@@ -354,10 +332,10 @@
             return;
         }
         tbody.innerHTML = '';
-        if (staffs.length === 0) {
+        if (!staffs || staffs.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="py-10 text-center">
+                    <td colspan="5" class="py-10 text-center">
                         <div class="flex flex-col items-center justify-center text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -367,9 +345,9 @@
                         </div>
                     </td>
                 </tr>`;
-        } else {
-            staffs.forEach(staff => updateStaffTableRow(staff, true));
+            return;
         }
+        staffs.forEach(staff => updateStaffTableRow(staff, true));
     }
 
     function updateStaffTableRow(staff, isNew = false) {
@@ -392,9 +370,6 @@
             <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="${staff.id}">
                 <td class="p-3 font-medium text-gray-200">${staff.first_name || ''} ${staff.last_name || ''}</td>
                 <td class="p-3 font-medium text-gray-200">${staff.email || ''}</td>
-                <td class="p-3 font-medium text-gray-200">
-                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-700 text-gray-200">${staff.rfid_uid || ''}</span>
-                </td>
                 <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
                 <td class="p-3 font-medium">
                     <span class="text-gray-200">${staff.created_at ? new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
@@ -429,31 +404,44 @@
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             },
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('create_first_name').value = data.form.first_name;
-            document.getElementById('create_last_name').value = data.form.last_name;
-            document.getElementById('create_gender').value = data.form.gender;
-            document.getElementById('create_phone_number').value = data.form.phone_number;
-            document.getElementById('create_email').value = data.form.email;
-            document.getElementById('create_role').value = data.form.role;
-            document.getElementById('create_rfid_uid').value = 'STAFF' + Math.random().toString(36).substring(2, 7).toUpperCase();
+            if (!data.form) {
+                console.error('Invalid create form data:', data);
+                showNotification('Error loading create form: Invalid data', 'error');
+                return;
+            }
+            document.getElementById('create_first_name').value = data.form.first_name || '';
+            document.getElementById('create_last_name').value = data.form.last_name || '';
+            document.getElementById('create_gender').value = data.form.gender || '';
+            document.getElementById('create_phone_number').value = data.form.phone_number || '';
+            document.getElementById('create_email').value = data.form.email || '';
+            document.getElementById('create_role').value = data.form.role || 'admin';
             document.getElementById('create_password').value = '';
             document.getElementById('create_password_confirmation').value = '';
             document.getElementById('create_error_container').classList.add('hidden');
             document.getElementById('createModal').classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         })
-        .catch(error => showNotification('Error loading create form: ' + error.message, 'error'));
+        .catch(error => {
+            console.error('Fetch error:', error);
+            showNotification('Error loading create form: ' + error.message, 'error');
+        });
     }
 
     function closeCreateModal() {
-        document.getElementById('createModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-        document.getElementById('createStaffForm').reset();
-        document.getElementById('create_error_container').classList.add('hidden');
+        const modal = document.getElementById('createModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        const form = document.getElementById('createStaffForm');
+        if (form) form.reset();
+        const errorContainer = document.getElementById('create_error_container');
+        if (errorContainer) errorContainer.classList.add('hidden');
         document.querySelectorAll('#createStaffForm .border-red-500').forEach(el => el.classList.remove('border-red-500'));
     }
 
@@ -462,81 +450,119 @@
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
             },
         })
         .then(response => response.json())
         .then(data => {
-            document.getElementById('editStaffForm').dataset.staffId = id;
-            document.getElementById('edit_first_name').value = data.staff.first_name;
-            document.getElementById('edit_last_name').value = data.staff.last_name;
-            document.getElementById('edit_gender').value = data.staff.gender;
-            document.getElementById('edit_phone_number').value = data.staff.phone_number;
-            document.getElementById('edit_email').value = data.staff.email;
-            document.getElementById('edit_role').value = data.staff.role;
-            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
+            if (!data.staff) {
+                console.error('Invalid edit staff data:', data);
+                showNotification('Error loading edit form: Invalid data', 'error');
+                return;
+            }
+            const form = document.getElementById('editStaffForm');
+            if (form) form.dataset.staffId = id;
+            document.getElementById('edit_first_name').value = data.staff.first_name || '';
+            document.getElementById('edit_last_name').value = data.staff.last_name || '';
+            document.getElementById('edit_gender').value = data.staff.gender || '';
+            document.getElementById('edit_phone_number').value = data.staff.phone_number || '';
+            document.getElementById('edit_email').value = data.staff.email || '';
+            document.getElementById('edit_role').value = data.staff.role || 'admin';
             document.getElementById('edit_password').value = '';
             document.getElementById('edit_password_confirmation').value = '';
             document.getElementById('edit_error_container').classList.add('hidden');
             document.getElementById('editModal').classList.remove('hidden');
             document.body.classList.add('overflow-hidden');
         })
-        .catch(error => showNotification('Error loading edit form: ' + error.message, 'error'));
+        .catch(error => {
+            console.error('Fetch error:', error);
+            showNotification('Error loading edit form: ' + error.message, 'error');
+        });
     }
 
     function closeEditModal() {
-        document.getElementById('editModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-        document.getElementById('editStaffForm').reset();
-        document.getElementById('edit_error_container').classList.add('hidden');
+        const modal = document.getElementById('editModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        const form = document.getElementById('editStaffForm');
+        if (form) form.reset();
+        const errorContainer = document.getElementById('edit_error_container');
+        if (errorContainer) errorContainer.classList.add('hidden');
         document.querySelectorAll('#editStaffForm .border-red-500').forEach(el => el.classList.remove('border-red-500'));
     }
 
     function openDeleteModal(id) {
         const form = document.getElementById('deleteForm');
-        form.dataset.staffId = id;
-        document.getElementById('deleteModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
+        if (form) {
+            form.dataset.staffId = id;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            document.body.classList.add('overflow-hidden');
+        } else {
+            console.error('Delete form not found');
+            showNotification('Cannot open delete modal: Form missing', 'error');
+        }
     }
 
     function closeDeleteModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
+        const modal = document.getElementById('deleteModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Filter functionality
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
         const filterOptions = document.getElementById('filterOptions');
         if (filterOptions) {
             filterOptions.addEventListener('change', function() {
+                if (isSubmitting) return;
                 const filter = this.value;
                 fetch('{{ route('staff.manageStaffs') }}?filter=' + filter, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                 })
                 .then(response => response.json())
-                .then(data => updateStaffTable(data.staffs))
-                .catch(error => showNotification('Error filtering staff: ' + error.message, 'error'));
+                .then(data => {
+                    if (data.staffs) {
+                        updateStaffTable(data.staffs);
+                    } else {
+                        console.error('Invalid filter response:', data);
+                        showNotification('Error filtering staff: Invalid data', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showNotification('Error filtering staff: ' + error.message, 'error');
+                });
             });
         }
 
-        // Refresh button
         const refreshBtn = document.getElementById('refreshBtn');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', function() {
+                if (isSubmitting) return;
                 location.reload();
             });
         }
 
-        // Create form submission
         const createForm = document.getElementById('createStaffForm');
         if (createForm) {
             createForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const submitButton = createForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Creating...';
+                if (isSubmitting) return;
+                isSubmitting = true;
+                const submitButton = document.getElementById('createSubmitBtn');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Creating...';
+                }
                 const formData = new FormData(createForm);
                 fetch('{{ route('staff.storeStaff') }}', {
                     method: 'POST',
@@ -544,18 +570,21 @@
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Create staff response:', data); // Debug response
-                    if (data.success) {
+                    console.log('Create staff response:', data);
+                    if (data.success && data.staff) {
                         closeCreateModal();
                         showNotification(data.message, 'success');
                         updateStaffTableRow(data.staff, true);
                     } else {
-                        showNotification('Validation errors occurred.', 'error');
-                        displayFormErrors('createStaffForm', data.errors);
+                        showNotification(data.message || 'Validation errors occurred.', 'error');
+                        if (data.errors) {
+                            displayFormErrors('createStaffForm', data.errors);
+                        }
                     }
                 })
                 .catch(error => {
@@ -563,25 +592,31 @@
                     showNotification('Error creating staff: ' + error.message, 'error');
                 })
                 .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                        </svg>
-                        Create Staff
-                    `;
+                    isSubmitting = false;
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                            </svg>
+                            Create Staff
+                        `;
+                    }
                 });
             });
         }
 
-        // Edit form submission
         const editForm = document.getElementById('editStaffForm');
         if (editForm) {
             editForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const submitButton = editForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Updating...';
+                if (isSubmitting) return;
+                isSubmitting = true;
+                const submitButton = document.getElementById('editSubmitBtn');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Updating...';
+                }
                 const formData = new FormData(editForm);
                 const staffId = editForm.dataset.staffId;
                 fetch('{{ route('staff.updateStaff', ':id') }}'.replace(':id', staffId), {
@@ -590,19 +625,21 @@
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Update staff response:', data); // Debug response
-                    if (data.success) {
+                    console.log('Update staff response:', data);
+                    if (data.success && data.staff) {
                         closeEditModal();
                         showNotification(data.message, 'success');
                         updateStaffTableRow(data.staff, false);
                     } else {
-                        showNotification('Validation errors occurred.', 'error');
-                        displayFormErrors('editStaffForm', data.errors);
+                        showNotification(data.message || 'Validation errors occurred.', 'error');
+                        if (data.errors) {
+                            displayFormErrors('editStaffForm', data.errors);
+                        }
                     }
                 })
                 .catch(error => {
@@ -610,32 +647,38 @@
                     showNotification('Error updating staff: ' + error.message, 'error');
                 })
                 .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Update Staff
-                    `;
+                    isSubmitting = false;
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Update Staff
+                        `;
+                    }
                 });
             });
         }
 
-        // Delete form submission
         const deleteForm = document.getElementById('deleteForm');
         if (deleteForm) {
             deleteForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                const submitButton = deleteForm.querySelector('button[type="submit"]');
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Deleting...';
+                if (isSubmitting) return;
+                isSubmitting = true;
+                const submitButton = document.getElementById('deleteSubmitBtn');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Deleting...';
+                }
                 const staffId = deleteForm.dataset.staffId;
                 fetch('{{ route('staff.deleteStaff', ':id') }}'.replace(':id', staffId), {
                     method: 'DELETE',
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-CSRF-TOKEN': csrfToken,
                     },
                 })
                 .then(response => response.json())
@@ -645,19 +688,26 @@
                         showNotification(data.message, 'success');
                         const row = document.querySelector(`tr[data-staff-id="${staffId}"]`);
                         if (row) row.remove();
+                        else console.warn(`Row with staff-id ${staffId} not found`);
                     } else {
-                        showNotification(data.message, 'error');
+                        showNotification(data.message || 'Error deleting staff', 'error');
                     }
                 })
-                .catch(error => showNotification('Error deleting staff: ' + error.message, 'error'))
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showNotification('Error deleting staff: ' + error.message, 'error');
+                })
                 .finally(() => {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                        </svg>
-                        Delete
-                    `;
+                    isSubmitting = false;
+                    if (submitButton) {
+                        submitButton.disabled = false;
+                        submitButton.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Delete
+                        `;
+                    }
                 });
             });
         }
