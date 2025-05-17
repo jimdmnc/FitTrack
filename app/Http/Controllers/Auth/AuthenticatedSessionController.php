@@ -40,14 +40,11 @@ public function store(Request $request)
         if ($user->role === 'admin') {
             return redirect()->route('staff.dashboard');
         } else {
-            // Logout non-admin users immediately
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             
-            return back()->withErrors([
-                'email' => 'Only admin users can access this page.',
-            ]);
+            return redirect()->route('sessionLogin')->with('error', 'Only admin users can access this page.');
         }
     }
 
