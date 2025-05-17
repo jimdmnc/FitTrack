@@ -55,7 +55,6 @@ class StaffController extends Controller
                     'gender' => '',
                     'phone_number' => '',
                     'email' => '',
-                    'rfid_uid' => '',
                     'role' => 'admin',
                     'session_status' => 'approved',
                 ],
@@ -77,7 +76,6 @@ class StaffController extends Controller
                 'password' => 'required|string|min:8|confirmed',
                 'role' => 'required|in:admin,super_admin',
                 'session_status' => 'required|in:approved,rejected',
-                'rfid_uid' => 'required|string|max:255|unique:users',
             ]);
 
             $user = User::create([
@@ -90,7 +88,7 @@ class StaffController extends Controller
                 'role' => $validated['role'],
                 'session_status' => $validated['session_status'],
                 'needs_approval' => 0,
-                'rfid_uid' => $validated['rfid_uid'],
+                'rfid_uid' => '', // Default value since NOT NULL
                 'membership_type' => 'staff',
                 'start_date' => now()->toDateString(),
                 'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
