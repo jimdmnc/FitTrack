@@ -243,7 +243,10 @@
                     <label for="edit_email" class="block text-sm font-medium text-gray-200">Email</label>
                     <input type="email" name="email" id="edit_email" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                 </div>
-            
+                <div>
+                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
+                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
                 <div>
                     <label for="edit_role" class="block text-sm font-medium text-gray-200">Role</label>
                     <select name="role" id="edit_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
@@ -312,10 +315,6 @@
 <script>
     function showNotification(message, type) {
         const notification = document.getElementById('notification');
-        if (!notification) {
-            console.error('Notification element not found');
-            return;
-        }
         notification.className = `p-4 rounded-md mb-4 flex items-center ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
         notification.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -329,11 +328,6 @@
 
     function displayFormErrors(formId, errors) {
         const errorContainer = document.getElementById(`${formId}_error_container`);
-        if (!errorContainer) {
-            console.error(`Error container for ${formId} not found`);
-            showNotification('Cannot display errors: Form error container missing', 'error');
-            return;
-        }
         errorContainer.innerHTML = '';
         errorContainer.classList.remove('hidden');
         for (const [field, messages] of Object.entries(errors)) {
@@ -351,11 +345,6 @@
 
     function updateStaffTable(staffs) {
         const tbody = document.getElementById('staffTableBody');
-        if (!tbody) {
-            console.error('Staff table body not found');
-            showNotification('Cannot update table: Table body missing', 'error');
-            return;
-        }
         tbody.innerHTML = '';
         if (staffs.length === 0) {
             tbody.innerHTML = `
@@ -377,16 +366,6 @@
 
     function updateStaffTableRow(staff, isNew = false) {
         const tbody = document.getElementById('staffTableBody');
-        if (!tbody) {
-            console.error('Staff table body not found');
-            showNotification('Cannot update table row: Table body missing', 'error');
-            return;
-        }
-        if (!staff || !staff.id) {
-            console.error('Invalid staff data:', staff);
-            showNotification('Cannot update table row: Invalid staff data', 'error');
-            return;
-        }
         const existingRow = document.querySelector(`tr[data-staff-id="${staff.id}"]`);
         const roleBadge = staff.role === 'super_admin'
             ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>'
@@ -398,13 +377,13 @@
             : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>';
         const rowHtml = `
             <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="${staff.id}">
-                <td class="p-3 font-medium text-gray-200">${staff.first_name || ''} ${staff.last_name || ''}</td>
-                <td class="p-3 font-medium text-gray-200">${staff.email || ''}</td>
+                <td class="p-3 font-medium text-gray-200">${staff.first_name} ${staff.last_name}</td>
+                <td class="p-3 font-medium text-gray-200">${staff.email}</td>
                 <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
                 <td class="p-3 font-medium text-gray-200">${statusBadge}</td>
                 <td class="p-3 font-medium">
-                    <span class="text-gray-200">${staff.created_at ? new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
-                    <span class="text-gray-400 text-sm">${staff.created_at ? new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) : ''}</span>
+                    <span class="text-gray-200">${new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span class="text-gray-400 text-sm">${new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
                 </td>
                 <td class="p-3 text-center">
                     <div class="flex justify-center gap-2">
@@ -443,7 +422,7 @@
             document.getElementById('create_last_name').value = data.form.last_name;
             document.getElementById('create_gender').value = data.form.gender;
             document.getElementById('create_phone_number').value = data.form.phone_number;
-            document.getElementById('create_email').value = data.form.email;
+            document.getElementById('create_email').value = data  .form.email;
             document.getElementById('create_role').value = data.form.role;
             document.getElementById('create_session_status').value = data.form.session_status;
             document.getElementById('create_password').value = '';
@@ -478,6 +457,7 @@
             document.getElementById('edit_gender').value = data.staff.gender;
             document.getElementById('edit_phone_number').value = data.staff.phone_number;
             document.getElementById('edit_email').value = data.staff.email;
+            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
             document.getElementById('edit_role').value = data.staff.role;
             document.getElementById('edit_session_status').value = data.staff.session_status;
             document.getElementById('edit_password').value = '';
@@ -582,7 +562,6 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Update staff response:', data); // Debug response
                     if (data.success) {
                         closeEditModal();
                         showNotification(data.message, 'success');
@@ -592,10 +571,7 @@
                         displayFormErrors('editStaffForm', data.errors);
                     }
                 })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    showNotification('Error updating staff: ' + error.message, 'error');
-                });
+                .catch(error => showNotification('Error updating staff: ' + error.message, 'error'));
             });
         }
 
