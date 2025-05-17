@@ -32,7 +32,7 @@
                 </svg>
                 <span>Register Member</span>
             </a>
-            <span class="text-gray-400 uppercase text-xxs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Members Management</span>
+            <span class="text-gray-400 uppercase text-2xs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Members Management</span>
 
             <!-- Members Attendance Link -->
             <a href="{{ route('staff.attendance') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.attendance') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
