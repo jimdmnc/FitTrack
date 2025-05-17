@@ -31,7 +31,7 @@
 <style>
        /* Scrollbar styles */
        ::-webkit-scrollbar {
-            width: 4px;
+            width: 2px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
