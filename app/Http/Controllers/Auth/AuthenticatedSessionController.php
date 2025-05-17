@@ -37,7 +37,7 @@ public function store(Request $request)
         $user = Auth::user();
 
         // Redirect based on role
-        if ($user->role === 'admin') {
+        if ($user->role === 'admin' || $user->role === 'super_admin') {
             return redirect()->route('staff.dashboard');
         } else {
             Auth::logout();
