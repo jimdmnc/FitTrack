@@ -88,7 +88,6 @@ class StaffController extends Controller
                 'role' => $validated['role'],
                 'session_status' => $validated['session_status'],
                 'needs_approval' => 0,
-                'rfid_uid' => '', // Default value since NOT NULL
                 'membership_type' => 'staff',
                 'start_date' => now()->toDateString(),
                 'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
@@ -120,7 +119,6 @@ class StaffController extends Controller
                     'gender' => $staff->gender,
                     'phone_number' => $staff->phone_number,
                     'email' => $staff->email,
-                    'rfid_uid' => '',
                     'role' => $staff->role,
                     'session_status' => $staff->session_status,
                 ],
@@ -144,7 +142,6 @@ class StaffController extends Controller
                 'password' => 'nullable|string|min:8|confirmed',
                 'role' => 'required|in:admin,super_admin',
                 'session_status' => 'required|in:approved,rejected',
-                'rfid_uid' => 'required|string|max:255|unique:users,rfid_uid,' . $id,
             ]);
 
             $updateData = [
@@ -155,7 +152,6 @@ class StaffController extends Controller
                 'email' => $validated['email'],
                 'role' => $validated['role'],
                 'session_status' => $validated['session_status'],
-                'rfid_uid' => $validated['rfid_uid'],
                 'membership_type' => 'staff',
                 'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
             ];
