@@ -120,7 +120,7 @@ class StaffController extends Controller
                     'gender' => $staff->gender,
                     'phone_number' => $staff->phone_number,
                     'email' => $staff->email,
-                    'rfid_uid' => $staff->rfid_uid,
+                    'rfid_uid' => '',
                     'role' => $staff->role,
                     'session_status' => $staff->session_status,
                 ],
