@@ -28,6 +28,24 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 </head>
+<style>
+       /* Scrollbar styles */
+       ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(52, 52, 52, 0.8);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgb(255, 81, 0);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 153, 45, 0.8);
+        }
+</style>
 <body class="font-sans bg-[#121212] overflow-x-hidden" x-data="{ sidebarOpen: window.innerWidth >= 768 }" x-init="() => {
     // Initialize sidebar state based on screen size
     window.addEventListener('resize', () => {
