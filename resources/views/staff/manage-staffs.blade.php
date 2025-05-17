@@ -21,14 +21,6 @@
         .mobile-full-width {
             width: 100%;
         }
-        .pagination-container {
-            overflow-x: auto;
-            padding-bottom: 1rem;
-        }
-        .pagination {
-            display: flex;
-            white-space: nowrap;
-        }
     }
 </style>
 <div class="p-6">
@@ -36,22 +28,8 @@
         <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Staff Management Dashboard</h2>
         <p class="text-gray-500 text-md ml-1">Manage staff accounts and roles</p>
     </div>
-    
-    @if(session('success'))
-        <div class="bg-green-100 text-green-700 p-4 rounded-md mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-            </svg>
-            {{ session('success') }}
-        </div>
-    @elseif(session('error'))
-        <div class="bg-red-100 text-red-700 p-4 rounded-md mb-4 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-            </svg>
-            {{ session('error') }}
-        </div>
-    @endif
+
+    <div id="notification" class="hidden p-4 rounded-md mb-4 flex items-center"></div>
 
     <div class="p-4">
         <div class="flex justify-between items-center mb-4">
@@ -70,17 +48,17 @@
                     Refresh
                 </button>
             </div>
-            <a href="{{ route('staff.createStaff') }}" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+            <button onclick="openCreateModal()" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Add New Staff
-            </a>
+            </button>
         </div>
 
         <div class="overflow-x-auto table-responsive">
             <table class="w-full border-collapse">
-                <thead> 
+                <thead>
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Email</th>
@@ -88,42 +66,27 @@
                         <th class="p-3 text-left">Status</th>
                         <th class="p-3 text-left">Created At</th>
                         <th class="p-3 text-center">Actions</th>
-                    </tr>   
+                    </tr>
                 </thead>
-
-                <tbody class="divide-y divide-black">
+                <tbody class="divide-y divide-black" id="staffTableBody">
                     @forelse($staffs as $staff)
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <td class="p-3 font-medium text-gray-200">{{ $staff->first_name }} {{ $staff->last_name }}</td>
                         <td class="p-3 font-medium text-gray-200">{{ $staff->email }}</td>
                         <td class="p-3 font-medium text-gray-200">
                             @if($staff->role == 'super_admin')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">
-                                    Super Admin
-                                </span>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>
                             @elseif($staff->role == 'admin')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">
-                                    Admin
-                                </span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
-                                    {{ $staff->role }}
-                                </span>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">Admin</span>
                             @endif
                         </td>
                         <td class="p-3 font-medium text-gray-200">
                             @if($staff->session_status == 'approved')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    Approved
-                                </span>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">Approved</span>
                             @elseif($staff->session_status == 'rejected')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">
-                                    Rejected
-                                </span>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">Rejected</span>
                             @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                                    Pending
-                                </span>
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>
                             @endif
                         </td>
                         <td class="p-3 font-medium">
@@ -132,13 +95,13 @@
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-2">
-                                <a href="{{ route('staff.editStaff', $staff->id) }}" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
+                                <button onclick="openEditModal({{ $staff->id }})" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     Edit
-                                </a>
-                                <button onclick="deleteStaff({{ $staff->id }})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                                </button>
+                                <button onclick="openDeleteModal({{ $staff->id }})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
@@ -166,52 +129,31 @@
     </div>
 </div>
 
-<div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
+<!-- Create Staff Modal -->
+<div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-200">Delete Staff Account</h3>
-            <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+            <h3 class="text-lg font-bold text-gray-200">Create New Staff</h3>
+            <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <p class="text-gray-400 mb-4">Are you sure you want to delete this staff account? This action cannot be undone.</p>
-        
-        <form action="{{ route('staff.deleteStaff', ['id' => 0]) }}" method="POST" id="deleteForm">
+        <form id="createStaffForm" method="POST" class="bg-[#212121] p-6 rounded-lg">
             @csrf
-            @method('DELETE')
-            <div class="flex justify-end gap-3 mt-3">
-                <button type="button" onclick="closeModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                    Delete
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    function closeModal() {
-        document.getElementById('deleteModal').classList.add('hidden');
-        document.body.classList.remove('overflow-hidden');
-    }
-
-    function deleteStaff(id) {
-        const form = document.getElementById('deleteForm');
-        let actionUrl = form.getAttribute('action');
-        actionUrl = actionUrl.replace('/0', '/' + id);
-        form.setAttribute('action', actionUrl);
-        document.getElementById('deleteModal').classList.remove('hidden');
-        document.body.classList.add('overflow-hidden');
-    }
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="create_first_name" class="block text-sm font-medium text-gray-200">First Name</label>
+                    <input type="text" name="first_name" id="create_first_name" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
+                <div>
+                    <label for="create_last_name" class="block text-sm font-medium text-gray-200">Last Name</label>
+                    <input type="text" name="last_name" id="create_last_name" class="mt-1 block w-full bg-[#2c2c2c] text علیه: 'center' });
+    });
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
         const filterOptions = document.getElementById('filterOptions');
         if (filterOptions) {
             filterOptions.addEventListener('change', function() {
@@ -223,70 +165,104 @@
                     },
                 })
                 .then(response => response.json())
-                .then(data => {
-                    const tbody = document.querySelector('tbody');
-                    tbody.innerHTML = '';
-                    if (data.staffs.length === 0) {
-                        tbody.innerHTML = `
-                            <tr>
-                                <td colspan="6" class="py-10 text-center">
-                                    <div class="flex flex-col items-center justify-center text-gray-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                        </svg>
-                                        <h3 class="mt-3 text-lg font-medium text-gray-200">No Staff Found</h3>
-                                        <p class="text-gray-300 mt-1">No staff members match the selected filter</p>
-                                    </div>
-                                </td>
-                            </tr>`;
-                    } else {
-                        data.staffs.forEach(staff => {
-                            const roleBadge = staff.role === 'super_admin' 
-                                ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>'
-                                : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">Admin</span>';
-                            const statusBadge = staff.session_status === 'approved'
-                                ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">Approved</span>'
-                                : staff.session_status === 'rejected'
-                                ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">Rejected</span>'
-                                : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>';
-                            tbody.innerHTML += `
-                                <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                                    <td class="p-3 font-medium text-gray-200">${staff.first_name} ${staff.last_name}</td>
-                                    <td class="p-3 font-medium text-gray-200">${staff.email}</td>
-                                    <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
-                                    <td class="p-3 font-medium text-gray-200">${statusBadge}</td>
-                                    <td class="p-3 font-medium">
-                                        <span class="text-gray-200">${new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                                        <span class="text-gray-400 text-sm">${new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
-                                    </td>
-                                    <td class="p-3 text-center">
-                                        <div class="flex justify-center gap-2">
-                                            <a href="/staff/edit-staff/${staff.id}" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                </svg>
-                                                Edit
-                                            </a>
-                                            <button onclick="deleteStaff(${staff.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
-                                                </svg>
-                                                Delete
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>`;
-                        });
-                    }
-                })
-                .catch(error => console.error('Error filtering staff:', error));
+                .then(data => updateStaffTable(data.staffs))
+                .catch(error => showNotification('Error filtering staff: ' + error.message, 'error'));
             });
         }
 
+        // Refresh button
         const refreshBtn = document.getElementById('refreshBtn');
         if (refreshBtn) {
             refreshBtn.addEventListener('click', function() {
                 location.reload();
+            });
+        }
+
+        // Create form submission
+        const createForm = document.getElementById('createStaffForm');
+        if (createForm) {
+            createForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(createForm);
+                fetch('{{ route('staff.storeStaff') }}', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeCreateModal();
+                        showNotification(data.message, 'success');
+                        updateStaffTableRow(data.staff, true);
+                    } else {
+                        showNotification('Validation errors occurred.', 'error');
+                        displayFormErrors('createStaffForm', data.errors);
+                    }
+                })
+                .catch(error => showNotification('Error creating staff: ' + error.message, 'error'));
+            });
+        }
+
+        // Edit form submission
+        const editForm = document.getElementById('editStaffForm');
+        if (editForm) {
+            editForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(editForm);
+                const staffId = editForm.dataset.staffId;
+                fetch('{{ route('staff.updateStaff', ':id') }}'.replace(':id', staffId), {
+                    method: 'PUT',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeEditModal();
+                        showNotification(data.message, 'success');
+                        updateStaffTableRow(data.staff, false);
+                    } else {
+                        showNotification('Validation errors occurred.', 'error');
+                        displayFormErrors('editStaffForm', data.errors);
+                    }
+                })
+                .catch(error => showNotification('Error updating staff: ' + error.message, 'error'));
+            });
+        }
+
+        // Delete form submission
+        const deleteForm = document.getElementById('deleteForm');
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const staffId = deleteForm.dataset.staffId;
+                fetch('{{ route('staff.deleteStaff', ':id') }}'.replace(':id', staffId), {
+                    method: 'DELETE',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        closeDeleteModal();
+                        showNotification(data.message, 'success');
+                        document.querySelector(`tr[data-staff-id="${staffId}"]`).remove();
+                    } else {
+                        showNotification(data.message, 'error');
+                    }
+                })
+                .catch(error => showNotification('Error deleting staff: ' + error.message, 'error'));
             });
         }
     });

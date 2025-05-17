@@ -6,19 +6,20 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class StaffController extends Controller
 {
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    //     $this->middleware(function ($request, $next) {
-    //         if (Auth::user()->role !== 'super_admin') {
-    //             abort(403, 'Unauthorized action.');
-    //         }
-    //         return $next($request);
-    //     });
-    // }
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            if (Auth::user()->role !== 'super_admin') {
+                abort(403, 'Unauthorized action.');
+            }
+            return $next($request);
+        });
+    }
 
     public function manageStaffs(Request $request)
     {
@@ -44,96 +45,156 @@ class StaffController extends Controller
         return view('staff.manage-staffs', compact('staffs'));
     }
 
-    public function createStaff()
+    public function createStaff(Request $request)
     {
-        return view('staff.create-staff');
+        if ($request->ajax()) {
+            return response()->json([
+                'form' => [
+                    'first_name' => '',
+                    'last_name' => '',
+                    'gender' => '',
+                    'phone_number' => '',
+                    'email' => '',
+                    'rfid_uid' => '',
+                    'role' => 'admin',
+                    'session_status' => 'approved',
+                ],
+            ]);
+        }
+
+        return redirect()->route('staff.manageStaffs');
     }
 
     public function storeStaff(Request $request)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|in:male,female,other',
-            'phone_number' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:admin,super_admin',
-            'session_status' => 'required|in:approved,rejected',
-            'rfid_uid' => 'nullable|string|max:255|unique:users',
-        ]);
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'gender' => 'required|in:male,female,other',
+                'phone_number' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users',
+                'password' => 'required|string|min:8|confirmed',
+                'role' => 'required|in:admin,super_admin',
+                'session_status' => 'required|in:approved,rejected',
+                'rfid_uid' => 'required|string|max:255|unique:users',
+            ]);
 
-        User::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'gender' => $validated['gender'],
-            'phone_number' => $validated['phone_number'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
-            'session_status' => $validated['session_status'],
-            'needs_approval' => 0, // Staff created by super admin are pre-approved
-            'rfid_uid' => $validated['rfid_uid'],
-            'membership_type' => 'staff', // Default for staff
-            'start_date' => now()->toDateString(), // Default to today
-            'member_status' => 'active', // Default for staff
-        ]);
+            $user = User::create([
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'gender' => $validated['gender'],
+                'phone_number' => $validated['phone_number'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => $validated['role'],
+                'session_status' => $validated['session_status'],
+                'needs_approval' => 0,
+                'rfid_uid' => $validated['rfid_uid'],
+                'membership_type' => 'staff',
+                'start_date' => now()->toDateString(),
+                'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
+            ]);
 
-        return redirect()->route('staff.manageStaffs')->with('success', 'Staff created successfully.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff created successfully.',
+                'staff' => $user,
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+            ], 422);
+        }
     }
 
-    public function editStaff($id)
+    public function editStaff(Request $request, $id)
     {
         $staff = User::findOrFail($id);
-        return view('staff.edit-staff', compact('staff'));
+
+        if ($request->ajax()) {
+            return response()->json([
+                'staff' => [
+                    'id' => $staff->id,
+                    'first_name' => $staff->first_name,
+                    'last_name' => $staff->last_name,
+                    'gender' => $staff->gender,
+                    'phone_number' => $staff->phone_number,
+                    'email' => $staff->email,
+                    'rfid_uid' => $staff->rfid_uid,
+                    'role' => $staff->role,
+                    'session_status' => $staff->session_status,
+                ],
+            ]);
+        }
+
+        return redirect()->route('staff.manageStaffs');
     }
 
     public function updateStaff(Request $request, $id)
     {
-        $staff = User::findOrFail($id);
+        try {
+            $staff = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'gender' => 'required|in:male,female,other',
-            'phone_number' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $id,
-            'password' => 'nullable|string|min:8|confirmed',
-            'role' => 'required|in:admin,super_admin',
-            'session_status' => 'required|in:approved,rejected',
-            'rfid_uid' => 'required|string|max:255|unique:users,rfid_uid,' . $id,
-        ]);
+            $validated = $request->validate([
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'gender' => 'required|in:male,female,other',
+                'phone_number' => 'required|string|max:255',
+                'email' => 'required|string|email|max:255|unique:users,email,' . $id,
+                'password' => 'nullable|string|min:8|confirmed',
+                'role' => 'required|in:admin,super_admin',
+                'session_status' => 'required|in:approved,rejected',
+                'rfid_uid' => 'required|string|max:255|unique:users,rfid_uid,' . $id,
+            ]);
 
-        $updateData = [
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'gender' => $validated['gender'],
-            'phone_number' => $validated['phone_number'],
-            'email' => $validated['email'],
-            'role' => $validated['role'],
-            'session_status' => $validated['session_status'],
-            'rfid_uid' => $validated['rfid_uid'],
-            'membership_type' => 'staff',
-            'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
-        ];
+            $updateData = [
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'gender' => $validated['gender'],
+                'phone_number' => $validated['phone_number'],
+                'email' => $validated['email'],
+                'role' => $validated['role'],
+                'session_status' => $validated['session_status'],
+                'rfid_uid' => $validated['rfid_uid'],
+                'membership_type' => 'staff',
+                'member_status' => $validated['session_status'] === 'approved' ? 'active' : 'revoked',
+            ];
 
-        if (!empty($validated['password'])) {
-            $updateData['password'] = Hash::make($validated['password']);
+            if (!empty($validated['password'])) {
+                $updateData['password'] = Hash::make($validated['password']);
+            }
+
+            $staff->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Staff updated successfully.',
+                'staff' => $staff,
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors(),
+            ], 422);
         }
-
-        $staff->update($updateData);
-
-        return redirect()->route('staff.manageStaffs')->with('success', 'Staff updated successfully.');
     }
 
     public function deleteStaff($id)
     {
         $staff = User::findOrFail($id);
         if ($staff->id === Auth::id()) {
-            return redirect()->route('staff.manageStaffs')->with('error', 'You cannot delete your own account.');
+            return response()->json([
+                'success' => false,
+                'message' => 'You cannot delete your own account.',
+            ], 403);
         }
         $staff->delete();
-        return redirect()->route('staff.manageStaffs')->with('success', 'Staff deleted successfully.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Staff deleted successfully.',
+        ]);
     }
 }
 ?>
