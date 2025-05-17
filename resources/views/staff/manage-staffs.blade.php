@@ -371,6 +371,7 @@
             staffs.forEach(staff => updateStaffTableRow(staff, true));
         }
     }
+
     function updateStaffTableRow(staff, isNew = false) {
         const tbody = document.getElementById('staffTableBody');
         if (!tbody) {
@@ -391,6 +392,9 @@
             <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="${staff.id}">
                 <td class="p-3 font-medium text-gray-200">${staff.first_name || ''} ${staff.last_name || ''}</td>
                 <td class="p-3 font-medium text-gray-200">${staff.email || ''}</td>
+                <td class="p-3 font-medium text-gray-200">
+                    <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-700 text-gray-200">${staff.rfid_uid || ''}</span>
+                </td>
                 <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
                 <td class="p-3 font-medium">
                     <span class="text-gray-200">${staff.created_at ? new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
@@ -435,6 +439,7 @@
             document.getElementById('create_phone_number').value = data.form.phone_number;
             document.getElementById('create_email').value = data.form.email;
             document.getElementById('create_role').value = data.form.role;
+            document.getElementById('create_rfid_uid').value = 'STAFF' + Math.random().toString(36).substring(2, 7).toUpperCase();
             document.getElementById('create_password').value = '';
             document.getElementById('create_password_confirmation').value = '';
             document.getElementById('create_error_container').classList.add('hidden');
@@ -468,6 +473,7 @@
             document.getElementById('edit_phone_number').value = data.staff.phone_number;
             document.getElementById('edit_email').value = data.staff.email;
             document.getElementById('edit_role').value = data.staff.role;
+            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
             document.getElementById('edit_password').value = '';
             document.getElementById('edit_password_confirmation').value = '';
             document.getElementById('edit_error_container').classList.add('hidden');
