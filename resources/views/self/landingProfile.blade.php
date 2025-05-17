@@ -303,7 +303,9 @@
                 <div class="flex justify-between items-center">
                     <!-- Logo Image -->
                     <div class="flex items-center">
-                        <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full" loading="lazy">
+                        <a href="{{ route('self.landingProfile') }}" aria-label="FitTrack Homepage">
+                            <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
+                        </a>
                     </div>
 
                     <!-- Workout Timer (Desktop) -->
