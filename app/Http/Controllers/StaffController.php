@@ -61,6 +61,9 @@ class StaffController extends Controller
                 'role' => 'required|in:admin,super_admin',
             ]);
 
+            // Generate RFID UID starting with STAFF followed by 5 random alphanumeric characters
+            $rfid_uid = 'STAFF' . strtoupper(Str::random(5));
+
             $user = User::create([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
@@ -69,12 +72,12 @@ class StaffController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'role' => $validated['role'],
-                'session_status' => 'approved', // Default value
-                'rfid_uid' => '', // Default value
+                'session_status' => 'approved',
+                'rfid_uid' => $rfid_uid, // Auto-generated RFID UID
                 'needs_approval' => 0,
                 'membership_type' => 'staff',
                 'start_date' => now()->toDateString(),
-                'member_status' => 'active', // Default value
+                'member_status' => 'active',
             ]);
 
             return response()->json([
