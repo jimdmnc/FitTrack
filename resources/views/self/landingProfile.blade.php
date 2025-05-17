@@ -316,7 +316,8 @@
                         <img src="images/image.png" alt="FitTrack Logo" class="h-12 w-12 md:h-16 md:w-16 rounded-full">
                     </div>
 
-                    <!-- Inside the navigation bar, replace the workout-timer section -->
+
+                    <!-- Workout Timer (Desktop) -->
                 @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
                     <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
                         <i class="fas fa-stopwatch mr-2 text-red-400"></i>
@@ -326,11 +327,20 @@
 
                 <!-- Time Out Button (Desktop and Mobile) -->
                 @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                    <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    <!-- Desktop Timeout Button (hidden on small screens) -->
+                    <button
+                        id="timeout-button"
+                        onclick="document.getElementById('timeout-modal').showModal()"
+                        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300"
+                    >
                         <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                     </button>
-                    <!-- Mobile Timeout Button -->
-                    <button onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
+
+                    <!-- Mobile Timeout Button (hidden on medium and larger screens) -->
+                    <button
+                        onclick="document.getElementById('timeout-modal').showModal()"
+                        class="inline-flex md:hidden bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300"
+                    >
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 @endif
@@ -350,14 +360,6 @@
                                 <i class="fas fa-sync-alt mr-1"></i> Renew
                             </button>
 
-                            <!-- TimeOut Button -->
-                            @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                            <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                            </button>
-                            @endif
-
-
                             <!-- Sign Out Button -->
                             <form method="POST" action="{{ route('logout.custom') }}">
                                 @csrf
@@ -371,14 +373,6 @@
 
                     <!-- Mobile Menu Button -->
                     <div class="md:hidden flex items-center space-x-3">
-                        <!-- TimeOut Button for Mobile -->
-                        @if(auth()->check() && auth()->user()->rfid_uid && !session('timed_out'))
-                            <button onclick="document.getElementById('timeout-modal').showModal()" 
-                                class="bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300">
-                                <i class="fas fa-sign-out-alt"></i>
-                            </button>
-                        @endif
-                        
                         <!-- Menu Toggle Button -->
                         <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md">
                             <i class="fas fa-bars text-xl"></i>
