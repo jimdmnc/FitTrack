@@ -22,28 +22,39 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(Request $request)
-    {
-        $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+   /**
+ * Handle an incoming authentication request.
+ */
+public function store(Request $request)
+{
+    $request->validate([
+        'email' => ['required', 'email'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
+    if (Auth::attempt($request->only('email', 'password'))) {
+        $request->session()->regenerate();
+        $user = Auth::user();
 
-            $user = Auth::user();
-
-            // Redirect based on role
-            if ($user->role === 'admin') {
-                return redirect()->route('staff.dashboard');
-            }
+        // Redirect based on role
+        if ($user->role === 'admin') {
+            return redirect()->route('staff.dashboard');
+        } else {
+            // Logout non-admin users immediately
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            return back()->withErrors([
+                'email' => 'Only admin users can access this page.',
+            ]);
         }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
     }
+
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ]);
+}
 
     /**
      * Destroy an authenticated session.
