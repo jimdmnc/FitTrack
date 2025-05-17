@@ -60,14 +60,14 @@
             </a>
 
             <!-- Manage Staffs Link (Visible only to Super Admins) -->
-            <!-- @if(auth()->user()->role === 'super_admin') -->
+            @if(auth()->user()->role === 'super_admin')
             <a href="{{ route('staff.manageStaffs') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.manageStaffs') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.manageStaffs') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                 </svg>
                 <span>Manage Staffs</span>
             </a>
-            <!-- @endif -->
+            @endif
 
             <!-- Member Status Link -->
             <a href="{{ route('staff.viewmembers') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.viewmembers') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
