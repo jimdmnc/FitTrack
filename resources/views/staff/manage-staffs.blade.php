@@ -243,7 +243,10 @@
                     <label for="edit_email" class="block text-sm font-medium text-gray-200">Email</label>
                     <input type="email" name="email" id="edit_email" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                 </div>
-                
+                <div>
+                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
+                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                </div>
                 <div>
                     <label for="edit_role" class="block text-sm font-medium text-gray-200">Role</label>
                     <select name="role" id="edit_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
@@ -454,6 +457,7 @@
             document.getElementById('edit_gender').value = data.staff.gender;
             document.getElementById('edit_phone_number').value = data.staff.phone_number;
             document.getElementById('edit_email').value = data.staff.email;
+            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
             document.getElementById('edit_role').value = data.staff.role;
             document.getElementById('edit_session_status').value = data.staff.session_status;
             document.getElementById('edit_password').value = '';
