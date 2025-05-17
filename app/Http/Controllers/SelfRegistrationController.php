@@ -45,6 +45,15 @@ class SelfRegistrationController extends Controller
             if (Auth::attempt(['email' => $validatedData['email'], 'password' => $validatedData['password']])) {
                 $user = Auth::user();
 
+                // Check if the user is an admin trying to access userSession login
+                if ($user->role === 'admin') {
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    
+                    return redirect()->back()->withInput()->with('error', 'Admins must login through the admin portal.');
+                }
+
                 if ($user->session_status === 'approved') {
                     return redirect()->route('self.landingProfile')->with('success', 'Login successful! Welcome back.');
                 }
