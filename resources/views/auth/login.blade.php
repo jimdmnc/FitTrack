@@ -5,7 +5,16 @@
     <div class="min-h-screen w-full flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat fixed inset-0" style="background-image: url('{{ asset('images/loginbg.jpg') }}');">
         <!-- Gradient overlay for better readability and visual appeal -->
         <div class="absolute inset-0 bg-gradient-to-br from-black/70 to-black/40"></div>
-        
+        @if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
         <!-- Main content container - modified to match reference image -->
         <div class="w-full max-w-sm bg-white/20 backdrop-blur-xl rounded-3xl overflow-hidden relative p-8 z-10 border border-white/30 my-8">
             <!-- Card content -->
