@@ -44,7 +44,7 @@ public function store(Request $request)
             $request->session()->invalidate();
             $request->session()->regenerateToken();
             
-            return redirect()->route('sessionLogin')->with('error', 'Only admin users can access this page.');
+            return redirect()->route('self.login')->with('error', 'Only admin users can access this page.');
         }
     }
 
