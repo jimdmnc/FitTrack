@@ -38,8 +38,6 @@
                     <option value="all">All Staff</option>
                     <option value="admin">Admins</option>
                     <option value="super_admin">Super Admins</option>
-                    <option value="approved">Approved</option>
-                    <option value="rejected">Rejected</option>
                 </select>
                 <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-3 py-2 rounded-md text-sm transition-colors flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +61,6 @@
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Email</th>
                         <th class="p-3 text-left">Role</th>
-                        <th class="p-3 text-left">Status</th>
                         <th class="p-3 text-left">Created At</th>
                         <th class="p-3 text-center">Actions</th>
                     </tr>
@@ -78,15 +75,6 @@
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>
                             @elseif($staff->role == 'admin')
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">Admin</span>
-                            @endif
-                        </td>
-                        <td class="p-3 font-medium text-gray-200">
-                            @if($staff->session_status == 'approved')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">Approved</span>
-                            @elseif($staff->session_status == 'rejected')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">Rejected</span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>
                             @endif
                         </td>
                         <td class="p-3 font-medium">
@@ -112,7 +100,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-10 text-center">
+                        <td colspan="5" class="py-10 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -172,13 +160,6 @@
                     <select name="role" id="create_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="create_session_status" class="block text-sm font-medium text-gray-200">Status</label>
-                    <select name="session_status" id="create_session_status" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
                 <div>
@@ -244,21 +225,10 @@
                     <input type="email" name="email" id="edit_email" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                 </div>
                 <div>
-                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
-                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
-                </div>
-                <div>
                     <label for="edit_role" class="block text-sm font-medium text-gray-200">Role</label>
                     <select name="role" id="edit_role" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="edit_session_status" class="block text-sm font-medium text-gray-200">Status</label>
-                    <select name="session_status" id="edit_session_status" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
                     </select>
                 </div>
                 <div>
@@ -315,6 +285,10 @@
 <script>
     function showNotification(message, type) {
         const notification = document.getElementById('notification');
+        if (!notification) {
+            console.error('Notification element not found');
+            return;
+        }
         notification.className = `p-4 rounded-md mb-4 flex items-center ${type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
         notification.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -328,6 +302,11 @@
 
     function displayFormErrors(formId, errors) {
         const errorContainer = document.getElementById(`${formId}_error_container`);
+        if (!errorContainer) {
+            console.error(`Error container for ${formId} not found`);
+            showNotification('Cannot display errors: Form error container missing', 'error');
+            return;
+        }
         errorContainer.innerHTML = '';
         errorContainer.classList.remove('hidden');
         for (const [field, messages] of Object.entries(errors)) {
@@ -345,11 +324,16 @@
 
     function updateStaffTable(staffs) {
         const tbody = document.getElementById('staffTableBody');
+        if (!tbody) {
+            console.error('Staff table body not found');
+            showNotification('Cannot update table: Table body missing', 'error');
+            return;
+        }
         tbody.innerHTML = '';
         if (staffs.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" class="py-10 text-center">
+                    <td colspan="5" class="py-10 text-center">
                         <div class="flex flex-col items-center justify-center text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -366,24 +350,28 @@
 
     function updateStaffTableRow(staff, isNew = false) {
         const tbody = document.getElementById('staffTableBody');
+        if (!tbody) {
+            console.error('Staff table body not found');
+            showNotification('Cannot update table row: Table body missing', 'error');
+            return;
+        }
+        if (!staff || !staff.id) {
+            console.error('Invalid staff data:', staff);
+            showNotification('Cannot update table row: Invalid staff data', 'error');
+            return;
+        }
         const existingRow = document.querySelector(`tr[data-staff-id="${staff.id}"]`);
         const roleBadge = staff.role === 'super_admin'
             ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>'
             : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">Admin</span>';
-        const statusBadge = staff.session_status === 'approved'
-            ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">Approved</span>'
-            : staff.session_status === 'rejected'
-            ? '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-red-900 text-red-200">Rejected</span>'
-            : '<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">Pending</span>';
         const rowHtml = `
             <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="${staff.id}">
-                <td class="p-3 font-medium text-gray-200">${staff.first_name} ${staff.last_name}</td>
-                <td class="p-3 font-medium text-gray-200">${staff.email}</td>
+                <td class="p-3 font-medium text-gray-200">${staff.first_name || ''} ${staff.last_name || ''}</td>
+                <td class="p-3 font-medium text-gray-200">${staff.email || ''}</td>
                 <td class="p-3 font-medium text-gray-200">${roleBadge}</td>
-                <td class="p-3 font-medium text-gray-200">${statusBadge}</td>
                 <td class="p-3 font-medium">
-                    <span class="text-gray-200">${new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                    <span class="text-gray-400 text-sm">${new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })}</span>
+                    <span class="text-gray-200">${staff.created_at ? new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
+                    <span class="text-gray-400 text-sm">${staff.created_at ? new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) : ''}</span>
                 </td>
                 <td class="p-3 text-center">
                     <div class="flex justify-center gap-2">
@@ -422,9 +410,8 @@
             document.getElementById('create_last_name').value = data.form.last_name;
             document.getElementById('create_gender').value = data.form.gender;
             document.getElementById('create_phone_number').value = data.form.phone_number;
-            document.getElementById('create_email').value = data  .form.email;
+            document.getElementById('create_email').value = data.form.email;
             document.getElementById('create_role').value = data.form.role;
-            document.getElementById('create_session_status').value = data.form.session_status;
             document.getElementById('create_password').value = '';
             document.getElementById('create_password_confirmation').value = '';
             document.getElementById('create_error_container').classList.add('hidden');
@@ -457,9 +444,7 @@
             document.getElementById('edit_gender').value = data.staff.gender;
             document.getElementById('edit_phone_number').value = data.staff.phone_number;
             document.getElementById('edit_email').value = data.staff.email;
-            document.getElementById('edit_rfid_uid').value = data.staff.rfid_uid;
             document.getElementById('edit_role').value = data.staff.role;
-            document.getElementById('edit_session_status').value = data.staff.session_status;
             document.getElementById('edit_password').value = '';
             document.getElementById('edit_password_confirmation').value = '';
             document.getElementById('edit_error_container').classList.add('hidden');
@@ -520,6 +505,9 @@
         if (createForm) {
             createForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const submitButton = createForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Creating...';
                 const formData = new FormData(createForm);
                 fetch('{{ route('staff.storeStaff') }}', {
                     method: 'POST',
@@ -531,6 +519,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Create staff response:', data); // Debug response
                     if (data.success) {
                         closeCreateModal();
                         showNotification(data.message, 'success');
@@ -540,7 +529,19 @@
                         displayFormErrors('createStaffForm', data.errors);
                     }
                 })
-                .catch(error => showNotification('Error creating staff: ' + error.message, 'error'));
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showNotification('Error creating staff: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        Create Staff
+                    `;
+                });
             });
         }
 
@@ -549,6 +550,9 @@
         if (editForm) {
             editForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const submitButton = editForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Updating...';
                 const formData = new FormData(editForm);
                 const staffId = editForm.dataset.staffId;
                 fetch('{{ route('staff.updateStaff', ':id') }}'.replace(':id', staffId), {
@@ -562,6 +566,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
+                    console.log('Update staff response:', data); // Debug response
                     if (data.success) {
                         closeEditModal();
                         showNotification(data.message, 'success');
@@ -571,7 +576,19 @@
                         displayFormErrors('editStaffForm', data.errors);
                     }
                 })
-                .catch(error => showNotification('Error updating staff: ' + error.message, 'error'));
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    showNotification('Error updating staff: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Update Staff
+                    `;
+                });
             });
         }
 
@@ -580,6 +597,9 @@
         if (deleteForm) {
             deleteForm.addEventListener('submit', function(e) {
                 e.preventDefault();
+                const submitButton = deleteForm.querySelector('button[type="submit"]');
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<svg class="animate-spin h-4 w-4 mr-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" /></svg> Deleting...';
                 const staffId = deleteForm.dataset.staffId;
                 fetch('{{ route('staff.deleteStaff', ':id') }}'.replace(':id', staffId), {
                     method: 'DELETE',
@@ -594,12 +614,22 @@
                     if (data.success) {
                         closeDeleteModal();
                         showNotification(data.message, 'success');
-                        document.querySelector(`tr[data-staff-id="${staffId}"]`).remove();
+                        const row = document.querySelector(`tr[data-staff-id="${staffId}"]`);
+                        if (row) row.remove();
                     } else {
                         showNotification(data.message, 'error');
                     }
                 })
-                .catch(error => showNotification('Error deleting staff: ' + error.message, 'error'));
+                .catch(error => showNotification('Error deleting staff: ' + error.message, 'error'))
+                .finally(() => {
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                        Delete
+                    `;
+                });
             });
         }
     });
