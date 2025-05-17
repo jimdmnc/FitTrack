@@ -60,6 +60,7 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Email</th>
+                        <th class="p-3 text-left">RFID UID</th>
                         <th class="p-3 text-left">Role</th>
                         <th class="p-3 text-left">Created At</th>
                         <th class="p-3 text-center">Actions</th>
@@ -70,6 +71,9 @@
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black" data-staff-id="{{ $staff->id }}">
                         <td class="p-3 font-medium text-gray-200">{{ $staff->first_name }} {{ $staff->last_name }}</td>
                         <td class="p-3 font-medium text-gray-200">{{ $staff->email }}</td>
+                        <td class="p-3 font-medium text-gray-200">
+                            <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-700 text-gray-200">{{ $staff->rfid_uid }}</span>
+                        </td>
                         <td class="p-3 font-medium text-gray-200">
                             @if($staff->role == 'super_admin')
                                 <span class="px-2 py-1 rounded-full text-xs font-semibold bg-purple-900 text-purple-200">Super Admin</span>
@@ -100,7 +104,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-10 text-center">
+                        <td colspan="6" class="py-10 text-center">
                             <div class="flex flex-col items-center justify-center text-gray-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -161,6 +165,17 @@
                         <option value="admin">Admin</option>
                         <option value="super_admin">Super Admin</option>
                     </select>
+                </div>
+                <div>
+                    <label for="create_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
+                    <div class="flex items-center mt-1">
+                        <input type="text" name="rfid_uid" id="create_rfid_uid" class="block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" value="STAFF{{ strtoupper(Str::random(5)) }}" readonly>
+                        <button type="button" onclick="generateNewRfid('create')" class="ml-2 bg-[#ff5722] text-white p-2 rounded-md hover:bg-[#e64a19] transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <label for="create_password" class="block text-sm font-medium text-gray-200">Password</label>
@@ -232,6 +247,10 @@
                     </select>
                 </div>
                 <div>
+                    <label for="edit_rfid_uid" class="block text-sm font-medium text-gray-200">RFID UID</label>
+                    <input type="text" name="rfid_uid" id="edit_rfid_uid" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" readonly>
+                </div>
+                <div>
                     <label for="edit_password" class="block text-sm font-medium text-gray-200">Password (Leave blank to keep current)</label>
                     <input type="password" name="password" id="edit_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]">
                 </div>
@@ -283,6 +302,11 @@
 </div>
 
 <script>
+    function generateNewRfid(formType) {
+        const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+        document.getElementById(`${formType}_rfid_uid`).value = `STAFF${randomPart}`;
+    }
+
     function showNotification(message, type) {
         const notification = document.getElementById('notification');
         if (!notification) {
@@ -333,7 +357,7 @@
         if (staffs.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="py-10 text-center">
+                    <td colspan="6" class="py-10 text-center">
                         <div class="flex flex-col items-center justify-center text-gray-400">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -347,7 +371,6 @@
             staffs.forEach(staff => updateStaffTableRow(staff, true));
         }
     }
-
     function updateStaffTableRow(staff, isNew = false) {
         const tbody = document.getElementById('staffTableBody');
         if (!tbody) {
