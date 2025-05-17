@@ -17,6 +17,7 @@ use App\Http\Controllers\Staff\AnnouncementController;
 // use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
 use App\Http\Controllers\PriceController;
+use App\Http\Controllers\StaffController;
 
 // Public routes
 Route::get('/', function () {
@@ -198,7 +199,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-    
+
     
 
     Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
