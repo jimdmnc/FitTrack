@@ -7,7 +7,7 @@
     <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    @vite('resources/css/app.css')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
@@ -274,12 +274,14 @@
 </head>
 <body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
 
-<!-- Add this temporarily to debug -->
-<div style="display:none">
+<div>
     Auth: {{ auth()->check() ? 'Yes' : 'No' }}
     RFID: {{ auth()->check() && auth()->user()->rfid_uid ? auth()->user()->rfid_uid : 'None' }}
+    Session Status: {{ auth()->check() ? auth()->user()->session_status : 'N/A' }}
     Attendance Set: {{ isset($attendance) ? 'Yes' : 'No' }}
+    Attendance Raw: {{ json_encode($attendance) }}
     Time Out: {{ isset($attendance) && !$attendance->time_out ? 'Not timed out' : 'Timed out or no attendance' }}
+    Logout Route: {{ route('logout.custom') }}
 </div>
     <!-- Navigation Bar -->
         <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
@@ -322,16 +324,6 @@
                     </div>
                 @endif
 
-                <!-- Mobile workout timer -->
-                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
-                    <div class="flex justify-center items-center py-4">
-                        <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                            <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                            <span id="mobile-workout-duration" class="text-lg font-medium">00:00:00</span>
-                        </div>
-                    </div>
-                @endif
-
                 <!-- Time Out Button (Desktop and Mobile) -->
                 @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
                     <button id="timeout-button" onclick="document.getElementById('timeout-modal').showModal()" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
@@ -348,7 +340,7 @@
                         <a href="#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
                         <a href="#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
                         <a href="#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
-                        <a href="#" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
+                        <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
                         
                         <!-- Action Buttons -->
                         <div class="flex items-center space-x-2">
@@ -410,7 +402,7 @@
                         <a href="#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
                         <a href="#tutorial" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
                         <a href="#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
-                        <a href="#" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
+                        <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                         
                         <!-- Mobile Workout Timer Display -->
                         @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out)
@@ -811,9 +803,9 @@
                         <div>
                             <h4 class="text-lg font-bold mb-4">Quick Links</h4>
                             <ul class="space-y-2">
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
+                                <li><a href="#home" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
+                                <li><a href="#tutorial" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
+                                <li><a href="#inhere" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
                             </ul>
                         </div>
                         
@@ -1033,8 +1025,12 @@
         // Smooth scroll for all anchor links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                // Skip if href is just '#' or empty
+                if (!href || href === '#') return;
+
                 e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
+                const target = document.querySelector(href);
                 if (target) {
                     target.scrollIntoView({
                         behavior: 'smooth',

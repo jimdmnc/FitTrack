@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Schedule the auto-checkout command to run daily at 9 PM
-        $schedule->command('attendance:auto-checkout')->dailyAt('21:00');
+        // $schedule->command('attendance:auto-checkout')->dailyAt('21:00');
     }
 
     /**

@@ -221,20 +221,37 @@ class SelfRegistrationController extends Controller
     }
 
     public function landingProfile()
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
+    \Log::info('User: ' . json_encode($user));
 
-        if ($user->session_status !== 'approved') {
-            return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
-        }
-
-        $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
-            ->whereNull('time_out')
-            ->latest('time_in')
-            ->first();
-
-        return view('self.landingProfile', compact('user', 'attendance'));
+    if ($user->session_status !== 'approved') {
+        \Log::warning('Redirecting to waiting due to session_status: ' . $user->session_status);
+        return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
     }
+
+    \Log::info('Querying attendance for rfid_uid: ' . $user->rfid_uid);
+    $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
+        ->whereNull('time_out')
+        ->latest('time_in')
+        ->first();
+
+    if (!$attendance) {
+        \Log::info('No active attendance found, creating new record for rfid_uid: ' . $user->rfid_uid);
+        $attendance = Attendance::create([
+            'rfid_uid' => $user->rfid_uid,
+            'attendance_date' => now(),
+            'time_in' => now(),
+            'status' => 'present',
+            'check_in_method' => 'auto',
+        ]);
+    }
+
+    \Log::info('Attendance query result: ' . json_encode($attendance));
+    \Log::info('Comparing rfid_uid: DB user = ' . $user->rfid_uid . ', Query param = ' . $user->rfid_uid);
+
+    return view('self.landingProfile', compact('user', 'attendance'));
+}
 
     public function logout(Request $request)
     {
@@ -279,8 +296,16 @@ class SelfRegistrationController extends Controller
                 Auth::login($user);
             }
 
-            return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
+            // Create a new attendance record after renewal
+            Attendance::create([
+                'rfid_uid' => $user->rfid_uid,
+                'attendance_date' => now(),
+                'time_in' => now(),
+                'status' => 'present',
+                'check_in_method' => 'auto',
+            ]);
 
+            return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -290,6 +315,7 @@ class SelfRegistrationController extends Controller
 
     public function timeout(Request $request)
     {
+        \Log::info('Timeout request received for rfid_uid: ' . $request->rfid_uid);
         $request->validate(['rfid_uid' => 'required|string']);
 
         $attendance = Attendance::where('rfid_uid', $request->rfid_uid)
@@ -298,13 +324,16 @@ class SelfRegistrationController extends Controller
             ->first();
 
         if ($attendance) {
+            \Log::info('Updating attendance record: ' . json_encode($attendance));
             $attendance->update([
                 'time_out' => now(),
                 'status' => 'completed',
             ]);
+            \Log::info('Attendance updated with time_out: ' . now());
             return response()->json(['success' => true]);
         }
 
+        \Log::warning('No active session found for rfid_uid: ' . $request->rfid_uid);
         return response()->json(['success' => false, 'message' => 'No active session found']);
     }
 }

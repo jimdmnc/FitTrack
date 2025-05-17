@@ -14,7 +14,6 @@ use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
 use App\Http\Controllers\Staff\StaffApprovalController;
 use App\Http\Controllers\Staff\AnnouncementController;
-// use App\Http\Controllers\Member\MemberDashboardController;
 use App\Http\Controllers\SelfRegistrationController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\StaffController;
@@ -22,7 +21,13 @@ use App\Http\Controllers\StaffController;
 // Public routes
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
+
+Route::get('/landing', function () {
+    return view('self.landing');
+})->name('self.landing');
+
+// Self-registration routes
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
 Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])->name('self.membership.renew');
@@ -30,69 +35,49 @@ Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])-
 Route::get('sessionLogin', [SelfRegistrationController::class, 'sessionLogin'])->name('self.login');
 Route::post('sessionLogin', [SelfRegistrationController::class, 'loginSubmit'])->name('self.login.submit');
 
+// RFID route (public)
+Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance'])->name('rfid.attendance');
 
-
+// Attendance timeout route (public, for compatibility with existing code)
 Route::post('/attendance/timeout', [AttendanceController::class, 'timeOut'])->name('attendance.timeout');
 
-
-
-Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
-    ->middleware('approved.user')  // Apply the middleware
-    ->name('self.landingProfile');
-    
-Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])
-    ->name('self.landingProfile')
-    ->middleware('auth');
-
-Route::get('/landing', function () {
-    return view('self.landing');
-})->name('self.landing');
-
-// routes/web.php
-Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
-
-// routes/web.php
-Route::get('/check-approval', [SelfRegistrationController::class, 'checkApproval'])->name('self.checkApproval');
-
-
-// Route to handle attendance
-Route::post('/rfid/attendance', [RFIDController::class, 'handleAttendance']);
-
+// Routes requiring authentication
 Route::middleware('auth')->group(function () {
+    // Self-registration routes with approval middleware
+    Route::middleware('approved.user')->group(function () {
+        Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])->name('self.landingProfile');
+        Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
+        Route::get('/check-approval', [SelfRegistrationController::class, 'checkApproval'])->name('self.checkApproval');
+    });
+
+    // User-specific timeout route
+    Route::post('/attendance/user-timeout', [SelfRegistrationController::class, 'timeout'])->name('attendance.timeout')->middleware('auth');
+
+    // Logout route
+    Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
+
     // Staff routes
     Route::prefix('staff')->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('staff.dashboard');
-        Route::get('/peak-hours', [DashboardController::class, 'getPeakHours']);
+        Route::get('/peak-hours', [DashboardController::class, 'getPeakHours'])->name('staff.peakHours');
 
         // Membership Registration
-        Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])
-            ->name('staff.membershipRegistration');
-        Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])
-            ->name('staff.membershipRegistration.store');
+        Route::get('/membershipRegistration', [MembershipRegistrationController::class, 'index'])->name('staff.membershipRegistration');
+        Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('staff.membershipRegistration.store');
 
-        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])
-            ->name('renew.membership');
-            
+        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])->name('renew.membership');
 
-        Route::get('/attendance', [AttendanceController::class, 'index'])
-            ->name('staff.attendance');
-        Route::get('/staff/attendance', [AttendanceController::class, 'index'])
-            ->name('staff.attendance.index');
+        // Attendance
+        Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
+        Route::get('/staff/attendance', [AttendanceController::class, 'index'])->name('staff.attendance.index');
+        Route::post('/record-attendance', [AttendanceController::class, 'recordAttendance'])->name('staff.record-attendance');
 
-        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout'])->name('attendance.timeout');
-        // In web.php or api.php
-        Route::post('/attendance/timeout', [AttendanceController::class, 'timeout']);
-        Route::post('/attendance/timeout', [SelfRegistrationController::class, 'timeout'])->name('attendance.timeout')->middleware('auth');
-        
+        // Staff Approval
+        Route::get('/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
+        Route::put('/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
+        Route::post('/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
 
-
-        Route::get('/staff/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
-        Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
-        // Route::put('/staff/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.renewMembership');
-        // Define the route for rejecting users - using POST method
-        Route::post('/staff/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
-
-        // If you're still having issues, add a debugging route to see all registered routes
+        // Debug routes
         Route::get('/debug/routes', function () {
             $routes = collect(Route::getRoutes())->map(function ($route) {
                 return [
@@ -102,30 +87,34 @@ Route::middleware('auth')->group(function () {
                     'action' => $route->getActionName(),
                 ];
             });
-            
             return response()->json($routes);
-        });
+        })->name('debug.routes');
 
-
-        // Route to record attendance
-        Route::post('/staff/record-attendance', [AttendanceController::class, 'recordAttendance'])
-            ->name('staff.record-attendance');
-
+        // View Members
         Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-        Route::post('/staff/members/revoke', [ViewmembersController::class, 'revokeMember'])->name('revoke.membership');
-        Route::post('/staff/members/restore', [ViewmembersController::class, 'restoreMember'])->name('restore.membership');
-        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])
-            ->name('staff.paymentTracking');
-        Route::post('/staff/paymentTracking/store', [PaymentTrackingController::class, 'store'])
-            ->name('payments.store');
-        Route::put('/staff/paymentTracking/update/{id}', [PaymentTrackingController::class, 'update'])
-            ->name('payments.update');
-        Route::delete('/staff/paymentTracking/destroy/{id}', [PaymentTrackingController::class, 'destroy'])
-            ->name('payments.destroy');
+        Route::post('/members/revoke', [ViewmembersController::class, 'revokeMember'])->name('revoke.membership');
+        Route::post('/members/restore', [ViewmembersController::class, 'restoreMember'])->name('restore.membership');
+        Route::get('/membership-prices', [ViewmembersController::class, 'membershipPrices'])->name('staff.membership.prices');
+        Route::post('/revoke-member', [ViewmembersController::class, 'revokeMember'])->name('revoke.member');
+        Route::post('/restore-member', [ViewmembersController::class, 'restoreMember'])->name('restore.member');
 
-        // Report routes
+        // Payment Tracking
+        Route::get('/paymentTracking', [PaymentTrackingController::class, 'index'])->name('staff.paymentTracking');
+        Route::post('/paymentTracking/store', [PaymentTrackingController::class, 'store'])->name('payments.store');
+        Route::put('/paymentTracking/update/{id}', [PaymentTrackingController::class, 'update'])->name('payments.update');
+        Route::delete('/paymentTracking/destroy/{id}', [PaymentTrackingController::class, 'destroy'])->name('payments.destroy');
+
+        // Reports
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
+
+        // Staff Management
+        Route::get('/manage-staffs', [StaffController::class, 'manageStaffs'])->name('staff.manageStaffs');
+        Route::get('/create-staff', [StaffController::class, 'createStaff'])->name('staff.createStaff');
+        Route::post('/store-staff', [StaffController::class, 'storeStaff'])->name('staff.storeStaff');
+        Route::get('/edit-staff/{id}', [StaffController::class, 'editStaff'])->name('staff.editStaff');
+        Route::put('/update-staff/{id}', [StaffController::class, 'updateStaff'])->name('staff.updateStaff');
+        Route::delete('/delete-staff/{id}', [StaffController::class, 'deleteStaff'])->name('staff.deleteStaff');
     });
 
     // Profile routes
@@ -137,82 +126,28 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/pricelist', [PriceController::class, 'pricelist'])->name('profile.pricelist');
     Route::post('/profile/pricelist/update', [PriceController::class, 'update'])->name('profile.pricelist.update');
 
-    Route::group(['middleware' => ['web', 'auth'], 'prefix' => 'staff'], function () {
-        Route::get('/viewmembers', [ViewmembersController::class, 'index'])->name('staff.viewmembers');
-        Route::get('/membership-prices', [ViewmembersController::class, 'membershipPrices'])->name('staff.membership.prices');
-        Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])->name('renew.membership');
-        Route::post('/revoke-member', [ViewmembersController::class, 'revokeMember'])->name('revoke.member');
-        Route::post('/restore-member', [ViewmembersController::class, 'restoreMember'])->name('restore.member');
-    });
-
-    // // **📩 Email Verification Routes**
-    // Route::get('/email/verify', function () {
-    //     return view('auth.verify-email');
-    // })->middleware('auth')->name('verification.notice');
-
+    // Email Verification Routes
     Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
         $request->fulfill();
         return redirect('/profile')->with('status', 'Email verified successfully!');
-    })->middleware(['auth', 'signed'])->name('verification.verify');
+    })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/verification-notification', function (Request $request) {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('status', 'Verification link sent!');
-    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+    })->middleware('throttle:6,1')->name('verification.send');
 
-    // Member routes
-    // Route::prefix('member')->group(function () {
-    //     Route::get('/dashboard', [MemberDashboardController::class, 'index'])->name('members.dashboard');
-    // });
-    
-
-
+    // Payment routes
     Route::get('/payment/success', function () {
         return view('payment.success');
     })->name('payment.success');
-    
+
     Route::get('/payment/failed', function () {
         return view('payment.failed');
     })->name('payment.failed');
 
-
-
-
-
-
-
-
-
-
-
-    Route::get('/staff/manage-staffs', [StaffController::class, 'manageStaffs'])->name('staff.manageStaffs');
-    Route::get('/staff/create-staff', [StaffController::class, 'createStaff'])->name('staff.createStaff');
-    Route::post('/staff/store-staff', [StaffController::class, 'storeStaff'])->name('staff.storeStaff');
-    Route::get('/staff/edit-staff/{id}', [StaffController::class, 'editStaff'])->name('staff.editStaff');
-    Route::put('/staff/update-staff/{id}', [StaffController::class, 'updateStaff'])->name('staff.updateStaff');
-    Route::delete('/staff/delete-staff/{id}', [StaffController::class, 'deleteStaff'])->name('staff.deleteStaff');
-
-
-
-
-
-
-
-
-
-    
-
-    Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
-
-
-
-        // Route::get('dashboard', function () {
-        //     return view('dashboard');
-        // })->name('dashboard');
-
-        Route::resource('announcements', AnnouncementController::class);
-        Route::get('landingProfile', [AnnouncementController::class, 'landing'])->name('self.landingProfile');
-
+    // Announcements
+    Route::resource('announcements', AnnouncementController::class);
 });
 
 // Authentication routes (login, register, etc.)
