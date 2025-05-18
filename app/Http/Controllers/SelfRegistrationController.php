@@ -21,8 +21,7 @@ class SelfRegistrationController extends Controller
     public function index()
     {
         $sessionPrice = Price::where('type', 'session')->first();
-        return view('self.registration');
-    }
+        return view('self.registration', compact('sessionPrice'));    }
 
     // Display the login form
     public function sessionLogin()
