@@ -140,7 +140,7 @@
                         class="group/item flex items-center w-full px-3 py-2 text-sm font-medium rounded-md 
                             {{ request()->routeIs('profile.edit') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} 
                             transition-all duration-200">
-                    <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ request()->routeIs('profile.edit') ? 'text-white' : 'execution: * Today's date and time is 09:24 PM PST on Sunday, May 18, 2025.
+                    <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ request()->routeIs('profile.edit') ? 'text-white' : 'execution: * Todays date and time is 09:24 PM PST on Sunday, May 18, 2025.
                             {{ request()->routeIs('profile.edit') ? 'text-white' : 'text-gray-400 group-hover/item:text-white' }}" 
                         fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
