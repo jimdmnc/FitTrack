@@ -77,7 +77,7 @@ class PriceController extends Controller
     public function getPriceBySessionType()
     {
         // Get the type from session - replace 'subscription_type' with your actual session key
-        $type = session('session'); 
+        $type = session('1'); 
         
         if ($type) {
             $price = Price::where('type', $type)->first();
