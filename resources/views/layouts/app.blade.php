@@ -34,27 +34,27 @@
     }
 </style>
 <body class="font-sans bg-[#121212] overflow-x-hidden">
-    <div x-data="{ sidebarOpen: false }" 
+    <div x-data="{ sidebarOpen: true }" 
          x-init="() => {
-             Alpine.store('sidebarOpen', window.innerWidth >= 768);
+             Alpine.store('sidebarOpen', true);
          }" class="flex flex-col md:flex-row min-h-screen">
         <!-- Sidebar -->
         <div id="sidebar" 
-            class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-transform duration-300 ease-in-out md:translate-x-0"
-            :class="{'translate-x-0 w-64': $store.sidebarOpen, '-translate-x-full w-0': !$store.sidebarOpen}">
+            class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-all duration-300 ease-in-out"
+            :class="{'w-64': $store.sidebarOpen, 'w-16': !$store.sidebarOpen}">
             @include('components.sidebar')
         </div>
 
         <!-- Mobile overlay -->
         <div id="sidebar-overlay" 
-            class="fixed inset-0 bg-black opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
+            class="fixed inset-0 bg-black opacity-50 z-20 transition-opacity duration-300 ease-in-out"
             :class="{'block': $store.sidebarOpen, 'hidden': !$store.sidebarOpen}"
             @click="$store.sidebarOpen = false"></div>
 
         <!-- Main Content -->
         <div id="main-content" 
              class="flex-1 will-change-transform transition-all duration-300 ease-in-out"
-             :style="$store.sidebarOpen && window.innerWidth >= 768 ? 'margin-left: 16rem' : 'margin-left: 0'">
+             :style="$store.sidebarOpen ? 'margin-left: 16rem' : 'margin-left: 4rem'">
             <div class="sticky top-0 z-10 bg-[#121212]">
                 @include('layouts.navigation')
             </div>
@@ -63,12 +63,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-        // Add event listener for window resize to manage sidebar state
-        window.addEventListener('resize', function() {
-            Alpine.store('sidebarOpen', window.innerWidth >= 768);
-        });
-    </script>
 </body>
 </html>
