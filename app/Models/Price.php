@@ -9,13 +9,13 @@ class Price extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'type',
-        'amount',
+    protected $table = 'prices';
+    
+    protected $fillable = ['type', 'amount'];
+    
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 }
