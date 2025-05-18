@@ -1,13 +1,5 @@
-<div class="flex flex-col w-64 md:w-64 h-full overflow-y-auto bg-[#121212] transition-transform duration-300 ease-in-out will-change-transform"
-     id="sidebar" x-data="{ sidebarOpen: true }" :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
-    <!-- Hamburger Menu Button -->
-    <button @click="sidebarOpen = !sidebarOpen" class="md:hidden p-3 text-white focus:outline-none">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M4 6h16M4 12h16m-7 6h7"></path>
-        </svg>
-    </button>
-
+<div class="flex flex-col w-64 h-full overflow-y-auto bg-[#121212] transition-transform duration-300 ease-in-out will-change-transform"
+     id="sidebar" x-data="{ sidebarOpen: true }" :class="{ 'translate-x-0': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen }">
     <!-- Logo and Brand Header -->
     <div class="flex items-center p-2 md:p-3">
         <a href="{{ route('staff.dashboard') }}" class="flex items-center w-full">
@@ -228,22 +220,3 @@
     }
     </script>
 </div>
-
-<!-- Main Content Wrapper (to toggle sidebar on mobile) -->
-<div class="flex-1 flex flex-col">
-    <!-- Hamburger Menu Button for Mobile (Outside Sidebar) -->
-    <button @click="$store.sidebarOpen = !$store.sidebarOpen" class="md:hidden p-3 text-white focus:outline-none fixed top-0 left-0 z-50">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M4 6h16M4 12h16m-7 6h7"></path>
-        </svg>
-    </button>
-    <!-- Your main content goes here -->
-</div>
-
-<!-- Alpine.js Store for Sidebar State -->
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.store('sidebarOpen', true);
-    });
-</script>
