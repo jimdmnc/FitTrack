@@ -29,9 +29,8 @@ Route::get('/landing', function () {
 
 
 
-// For displaying the registration form with prices
-Route::get('/self/register', [PriceController::class, 'showRegistration'])->name('self.registration');
-
+Route::get('/self/register', [PriceController::class, 'showRegistration'])
+    ->name('self.registration');
 
 // Self-registration routes
 Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
