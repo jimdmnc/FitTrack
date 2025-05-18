@@ -60,21 +60,16 @@ class PriceController extends Controller
         return view('profile.pricelist', compact('prices'));
     }
     
-
+    /**
+     * Update prices from the profile section.
+     * This is an alias to the update method to maintain route consistency.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function updatePrice(Request $request)
     {
         // Simply call the existing update method
         return $this->update($request);
     }
-
-    public function showRegistration()
-    {
-        $sessionPrice = Price::where('type', 'session')->first();
-        
-        // Debug: Dump the variable
-        dd($sessionPrice);
-        
-        return view('self.registration', compact('sessionPrice'));
-    }
-
 }
