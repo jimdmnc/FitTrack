@@ -51,8 +51,7 @@
                class="flex items-center px-3 py-2 text-sm font-medium rounded-md group/item 
                       {{ Request::routeIs('staff.paymentTracking') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} 
                       transition-all duration-200">
-                <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ plats: Today's date and time is 09:31 PM PST on Sunday, May 18, 2025.
-                      {{ Request::routeIs('staff.paymentTracking') ? 'text-white' : 'text-gray-400 group-hover/item:text-white' }}" 
+                <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ Request::routeIs('staff.paymentTracking') ? 'text-white' : 'text-gray-400 group-hover/item:text-white' }}" 
                      fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
                           d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -96,7 +95,7 @@
                 <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ Request::routeIs('staff.manageApproval') ? 'text-white' : 'text-gray-400 group-hover/item:text-white' }}" 
                      fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
+                          d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2. miedium5 0 0 0-2.5-2.5z"/>
                 </svg>
                 <span class="whitespace-nowrap" :class="{ 'opacity-0': !$store.sidebarOpen, 'opacity-100': $store.sidebarOpen }">Manage Approval</span>
                 <span id="pending-approval-badge" 
@@ -135,41 +134,41 @@
             <!-- Profile Section -->
             <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-3 py-2" :class="{ 'opacity-0': !$store.sidebarOpen, 'opacity-100': $store.sidebarOpen }">Settings</span>
 
-            <!-- Profile Dropdown -->
-            <div x-data="{ dropdownOpen: false }" class="mt-1">
+           <!-- Profile Dropdown -->
+           <div x-data="{ dropdownOpen: false }" class="mt-1">
                 <button @click="dropdownOpen = !dropdownOpen" 
                         class="group/item flex items-center w-full px-3 py-2 text-sm font-medium rounded-md 
-                               {{ request()->routeIs('profile.edit') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} 
-                               transition-all duration-200">
+                            {{ request()->routeIs('profile.edit') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} 
+                            transition-all duration-200">
                     <svg class="w-5 h-5 mr-2 flex-shrink-0 {{ request()->routeIs('profile.edit') ? 'text-white' : 'text-gray-400 group-hover/item:text-white' }}" 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                     </svg>
-                    <span class="whitespace-nowrap" :class="{ 'opacity-0': !$store.sidebarOpen, 'opacity-100': $store.sidebarOpen }">Account Settings</span>
+                    <span class="whitespace-nowrap">Account Settings</span>
                     
                     <!-- Always visible dropdown icon -->
                     <svg :class="{ 'rotate-90': dropdownOpen, 'rotate-0': !dropdownOpen }" 
-                         class="w-4 h-4 ml-auto transform transition-transform duration-200 text-gray-400 group-hover/item:text-white" 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        class="w-4 h-4 ml-auto transform transition-transform duration-200 text-gray-400 group-hover/item:text-white" 
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </button>
 
                 <div x-show="dropdownOpen" 
-                     x-transition:enter="transition ease-out duration-200" 
-                     x-transition:enter-start="opacity-0 transform -translate-y-2" 
-                     x-transition:enter-end="opacity-100 transform translate-y-0" 
-                     x-transition:leave="transition ease-in duration-150" 
-                     x-transition:leave-start="opacity-100 transform translate-y-0" 
-                     x-transition:leave-end="opacity-0 transform -translate-y-2" 
-                     class="pl-4 mt-1 space-y-1">
+                    x-transition:enter="transition ease-out duration-200" 
+                    x-transition:enter-start="opacity-0 transform -translate-y-2" 
+                    x-transition:enter-end="opacity-100 transform translate-y-0" 
+                    x-transition:leave="transition ease-in duration-150" 
+                    x-transition:leave-start="opacity-100 transform translate-y-0" 
+                    x-transition:leave-end="opacity-0 transform -translate-y-2" 
+                    class="pl-4 mt-1 space-y-1">
                     <a href="{{ route('profile.edit') }}" 
-                       class="group/item block text-sm font-medium text-gray-400 rounded-md px-3 py-2 transition-all duration-200 hover:bg-orange-700 hover:text-white">
+                    class="group/item block text-sm font-medium text-gray-400 rounded-md px-3 py-2 transition-all duration-200 hover:bg-orange-700 hover:text-white">
                         View Profile
                     </a>
                     <a href="{{ route('profile.pricelist') }}" 
-                       class="group/item block text-sm font-medium text-gray-400 rounded-md px-3 py-2 transition-all duration-200 hover:bg-orange-700 hover:text-white">
+                    class="group/item block text-sm font-medium text-gray-400 rounded-md px-3 py-2 transition-all duration-200 hover:bg-orange-700 hover:text-white">
                         Membership Pricing
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
