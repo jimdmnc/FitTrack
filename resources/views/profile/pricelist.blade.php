@@ -1,13 +1,81 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="m-6">
-    <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600 pb-2">Membership Pricing Management</h1>
-    <p class="text-gray-400">Complete the form below to update your gym membership pricing structure</p>
-</div>
-<div class="py-4 px-4 md:px-8 max-w-6xl mx-auto">
-    
+<style>
+    /* Ensure buttons are touch-friendly */
+    .btn-touch {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.75rem 1.5rem;
+    }
+    /* Adjust pricing guide cards on smaller screens */
+    @media (max-width: 640px) {
+        .pricing-guide-card {
+            padding: 0.75rem;
+        }
+        .pricing-guide-card p {
+            font-size: 0.85rem;
+        }
+    }
+    /* Responsive table styling */
+    .responsive-table th,
+    .responsive-table td {
+        padding: 0.75rem 1rem;
+    }
+    @media (max-width: 640px) {
+        .responsive-table thead {
+            display: none; /* Hide headers on mobile */
+        }
+        .responsive-table tbody tr {
+            display: block;
+            border-bottom: 1px solid #2d2d2d;
+            margin-bottom: 1rem;
+            background: linear-gradient(to bottom right, #2c2c2c, #1e1e1e);
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+        }
+        .responsive-table tbody td {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 0.5rem;
+            font-size: 0.875rem;
+            border: none;
+        }
+        .responsive-table tbody td:before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #9ca3af;
+            margin-bottom: 0.25rem;
+            font-size: 0.85rem;
+        }
+        .responsive-table tbody td .flex.items-center {
+            width: 100%;
+            justify-content: space-between;
+        }
+        .responsive-table tbody td input {
+            width: 100%;
+        }
+    }
+    @media (min-width: 641px) {
+        .responsive-table tbody tr {
+            display: table-row;
+        }
+        .responsive-table tbody td {
+            display: table-cell;
+        }
+        .responsive-table tbody td:before {
+            content: none;
+        }
+    }
+</style>
 
+<div class="m-4 sm:m-6">
+    <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600 pb-2">Membership Pricing Management</h1>
+    <p class="text-gray-400 text-sm sm:text-base">Complete the form below to update your gym membership pricing structure</p>
+</div>
+
+<div class="py-4 px-4 sm:px-6 md:px-8 max-w-6xl mx-auto">
     @if (session('success'))
         <div class="bg-green-900 border-l-4 border-green-500 text-green-200 p-4 mb-6 rounded shadow">
             {{ session('success') }}
@@ -25,10 +93,10 @@
         </div>
     @endif
 
-    <div class="bg-[#1e1e1e] rounded-lg shadow-md p-6">
+    <div class="bg-[#1e1e1e] rounded-lg shadow-md p-4 sm:p-6">
         <form method="POST" action="{{ route('profile.pricelist.update') }}">
             @csrf
-            <div class="overflow-x-auto">
+            <div class="responsive-table w-full">
                 <table class="w-full">
                     <thead class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
                         <tr class="border-b border-gray-700">
@@ -39,7 +107,7 @@
                     <tbody>
                         @foreach ($prices as $price)
                             <tr class="border-b border-gray-800">
-                                <td class="py-4 px-4">
+                                <td data-label="Membership Type" class="py-4 px-4">
                                     <div class="flex items-center">
                                         @if($price->type == 'session')
                                             <span class="mr-3 text-orange-500">
@@ -75,7 +143,7 @@
                                         <span class="font-medium capitalize text-gray-300">{{ $price->type }}</span>
                                     </div>
                                 </td>
-                                <td class="py-4 px-4">
+                                <td data-label="Amount (₱)" class="py-4 px-4">
                                     <div class="flex items-center">
                                         <span class="text-gray-400 mr-2">₱</span>
                                         <input 
@@ -84,7 +152,7 @@
                                             step="0.01" 
                                             name="prices[{{ $price->id }}]" 
                                             value="{{ $price->amount }}" 
-                                            class="bg-[#2c2c2c] border border-gray-700 rounded py-2 px-3 w-40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-200"
+                                            class="bg-[#2c2c2c] border border-gray-700 rounded py-2 px-3 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-200"
                                         >
                                     </div>
                                 </td>
@@ -95,7 +163,7 @@
             </div>
             
             <div class="mt-6 flex justify-end">
-                <button type="submit" class="bg-orange-600 hover:bg-orange-700 hover:translate-y-[-2px] text-white py-2 px-6 rounded-md font-medium transition duration-200 flex items-center shadow-md">
+                <button type="submit" class="bg-orange-600 hover:bg-orange-700 hover:translate-y-[-2px] text-white py-2 px-6 rounded-md font-medium transition duration-200 flex items-center shadow-md btn-touch">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
@@ -107,7 +175,7 @@
         <div class="mt-8 pt-6 border-t border-gray-700">
             <h2 class="text-lg font-semibold mb-4 text-gray-200">Pricing Guide</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700">
+                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
                     <div class="flex items-center mb-2">
                         <span class="text-orange-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -119,7 +187,7 @@
                     <p class="text-sm text-gray-400">For single visit or drop-in customers. This is the price for one gym session.</p>
                 </div>
                 
-                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700">
+                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
                     <div class="flex items-center mb-2">
                         <span class="text-orange-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -131,7 +199,7 @@
                     <p class="text-sm text-gray-400">Short-term access for 7 consecutive days. Ideal for visitors or trial members.</p>
                 </div>
                 
-                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700">
+                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
                     <div class="flex items-center mb-2">
                         <span class="text-orange-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -143,7 +211,7 @@
                     <p class="text-sm text-gray-400">Our most popular option. 30-day access with all standard benefits.</p>
                 </div>
                 
-                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700">
+                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
                     <div class="flex items-center mb-2">
                         <span class="text-orange-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

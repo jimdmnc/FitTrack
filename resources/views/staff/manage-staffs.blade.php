@@ -17,36 +17,66 @@
         background-color: #ff5722;
         border-radius: 20px;
     }
-    @media (max-width: 640px) {
-        .mobile-full-width {
-            width: 100%;
+    /* Adjust table and column styles for responsiveness */
+    @media (max-width: 768px) {
+        .table-responsive table {
+            min-width: 600px; /* Ensure table is scrollable with minimum width */
+        }
+        .table-responsive th,
+        .table-responsive td {
+            padding: 0.5rem;
+            font-size: 0.875rem; /* Reduce font size on mobile */
+        }
+        .table-responsive .text-center {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
         }
     }
+    /* Adjust modal padding and width on smaller screens */
+    @media (max-width: 640px) {
+        .modal-content {
+            width: 95%;
+            padding: 1rem;
+        }
+        .modal-content form {
+            padding: 1rem;
+        }
+        .modal-content .grid {
+            grid-template-columns: 1fr; /* Stack form fields on mobile */
+        }
+    }
+    /* Ensure buttons are touch-friendly */
+    .btn-touch {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0.75rem 1rem;
+    }
 </style>
-<div class="p-6">
+
+<div class="p-4 sm:p-6">
     <div class="mb-6">
-        <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Staff Management Dashboard</h2>
-        <p class="text-gray-500 text-md ml-1">Manage staff accounts and roles</p>
+        <h2 class="text-xl sm:text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Staff Management Dashboard</h2>
+        <p class="text-gray-500 text-sm sm:text-md ml-1">Manage staff accounts and roles</p>
     </div>
 
     <div id="notification" class="hidden p-4 rounded-md mb-4 flex items-center"></div>
 
     <div class="p-4">
-        <div class="flex justify-between items-center mb-4">
-            <div class="flex gap-2">
-                <select id="filterOptions" class="bg-[#212121] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-[#ff5722] focus:border-[#ff5722]">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-3 sm:space-y-0 sm:space-x-3">
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+                <select id="filterOptions" class="bg-[#212121] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-[#ff5722] focus:border-[#ff5722] w-full sm:w-auto">
                     <option value="all">All Staff</option>
                     <option value="admin">Admins</option>
                     <option value="super_admin">Super Admins</option>
                 </select>
-                <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-3 py-2 rounded-md text-sm transition-colors flex items-center">
+                <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
                     Refresh
                 </button>
             </div>
-            <button onclick="openCreateModal()" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+            <button onclick="openCreateModal()" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center btn-touch w-full sm:w-auto">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
@@ -58,11 +88,11 @@
             <table class="w-full border-collapse">
                 <thead>
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                        <th class="border-gray-700 p-3 text-left">Full Name</th>
-                        <th class="p-3 text-left">Email</th>
-                        <th class="p-3 text-left">Role</th>
-                        <th class="p-3 text-left">Created At</th>
-                        <th class="p-3 text-center">Actions</th>
+                        <th class="border-gray-700 p-3 text-left min-w-[150px]">Full Name</th>
+                        <th class="p-3 text-left min-w-[200px]">Email</th>
+                        <th class="p-3 text-left min-w-[120px]">Role</th>
+                        <th class="p-3 text-left min-w-[150px]">Created At</th>
+                        <th class="p-3 text-center min-w-[200px]">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-black" id="staffTableBody">
@@ -82,14 +112,14 @@
                             <span class="text-gray-400 text-sm">{{ $staff->created_at->format('h:i A') }}</span>
                         </td>
                         <td class="p-3 text-center">
-                            <div class="flex justify-center gap-2">
-                                <button onclick="openEditModal({{ $staff->id }})" class="bg-blue-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
+                            <div class="flex justify-center gap-2 flex-wrap">
+                                <button onclick="openEditModal({{ $staff->id }})" class="bg-blue-600 text-gray-200 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center btn-touch">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                     Edit
                                 </button>
-                                <button onclick="openDeleteModal({{ $staff->id }})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                                <button onclick="openDeleteModal({{ $staff->id }})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center btn-touch">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
@@ -119,16 +149,16 @@
 
 <!-- Create Staff Modal -->
 <div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+    <div class="bg-[#121212] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto modal-content">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-200">Create New Staff</h3>
-            <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+            <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <form id="createStaffForm" method="POST" class="bg-[#212121] p-6 rounded-lg">
+        <form id="createStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-lg">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -172,9 +202,9 @@
                 </div>
             </div>
             <div id="create_error_container" class="mt-4 hidden"></div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" onclick="closeCreateModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" id="createSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+            <div class="mt-6 flex justify-end gap-3 flex-wrap">
+                <button type="button" onclick="closeCreateModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors btn-touch">Cancel</button>
+                <button type="submit" id="createSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center btn-touch">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -187,16 +217,16 @@
 
 <!-- Edit Staff Modal -->
 <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+    <div class="bg-[#121212] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto modal-content">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-200">Edit Staff</h3>
-            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         </div>
-        <form id="editStaffForm" method="POST" class="bg-[#212121] p-6 rounded-lg">
+        <form id="editStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-lg">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -241,9 +271,9 @@
                 </div>
             </div>
             <div id="edit_error_container" class="mt-4 hidden"></div>
-            <div class="mt-6 flex justify-end gap-3">
-                <button type="button" onclick="closeEditModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" id="editSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center">
+            <div class="mt-6 flex justify-end gap-3 flex-wrap">
+                <button type="button" onclick="closeEditModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors btn-touch">Cancel</button>
+                <button type="submit" id="editSubmitBtn" class="bg-[#ff5722] text-white px-4 py-2 rounded-md hover:bg-[#e64a19] transition-colors flex items-center btn-touch">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
@@ -256,10 +286,10 @@
 
 <!-- Delete Staff Modal -->
 <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
+    <div class="bg-[#121212] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-md modal-content">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-bold text-gray-200">Delete Staff Account</h3>
-            <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+            <button type="button" onclick="closeDeleteModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -269,9 +299,9 @@
         <form id="deleteForm" method="POST">
             @csrf
             @method('DELETE')
-            <div class="flex justify-end gap-3 mt-3">
-                <button type="button" onclick="closeDeleteModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">Cancel</button>
-                <button type="submit" id="deleteSubmitBtn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center">
+            <div class="flex justify-end gap-3 mt-3 flex-wrap">
+                <button type="button" onclick="closeDeleteModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors btn-touch">Cancel</button>
+                <button type="submit" id="deleteSubmitBtn" class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors flex items-center btn-touch">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                     </svg>
@@ -388,14 +418,14 @@
                     <span class="text-gray-400 text-sm">${staff.created_at ? new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) : ''}</span>
                 </td>
                 <td class="p-3 text-center">
-                    <div class="flex justify-center gap-2">
-                        <button onclick="openEditModal(${staff.id})" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center">
+                    <div class="flex justify-center gap-2 flex-wrap">
+                        <button onclick="openEditModal(${staff.id})" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center btn-touch">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                             Edit
                         </button>
-                        <button onclick="openDeleteModal(${staff.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                        <button onclick="openDeleteModal(${staff.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center btn-touch">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                             </svg>
@@ -638,7 +668,7 @@
                 const formData = new FormData(editForm);
                 const staffId = editForm.dataset.staffId;
                 fetch('{{ route('staff.updateStaff', ':id') }}'.replace(':id', staffId), {
-                    method: 'POST', // Laravel handles @method('PUT') via _method field
+                    method: 'POST',
                     body: formData,
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
