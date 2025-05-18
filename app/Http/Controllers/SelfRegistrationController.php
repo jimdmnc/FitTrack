@@ -223,15 +223,21 @@ class SelfRegistrationController extends Controller
     public function landingProfile()
     {
         $user = auth()->user();
+        \Log::info('User: ' . json_encode($user));
 
         if ($user->session_status !== 'approved') {
+            \Log::warning('Redirecting to waiting due to session_status: ' . $user->session_status);
             return redirect()->route('self.waiting')->with('error', 'Your profile is not yet approved.');
         }
 
+        \Log::info('Querying attendance for rfid_uid: ' . $user->rfid_uid);
         $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
             ->whereNull('time_out')
             ->latest('time_in')
             ->first();
+
+        \Log::info('Attendance query result: ' . json_encode($attendance));
+        \Log::info('Comparing rfid_uid: DB user = ' . $user->rfid_uid . ', Query param = ' . $user->rfid_uid);
 
         return view('self.landingProfile', compact('user', 'attendance'));
     }
@@ -239,10 +245,8 @@ class SelfRegistrationController extends Controller
     public function logout(Request $request)
     {
         Auth::logout();
-
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect()->route('self.landing');
     }
 
@@ -257,9 +261,18 @@ class SelfRegistrationController extends Controller
                 'amount' => 'required|numeric',
             ]);
 
-            $request->session()->forget('timed_out');
-
             $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+            // Check if there's an active attendance
+            $activeAttendance = Attendance::where('rfid_uid', $request->rfid_uid)
+                ->whereNull('time_out')
+                ->first();
+
+            if ($activeAttendance) {
+                return redirect()->back()->with('error', 'Please time out before renewing your membership.');
+            }
+
+            $request->session()->forget('timed_out');
 
             $user->update([
                 'membership_type' => $request->membership_type,
@@ -280,7 +293,6 @@ class SelfRegistrationController extends Controller
             }
 
             return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
-
         } catch (\Exception $e) {
             return redirect()->back()
                 ->withInput()
@@ -290,6 +302,7 @@ class SelfRegistrationController extends Controller
 
     public function timeout(Request $request)
     {
+        \Log::info('Timeout request received for rfid_uid: ' . $request->rfid_uid);
         $request->validate(['rfid_uid' => 'required|string']);
 
         $attendance = Attendance::where('rfid_uid', $request->rfid_uid)
@@ -298,13 +311,20 @@ class SelfRegistrationController extends Controller
             ->first();
 
         if ($attendance) {
+            \Log::info('Updating attendance record: ' . json_encode($attendance));
             $attendance->update([
                 'time_out' => now(),
                 'status' => 'completed',
             ]);
+            \Log::info('Attendance updated with time_out: ' . now());
+
+            // Set session flag for UI
+            $request->session()->put('timed_out', true);
+
             return response()->json(['success' => true]);
         }
 
+        \Log::warning('No active session found for rfid_uid: ' . $request->rfid_uid);
         return response()->json(['success' => false, 'message' => 'No active session found']);
     }
 }
