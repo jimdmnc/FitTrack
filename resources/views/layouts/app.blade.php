@@ -10,130 +10,139 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+
+    <!-- Custom Favicon -->
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
+    
+
+    <!-- Tailwind CSS -->
     @vite('resources/css/app.css')
+
+    <!-- Alpine.js for interactions -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Chart.js for graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 </head>
 <style>
-    ::-webkit-scrollbar {
-        width: 2px;
-        height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: rgba(52, 52, 52, 0.8);
-        border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: rgb(255, 81, 0);
-        border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: rgba(255, 153, 45, 0.8);
-    }
-
-    /* Custom styles for sidebar hover */
-    #sidebar {
-        width: 4rem; /* Default width: 64px */
-        transition: width 0.3s ease-in-out;
-    }
-    #sidebar:hover {
-        width: 16rem; /* Expanded width: 256px */
-    }
-    #main-content {
-        margin-left: 4rem; /* Default margin to account for collapsed sidebar */
-        transition: margin-left 0.3s ease-in-out;
-    }
-    #sidebar:hover ~ #main-content {
-        margin-left: 16rem; /* Shift main content when sidebar is hovered */
-    }
-    @media (max-width: 767px) {
-        #sidebar {
-            width: 0;
+       /* Scrollbar styles */
+       ::-webkit-scrollbar {
+            width: 2px;
+            height: 8px;
         }
-        #sidebar.mobile-open {
-            width: 16rem;
+        ::-webkit-scrollbar-track {
+            background: rgba(52, 52, 52, 0.8);
+            border-radius: 10px;
         }
-        #main-content {
-            margin-left: 0;
+        ::-webkit-scrollbar-thumb {
+            background: rgb(255, 81, 0);
+            border-radius: 10px;
         }
-        #sidebar:hover ~ #main-content {
-            margin-left: 0;
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 153, 45, 0.8);
         }
-    }
 </style>
-<body class="font-sans bg-[#121212] overflow-x-hidden">
-    <div x-data="{ sidebarOpen: false }" 
-         x-init="() => {
-             Alpine.store('sidebarOpen', false);
-             $watch('$store.sidebarOpen', value => {
-                 sidebarOpen = value;
-                 if (window.innerWidth < 768) {
-                     document.getElementById('sidebar').classList.toggle('mobile-open', value);
-                 }
-             });
-         }" class="flex flex-col md:flex-row min-h-screen">
-        <!-- Sidebar -->
-        <div id="sidebar" 
-            class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-all duration-300 ease-in-out"
-            :class="{'translate-x-0 w-64': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen, 'md:translate-x-0': true}">
-            @include('components.sidebar')
-        </div>
-
-        <!-- Mobile overlay -->
-        <div id="sidebar-overlay" 
-            class="fixed inset-0 bg-black opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
-            :class="{'block': $store.sidebarOpen, 'hidden': !$store.sidebarOpen}"
-            @click="$store.sidebarOpen = false"></div>
-
-        <!-- Main Content -->
-        <div id="main-content" 
-             class="w-full will-change-transform">
-            <div class="sticky top-0 z-10 bg-[#121212]">
-                @include('layouts.navigation')
-            </div>
-            <div class="px-4 md:px-10 pb-20 md:pb-10">
-                @yield('content')
-            </div>
-        </div>
+<body class="font-sans bg-[#121212] overflow-x-hidden" x-data="{ sidebarOpen: window.innerWidth >= 768 }" x-init="() => {
+    // Initialize sidebar state based on screen size
+    window.addEventListener('resize', () => {
+        sidebarOpen = window.innerWidth >= 768;
+    });
+}">
+    
+<div class="flex flex-col md:flex-row min-h-screen w-full">
+    <!-- Sidebar -->
+    <div id="sidebar" 
+         class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out overflow-y-auto"
+         :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
+        @include('components.sidebar')
     </div>
 
+    <!-- Mobile overlay -->
+    <div id="sidebar-overlay" 
+         class="fixed inset-0 bg-black opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
+         :class="{'block': sidebarOpen, 'hidden': !sidebarOpen}"
+         @click="sidebarOpen = false"></div>
+
+    <!-- Main Content -->
+    <div id="main-content" 
+         class="w-full transition-all duration-300"
+         :class="{'md:ml-64': sidebarOpen, 'ml-0': !sidebarOpen}">
+        <div class="sticky top-0 z-10 bg-[#121212]">
+            @include('layouts.navigation')
+        </div>
+        <div class="px-4 md:px-10 pb-20 md:pb-10">
+            @yield('content')
+        </div>
+    </div>
+</div>
+
 <script>
-    // Add event listener for window resize to close mobile sidebar if screen becomes larger
-    window.addEventListener('resize', function() {
-        if (window.innerWidth >= 768) {
-            Alpine.store('sidebarOpen', false);
-        }
-    });
-    
-    document.addEventListener('DOMContentLoaded', function() {
-        // Watch for Alpine sidebar toggle
-        if (window.Alpine) {
-            Alpine.effect(() => {
-                const sidebarOpen = Alpine.store('sidebarOpen');
-                const sidebar = document.getElementById('sidebar');
-                const sidebarTextElements = document.querySelectorAll('[id^="nav-text-"], [id^="nav-section-"], #sidebar-text, #pending-approval-badge, #dropdown-menu');
-                
-                // On mobile devices
-                if (window.innerWidth < 768) {
-                    // Show text when sidebar is open
-                    if (sidebarOpen) {
-                        setTimeout(() => {
-                            sidebarTextElements.forEach(el => {
-                                if (el) el.style.opacity = '1';
-                            });
-                        }, 150);
-                    } else {
-                        // Hide text when sidebar is closed
-                        sidebarTextElements.forEach(el => {
-                            if (el) el.style.opacity = '0';
-                        });
-                    }
-                }
-            });
-        }
-    });
+document.addEventListener("DOMContentLoaded", function () {
+    const line1 = document.getElementById('line1');
+    const line2 = document.getElementById('line2');
+    const line3 = document.getElementById('line3');
+    const hamburger = document.getElementById('hamburger');
+
+    if (line1 && line2 && line3 && hamburger) {
+        // Initial line positions
+        line1.style.transform = 'translateY(-8px)';
+        line3.style.transform = 'translateY(8px)';
+
+        hamburger.addEventListener('click', function (e) {
+            // Toggle sidebar state
+            const alpineComponent = Alpine.$data(document.body);
+            alpineComponent.sidebarOpen = !alpineComponent.sidebarOpen;
+            
+            // Animate hamburger
+            if (alpineComponent.sidebarOpen) {
+                line1.style.transform = 'translateY(0) rotate(45deg)';
+                line2.style.opacity = '0';
+                line3.style.transform = 'translateY(0) rotate(-45deg)';
+            } else {
+                line1.style.transform = 'translateY(-8px) rotate(0)';
+                line2.style.opacity = '1';
+                line3.style.transform = 'translateY(8px) rotate(0)';
+            }
+
+            // Ripple effect
+            const circle = document.createElement('span');
+            const diameter = Math.max(hamburger.clientWidth, hamburger.clientHeight);
+            const radius = diameter / 2;
+
+            circle.style.width = circle.style.height = `${diameter}px`;
+            circle.style.left = `${e.clientX - hamburger.getBoundingClientRect().left - radius}px`;
+            circle.style.top = `${e.clientY - hamburger.getBoundingClientRect().top - radius}px`;
+            circle.classList.add('ripple');
+
+            const ripple = hamburger.getElementsByClassName('ripple')[0];
+            if (ripple) ripple.remove();
+
+            hamburger.appendChild(circle);
+        });
+
+        // Hover effects
+        hamburger.addEventListener('mouseenter', function () {
+            const isOpen = Alpine.$data(document.body).sidebarOpen;
+            if (!isOpen) {
+                line1.style.transform = 'translateY(-6px)';
+                line3.style.transform = 'translateY(6px)';
+            }
+        });
+
+        hamburger.addEventListener('mouseleave', function () {
+            const isOpen = Alpine.$data(document.body).sidebarOpen;
+            if (!isOpen) {
+                line1.style.transform = 'translateY(-8px)';
+                line3.style.transform = 'translateY(8px)';
+            }
+        });
+    }
+});
 </script>
+
 </body>
 </html>
