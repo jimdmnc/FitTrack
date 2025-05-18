@@ -69,11 +69,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m2.5-5.5h-11a2.5 2.5 0 0 0-2.5 2.5v11a2.5 2.5 0 0 0 2.5 2.5h11a2.5 2.5 0 0 0 2.5-2.5v-11a2.5 2.5 0 0 0-2.5-2.5z"/>
                 </svg>
                 Manage Approval
-                @if($pendingApprovalCount > 0)
-                    <span class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-                        {{ $pendingApprovalCount }}
-                    </span>
-                @endif
+                <span id="pending-approval-badge" class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-600 rounded-full {{ $pendingApprovalCount > 0 ? '' : 'hidden' }}">
+                    {{ $pendingApprovalCount }}
+                </span>
             </a>
 
      
@@ -137,3 +135,38 @@
         </nav>
     </div>
 </div>
+<script>
+    function initPendingApprovalCount() {
+        const badge = document.getElementById('pending-approval-badge');
+        if (!badge) return;
+
+        async function fetchPendingApprovalCount() {
+            try {
+                const response = await fetch('{{ route('staff.pendingApprovalCount') }}', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+
+                if (data.success) {
+                    badge.textContent = data.count;
+                    badge.classList.toggle('hidden', data.count === 0);
+                } else {
+                    console.error('Failed to fetch pending approval count:', data.message);
+                }
+            } catch (error) {
+                console.error('Error fetching pending approval count:', error);
+            }
+        }
+
+        // Fetch immediately and every 30 seconds
+        fetchPendingApprovalCount();
+        setInterval(fetchPendingApprovalCount, 30000);
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', initPendingApprovalCount);
+</script>

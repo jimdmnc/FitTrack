@@ -11,28 +11,43 @@ use App\Models\Payment; // Add this if not already imported
 class StaffApprovalController extends Controller
 {
    // Show pending users
-public function index()
-{
-    // Retrieve users with session_status 'pending', needs_approval true, 
-    // and either 'user' or 'userSession' role
-    $pendingUsers = User::where('session_status', 'pending')
-        ->where('needs_approval', true)
-        ->where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
-        })
-        ->with(['payment' => function ($query) {
-            $query->latest(); // Get the latest payment
-        }])
-        ->get();
+    public function index()
+    {
+        // Retrieve users with session_status 'pending', needs_approval true, 
+        // and either 'user' or 'userSession' role
+        $pendingUsers = User::where('session_status', 'pending')
+            ->where('needs_approval', true)
+            ->where(function($query) {
+                $query->where('role', 'user')
+                    ->orWhere('role', 'userSession');
+            })
+            ->with(['payment' => function ($query) {
+                $query->latest(); // Get the latest payment
+            }])
+            ->get();
 
-    // Get the count of pending approvals
-    $pendingApprovalCount = $pendingUsers->count();
+        // Get the count of pending approvals
+        $pendingApprovalCount = $pendingUsers->count();
+        
+        // Pass the data to the view
+        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+    }
+
+    public function getPendingApprovalCount()
+    {
+        try {
+            // Assuming pending approvals are users with needs_approval = 1
+            $count = User::where('needs_approval', true)->count();
+            // Alternatively, if using MembersPayment or another table:
+            // $count = MembersPayment::where('status', 'pending')->count();
+
+            return response()->json(['success' => true, 'count' => $count]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching pending approval count: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Failed to fetch count'], 500);
+        }
+    }
     
-    // Pass the data to the view
-    return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
-}
-
     // Approve New User Registration
     public function approveUser($id)
     {
