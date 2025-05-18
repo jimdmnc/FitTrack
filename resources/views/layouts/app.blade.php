@@ -33,70 +33,51 @@
         background: rgba(255, 153, 45, 0.8);
     }
 
-    /* Custom styles for sidebar */
+    /* Custom styles for sidebar hover */
     #sidebar {
-        width: 16rem; /* Default width: 256px */
-        transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+        width: 4rem; /* Default width: 64px */
+        transition: width 0.3s ease-in-out;
+    }
+    #sidebar:hover {
+        width: 16rem; /* Expanded width: 256px */
     }
     #main-content {
-        margin-left: 16rem; /* Default margin to account for open sidebar */
+        margin-left: 4rem; /* Default margin to account for collapsed sidebar */
         transition: margin-left 0.3s ease-in-out;
     }
-    #sidebar.collapsed {
-        width: 4rem; /* Collapsed width: 64px */
-    }
-    #sidebar.collapsed ~ #main-content {
-        margin-left: 4rem;
-    }
-    #sidebar.collapsed .flex.items-center {
-        justify-content: center;
-    }
-    #sidebar.collapsed a.flex.items-center {
-        justify-content: center;
-    }
-    #sidebar.collapsed button.flex.items-center {
-        justify-content: center;
+    #sidebar:hover ~ #main-content {
+        margin-left: 16rem; /* Shift main content when sidebar is hovered */
     }
     @media (max-width: 767px) {
         #sidebar {
-            width: 16rem;
-            transform: translateX(-100%);
+            width: 0;
         }
         #sidebar.mobile-open {
-            transform: translateX(0);
+            width: 16rem;
         }
         #main-content {
             margin-left: 0;
         }
-        #sidebar.collapsed {
-            width: 0;
-            transform: translateX(-100%);
-        }
-        #sidebar.collapsed ~ #main-content {
+        #sidebar:hover ~ #main-content {
             margin-left: 0;
-        }
-        #sidebar.mobile-open .sidebar-text {
-            display: block;
         }
     }
 </style>
 <body class="font-sans bg-[#121212] overflow-x-hidden">
-    <div x-data="{ sidebarOpen: true }" 
+    <div x-data="{ sidebarOpen: false }" 
          x-init="() => {
-             Alpine.store('sidebarOpen', true);
+             Alpine.store('sidebarOpen', false);
              $watch('$store.sidebarOpen', value => {
                  sidebarOpen = value;
-                 const sidebar = document.getElementById('sidebar');
-                 sidebar.classList.toggle('collapsed', !value);
                  if (window.innerWidth < 768) {
-                     sidebar.classList.toggle('mobile-open', value);
+                     document.getElementById('sidebar').classList.toggle('mobile-open', value);
                  }
              });
          }" class="flex flex-col md:flex-row min-h-screen">
         <!-- Sidebar -->
         <div id="sidebar" 
             class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-all duration-300 ease-in-out"
-            :class="{'translate-x-0': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen, 'md:translate-x-0': true}">
+            :class="{'translate-x-0 w-64': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen, 'md:translate-x-0': true}">
             @include('components.sidebar')
         </div>
 
@@ -119,10 +100,38 @@
     </div>
 
 <script>
-    // Add event listener for window resize to handle sidebar state
+    // Add event listener for window resize to close mobile sidebar if screen becomes larger
     window.addEventListener('resize', function() {
         if (window.innerWidth >= 768) {
-            Alpine.store('sidebarOpen', true);
+            Alpine.store('sidebarOpen', false);
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Watch for Alpine sidebar toggle
+        if (window.Alpine) {
+            Alpine.effect(() => {
+                const sidebarOpen = Alpine.store('sidebarOpen');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarTextElements = document.querySelectorAll('[id^="nav-text-"], [id^="nav-section-"], #sidebar-text, #pending-approval-badge, #dropdown-menu');
+                
+                // On mobile devices
+                if (window.innerWidth < 768) {
+                    // Show text when sidebar is open
+                    if (sidebarOpen) {
+                        setTimeout(() => {
+                            sidebarTextElements.forEach(el => {
+                                if (el) el.style.opacity = '1';
+                            });
+                        }, 150);
+                    } else {
+                        // Hide text when sidebar is closed
+                        sidebarTextElements.forEach(el => {
+                            if (el) el.style.opacity = '0';
+                        });
+                    }
+                }
+            });
         }
     });
 </script>
