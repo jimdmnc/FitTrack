@@ -29,7 +29,7 @@ Route::get('/landing', function () {
 
 
 
-Route::get('/session-registration', [PriceController::class, 'showRegistration'])
+Route::get('/self/register', [PriceController::class, 'showRegistration'])
     ->name('self.registration');
 
 // Self-registration routes

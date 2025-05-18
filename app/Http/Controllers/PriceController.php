@@ -75,12 +75,12 @@ class PriceController extends Controller
 
     public function showRegistration()
     {
-        // Fetch the price where type = 'session'
-        $sessionPrice = Price::where('type', 'session')->first();
+        // Get the session price (or fail if not found)
+        $sessionPrice = Price::where('type', 'session')->firstOrFail();
         
-        // Pass it to the view (registration.blade.php)
-        return view('self.registration', compact('sessionPrice'));
+        return view('self.registration', [
+            'sessionPrice' => $sessionPrice
+        ]);
     }
-
 
 }
