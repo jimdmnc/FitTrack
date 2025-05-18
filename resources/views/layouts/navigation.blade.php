@@ -25,7 +25,7 @@
                     <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
             </span>
-            <span idcdd="time-text">Loading time...</span>
+            <span id="time-text">Loading time...</span>
         </div>
 
         <!-- Right Section: Notifications -->

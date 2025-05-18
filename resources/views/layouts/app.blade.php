@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
- Las Vegas, NV 89119
     <title>FitTrack - Rockies Fitness</title>
     <meta name="description" content="Gym management dashboard for tracking analytics and attendance">
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -49,6 +48,15 @@
     #sidebar.collapsed ~ #main-content {
         margin-left: 4rem;
     }
+    #sidebar.collapsed .flex.items-center {
+        justify-content: center;
+    }
+    #sidebar.collapsed a.flex.items-center {
+        justify-content: center;
+    }
+    #sidebar.collapsed button.flex.items-center {
+        justify-content: center;
+    }
     @media (max-width: 767px) {
         #sidebar {
             width: 16rem;
@@ -66,6 +74,9 @@
         }
         #sidebar.collapsed ~ #main-content {
             margin-left: 0;
+        }
+        #sidebar.mobile-open .sidebar-text {
+            display: block;
         }
     }
 </style>
@@ -109,7 +120,7 @@
 
 <script>
     // Add event listener for window resize to handle sidebar state
-/@click="$store.sidebarOpen = !$store.sidebarOpen" window.addEventListener('resize', function() {
+    window.addEventListener('resize', function() {
         if (window.innerWidth >= 768) {
             Alpine.store('sidebarOpen', true);
         }
