@@ -5,7 +5,7 @@
     <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600 pb-2">Membership Pricing Management</h1>
     <p class="text-gray-400">Complete the form below to update your gym membership pricing structure</p>
 </div>
-<div class="py-4 px-4 md:px-8 max-w-5xl mx-auto">
+<div class="py-4 px-4 md:px-8 max-w-6xl mx-auto">
     
 
     @if (session('success'))
