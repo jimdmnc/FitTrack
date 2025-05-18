@@ -72,20 +72,4 @@ class PriceController extends Controller
         // Simply call the existing update method
         return $this->update($request);
     }
-
-
-    public function getPriceByType($type = null)
-    {
-        $type = $type ?? session('type');
-        $price = Price::where('type', $type)->first();
-        return $price ? $price->amount : 60.00;
-    }
-    
-    // Registration method
-    public function showRegistration()
-    {
-        $amount = $this->getPriceByType();
-        return view('self.registration', compact('amount'));
-    }
-
 }
