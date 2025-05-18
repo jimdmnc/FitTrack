@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\Models\Attendance;
+use Carbon\Carbon;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -10,10 +12,19 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      */
-    protected function schedule(Schedule $schedule): void
+    protected function schedule(Schedule $schedule)
     {
-        // Schedule the auto-checkout command to run daily at 9 PM
-        $schedule->command('attendance:auto-checkout')->dailyAt('21:00');
+        $schedule->call(function () {
+            $today = Carbon::today();
+            $autoCheckoutTime = Carbon::today()->setTime(21, 0, 0);
+
+            Attendance::whereNull('time_out')
+                ->whereDate('time_in', $today)
+                ->update([
+                    'time_out' => $autoCheckoutTime,
+                    'status' => 'completed',
+                ]);
+        })->dailyAt('21:00');
     }
 
     /**
