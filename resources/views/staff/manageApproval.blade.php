@@ -3,48 +3,42 @@
 @section('content')
 <style>
     [x-cloak] { display: none !important; }
-    <>
     /* Responsive table container */
     .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    /* Custom scrollbar for tables */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px;
+    }
+    .table-responsive::-webkit-scrollbar-track {
+        background: #2d2d2d;
+    }
+    .table-responsive::-webkit-scrollbar-thumb {
+        background-color: #ff5722;
+        border-radius: 20px;
+    }
+    /* Mobile optimizations */
+    @media (max-width: 640px) {
+        .mobile-full-width {
+            width: 100%;
+        }
+        .pagination-container {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
+            padding-bottom: 1rem;
         }
-        
-        /* Custom scrollbar for tables */
-        .table-responsive::-webkit-scrollbar {
-            height: 8px;
+        .pagination {
+            display: flex;
+            white-space: nowrap;
         }
-        .table-responsive::-webkit-scrollbar-track {
-            background: #2d2d2d;
-        }
-        .table-responsive::-webkit-scrollbar-thumb {
-            background-color: #ff5722;
-            border-radius: 20px;
-        }
-        
-        /* Mobile optimizations */
-        @media (max-width: 640px) {
-            .mobile-full-width {
-                width: 100%;
-            }
-            
-            .pagination-container {
-                overflow-x: auto;
-                padding-bottom: 1rem;
-            }
-            
-            .pagination {
-                display: flex;
-                white-space: nowrap;
-            }
-        }
+    }
 </style>
 <div class="p-6">
     <div class="mb-6">
         <h2 class="text-2xl font-bold pb-1 md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Member Approval Dashboard</h2>
         <p class="text-gray-500 text-md ml-1">Review and process new membership requests</p>
     </div>
-    
 
     @if(session('success'))
         <div class="bg-green-100 text-green-700 p-4 rounded-md mb-4 flex items-center">
@@ -62,7 +56,7 @@
         </div>
     @endif
 
-    <div class="p-4" >
+    <div class="p-4">
         <div class="flex justify-between items-center mb-4">
             <div class="flex gap-2">
                 <select id="filterOptions" class="bg-[#212121] rounded-md px-3 py-2 text-sm text-gray-200 focus:ring-[#ff5722] focus:border-[#ff5722]">
@@ -81,110 +75,31 @@
 
         <div class="overflow-x-auto table-responsive">
             <table class="w-full border-collapse">
-                <thead> 
+                <thead>
                     <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
                         <th class="border-gray-700 p-3 text-left">Full Name</th>
                         <th class="p-3 text-left">Gender</th>
-                        <th class="p-3 text-left">Membeship Type</th>
+                        <th class="p-3 text-left">Membership Type</th>
                         <th class="p-3 text-left">Payment Method</th>
                         <th class="p-3 text-left">Registration Date</th>
                         <th class="p-3 text-center">Actions</th>
-                    </tr>   
+                    </tr>
                 </thead>
-
-                <tbody class="divide-y divide-black">
-                    @forelse($pendingUsers as $user)
-                    <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                        <td class="p-3 font-medium text-gray-200">{{ $user->first_name }} {{ $user->last_name }}</td>
-                        <td class="p-3 font-medium text-gray-200">{{ ucfirst($user->gender) }}</td>
-                        <td class="p-3 font-medium text-gray-200">
-                            @if($user->membership_type == '7')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    Weekly
-                                </span>
-                            @elseif($user->membership_type == '1')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                                    Session
-                                </span>
-                            @elseif($user->membership_type == '30')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-blue-900 text-blue-200">
-                                    Monthly
-                                </span>
-                            @elseif($user->membership_type == '365')
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold  bg-purple-900 text-purple-200">
-                                    Annual
-                                </span>
-                            @else
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200">
-                                    {{ $user->membership_type ?? 'N/A' }}
-                                </span>
-                            @endif
-                        </td>
-
-                        <td class="p-3 font-medium text-gray-200">
-            @if($user->payment && $user->payment->payment_method == 'gcash')
-                <button
-                    onclick="openScreenshotModal('{{ Storage::url($user->payment->payment_screenshot) }}')"
-                    class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors"
-                >
-                    GCASH
-                </button>
-            @elseif($user->payment && $user->payment->payment_method == 'cash')
-                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">
-                    CASH
-                </span>
-            @else
-                <span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">
-                    Unknown
-                </span>
-            @endif
-        </td>
-
-                        <td class="p-3 font-medium">
-                            <span class="text-gray-200">{{ $user->updated_at->format('M d, Y') }}</span>
-                            <span class="text-gray-400 text-sm">{{ $user->updated_at->format('h:i A') }}</span>
-                        </td>
-
-                        <td class="p-3 text-center">
-                            <div class="flex justify-center gap-2">
-                                <form action="{{route('staff.approveUser', $user->id)}}" method="POST" class="inline-block">
-                                    @csrf
-                                    @method('PUT')
-                                    <button type="submit" class="bg-green-100 text-green-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                        </svg>
-                                        Approve
-                                    </button>
-                                </form>
-
-                                <button onclick="rejectUser({{ $user->id }})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Reject
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="5" class="py-10 text-center">
-                            <div class="flex flex-col items-center justify-center text-gray-400">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
-                                <p class="text-gray-300 mt-1">All membership requests have been processed</p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
+                <tbody id="pending-users-table" class="divide-y divide-black">
+                    <!-- Populated by JavaScript -->
                 </tbody>
+            </table>
+        </div>
 
+        <div id="no-users-message" class="hidden py-10 text-center">
+            <div class="flex flex-col items-center justify-center text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 class="mt-3 text-lg font-medium text-gray-200">No Pending Approvals</h3>
+                <p class="text-gray-300 mt-1">All membership requests have been processed</p>
             </div>
-
-        </table>
+        </div>
     </div>
 </div>
 
@@ -200,11 +115,9 @@
             </button>
         </div>
         <p class="text-gray-400 mb-4">Please provide a reason for rejecting this membership request. This information may be shared with the applicant.</p>
-        
         <form action="{{ route('staff.rejectUser', ['id' => 0]) }}" method="POST" id="rejectForm">
             @csrf
             <textarea name="rejection_reason" id="rejection_reason" class="w-full p-3 border border-gray-300 rounded-md focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#212121] text-gray-200 placeholder-gray-400" rows="4" placeholder="Example: Incomplete information provided"></textarea>
-
             <div class="flex justify-end gap-3 mt-3">
                 <button type="button" onclick="closeModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
                     Cancel
@@ -220,11 +133,9 @@
     </div>
 </div>
 
-
 <!-- Modal for Viewing Payment Screenshot -->
 <div id="screenshotModal" class="absolute inset-0 flex items-center justify-center hidden z-50">
     <div class="bg-gray-800 rounded-lg p-4 w-full max-w-sm mx-4">
-        <!-- Modal Header -->
         <div class="flex h-[50px] justify-between items-center mb-3">
             <h3 class="text-sm font-semibold text-gray-200">Payment Screenshot</h3>
             <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
@@ -233,30 +144,21 @@
                 </svg>
             </button>
         </div>
-
-        <!-- Image Container -->
         <div class="flex justify-center">
             <div class="max-w-[320px] max-h-[220px] w-full h-sm overflow-hidden rounded-md bg-gray-700">
-                <img id="screenshotImage" src="" alt="Payment Screenshot"
-                     class="w-full h-md object-contain rounded-md" />
+                <img id="screenshotImage" src="" alt="Payment Screenshot" class="w-full h-md object-contain rounded-md" />
             </div>
         </div>
-
-        <!-- Modal Footer -->
         <div class="mt-3 flex justify-center">
-            <button onclick="closeScreenshotModal()"
-                    class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm">
+            <button onclick="closeScreenshotModal()" class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm">
                 Close
             </button>
         </div>
     </div>
 </div>
 
-
-
-
 <script>
-        function openScreenshotModal(imageUrl) {
+    function openScreenshotModal(imageUrl) {
         const modal = document.getElementById('screenshotModal');
         const image = document.getElementById('screenshotImage');
         image.src = imageUrl;
@@ -268,48 +170,133 @@
         modal.classList.add('hidden');
         document.getElementById('screenshotImage').src = '';
     }
+
     function closeModal() {
         document.getElementById('rejectModal').classList.add('hidden');
         document.body.classList.remove('overflow-hidden');
     }
 
     function rejectUser(id) {
-        // Get the form and update its action URL
         const form = document.getElementById('rejectForm');
-        
-        // Get the original action URL which has a placeholder ID of 0
         let actionUrl = form.getAttribute('action');
-        
-        // Replace the placeholder ID with the actual ID
         actionUrl = actionUrl.replace('/0', '/' + id);
-        
-        // Update the form's action attribute
         form.setAttribute('action', actionUrl);
-        
-        // Show the modal
         document.getElementById('rejectModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-        
         console.log('Form will submit to:', form.action);
     }
-    // Wrap the event listeners in a DOMContentLoaded to ensure elements exist
-    document.addEventListener('DOMContentLoaded', function() {
-        // Filter options change - check if element exists first
+
+    function initPendingUsersTable() {
+        const tableBody = document.getElementById('pending-users-table');
+        const noUsersMessage = document.getElementById('no-users-message');
         const filterOptions = document.getElementById('filterOptions');
-        if (filterOptions) {
-            filterOptions.addEventListener('change', function() {
-                console.log("Filter changed:", this.value);
-                // Would typically trigger an AJAX request here
-            });
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        async function fetchPendingUsers(filter = 'all') {
+            try {
+                const response = await fetch('{{ route('staff.pendingUsers') }}?filter=' + filter, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+
+                if (data.success) {
+                    tableBody.innerHTML = '';
+                    noUsersMessage.classList.add('hidden');
+
+                    if (data.users.length === 0) {
+                        noUsersMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    data.users.forEach(user => {
+                        const membershipLabels = {
+                            '7': { text: 'Weekly', class: 'bg-green-900 text-green-200' },
+                            '1': { text: 'Session', class: 'bg-yellow-900 text-yellow-200' },
+                            '30': { text: 'Monthly', class: 'bg-blue-900 text-blue-200' },
+                            '365': { text: 'Annual', class: 'bg-purple-900 text-purple-200' }
+                        };
+                        const membership = membershipLabels[user.membership_type] || { 
+                            text: user.membership_type || 'N/A', 
+                            class: 'bg-green-900 text-green-200' 
+                        };
+
+                        const paymentMethod = user.payment_method === 'gcash' 
+                            ? `<button onclick="openScreenshotModal('${user.payment_screenshot}')" class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors">GCASH</button>`
+                            : user.payment_method === 'cash'
+                            ? `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">CASH</span>`
+                            : `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">Unknown</span>`;
+
+                        const row = `
+                            <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                                <td class="p-3 font-medium text-gray-200">${user.first_name} ${user.last_name}</td>
+                                <td class="p-3 font-medium text-gray-200">${user.gender}</td>
+                                <td class="p-3 font-medium text-gray-200">
+                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${membership.class}">
+                                        ${membership.text}
+                                    </span>
+                                </td>
+                                <td class="p-3 font-medium text-gray-200">${paymentMethod}</td>
+                                <td class="p-3 font-medium">
+                                    <span class="text-gray-200">${user.updated_at.date}</span>
+                                    <span class="text-gray-400 text-sm">${user.updated_at.time}</span>
+                                </td>
+                                <td class="p-3 text-center">
+                                    <div class="flex justify-center gap-2">
+                                        <form action="${user.approve_url}" method="POST" class="inline-block">
+                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                            <input type="hidden" name="_method" value="PUT">
+                                            <button type="submit" class="bg-green-100 text-green-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                                </svg>
+                                                Approve
+                                            </button>
+                                        </form>
+                                        <button onclick="rejectUser(${user.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Reject
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.insertAdjacentHTML('beforeend', row);
+                    });
+                } else {
+                    console.error('Failed to fetch pending users:', data.message);
+                    showNotification('Error', data.message || 'Failed to load pending users.', 'error');
+                }
+            } catch (error) {
+                console.error('Error fetching pending users:', error);
+                showNotification('Error', 'Failed to load pending users.', 'error');
+            }
         }
 
-        // Refresh button click - check if element exists first
-        const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', function() {
-                location.reload();
-            });
-        }
+        // Fetch on page load
+        fetchPendingUsers(filterOptions.value);
+
+        // Filter change
+        filterOptions.addEventListener('change', function() {
+            fetchPendingUsers(this.value);
+        });
+
+        // Refresh button
+        refreshBtn.addEventListener('click', function() {
+            fetchPendingUsers(filterOptions.value);
+        });
+
+        // Poll every 30 seconds
+        setInterval(() => fetchPendingUsers(filterOptions.value), 30000);
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initPendingUsersTable();
     });
 </script>
 @endsection

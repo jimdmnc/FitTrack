@@ -6,15 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Payment; // Add this if not already imported
+use Illuminate\Support\Facades\Log;
 
 class StaffApprovalController extends Controller
 {
-   // Show pending users
+    // Show pending users (server-side rendering, kept for fallback)
     public function index()
     {
-        // Retrieve users with session_status 'pending', needs_approval true, 
-        // and either 'user' or 'userSession' role
         $pendingUsers = User::where('session_status', 'pending')
             ->where('needs_approval', true)
             ->where(function($query) {
@@ -22,25 +20,74 @@ class StaffApprovalController extends Controller
                     ->orWhere('role', 'userSession');
             })
             ->with(['payment' => function ($query) {
-                $query->latest(); // Get the latest payment
+                $query->latest();
             }])
             ->get();
 
-        // Get the count of pending approvals
         $pendingApprovalCount = $pendingUsers->count();
         
-        // Pass the data to the view
         return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+    }
+
+    // Fetch pending users for AJAX
+    public function getPendingUsers(Request $request)
+    {
+        try {
+            $query = User::where('session_status', 'pending')
+                ->where('needs_approval', true)
+                ->where(function($query) {
+                    $query->where('role', 'user')
+                        ->orWhere('role', 'userSession');
+                })
+                ->with(['payment' => function ($query) {
+                    $query->latest();
+                }]);
+
+            // Apply filters
+            $filter = $request->query('filter', 'all');
+            if ($filter === 'today') {
+                $query->whereDate('updated_at', today());
+            } elseif ($filter === 'week') {
+                $query->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            }
+
+            $pendingUsers = $query->get()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'gender' => ucfirst($user->gender),
+                    'membership_type' => $user->membership_type,
+                    'payment_method' => $user->payment ? $user->payment->payment_method : null,
+                    'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
+                        ? \Storage::url($user->payment->payment_screenshot) 
+                        : null,
+                    'updated_at' => [
+                        'date' => $user->updated_at->format('M d, Y'),
+                        'time' => $user->updated_at->format('h:i A')
+                    ],
+                    'approve_url' => route('staff.approveUser', $user->id),
+                    'reject_url' => route('staff.rejectUser', $user->id)
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'users' => $pendingUsers
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching pending users: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch pending users'
+            ], 500);
+        }
     }
 
     public function getPendingApprovalCount()
     {
         try {
-            // Assuming pending approvals are users with needs_approval = 1
             $count = User::where('needs_approval', true)->count();
-            // Alternatively, if using MembersPayment or another table:
-            // $count = MembersPayment::where('status', 'pending')->count();
-
             return response()->json(['success' => true, 'count' => $count]);
         } catch (\Exception $e) {
             Log::error('Error fetching pending approval count: ' . $e->getMessage());
@@ -48,18 +95,14 @@ class StaffApprovalController extends Controller
         }
     }
     
-    // Approve New User Registration
     public function approveUser($id)
     {
         $user = User::findOrFail($id);
-
-        // Update the user's session status to approved
         $user->member_status = 'active';
         $user->session_status = 'approved';
         $user->needs_approval = false;
         $user->save();
 
-        // Create an attendance record when the user is approved
         DB::table('attendances')->insert([
             'rfid_uid' => $user->rfid_uid,
             'time_in' => now(),
@@ -76,8 +119,7 @@ class StaffApprovalController extends Controller
 
     public function rejectUser(Request $request, $id)
     {
-        // Log the incoming request for debugging
-        \Log::info('Reject User Request', [
+        Log::info('Reject User Request', [
             'id' => $id,
             'request_data' => $request->all(),
             'method' => $request->method()
@@ -91,13 +133,11 @@ class StaffApprovalController extends Controller
 
             return redirect()->route('staff.manageApproval')->with('success', 'Membership request rejected');
         } catch (\Exception $e) {
-            \Log::error('Error rejecting user', [
+            Log::error('Error rejecting user', [
                 'id' => $id,
                 'error' => $e->getMessage()
             ]);
-            
             return redirect()->back()->with('error', 'Error rejecting user: ' . $e->getMessage());
         }
     }
-
 }

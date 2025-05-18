@@ -76,6 +76,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/manage-approval', [StaffApprovalController::class, 'index'])->name('staff.manageApproval');
         Route::put('/approve/{id}', [StaffApprovalController::class, 'approveUser'])->name('staff.approveUser');
         Route::post('/reject/{id}', [StaffApprovalController::class, 'rejectUser'])->name('staff.rejectUser');
+        Route::get('/staff/pending-users', [StaffApprovalController::class, 'getPendingUsers'])
+            ->name('staff.pendingUsers')
+            ->middleware('auth');
 
         // Debug routes
         Route::get('/debug/routes', function () {
