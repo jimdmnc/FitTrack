@@ -414,9 +414,9 @@
                         <div>
                             <h4 class="text-lg font-bold mb-4">Quick Links</h4>
                             <ul class="space-y-2">
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
-                                <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
+                                <li><a href="#home" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
+                                <li><a href="#tutorial" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
+                                <li><a href="#inhere" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
                             </ul>
                         </div>
                         
@@ -447,12 +447,7 @@
 
 
 <script>
-        /**
-     * Main application JavaScript
-     * Organized by functionality
-     */
-
-    // Wait for DOM to be fully loaded
+    
     document.addEventListener('DOMContentLoaded', function() {
         // Initialize all components
         initNavigation();

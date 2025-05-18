@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Attendance;
 use App\Models\Price;
+use Illuminate\Support\Facades\Log;
 
 class SelfRegistrationController extends Controller
 {
@@ -283,7 +284,12 @@ class SelfRegistrationController extends Controller
                     'check_in_method' => 'auto',
                 ]);
             }
-
+            
+            // Fetch session price
+            $sessionPrice = Price::where('type', 'session')->first();
+            if (!$sessionPrice) {
+                throw new \Exception('Session price not configured.');
+            }
             $currentTime = Carbon::now();
             $autoCheckoutTime = Carbon::today()->setTime(21, 0, 0);
 
@@ -296,7 +302,9 @@ class SelfRegistrationController extends Controller
         return view('self.landingProfile', [
             'attendance' => $attendance,
             'timedOut' => $timedOut,
+            'sessionPrice' => $sessionPrice,
         ]);
+
     }
 
     public function logout(Request $request)
@@ -309,51 +317,70 @@ class SelfRegistrationController extends Controller
 
     public function renew(Request $request)
     {
+        Log::info('Renew Request:', $request->all());
+
         try {
-            $request->validate([
-                'rfid_uid' => 'required|string',
-                'membership_type' => 'required|string|in:1',
+            $validated = $request->validate([
+                'rfid_uid' => 'required|string|exists:users,rfid_uid',
+                'membership_type' => 'required|string|in:session', // Updated to accept 'session'
                 'start_date' => 'required|date',
-                'end_date' => 'required|date',
-                'amount' => 'required|numeric',
+                'end_date' => 'required|date|after_or_equal:start_date',
+                'amount' => 'required|numeric|min:0',
             ]);
 
-            $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+            $user = User::where('rfid_uid', $validated['rfid_uid'])->firstOrFail();
 
-            // Check if there's an active attendance
-            $activeAttendance = Attendance::where('rfid_uid', $request->rfid_uid)
+            // Check active attendance
+            $activeAttendance = Attendance::where('rfid_uid', $validated['rfid_uid'])
                 ->whereNull('time_out')
                 ->first();
 
             if ($activeAttendance) {
-                return redirect()->back()->with('error', 'Please time out before renewing your membership.');
+                $message = 'Please time out before renewing your membership.';
+                return $request->ajax()
+                    ? response()->json(['success' => false, 'message' => $message], 422)
+                    : redirect()->back()->with('error', $message);
             }
 
             $request->session()->forget('timed_out');
 
+            DB::beginTransaction();
             $user->update([
-                'membership_type' => $request->membership_type,
-                'start_date' => $request->start_date,
-                'end_date' => $request->end_date,
+                'membership_type' => $validated['membership_type'],
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
                 'session_status' => 'pending',
                 'needs_approval' => true,
             ]);
 
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
-                'amount' => $request->amount,
+                'amount' => $validated['amount'],
                 'payment_date' => now(),
             ]);
+
+            DB::commit();
 
             if (!Auth::check()) {
                 Auth::login($user);
             }
 
-            return redirect()->route('self.waiting')->with('success', 'Your membership renewal has been submitted for approval.');
+            $message = 'Your membership renewal has been submitted for approval.';
+            return $request->ajax()
+                ? response()->json(['success' => true, 'message' => $message])
+                : redirect()->route('self.waiting')->with('success', $message);
+        } catch (ValidationException $e) {
+            Log::warning('Validation failed for renew request:', ['errors' => $e->errors()]);
+            return $request->ajax()
+                ? response()->json(['success' => false, 'errors' => $e->errors()], 422)
+                : redirect()->back()->withErrors($e->errors())->withInput();
         } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Renewal failed: ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('Renewal error: ' . $e->getMessage(), ['exception' => $e]);
+            $message = 'Renewal failed: ' . $e->getMessage();
+            return $request->ajax()
+                ? response()->json(['success' => false, 'message' => $message], 500)
+                : redirect()->back()->with('error', $message)->withInput();
         }
     }
 

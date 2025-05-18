@@ -312,7 +312,7 @@
                             @csrf
                             <button type="submit"
                                 class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-door-open mr-1"></i> Logout
+                                <i class="fas fa-door-open mr-1"></i> Sign Out
                             </button>
                         </form>
                     </div>
@@ -360,7 +360,7 @@
                     <div class="grid grid-cols-2 gap-4 mt-6">
                         <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew Membership
+                            <i class="fas fa-sync-alt mr-2"></i> Renew
                         </button>
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
@@ -575,9 +575,7 @@
                                     <p class="text-gray-200 text-center font-semibold text-sm md:text-base">Dan gained strength and defined muscle in just 8 months</p>
                                 </div>
                             </div>
-                            <div class="min гражда
-
--w-full relative">
+                            <div class="min-w-full relative">
                                 <img src="{{ asset('images/welcomebggg.jpg') }}" class="absolute inset-0 w-full h-full object-cover" alt="State-of-the-art gym equipment">
                                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
                                     <p class="text-gray-200 text-center font-semibold text-sm md:text-base">Our state-of-the-art weight training section</p>
@@ -767,61 +765,51 @@
 
         <!-- Session Renewal Modal -->
         <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
-            <div class="bg-[#1e1e1e] p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+            <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
                 <div class="mb-6 text-center">
-                    <h2 class="text-2xl font-bold text-white">Membership Renewal</h2>
-                    <p class="text-gray-400 mt-1">Please confirm your session membership details</p>
+                    <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
+                    <p class="text-gray-400 mt-1">Confirm your session membership details</p>
                 </div>
                 <div class="border-b border-gray-700 mb-6"></div>
                 <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
                     @csrf
-                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                    <input type="hidden" name="membership_type" value="session">
-                    <input type="hidden" name="start_date" value="{{ now()->toDateString() }}">
-                    <input type="hidden" name="end_date" value="{{ now()->addMonth()->toDateString() }}">
-                    <input type="hidden" name="amount" value="60">
+                    <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                    <input type="hidden" name="membership_type" id="membership_type" value="session">
+                    <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
+                    <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
+                    <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
+
+                    <!-- Summary -->
                     <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
                         <div class="space-y-3">
                             <div class="flex items-center">
-                                <div class="w-1/3">
-                                    <span class="text-gray-400 text-sm">RFID UID</span>
-                                </div>
-                                <div class="w-2/3">
-                                    <span class="font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
-                                </div>
+                                <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                                <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-1/3">
-                                    <span class="text-gray-400 text-sm">Type</span>
-                                </div>
-                                <div class="w-2/3">
-                                    <span class="font-medium text-white">Session</span>
-                                </div>
+                                <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                                <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-1/3">
-                                    <span class="text-gray-400 text-sm">Period</span>
-                                </div>
-                                <div class="w-2/3">
-                                    <span class="font-medium text-white">{{ now()->format('M d, Y') }} - {{ now()->addMonth()->format('M d, Y') }}</span>
-                                </div>
+                                <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                                <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
                             </div>
                             <div class="flex items-center">
-                                <div class="w-1/3">
-                                    <span class="text-gray-400 text-sm">Amount</span>
-                                </div>
-                                <div class="w-2/3">
-                                    <span class="font-medium text-white text-lg">₱60.00</span>
-                                </div>
+                                <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                                <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
                             </div>
                         </div>
+                        <!-- Validation Errors -->
+                        <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
                     </div>
-                    <div class="flex space-x-4 mt-8">
+
+                    <!-- Buttons -->
+                    <div class="flex space-x-4">
                         <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
                             Cancel
                         </button>
-                        <button type="submit" class="w-1/2 py-3 bg-[#FF5722] hover:bg-[#e64a19] text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
-                            <span>Confirm Payment</span>
+                        <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                            Confirm Payment
                         </button>
                     </div>
                 </form>
@@ -838,11 +826,59 @@
                 initPhoneAnimation();
                 initTimeoutHandling();
                 initModals();
+                initRenewModal();
                 initAttendanceCheck();
                 @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                     initWorkoutTimer();
                 @endif
             });
+
+            function initRenewModal() {
+                const renewForm = document.getElementById('renewForm');
+                const confirmButton = document.getElementById('confirm_button');
+
+                if (renewForm) {
+                    renewForm.addEventListener('submit', async function(e) {
+                        e.preventDefault();
+                        confirmButton.disabled = true;
+                        confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+
+                        const formData = new FormData(renewForm);
+                        
+                        try {
+                            const response = await fetch(renewForm.action, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                }
+                            });
+                            
+                            if (!response.ok) {
+                                const data = await response.json();
+                                throw new Error(data.message || 'Failed to renew membership');
+                            }
+                            
+                            const data = await response.json();
+
+                            if (data.success) {
+                                closeRenewModal();
+                                showNotification('Success', 'Membership renewed successfully!', 'success');
+                                setTimeout(() => window.location.href = data.redirect || window.location.href, 2000);
+                            } else {
+                                throw new Error(data.message || 'Renewal failed');
+                            }
+                        } catch (error) {
+                            console.error('Error renewing membership:', error);
+                            showNotification('Error', error.message || 'Failed to renew membership. Please try again.', 'error');
+                        } finally {
+                            confirmButton.disabled = false;
+                            confirmButton.innerHTML = 'Confirm Payment';
+                        }
+                    });
+                }
+            }
 
             function initAttendanceCheck() {
                 let retryCount = 0;
@@ -1154,13 +1190,35 @@
             }
 
             function checkRenewalEligibility() {
-                @if(isset($attendance) && !$attendance->time_out)
-                    showNotification('Error', 'You must time out before renewing your membership.', 'error');
-                    return false;
-                @else
+                // First check if user is timed out
+                const isTimedOut = document.body.dataset.timedOut === 'true';
+                
+                if (isTimedOut) {
                     openRenewModal();
                     return true;
-                @endif
+                }
+                
+                // Check for active attendance
+                fetch('/self/check-attendance-status', {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.attendance && !data.attendance.time_out && !data.timedOut) {
+                        showNotification('Error', 'You must time out before renewing your membership.', 'error');
+                    } else {
+                        openRenewModal();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking attendance:', error);
+                    showNotification('Error', 'Unable to check attendance status. Please try again.', 'error');
+                });
+                
+                return false;
             }
 
             function initPhoneAnimation() {
