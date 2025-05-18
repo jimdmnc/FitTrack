@@ -249,14 +249,14 @@
                                         <form action="${user.approve_url}" method="POST" class="inline-block">
                                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                             <input type="hidden" name="_method" value="PUT">
-                                            <button type="submit" class="bg-green-100 text-green-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
+                                            <button type="submit" class="bg-green-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                                 </svg>
                                                 Approve
                                             </button>
                                         </form>
-                                        <button onclick="rejectUser(${user.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                                        <button onclick="rejectUser(${user.id})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
                                             </svg>
