@@ -1065,103 +1065,148 @@
                 </form>
             </div>
         </div>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-          // Create a backdrop element
+        <script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Create a backdrop element
     const backdrop = document.createElement("div");
     backdrop.style.position = "fixed";
     backdrop.style.top = "0";
     backdrop.style.left = "0";
     backdrop.style.width = "100vw";
     backdrop.style.height = "100vh";
-    backdrop.style.background = "rgba(0, 0, 0, 0.5)"; // 🔥 Semi-transparent black background
-    backdrop.style.zIndex = "40"; // Behind the chart
+    backdrop.style.background = "rgba(0, 0, 0, 0.7)"; // Darker backdrop for better contrast
+    backdrop.style.zIndex = "999"; // Behind the chart modal
     backdrop.style.display = "none"; // Initially hidden
     document.body.appendChild(backdrop);
 
-        function toggleExpand(button, container, card, chart) {
-            card.classList.toggle("expanded");
+    function toggleExpand(button, container, card, chart, originalHeight) {
+        const isExpanded = card.classList.toggle("expanded");
+        const canvas = container.querySelector('canvas');
 
-            if (card.classList.contains("expanded")) {
-                backdrop.style.display = "block"; // Show backdrop
+        if (isExpanded) {
+            backdrop.style.display = "block"; // Show backdrop
 
-                card.style.position = "fixed";
-                card.style.top = "50%";
-                card.style.left = "50%";
-                card.style.transform = "translate(-50%, -50%)";
-                card.style.zIndex = "50";
-                card.style.width = "100vw"; 
-                card.style.height = "90vh"; 
-                card.style.maxWidth = "1100px"; 
-                card.style.maxHeight = "800px"; 
-                card.style.background = "#1e1e1e";
-                card.style.padding = "30px"; 
-                card.style.borderRadius = "12px"; 
-                card.style.overflow = "auto";  // 🔥 Make it scrollable when needed
+            // Store original styles
+            card.dataset.originalStyle = JSON.stringify({
+                position: card.style.position,
+                top: card.style.top,
+                left: card.style.left,
+                transform: card.style.transform,
+                zIndex: card.style.zIndex,
+                width: card.style.width,
+                height: card.style.height,
+                maxWidth: card.style.maxWidth,
+                maxHeight: card.style.maxHeight,
+                background: card.style.background,
+                padding: card.style.padding,
+                borderRadius: card.style.borderRadius,
+                overflow: card.style.overflow
+            });
 
-                button.innerHTML = `<i class="fas fa-compress-alt text-sm"></i>`;
+            // Apply expanded styles
+            card.style.position = "fixed";
+            card.style.top = "50%";
+            card.style.left = "50%";
+            card.style.transform = "translate(-50%, -50%) scale(1)";
+            card.style.zIndex = "1000";
+            card.style.width = "90vw";
+            card.style.height = "80vh";
+            card.style.maxWidth = "1200px";
+            card.style.maxHeight = "800px";
+            card.style.background = "#1e1e1e";
+            card.style.padding = "24px";
+            card.style.borderRadius = "16px";
+            card.style.overflow = "auto";
+            card.style.boxShadow = "0 10px 30px rgba(0, 0, 0, 0.5)";
+            card.style.transition = "all 0.3s ease-in-out";
 
-                // 🔥 Make the chart smaller inside the expanded card
-                container.style.height = "400px";  // Change from 500px to 300px
-                
-                // Resize chart after expanding
-                setTimeout(() => {
-                    chart.resize();
-                }, 500);
-            } else {
-                backdrop.style.display = "none"; // Hide backdrop when collapsed
+            // Adjust container height based on chart type
+            container.style.height = chart.config.type === 'pie' ? "60vh" : "50vh";
+            container.style.width = "100%";
 
-                container.style.height = "190px"; // Reset height
-                card.style = ""; // Reset styles
-                button.innerHTML = `<i class="fas fa-expand-alt text-sm"></i>`;
+            // Update button icon to minimize
+            button.innerHTML = `<i class="fas fa-compress-alt text-sm"></i>`;
 
-                // Resize back when collapsed
-                setTimeout(() => {
-                    chart.resize();
-                }, 300);
-            }
+            // Animate entrance
+            card.style.opacity = "0";
+            card.style.transform = "translate(-50%, -50%) scale(0.9)";
+            setTimeout(() => {
+                card.style.opacity = "1";
+                card.style.transform = "translate(-50%, -50%) scale(1)";
+            }, 50);
+        } else {
+            backdrop.style.display = "none"; // Hide backdrop
+
+            // Restore original styles
+            const originalStyle = JSON.parse(card.dataset.originalStyle || '{}');
+            Object.assign(card.style, originalStyle);
+
+            // Reset container height
+            container.style.height = originalHeight;
+            container.style.width = "100%";
+
+            // Update button icon to expand
+            button.innerHTML = `<i class="fas fa-expand-alt text-sm"></i>`;
+
+            // Animate exit
+            card.style.opacity = "1";
+            card.style.transform = "translate(-50%, -50%) scale(1)";
+            setTimeout(() => {
+                card.style.opacity = "1";
+                card.style.transform = "";
+            }, 50);
         }
+
+        // Resize chart after transition
+        setTimeout(() => {
+            chart.resize();
+            chart.update();
+        }, 300);
+    }
+
     // Close on backdrop click
     backdrop.addEventListener("click", function () {
-        const expandedCard = document.querySelector(".expanded");
-        if (expandedCard) {
-            expandedCard.classList.remove("expanded");
-            backdrop.style.display = "none"; // Hide backdrop
-        }
-    });
-        // Get Chart.js instances
-        const peakChart = Chart.getChart("time-of-day-chart"); 
-        const subscribersChart = Chart.getChart("membershipChart"); 
-        const checkinsChart = Chart.getChart("checkins-chart");  // Check-ins Chart
-
-
-        // Expand Peak Hours Chart
-        const expandPeakButton = document.querySelector(".expand-peak-btn");
-        const peakChartContainer = document.getElementById("chartContainer");
-        const peakChartCard = document.getElementById("chartCard");
-        expandPeakButton.addEventListener("click", function () {
-            toggleExpand(expandPeakButton, peakChartContainer, peakChartCard, peakChart);
-        });
-
-        // Expand Subscribers Chart
-        const expandSubscribersButton = document.querySelector(".expand-subscribers-btn");
-        const subscribersChartContainer = document.getElementById("subscribersChartContainer");
-        const subscribersChartCard = document.getElementById("subscribersChartCard");
-        expandSubscribersButton.addEventListener("click", function () {
-            toggleExpand(expandSubscribersButton, subscribersChartContainer, subscribersChartCard, subscribersChart);
-        });
-        // Expand Check-ins Chart
-        const expandCheckinsButton = document.querySelector(".expand-checkins-btn");
-        const checkinsChartContainer = document.getElementById("checkinsChartContainer");
-        const checkinsChartCard = document.getElementById("checkinsChartCard");
-        expandCheckinsButton.addEventListener("click", function () {
-            toggleExpand(expandCheckinsButton, checkinsChartContainer, checkinsChartCard, checkinsChart);
+        const expandedCards = document.querySelectorAll(".expanded");
+        expandedCards.forEach(card => {
+            const button = card.querySelector(".chart-action-button");
+            const container = card.querySelector(".chart-container, .relative.w-full");
+            const chartId = card.querySelector("canvas").id;
+            const chart = Chart.getChart(chartId);
+            const originalHeight = chartId === "membershipChart" ? "190px" : chartId === "time-of-day-chart" ? "180px" : "300px";
+            toggleExpand(button, container, card, chart, originalHeight);
         });
     });
 
+    // Get Chart.js instances
+    const peakChart = Chart.getChart("time-of-day-chart");
+    const subscribersChart = Chart.getChart("membershipChart");
+    const checkinsChart = Chart.getChart("checkins-chart");
+
+    // Expand Peak Hours Chart (Line)
+    const expandPeakButton = document.querySelector(".expand-peak-btn");
+    const peakChartContainer = document.getElementById("chartContainer");
+    const peakChartCard = document.getElementById("chartCard");
+    expandPeakButton.addEventListener("click", function () {
+        toggleExpand(expandPeakButton, peakChartContainer, peakChartCard, peakChart, "180px");
+    });
+
+    // Expand Subscribers Chart (Pie)
+    const expandSubscribersButton = document.querySelector(".expand-subscribers-btn");
+    const subscribersChartContainer = document.getElementById("subscribersChartContainer");
+    const subscribersChartCard = document.getElementById("subscribersChartCard");
+    expandSubscribersButton.addEventListener("click", function () {
+        toggleExpand(expandSubscribersButton, subscribersChartContainer, subscribersChartCard, subscribersChart, "190px");
+    });
+
+    // Expand Check-ins Chart (Bar)
+    const expandCheckinsButton = document.querySelector(".expand-checkins-btn");
+    const checkinsChartContainer = document.getElementById("checkinsChartContainer");
+    const checkinsChartCard = document.getElementById("checkinsChartCard");
+    expandCheckinsButton.addEventListener("click", function () {
+        toggleExpand(expandCheckinsButton, checkinsChartContainer, checkinsChartCard, checkinsChart, "300px");
+    });
+});
 </script>
-
-
 
 
 
