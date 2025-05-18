@@ -76,15 +76,8 @@ class PriceController extends Controller
 
     public function getPriceBySessionType()
     {
-        // Get the type from session - replace 'subscription_type' with your actual session key
-        $type = session('1'); 
-        
-        if ($type) {
-            $price = Price::where('type', $type)->first();
-            return $price ? $price->amount : 60.00; // Default to 60 if not found
-        }
-        
-        return 60.00; // Default value if no session type
+        $amount = app(PriceController::class)->getPriceBySessionType();
+        return view('self.registration', compact('amount'));
     }
 
 }
