@@ -252,7 +252,7 @@
                                 class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg readonly-field" 
                                 id="amount" 
                                 name="amount" 
-                                value="60"
+                                value="{{ $dynamicAmount ?? 60 }}" 
                                 style="pointer-events: none"
                                 readonly>
                             <i class="fas fa-lock readonly-icon text-sm"></i>

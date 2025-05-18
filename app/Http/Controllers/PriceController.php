@@ -72,4 +72,19 @@ class PriceController extends Controller
         // Simply call the existing update method
         return $this->update($request);
     }
+
+
+    public function getPriceBySessionType()
+    {
+        // Get the type from session - replace 'subscription_type' with your actual session key
+        $type = session('subscription_type'); 
+        
+        if ($type) {
+            $price = Price::where('type', $type)->first();
+            return $price ? $price->amount : 60.00; // Default to 60 if not found
+        }
+        
+        return 60.00; // Default value if no session type
+    }
+
 }
