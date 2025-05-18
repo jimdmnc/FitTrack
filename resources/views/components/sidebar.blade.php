@@ -25,15 +25,31 @@
                 <span>Dashboard</span>
             </a>
 
+                 <!-- Manage Staffs Link (Visible only to Super Admins) -->
+                 @if(auth()->user()->role === 'super_admin')
+            <a href="{{ route('staff.manageStaffs') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.manageStaffs') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.manageStaffs') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+                <span>Manage Staffs</span>
+            </a>
+                @endif
+            <!-- Payment Tracking Link -->
+            <a href="{{ route('staff.paymentTracking') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.paymentTracking') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.paymentTracking') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span>Payment Tracking</span>
+            </a>
+
+            <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Members Management</span>
             <!-- Register Member Link -->
             <a href="{{ route('staff.membershipRegistration') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.membershipRegistration') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.membershipRegistration') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                <span>Register Member</span>
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.membershipRegistration') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                            </svg>
+                            <span>Register Member</span>
             </a>
-            <span class="text-gray-400 uppercase text-xs font-semibold tracking-wider px-2 sm:px-3 py-1 sm:py-2 block mt-2 sm:mt-3">Members Management</span>
-
             <!-- Members Attendance Link -->
             <a href="{{ route('staff.attendance') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.attendance') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.attendance') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
@@ -60,15 +76,7 @@
                 @endif
             </a>
 
-            <!-- Manage Staffs Link (Visible only to Super Admins) -->
-            @if(auth()->user()->role === 'super_admin')
-            <a href="{{ route('staff.manageStaffs') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.manageStaffs') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.manageStaffs') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                </svg>
-                <span>Manage Staffs</span>
-            </a>
-            @endif
+     
 
             <!-- Member Status Link -->
             <a href="{{ route('staff.viewmembers') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.viewmembers') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
@@ -78,13 +86,7 @@
                 <span>Member Status</span>
             </a>
 
-            <!-- Payment Tracking Link -->
-            <a href="{{ route('staff.paymentTracking') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ Request::routeIs('staff.paymentTracking') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 {{ Request::routeIs('staff.paymentTracking') ? 'text-white' : 'text-gray-400 group-hover:text-white' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                <span>Payment Tracking</span>
-            </a>
+
 
             <!-- Reports Link -->
             <a href="{{ route('staff.report') }}" class="flex items-center px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md group {{ request()->routeIs('staff.report') ? 'bg-orange-700 text-white' : 'text-gray-400 hover:bg-orange-700 hover:text-white' }} transition-all duration-200 ease-in-out transform hover:translate-x-1">
