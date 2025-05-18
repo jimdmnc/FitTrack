@@ -33,47 +33,57 @@
         background: rgba(255, 153, 45, 0.8);
     }
 
-    /* Sidebar and main content styles */
+    /* Custom styles for sidebar hover */
     #sidebar {
-        width: 16rem; /* 256px */
-        transition: transform 0.3s ease-in-out;
+        width: 4rem; /* Default width: 64px */
+        transition: width 0.3s ease-in-out;
+    }
+    #sidebar:hover {
+        width: 16rem; /* Expanded width: 256px */
     }
     #main-content {
-        margin-left: 16rem; /* Match sidebar width */
+        margin-left: 4rem; /* Default margin to account for collapsed sidebar */
         transition: margin-left 0.3s ease-in-out;
+    }
+    #sidebar:hover ~ #main-content {
+        margin-left: 16rem; /* Shift main content when sidebar is hovered */
     }
     @media (max-width: 767px) {
         #sidebar {
-            width: 16rem;
-            transform: translateX(-100%);
+            width: 0;
         }
         #sidebar.mobile-open {
-            transform: translateX(0);
+            width: 16rem;
         }
         #main-content {
+            margin-left: 0;
+        }
+        #sidebar:hover ~ #main-content {
             margin-left: 0;
         }
     }
 </style>
 <body class="font-sans bg-[#121212] overflow-x-hidden">
-    <div x-data="{ sidebarOpen: true }" 
+    <div x-data="{ sidebarOpen: false }" 
          x-init="() => {
-             Alpine.store('sidebarOpen', true);
+             Alpine.store('sidebarOpen', false);
              $watch('$store.sidebarOpen', value => {
                  sidebarOpen = value;
-                 document.getElementById('sidebar').classList.toggle('mobile-open', value);
+                 if (window.innerWidth < 768) {
+                     document.getElementById('sidebar').classList.toggle('mobile-open', value);
+                 }
              });
          }" class="flex flex-col md:flex-row min-h-screen">
         <!-- Sidebar -->
         <div id="sidebar" 
-            class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-transform duration-300 ease-in-out"
-            :class="{'translate-x-0': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen}">
+            class="fixed inset-y-0 left-0 z-30 bg-gray-900 text-white overflow-y-auto transition-all duration-300 ease-in-out"
+            :class="{'translate-x-0 w-64': $store.sidebarOpen, '-translate-x-full': !$store.sidebarOpen, 'md:translate-x-0': true}">
             @include('components.sidebar')
         </div>
 
         <!-- Mobile overlay -->
         <div id="sidebar-overlay" 
-            class="fixed inset-0 bg-black opacity-50 z-20 transition-opacity duration-300 ease-in-out"
+            class="fixed inset-0 bg-black opacity-50 z-20 md:hidden transition-opacity duration-300 ease-in-out"
             :class="{'block': $store.sidebarOpen, 'hidden': !$store.sidebarOpen}"
             @click="$store.sidebarOpen = false"></div>
 
@@ -90,12 +100,38 @@
     </div>
 
 <script>
-    // Add event listener for window resize to manage sidebar state
+    // Add event listener for window resize to close mobile sidebar if screen becomes larger
     window.addEventListener('resize', function() {
         if (window.innerWidth >= 768) {
-            Alpine.store('sidebarOpen', true); // Keep sidebar open on desktop
-        } else {
-            Alpine.store('sidebarOpen', false); // Close sidebar on mobile
+            Alpine.store('sidebarOpen', false);
+        }
+    });
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Watch for Alpine sidebar toggle
+        if (window.Alpine) {
+            Alpine.effect(() => {
+                const sidebarOpen = Alpine.store('sidebarOpen');
+                const sidebar = document.getElementById('sidebar');
+                const sidebarTextElements = document.querySelectorAll('[id^="nav-text-"], [id^="nav-section-"], #sidebar-text, #pending-approval-badge, #dropdown-menu');
+                
+                // On mobile devices
+                if (window.innerWidth < 768) {
+                    // Show text when sidebar is open
+                    if (sidebarOpen) {
+                        setTimeout(() => {
+                            sidebarTextElements.forEach(el => {
+                                if (el) el.style.opacity = '1';
+                            });
+                        }, 150);
+                    } else {
+                        // Hide text when sidebar is closed
+                        sidebarTextElements.forEach(el => {
+                            if (el) el.style.opacity = '0';
+                        });
+                    }
+                }
+            });
         }
     });
 </script>

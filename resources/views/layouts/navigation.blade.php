@@ -1,9 +1,9 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-800 sticky top-0 z-50">
     <header class="flex justify-between items-center w-full px-4 md:px-10 py-3 shadow-md bg-[#121212] transition-all duration-300">
-        <!-- Left Section: Hamburger Menu -->
+        <!-- Left Section: Hamburger Menu (Mobile Only) -->
         <div class="flex items-center space-x-4">
-            <!-- Hamburger Menu Button -->
-            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative" 
+            <!-- Hamburger Menu Button (Visible on Mobile Only) -->
+            <button id="hamburger" class="md:hidden p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative" 
                     @click="$store.sidebarOpen = !$store.sidebarOpen">
                 <div class="w-6 h-6 relative flex flex-col justify-center items-center">
                     <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
