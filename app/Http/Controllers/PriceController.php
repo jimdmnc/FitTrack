@@ -54,21 +54,12 @@ class PriceController extends Controller
      *
      * @return \Illuminate\View\View
      */
-/**
- * Display the pricing list for user profile.
- *
- * @return \Illuminate\View\View
- */
-public function pricelist()
-{
-    // Fetch the price for the 'session' type
-    $sessionPrice = Price::where('type', 'session')->first();
+    public function pricelist()
+    {
+        $prices = Price::orderBy('id')->get();
+        return view('profile.pricelist', compact('prices'));
+    }
     
-    // Fetch all prices for other parts of the view (if needed)
-    $prices = Price::orderBy('id')->get();
-    
-    return view('profile.pricelist', compact('prices', 'sessionPrice'));
-}
     /**
      * Update prices from the profile section.
      * This is an alias to the update method to maintain route consistency.

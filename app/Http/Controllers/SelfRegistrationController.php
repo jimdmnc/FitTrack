@@ -19,6 +19,7 @@ class SelfRegistrationController extends Controller
     // Display the registration form for session membership
     public function index()
     {
+        $sessionPrice = Price::where('type', 'session')->first();
         return view('self.registration');
     }
 
@@ -137,9 +138,15 @@ class SelfRegistrationController extends Controller
                 'password.min' => 'Password must be at least 8 characters.',
                 'password.confirmed' => 'Password confirmation does not match.',
             ]);
-
+    
             $request->session()->forget('timed_out');
-
+    
+            // Fetch session price
+            $sessionPrice = Price::where('type', 'session')->first();
+            if (!$sessionPrice) {
+                throw new \Exception('Session price not configured.');
+            }
+    
             $existingUser = User::where(function ($query) use ($validatedData) {
                 $query->where('email', $validatedData['email'])
                       ->orWhere(function ($subQuery) use ($validatedData) {
@@ -147,7 +154,7 @@ class SelfRegistrationController extends Controller
                                    ->where('last_name', $validatedData['last_name']);
                       });
             })->first();
-
+    
             if ($existingUser) {
                 $existingUser->update([
                     'first_name' => $validatedData['first_name'],
@@ -160,23 +167,22 @@ class SelfRegistrationController extends Controller
                     'end_date' => Carbon::now(),
                     'needs_approval' => true,
                 ]);
-
+    
                 MembersPayment::create([
                     'rfid_uid' => $existingUser->rfid_uid,
-                    'amount' => 60,
+                    'amount' => $sessionPrice->amount, // Use dynamic amount
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
-
+    
                 Auth::login($existingUser);
-
-
+    
                 return redirect()->route('self.waiting')->with('success', 'Your session has been submitted for approval. Please wait for staff approval.');
             }
-
+    
             $rfidUid = 'DAILY' . strtoupper(Str::random(5));
-
-            $user = DB::transaction(function () use ($validatedData, $rfidUid) {
+    
+            $user = DB::transaction(function () use ($validatedData, $rfidUid, $sessionPrice) {
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
@@ -192,22 +198,21 @@ class SelfRegistrationController extends Controller
                     'password' => Hash::make($validatedData['password']),
                     'needs_approval' => true,
                 ]);
-
+    
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
-                    'amount' => 60,
+                    'amount' => $sessionPrice->amount, // Use dynamic amount
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
-
+    
                 return $user;
             });
-
+    
             Auth::login($user);
-
-
+    
             return redirect()->route('self.waiting')->with('success', 'Registration successful! Welcome to our gym.');
-
+    
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->route('self.registration')
                 ->withInput()
