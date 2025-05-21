@@ -121,15 +121,15 @@ class MembershipRegistrationController extends Controller
                         ->format('Y-m-d'),
                 ]);
 
-                $user->memberships()->create([
-                    'price_id' => $price->id,
-                    'amount_paid' => $paymentAmount,
-                    'start_date' => $validatedData['start_date'],
-                    'end_date' => Carbon::parse($validatedData['start_date'])
-                        ->addDays((int)$membershipDays - 1)
-                        ->format('Y-m-d'),
-                    'status' => 'active',
-                ]);
+                // $user->memberships()->create([
+                //     'price_id' => $price->id,
+                //     'amount_paid' => $paymentAmount,
+                //     'start_date' => $validatedData['start_date'],
+                //     'end_date' => Carbon::parse($validatedData['start_date'])
+                //         ->addDays((int)$membershipDays - 1)
+                //         ->format('Y-m-d'),
+                //     'status' => 'active',
+                // ]);
 
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
