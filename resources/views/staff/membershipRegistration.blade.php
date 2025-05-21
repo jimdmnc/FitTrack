@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
 
-    function fetchLatestUid(retryCount = 0) {
+    async function fetchLatestUid(retryCount = 0) {
         if (isFetching) return;
         isFetching = true;
 
@@ -643,50 +643,45 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function clearRfid() {
-    const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
-
-    if (!uid) {
-        updateRfidStatus('error', 'No RFID to clear');
-        return;
-    }
-
-    fetch(`/api/rfid/clear/${uid}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            uidInput.value = '';
-            updateRfidStatus('success', 'RFID cleared');
-        } else {
-            updateRfidStatus('error', data.message || 'Failed to clear RFID');
+    async function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        if (!uidInput || !uidInput.value) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
         }
-        toggleClearButton();
-    })
-    .catch(error => {
-        console.error(error);
-        updateRfidStatus('error', 'Request failed');
-    });
-}
 
-function toggleClearButton() {
-    const uidInput = document.getElementById('uid');
-    const clearBtn = document.getElementById('clearRfidBtn');
+        const uid = uidInput.value.trim();
+        try {
+            const response = await fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
+                    'Accept': 'application/json',
+                }
+            });
 
-    if (uidInput && clearBtn) {
-        if (uidInput.value.trim() !== '') {
-            clearBtn.classList.remove('hidden');
-        } else {
-            clearBtn.classList.add('hidden');
+            const data = await response.json();
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        } catch (error) {
+            console.error('Clear RFID Error:', error);
+            updateRfidStatus('error', 'Request failed');
         }
     }
-}
+
+    function toggleClearButton() {
+        const uidInput = document.getElementById('uid');
+        const clearBtn = document.getElementById('clearRfidBtn');
+
+        if (uidInput && clearBtn) {
+            clearBtn.classList.toggle('hidden', !uidInput.value.trim());
+        }
+    }
 
     // Initialize
     function initialize() {
