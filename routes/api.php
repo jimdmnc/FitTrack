@@ -125,3 +125,4 @@ Route::post('/attendance', [RFIDController::class, 'handleAttendance']);
 Route::post('/save_rfid', [RFIDController::class, 'saveRFID']);
 Route::get('/rfid/latest', [RFIDController::class, 'getLatestRFID']);
 Route::delete('/rfid/clear/{uid}', [RFIDController::class, 'clear']);
+Route::post('/sync_offline_attendance', [RFIDController::class, 'syncOfflineAttendance']);
