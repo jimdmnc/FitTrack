@@ -643,36 +643,37 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    async function clearRfid() {
-        const uidInput = document.getElementById('uid');
-        if (!uidInput || !uidInput.value) {
-            updateRfidStatus('error', 'No RFID to clear');
-            return;
-        }
+    function clearRfid() {
+    const uidInput = document.getElementById('uid');
+    const uid = uidInput.value;
 
-        const uid = uidInput.value.trim();
-        try {
-            const response = await fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
-                    'Accept': 'application/json',
-                }
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared');
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-            toggleClearButton();
-        } catch (error) {
-            console.error('Clear RFID Error:', error);
-            updateRfidStatus('error', 'Request failed');
-        }
+    if (!uid) {
+        updateRfidStatus('error', 'No RFID to clear');
+        return;
     }
+
+    fetch(`/api/rfid/clear/${uid}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            uidInput.value = '';
+            updateRfidStatus('success', 'RFID cleared');
+        } else {
+            updateRfidStatus('error', data.message || 'Failed to clear RFID');
+        }
+        toggleClearButton();
+    })
+    .catch(error => {
+        console.error(error);
+        updateRfidStatus('error', 'Request failed');
+    });
+}
 
     function toggleClearButton() {
         const uidInput = document.getElementById('uid');
