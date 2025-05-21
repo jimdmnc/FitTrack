@@ -1,152 +1,109 @@
 <?php
 
-namespace App\Http\Controllers\Staff;
+namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-use App\Models\RfidTag;
-use Carbon\Carbon; // Ensure Carbon is imported
-use App\Models\MembersPayment;
-use App\Models\Price;
-use App\Models\Membership;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
+use App\Models\User;
+use App\Models\RfidTag;
+use Illuminate\Support\Facades\Hash;
 
 class MembershipRegistrationController extends Controller
 {
-    public function index()
+    public function showRegistrationForm()
     {
-        $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
-        if (!$prices->has('session')) {
-            return redirect()->route('staff.membershipRegistration')
-                ->with('error', 'Session price not configured. Please contact the administrator.');
-        }
-        return view('staff.membershipRegistration', [
-            'prices' => $prices,
-            'maxBirthdate' => Carbon::today()->subYears(16)->format('Y-m-d'),
-            'today' => Carbon::today()->format('Y-m-d'), // Pass today to the view
-        ]);
+        $prices = [
+            'session' => (object)['amount' => 60],
+            'weekly' => (object)['amount' => 300],
+            'monthly' => (object)['amount' => 850],
+            'annual' => (object)['amount' => 10000],
+        ];
+        $today = Carbon::today()->toDateString();
+        $maxBirthdate = Carbon::today()->subYears(16)->toDateString();
+
+        return view('membership.registration', compact('prices', 'today', 'maxBirthdate'));
     }
 
-    public function store(Request $request)
+    public function register(Request $request)
     {
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'birthdate' => 'required|date|before:today|after:'.Carbon::today()->subYears(100)->toDateString(),
+            'gender' => 'required|in:male,female,other',
+            'phone_number' => 'required|digits:11',
+            'email' => 'required|email|unique:users,email',
+            'membership_type' => 'required|in:custom,7,30,365',
+            'custom_days' => 'required_if:membership_type,custom|integer|min:1|max:365',
+            'start_date' => 'required|date|after_or_equal:today',
+            'uid' => 'required|string|max:255',
+            'generated_password' => 'required|string|min:6',
+        ]);
+
+        DB::beginTransaction();
+
         try {
-            $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
-
-            $input = $request->all();
-            if ($request->input('membership_type') !== 'custom') {
-                $input['custom_days'] = null;
+            // Check if RFID UID exists and is unregistered
+            $rfidTag = RfidTag::where('uid', $request->uid)->where('registered', 0)->first();
+            if (!$rfidTag) {
+                return redirect()->back()->withInput()->with('error', 'Invalid or already registered RFID UID.');
             }
-            $modifiedRequest = new Request($input);
 
-            $maxBirthdate = Carbon::today()->subYears(16)->format('Y-m-d');
+            // Check if UID is already assigned to a user
+            $existingUser = DB::table('users')->where('rfid_uid', $request->uid)->first();
+            if ($existingUser) {
+                return redirect()->back()->withInput()->with('error', 'RFID UID is already assigned to another user.');
+            }
 
-            $validatedData = $modifiedRequest->validate([
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
-                'email' => [
-                    'required',
-                    'string',
-                    'email',
-                    'max:255',
-                    Rule::unique('users')
-                ],
-                'gender' => 'required|string|in:male,female,other',
-                'phone_number' => [
-                    'required',
-                    'digits:11',
-                    'regex:/^09\d{9}$/'
-                ],
-                'membership_type' => 'required|string|in:custom,7,30,365',
-                'custom_days' => 'nullable|integer|min:1|max:365|required_if:membership_type,custom',
-                'start_date' => 'required|date|after_or_equal:today',
-                'birthdate' => ['required', 'date', 'before:today', "before_or_equal:{$maxBirthdate}"],
-                'uid' => [
-                    'required',
-                    'string',
-                    'max:255',
-                    Rule::unique('users', 'rfid_uid')
-                ],
-                'generated_password' => 'required|string|min:8',
+            // Calculate expiry date
+            $startDate = Carbon::parse($request->start_date);
+            $duration = $request->membership_type === 'custom' ? $request->custom_days : $request->membership_type;
+            $expiryDate = $startDate->copy()->addDays($duration - 1);
+
+            // Create user
+            $user = User::create([
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'birthdate' => $request->birthdate,
+                'gender' => $request->gender,
+                'phone_number' => $request->phone_number,
+                'email' => $request->email,
+                'rfid_uid' => $request->uid,
+                'password' => Hash::make($request->generated_password),
+                'member_status' => 'active',
+                'membership_type' => $request->membership_type,
+                'start_date' => $startDate,
+                'expiry_date' => $expiryDate,
             ]);
 
-            $priceType = match ($validatedData['membership_type']) {
-                'custom' => 'session',
-                '7' => 'weekly',
-                '30' => 'monthly',
-                '365' => 'annual',
-                default => throw new \Exception('Invalid membership type'),
-            };
+            // Update RFID tag to registered
+            $rfidTag->update(['registered' => 1, 'user_id' => $user->id, 'updated_at' => Carbon::now('Asia/Manila')]);
 
-            $price = $prices[$priceType] ?? throw new \Exception("Price for {$priceType} not found");
+            // Calculate payment amount
+            $prices = [
+                '7' => 300,
+                '30' => 850,
+                '365' => 10000,
+                'custom' => 60 * ($request->membership_type === 'custom' ? $request->custom_days : 1),
+            ];
+            $paymentAmount = $prices[$request->membership_type] ?? 0;
 
-            $membershipDays = match ($validatedData['membership_type']) {
-                'custom' => $validatedData['custom_days'],
-                '7' => 7,
-                '30' => 30,
-                '365' => 365,
-                default => throw new \Exception('Invalid membership type'),
-            };
+            // Log payment (assuming you have a payments table)
+            DB::table('payments')->insert([
+                'user_id' => $user->id,
+                'amount' => $paymentAmount,
+                'payment_date' => Carbon::now('Asia/Manila'),
+                'created_at' => Carbon::now('Asia/Manila'),
+            ]);
 
-            $paymentAmount = match ($validatedData['membership_type']) {
-                'custom' => $validatedData['custom_days'] * $price->amount,
-                '7', '30', '365' => $price->amount,
-                default => throw new \Exception('Invalid membership type'),
-            };
-
-            $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $membershipDays) {
-                $user = User::create([
-                    'first_name' => $validatedData['first_name'],
-                    'last_name' => $validatedData['last_name'],
-                    'email' => $validatedData['email'],
-                    'gender' => $validatedData['gender'],
-                    'phone_number' => $validatedData['phone_number'],
-                    'birthdate' => $validatedData['birthdate'],
-                    'password' => Hash::make($validatedData['generated_password']),
-                    'role' => 'user',
-                    'rfid_uid' => $validatedData['uid'],
-                    'session_status' => 'approved',
-                ]);
-
-                $user->memberships()->create([
-                    'price_id' => $price->id,
-                    'amount_paid' => $paymentAmount,
-                    'start_date' => $validatedData['start_date'],
-                    'end_date' => Carbon::parse($validatedData['start_date'])
-                        ->addDays((int)$membershipDays - 1)
-                        ->format('Y-m-d'),
-                    'status' => 'active',
-                ]);
-
-                MembersPayment::create([
-                    'rfid_uid' => $user->rfid_uid,
-                    'amount' => $paymentAmount,
-                    'payment_method' => 'cash',
-                    'payment_date' => now(),
-                ]);
-
-                RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
-
-                return $user;
-            });
-
-            return redirect()->route('staff.membershipRegistration')
-                ->with([
-                    'success' => 'Member registered successfully!',
-                    'generated_password' => $validatedData['generated_password']
-                ]);
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->route('staff.membershipRegistration')
-                ->withErrors($e->validator)
-                ->withInput();
+            DB::commit();
+            return redirect()->route('staff.membershipRegistration')->with('success', 'Member registered successfully!')->with('generated_password', $request->generated_password);
         } catch (\Exception $e) {
-            logger()->error('Registration Error: ' . $e->getMessage());
-            return redirect()->route('staff.membershipRegistration')
-                ->withInput()
-                ->with('error', 'Registration failed: ' . $e->getMessage());
+            DB::rollBack();
+            Log::error('Registration Error: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Registration failed. Please try again.');
         }
     }
 }
