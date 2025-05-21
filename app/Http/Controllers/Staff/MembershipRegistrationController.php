@@ -18,8 +18,16 @@ class MembershipRegistrationController extends Controller
 {
     public function index()
     {
-        return view('staff.membershipRegistration');
-
+        $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
+        if (!$prices->has('session')) {
+            return redirect()->route('staff.membershipRegistration')
+                ->with('error', 'Session price not configured. Please contact the administrator.');
+        }
+        return view('staff.membershipRegistration', [
+            'prices' => $prices,
+            'maxBirthdate' => Carbon::today()->subYears(16)->format('Y-m-d'),
+            'today' => Carbon::today()->format('Y-m-d'), // Pass today to the view
+        ]);
     }
 
     public function store(Request $request)
