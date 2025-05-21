@@ -127,25 +127,16 @@ public function handleAttendance(Request $request)
     
         return response()->json(['uid' => $latestRFID->uid]);
     }
-    public function clearRfid($uid)
+    public function clear($uid)
     {
-        try {
-            $rfid = RfidTag::where('uid', $uid)->where('registered', false)->first();
+        $tag = RfidTag::where('uid', $uid)->first();
 
-            if (!$rfid) {
-                return response()->json(['success' => false, 'message' => 'RFID not found or already registered'], 404);
-            }
-
-            $rfid->delete();
-
-            return response()->json(['success' => true, 'message' => 'RFID cleared successfully'], 200);
-        } catch (\Exception $e) {
-            Log::error('Failed to clear RFID', [
-                'uid' => $uid,
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
-            return response()->json(['success' => false, 'message' => 'Failed to clear RFID'], 500);
+        if (!$tag) {
+            return response()->json(['success' => false, 'message' => 'RFID not found'], 404);
         }
+
+        $tag->delete(); // Or you can update registered to 0: $tag->update(['registered' => 0]);
+
+        return response()->json(['success' => true, 'message' => 'RFID cleared']);
     }
 }
