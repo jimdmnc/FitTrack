@@ -730,7 +730,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
+        fetch(`/api/rfid/clear`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
