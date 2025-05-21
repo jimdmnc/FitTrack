@@ -342,8 +342,11 @@ document.addEventListener("DOMContentLoaded", function() {
     let isFetching = false;
     let rfidPollInterval = null;
 
+    // Safely get elements
+    const getElement = (id) => document.getElementById(id);
+    
     // Birthdate Validation
-    const birthdateInput = document.getElementById("birthdate");
+    const birthdateInput = getElement("birthdate");
     const maxBirthdate = "{{ $maxBirthdate }}";
     const today = "{{ $today }}";
 
@@ -377,11 +380,12 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Payment Amount Calculation
-    const membershipType = document.getElementById("membershipType");
-    const customDaysContainer = document.getElementById("customDaysContainer");
-    const customDaysInput = document.getElementById("customDays");
-    const paymentAmount = document.getElementById("payment_amount");
+    const membershipType = getElement("membershipType");
+    const customDaysContainer = getElement("customDaysContainer");
+    const customDaysInput = getElement("customDays");
+    const paymentAmount = getElement("payment_amount");
 
+    // Default to empty object if paymentRates is undefined
     const paymentRates = {
         "7": {{ $prices['weekly']->amount ?? 300 }},
         "30": {{ $prices['monthly']->amount ?? 850 }},
@@ -392,12 +396,16 @@ document.addEventListener("DOMContentLoaded", function() {
     function updatePaymentAmount() {
         if (!paymentAmount || !membershipType) return;
 
-        if (membershipType.value === 'custom' && customDaysInput?.value) {
+        let amount = 0;
+        
+        if (membershipType.value === 'custom' && customDaysInput) {
             const days = parseInt(customDaysInput.value) || 0;
-            paymentAmount.value = (days > 0 ? days * paymentRates['custom'] : 0).toFixed(2);
+            amount = days > 0 ? days * (paymentRates['custom'] || 60) : 0;
         } else {
-            paymentAmount.value = (paymentRates[membershipType.value] || 0).toFixed(2);
+            amount = paymentRates[membershipType.value] || 0;
         }
+        
+        paymentAmount.value = amount.toFixed(2);
     }
 
     function toggleCustomDays() {
@@ -406,55 +414,74 @@ document.addEventListener("DOMContentLoaded", function() {
         if (membershipType.value === 'custom') {
             customDaysContainer.classList.remove('hidden');
             customDaysInput.setAttribute('required', 'required');
+            // Set default value if empty
+            if (!customDaysInput.value) {
+                customDaysInput.value = '1';
+            }
         } else {
             customDaysContainer.classList.add('hidden');
             customDaysInput.removeAttribute('required');
-            customDaysInput.value = '';
         }
         updatePaymentAmount();
         updateEndDate();
     }
 
     function setupMembershipHandlers() {
-        if (membershipType && paymentAmount) {
+        if (membershipType) {
             membershipType.addEventListener("change", toggleCustomDays);
+            
             if (customDaysInput) {
                 customDaysInput.addEventListener("input", function() {
-                    const value = parseInt(this.value) || 1;
-                    this.value = Math.min(Math.max(value, 1), 365);
+                    // Ensure value is a positive integer between 1-365
+                    let value = parseInt(this.value) || 0;
+                    if (value <= 0) value = 1;
+                    if (value > 365) value = 365;
+                    this.value = value;
+                    
                     updatePaymentAmount();
                     updateEndDate();
                 });
             }
+            
+            // Initialize on page load
             toggleCustomDays();
         }
     }
 
     // Expiry Date Calculation
     function updateEndDate() {
-        const startDateInput = document.getElementById('startDate');
-        const endDateInput = document.getElementById('endDate');
+        const startDateInput = getElement('startDate');
+        const endDateInput = getElement('endDate');
 
         if (!startDateInput || !endDateInput || !membershipType || !startDateInput.value) {
             if (endDateInput) endDateInput.value = '';
             return;
         }
 
+        // Parse the start date correctly
         const startDate = new Date(startDateInput.value);
         if (isNaN(startDate)) {
             endDateInput.value = '';
             return;
         }
 
-        let duration = membershipType.value === 'custom' && customDaysInput?.value 
-            ? parseInt(customDaysInput.value) 
-            : parseInt(membershipType.value);
+        let duration = 0;
+        if (membershipType.value === 'custom' && customDaysInput) {
+            duration = parseInt(customDaysInput.value) || 0;
+        } else {
+            duration = parseInt(membershipType.value) || 0;
+        }
 
-        if (!isNaN(duration) && duration > 0) {
-            startDate.setDate(startDate.getDate() + duration - 1);
-            const day = String(startDate.getDate()).padStart(2, '0');
-            const month = String(startDate.getMonth() + 1).padStart(2, '0');
-            const year = startDate.getFullYear();
+        if (duration > 0) {
+            // Create a new date object to avoid modifying the original
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + duration - 1);
+            
+            // Format date consistently as DD/MM/YYYY
+            const day = String(endDate.getDate()).padStart(2, '0');
+            const month = String(endDate.getMonth() + 1).padStart(2, '0');
+            const year = endDate.getFullYear();
+            
             endDateInput.value = `${day}/${month}/${year}`;
         } else {
             endDateInput.value = '';
@@ -463,10 +490,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Password Generation
     function updatePassword() {
-        const lastNameInput = document.getElementById("last_name");
-        const birthdateInput = document.getElementById("birthdate");
-        const passwordField = document.getElementById("password");
-        const hiddenPasswordField = document.getElementById("generated_password");
+        const lastNameInput = getElement("last_name");
+        const birthdateInput = getElement("birthdate");
+        const passwordField = getElement("password");
+        const hiddenPasswordField = getElement("generated_password");
 
         if (!lastNameInput || !birthdateInput || !passwordField || !hiddenPasswordField) {
             return;
@@ -482,6 +509,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Sanitize last name (only allow alphanumeric)
         const sanitizedLastName = lastNameValue.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
         if (!sanitizedLastName) {
             passwordField.value = '';
@@ -501,9 +529,11 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Format date parts consistently
         const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const day = String(selectedDate.getDate()).padStart(2, '0');
         const year = String(selectedDate.getFullYear());
+        
         const generatedPassword = `${sanitizedLastName}${month}${day}${year}`;
         
         passwordField.value = generatedPassword;
@@ -513,7 +543,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Form Handling
     function setupFormHandlers() {
-        const form = document.getElementById('registrationForm');
+        const form = getElement('registrationForm');
         if (!form) return;
 
         const clearButton = form.querySelector('button[type="button"]');
@@ -521,10 +551,14 @@ document.addEventListener("DOMContentLoaded", function() {
             clearButton.addEventListener('click', function() {
                 if (confirm('Are you sure you want to clear the form?')) {
                     form.reset();
-                    ['endDate', 'password', 'generated_password'].forEach(id => {
-                        const el = document.getElementById(id);
+                    
+                    // Clear specific fields that might not get cleared by reset
+                    ['endDate', 'password', 'generated_password', 'uid'].forEach(id => {
+                        const el = getElement(id);
                         if (el) el.value = '';
                     });
+                    
+                    // Reset UI states
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                     updatePaymentAmount();
                     updateEndDate();
@@ -534,26 +568,50 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
 
-        const lastNameInput = document.getElementById("last_name");
-        const birthdateInput = document.getElementById("birthdate");
-        const startDateEl = document.getElementById('startDate');
-        const membershipTypeEl = document.getElementById('membershipType');
+        // Set up input event handlers for form fields
+        const lastNameInput = getElement("last_name");
+        const birthdateInput = getElement("birthdate");
+        const startDateEl = getElement('startDate');
 
         if (lastNameInput) lastNameInput.addEventListener("input", updatePassword);
         if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
         if (startDateEl) startDateEl.addEventListener('change', updateEndDate);
-        if (membershipTypeEl) membershipTypeEl.addEventListener('change', updateEndDate);
-
+        
+        // Initialize calculated fields
         updatePassword();
         updateEndDate();
 
+        // Set default start date to today if empty
+        if (startDateEl && !startDateEl.value) {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            startDateEl.value = `${year}-${month}-${day}`;
+            updateEndDate();
+        }
+
+        // Form submission handling
         form.addEventListener('submit', function(e) {
-            if (membershipType?.value === 'custom' && (!customDaysInput?.value || parseInt(customDaysInput.value) <= 0)) {
+            // Validate custom days
+            if (membershipType?.value === 'custom') {
+                const customDays = parseInt(customDaysInput?.value) || 0;
+                if (customDays <= 0 || customDays > 365) {
+                    e.preventDefault();
+                    alert('Please enter a valid number of days (1-365) for custom membership');
+                    return;
+                }
+            }
+            
+            // Validate required RFID
+            const uidInput = getElement('uid');
+            if (uidInput && !uidInput.value.trim() && uidInput.hasAttribute('required')) {
                 e.preventDefault();
-                alert('Please enter a valid number of days for custom membership');
+                updateRfidStatus('error', 'Please tap an RFID card before submitting');
                 return;
             }
 
+            // Show loading state on submit button
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -566,11 +624,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 `;
             }
         });
+
+        // Add event listener for clear RFID button
+        const clearRfidBtn = getElement('clearRfidBtn');
+        if (clearRfidBtn) {
+            clearRfidBtn.addEventListener('click', clearRfid);
+        }
     }
 
     // RFID Handling
     function updateRfidStatus(type, message) {
-        const rfidStatus = document.getElementById('rfid_status');
+        const rfidStatus = getElement('rfid_status');
         if (!rfidStatus) return;
 
         const icons = {
@@ -596,30 +660,52 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
-                    uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
+        if (isFetching) return;
+        
+        isFetching = true;
+        
+        // Add timeout handling
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+        
+        fetch('/api/rfid/latest', { 
+            signal: controller.signal
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const uidInput = getElement('uid');
+            if (data && data.uid && uidInput) {
+                uidInput.value = data.uid;
+                updateRfidStatus('success', 'Card detected');
+            } else {
+                if (uidInput && !uidInput.value) {
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                 }
-                toggleClearButton();
-            })
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            if (error.name === 'AbortError') {
+                console.warn('RFID fetch request timed out');
+            } else {
+                console.error('Error fetching RFID:', error);
+                updateRfidStatus('error', 'Failed to detect RFID card');
+            }
+        })
+        .finally(() => {
+            clearTimeout(timeoutId);
+            isFetching = false;
+        });
     }
 
     function clearRfid() {
-        const uidInput = document.getElementById('uid');
-        const rfidStatus = document.getElementById('rfid_status');
-        const clearBtn = document.getElementById('clearRfidBtn');
+        const uidInput = getElement('uid');
+        const clearBtn = getElement('clearRfidBtn');
 
-        if (!uidInput || !rfidStatus || !clearBtn) {
+        if (!uidInput || !clearBtn) {
             updateRfidStatus('error', 'Form elements not found');
             return;
         }
@@ -630,14 +716,24 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Disable button during request
         clearBtn.disabled = true;
         clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
         updateRfidStatus('waiting', 'Clearing RFID...');
 
+        // Get CSRF token safely
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+        if (!csrfToken) {
+            updateRfidStatus('error', 'CSRF token not found');
+            clearBtn.disabled = false; 
+            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            return;
+        }
+
         fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'X-CSRF-TOKEN': csrfToken,
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
@@ -655,52 +751,73 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 updateRfidStatus('error', data.message || 'Failed to clear RFID');
             }
-            clearBtn.disabled = false;
-            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            toggleClearButton();
         })
         .catch(error => {
             console.error('Error clearing RFID:', error);
             updateRfidStatus('error', 'Failed to clear RFID: ' + error.message);
+        })
+        .finally(() => {
             clearBtn.disabled = false;
             clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
             toggleClearButton();
         });
     }
 
-function toggleClearButton() {
-    const uidInput = document.getElementById('uid');
-    const clearBtn = document.getElementById('clearRfidBtn');
+    function toggleClearButton() {
+        const uidInput = getElement('uid');
+        const clearBtn = getElement('clearRfidBtn');
 
-    if (uidInput && clearBtn) {
-        if (uidInput.value.trim() !== '') {
-            clearBtn.classList.remove('hidden');
-        } else {
-            clearBtn.classList.add('hidden');
+        if (uidInput && clearBtn) {
+            if (uidInput.value.trim() !== '') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
         }
     }
-}
 
     // Initialize
     function initialize() {
-        validateBirthdate();
-        setupMembershipHandlers();
-        setupFormHandlers();
+        try {
+            validateBirthdate();
+            setupMembershipHandlers();
+            setupFormHandlers();
 
-        // Handle session messages
-        @if (session('success'))
-            const uidInput = document.getElementById('uid');
-            if (uidInput) uidInput.value = '';
-            updateRfidStatus('success', 'Registration successful!');
-        @endif
+            // Handle session messages
+            @if (session('success'))
+                const uidInput = getElement('uid');
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', '{{ session('success') }}');
+            @endif
 
-        @if (session('error'))
-            updateRfidStatus('error', '{{ session('error') }}');
-        @endif
+            @if (session('error'))
+                updateRfidStatus('error', '{{ session('error') }}');
+            @endif
 
-        // Start RFID polling
-        fetchLatestUid();
-        rfidPollInterval = setInterval(fetchLatestUid, RFID_POLL_INTERVAL);
+            // Initial RFID status
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            
+            // Start RFID polling with retry mechanism
+            let retryCount = 0;
+            
+            fetchLatestUid();
+            
+            rfidPollInterval = setInterval(() => {
+                if (isFetching) {
+                    retryCount++;
+                    if (retryCount > MAX_RETRIES) {
+                        isFetching = false;
+                        retryCount = 0;
+                    }
+                    return;
+                }
+                
+                retryCount = 0;
+                fetchLatestUid();
+            }, RFID_POLL_INTERVAL);
+        } catch (error) {
+            console.error('Error initializing form:', error);
+        }
 
         // Cleanup
         window.addEventListener('beforeunload', () => {
@@ -711,6 +828,7 @@ function toggleClearButton() {
         });
     }
 
+    // Start everything
     initialize();
 });
 </script>
