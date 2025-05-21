@@ -213,122 +213,82 @@
             </div>
             
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-    <!-- Column 1, Row 1: Membership Type -->
-    <div>
-        <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
-        <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required>
-            <option value="" selected disabled>Select Membership Type</option>
-            <option value="custom">Custom Days</option>
-            <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days)</option>
-            <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days)</option>
-            <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days)</option>
-        </select>
-        
-        @error('membership_type')
-            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-        @enderror
-    </div>
-    
-    <!-- Column 2, Row 1: Payment Amount -->
-    <div>
-        <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount</label>
-        <input 
-            type="text" 
-            id="payment_amount" 
-            name="payment_amount" 
-            class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" 
-            readonly
-            style="box-shadow: none;"
-        >
-    </div>
-    
-    <!-- Column 1, Row 2: Custom Days (conditionally displayed) -->
-    <div id="customDaysContainer" class="hidden">
-        <label for="customDays" class="block text-gray-200 font-medium mb-2">Number of Days <span class="text-red-500">*</span></label>
-        <input type="number" id="customDays" name="custom_days" min="1" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent">
-        
-        @error('custom_days')
-            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-        @enderror
-    </div>
-    
-    <!-- Column 1, Row 2/3: Start Date (position changes based on custom days visibility) -->
-    <div class="start-date-container">
-        <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
-        <div class="relative">
-            <input 
-                type="date" 
-                id="startDate" 
-                name="start_date" 
-                class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
-                value="{{ old('start_date') ?? date('Y-m-d') }}" 
-                required
-            >
-        </div>
-
-        @error('start_date')
-            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-        @enderror
-    </div>
-
-    <!-- Column 2, Row 2/3: Expiration Date (position changes based on custom days visibility) -->
-    <div class="end-date-container">
-        <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
-        <div class="relative">
-            <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly>
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
+            <div>
+                <label for="membershipType" class="block text-gray-200 font-medium mb-2">Membership Type <span class="text-red-500">*</span></label>
+                <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required aria-describedby="membership_type_error">
+                    <option value="" selected disabled>Select Membership Type</option>
+                    <option value="custom" {{ old('membership_type') == 'custom' ? 'selected' : '' }}>Custom Days (₱{{ number_format($prices['session']->amount ?? 60, 2) }}/day)</option>
+                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Week (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
+                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
+                    <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days, ₱{{ number_format($prices['annual']->amount ?? 10000, 2) }})</option>
+                </select>
+                @error('membership_type')
+                    <span id="membership_type_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
             </div>
-        </div>
-        <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
-    </div>
 
-    <!-- Spans full width when Custom Days is visible, otherwise follows normal flow -->
-    <div class="rfid-container">
-        <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
-        <!-- Input with improved visual cues -->
-        <div class="relative">
-            <input 
-                id="uid" 
-                name="uid" 
-                class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all"
-                placeholder="Waiting for card tap..." 
-                readonly 
-            />
-        
-            <!-- Loading indicator -->
-            <div class="absolute inset-y-0 right-3 flex items-center">
-                <div id="rfid-loading" class="animate-pulse flex items-center">
-                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                    <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+            <div>
+                <label for="payment_amount" class="block text-gray-200 font-medium mb-2">Payment Amount (₱)</label>
+                <input type="text" id="payment_amount" name="payment_amount" class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" readonly style="box-shadow: none;">
+            </div>
+
+            <div id="customDaysContainer" class="hidden">
+                <label for="customDays" class="block text-gray-200 font-medium mb-2">Number of Days <span class="text-red-500">*</span></label>
+                <input type="number" id="customDays" name="custom_days" min="1" max="365" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('custom_days') }}" aria-describedby="custom_days_error">
+                @error('custom_days')
+                    <span id="custom_days_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="start-date-container">
+                <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input type="date" id="startDate" name="start_date" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" required aria-describedby="start_date_error">
                 </div>
-                
-                <!-- Clear button - Initially hidden -->
-                <button 
-                    id="clearRfidBtn" 
-                    type="button" 
-                    onclick="clearRfid()" 
-                    class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden"
-                    aria-label="Clear RFID input"
-                >
-                    &times;
-                </button>
+                @error('start_date')
+                    <span id="start_date_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
+            </div>
+
+            <div class="end-date-container">
+                <label for="endDate" class="block text-gray-200 font-medium mb-2">Expiration Date</label>
+                <div class="relative">
+                    <input type="text" id="endDate" name="expiry_date" placeholder="Calculated automatically" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly>
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
+            </div>
+
+            <div class="rfid-container">
+                <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
+                    <div class="absolute inset-y-0 right-3 flex items-center">
+                        <div id="rfid-loading" class="animate-pulse flex items-center">
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                        </div>
+                        <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                            ×
+                        </button>
+                    </div>
+                </div>
+                <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Please Tap Your Card...
+                </div>
+                @error('uid')
+                    <span id="uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
             </div>
         </div>
-        <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
-            Please Tap Your Card...
-        </div>
-        @error('rfid_uid')
-            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-        @enderror
-    </div>
-</div>
 
             <!-- Account Section -->
             <div class="p-6 border-t border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
@@ -397,30 +357,28 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // =============================================
-    // 1. Payment Amount Calculation
-    // =============================================
+    // Payment Amount Calculation
     const membershipType = document.getElementById("membershipType");
     const customDaysContainer = document.getElementById("customDaysContainer");
     const customDaysInput = document.getElementById("customDays");
     const paymentAmount = document.getElementById("payment_amount");
-    
+
     const paymentRates = {
-        "7": "300",   // 7-day weekly
-        "30": "1800", // 30-day monthly
-        "365": "2000" // 1-year membership
+        "7": {{ $prices['weekly']->amount ?? 300 }},
+        "30": {{ $prices['monthly']->amount ?? 850 }},
+        "365": {{ $prices['annual']->amount ?? 10000 }},
+        "custom": {{ $prices['session']->amount ?? 60 }}
     };
 
     function updatePaymentAmount() {
         if (membershipType.value === 'custom' && customDaysInput.value) {
-            // Calculate custom days payment (60 pesos per day)
-            paymentAmount.value = parseInt(customDaysInput.value) * 60;
+            const days = parseInt(customDaysInput.value);
+            paymentAmount.value = (days > 0 ? days * paymentRates['custom'] : 0).toFixed(2);
         } else {
-            paymentAmount.value = paymentRates[membershipType.value] || "0";
+            paymentAmount.value = (paymentRates[membershipType.value] || "0").toFixed(2);
         }
     }
 
-    // Toggle custom days input visibility
     function toggleCustomDays() {
         if (membershipType.value === 'custom') {
             customDaysContainer.classList.remove('hidden');
@@ -428,6 +386,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             customDaysContainer.classList.add('hidden');
             customDaysInput.removeAttribute('required');
+            customDaysInput.value = '';
         }
         updatePaymentAmount();
         updateEndDate();
@@ -437,32 +396,32 @@ document.addEventListener("DOMContentLoaded", function() {
         membershipType.addEventListener("change", toggleCustomDays);
         if (customDaysInput) {
             customDaysInput.addEventListener("input", function() {
+                if (this.value < 1) this.value = 1;
+                if (this.value > 365) this.value = 365;
                 updatePaymentAmount();
                 updateEndDate();
             });
         }
-        toggleCustomDays(); // Initialize on load
+        toggleCustomDays();
     }
 
-    // 2. Expiry Date Calculation
+    // Expiry Date Calculation
     function updateEndDate() {
-        const membershipType = document.getElementById('membershipType');
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
 
         if (startDateInput && startDateInput.value && membershipType && membershipType.value) {
             const startDate = new Date(startDateInput.value);
             let duration = 0;
-            
-            if (membershipType.value === 'custom' && customDaysInput.value) {
+
+            if (membershipType.value === 'custom' && customDaysInput && customDaysInput.value) {
                 duration = parseInt(customDaysInput.value);
             } else {
                 duration = parseInt(membershipType.value);
             }
-            
-            if (!isNaN(duration)) {
-                startDate.setDate(startDate.getDate() + duration);
-                
+
+            if (!isNaN(duration) && duration > 0) {
+                startDate.setDate(startDate.getDate() + duration - 1);
                 const day = String(startDate.getDate()).padStart(2, '0');
                 const month = String(startDate.getMonth() + 1).padStart(2, '0');
                 const year = startDate.getFullYear();
@@ -478,7 +437,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (startDateEl) startDateEl.addEventListener('change', updateEndDate);
     if (membershipTypeEl) membershipTypeEl.addEventListener('change', updateEndDate);
-    updateEndDate(); // Initialize on load
+    updateEndDate();
 
     // =============================================
     // 3. Form Handling
