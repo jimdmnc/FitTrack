@@ -34,15 +34,15 @@ class MembershipRegistrationController extends Controller
     {
         try {
             $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
-
+    
             $input = $request->all();
             if ($request->input('membership_type') !== 'custom') {
                 $input['custom_days'] = null;
             }
             $modifiedRequest = new Request($input);
-
+    
             $maxBirthdate = Carbon::today()->subYears(16)->format('Y-m-d');
-
+    
             $validatedData = $modifiedRequest->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
@@ -71,7 +71,7 @@ class MembershipRegistrationController extends Controller
                 ],
                 'generated_password' => 'required|string|min:8',
             ]);
-
+    
             $priceType = match ($validatedData['membership_type']) {
                 'custom' => 'session',
                 '7' => 'weekly',
@@ -79,9 +79,9 @@ class MembershipRegistrationController extends Controller
                 '365' => 'annual',
                 default => throw new \Exception('Invalid membership type'),
             };
-
+    
             $price = $prices[$priceType] ?? throw new \Exception("Price for {$priceType} not found");
-
+    
             $membershipDays = match ($validatedData['membership_type']) {
                 'custom' => $validatedData['custom_days'],
                 '7' => 7,
@@ -89,15 +89,15 @@ class MembershipRegistrationController extends Controller
                 '365' => 365,
                 default => throw new \Exception('Invalid membership type'),
             };
-
+    
             $paymentAmount = match ($validatedData['membership_type']) {
                 'custom' => $validatedData['custom_days'] * $price->amount,
                 '7', '30', '365' => $price->amount,
                 default => throw new \Exception('Invalid membership type'),
             };
-
+    
             $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $membershipDays) {
-                // Create user with membership_type
+                // Create user with all required fields
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
@@ -112,8 +112,9 @@ class MembershipRegistrationController extends Controller
                     'membership_type' => $validatedData['membership_type'] === 'custom' 
                         ? $validatedData['custom_days'] 
                         : $validatedData['membership_type'],
+                    'start_date' => $validatedData['start_date'], // Added this line
                 ]);
-
+    
                 // Create membership record
                 $user->memberships()->create([
                     'price_id' => $price->id,
@@ -124,25 +125,25 @@ class MembershipRegistrationController extends Controller
                         ->format('Y-m-d'),
                     'status' => 'active',
                 ]);
-
+    
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
                     'amount' => $paymentAmount,
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
-
+    
                 RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
-
+    
                 return $user;
             });
-
+    
             return redirect()->route('staff.membershipRegistration')
                 ->with([
                     'success' => 'Member registered successfully!',
                     'generated_password' => $validatedData['generated_password']
                 ]);
-
+    
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->route('staff.membershipRegistration')
                 ->withErrors($e->validator)
