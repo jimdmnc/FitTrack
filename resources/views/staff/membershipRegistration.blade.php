@@ -595,23 +595,52 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
 
-    function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
-                    uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
+    async function fetchLatestUid(retryCount = 0) {
+        if (isFetching) return;
+        isFetching = true;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
+
+        try {
+            const response = await fetch('/api/rfid/latest', {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json'
                 }
-                toggleClearButton();
-            })
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const uidInput = document.getElementById('uid');
+
+            if (data?.uid && uidInput) {
+                uidInput.value = data.uid;
+                updateRfidStatus('success', 'Card detected');
+            } else {
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('waiting', 'Please Tap Your Card...');
+            }
+            toggleClearButton();
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                if (retryCount < MAX_RETRIES) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    return fetchLatestUid(retryCount + 1);
+                }
+                updateRfidStatus('error', 'Request timed out. Please try again.');
+            } else {
+                console.error('RFID Fetch Error:', error);
+                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+            }
+        } finally {
+            isFetching = false;
+        }
     }
 
     async function clearRfid() {
