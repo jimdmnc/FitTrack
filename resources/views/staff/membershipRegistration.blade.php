@@ -585,7 +585,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
+                if (data && data.uid && uidInput) {
                     uidInput.value = data.uid;
                     updateRfidStatus('success', 'Card detected');
                 } else {
@@ -594,6 +594,10 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 toggleClearButton();
             })
+            .catch(error => {
+                console.error('RFID Fetch Error:', error);
+                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+            });
     }
 
     @if (session('success'))
