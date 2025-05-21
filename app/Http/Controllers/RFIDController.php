@@ -113,37 +113,30 @@ public function handleAttendance(Request $request)
             ->delete();
     }
 
-  // Fetch the latest unregistered RFID UID
-  public function getLatestRFID()
-  {
-      $latestRFID = DB::table('rfid_tags')
-          ->where('registered', 0) // Fetch only unregistered RFIDs
-          ->latest('created_at')
-          ->first();
+    // Fetch the latest RFID UID from the rfid_tags table
+    public function getLatestRFID()
+    {
+        $latestRFID = DB::table('rfid_tags')
+            ->where('registered', 0) // Fetch only registered RFIDs
+            ->latest('created_at') // Get the most recent entry
+            ->first();
+    
+        if (!$latestRFID) {
+            return response()->json(['error' => 'No registered RFID found.'], 404);
+        }
+    
+        return response()->json(['uid' => $latestRFID->uid]);
+    }
+    public function clear($uid)
+    {
+        $tag = RfidTag::where('uid', $uid)->first();
 
-      // Clean up unregistered tags older than 2 minutes
-      DB::table('rfid_tags')
-          ->where('registered', 0)
-          ->whereRaw('TIMESTAMPDIFF(MINUTE, created_at, NOW()) >= 2')
-          ->delete();
+        if (!$tag) {
+            return response()->json(['success' => false, 'message' => 'RFID not found'], 404);
+        }
 
-      if (!$latestRFID) {
-          return response()->json(['error' => 'No unregistered RFID found.'], 404);
-      }
+        $tag->delete(); // Or you can update registered to 0: $tag->update(['registered' => 0]);
 
-      return response()->json(['uid' => $latestRFID->uid]);
-  }
-
-  // Clear RFID tag
-  public function clear($uid)
-  {
-      $tag = RfidTag::where('uid', $uid)->where('registered', 0)->first();
-
-      if (!$tag) {
-          return response()->json(['success' => false, 'message' => 'Unregistered RFID not found or already assigned'], 404);
-      }
-
-      $tag->delete();
-      return response()->json(['success' => true, 'message' => 'RFID cleared']);
-  }
+        return response()->json(['success' => true, 'message' => 'RFID cleared']);
+    }
 }
