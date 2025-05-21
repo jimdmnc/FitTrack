@@ -117,7 +117,7 @@ public function handleAttendance(Request $request)
     public function getLatestRFID()
     {
         $latestRFID = DB::table('rfid_tags')
-            ->where('registered', 0) // Fetch only registered RFIDs
+            ->where('registered', 0) 
             ->latest('created_at') // Get the most recent entry
             ->first();
     
