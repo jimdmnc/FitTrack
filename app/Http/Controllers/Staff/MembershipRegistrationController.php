@@ -117,7 +117,7 @@ class MembershipRegistrationController extends Controller
                     'rfid_uid' => $validatedData['uid'],
                     'session_status' => 'pending', // Default status
                     'end_date' => Carbon::parse($validatedData['start_date'])
-                        ->addDays((int)$membershipDays)
+                        ->addDays((int)$membershipDays - 1)
                         ->format('Y-m-d'),
                 ]);
 
