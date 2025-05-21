@@ -330,97 +330,124 @@
     </div>
 </div>
 
-            <!-- Account Section -->
-            <div class="p-6 border-t border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
-                <h2 class="text-xl font-semibold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+        <!-- Account Section -->
+        <div class="p-6 border-t border-[#121212] bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e]">
+            <h2 class="text-xl font-semibold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Account Setup
+            </h2>
+            <p class="text-sm text-gray-300 mt-1 mb-4">Auto-generated password details</p>
+        </div>
+
+        <div class="p-6">
+            <div class="bg-[#ff5722] bg-opacity-10 p-4 rounded-lg border border-[#ff5722] mb-6">
+                <div class="flex">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722] mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                     </svg>
-                    Account Setup
-                </h2>
-                <p class="text-sm text-gray-300 mt-1 mb-4">Auto-generated password details</p>
-            </div>
-                
-            <div class="p-6">
-                <div class="bg-[#ff5722] bg-opacity-10 p-4 rounded-lg border border-[#ff5722] mb-6">
-                    <div class="flex">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722] mr-2 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-                        </svg>
-                        <div>
-                            <h3 class="text-sm font-medium text-gray-300">Password Information</h3>
-                            <p class="text-sm text-gray-300 mt-1">A password will be automatically generated based on the member's last name and birth date.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-[#1e1e1e] p-4 rounded-lg border border-[#121212] mb-6">
-                    <div class="flex justify-between items-center">
-                        <label for="password" class="block text-gray-200 font-medium">Generated Password</label>
-                        <span class="text-xs text-gray-300">Will be shown to the member</span>
-                    </div>
-                    <div class="relative mt-2">
-                        <input type="text" id="password" name="password" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly required>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                            </svg>
-                        </div>
+                    <div>
+                        <h3 class="text-sm font-medium text-gray-300">Password Information</h3>
+                        <p class="text-sm text-gray-300 mt-1">A password will be automatically generated based on the member's last name and birth date.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Submit Button -->
-            <div class="p-6 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-[#121212] shadow-lg">
-                <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                    <button type="button" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-full">
-                        <span class="flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6l1-1M5 7h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v0a2 2 0 002 2z" />
-                            </svg>
-                            Clear Form
-                        </span>
-                    </button>
-                    <button type="submit" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
+            <div class="bg-[#1e1e1e] p-4 rounded-lg border border-[#121212] mb-6">
+                <div class="flex justify-between items-center">
+                    <label for="password" class="block text-gray-200 font-medium">Generated Password</label>
+                    <span class="text-xs text-gray-300">Will be shown to the member</span>
+                </div>
+                <div class="relative mt-2">
+                    <input type="text" id="password" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg cursor-default pointer-events-none select-none" readonly aria-live="polite" value="{{ old('generated_password') ?? session('generated_password') ?? '' }}">
+                    <input type="hidden" id="generated_password" name="generated_password" value="{{ old('generated_password') ?? session('generated_password') ?? '' }}">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                        </svg>
+                    </div>
+                </div>
+                @error('generated_password')
+                    <span id="generated_password_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="p-6 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-[#121212] shadow-lg">
+            <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+                <button type="button" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-full">
+                    <span class="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6l1-1M5 7h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v0a2 2 0 002 2z" />
+                        </svg>
+                        Clear Form
+                    </span>
+                </button>
+                <button type="submit" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
-                        Register New Member
-                    </button>
-                </div>
+                    Register New Member
+                </button>
             </div>
-</form>
-
-    </div>
+        </div>
+    </form>
 </div>
-
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // =============================================
-    // 1. Payment Amount Calculation
-    // =============================================
+    // Birthdate Validation
+    const birthdateInput = document.getElementById("birthdate");
+    const maxBirthdate = "{{ $maxBirthdate }}"; // Dynamic max birthdate
+    const today = "{{ $today }}"; // Use the today variable passed from controller
+
+    if (birthdateInput) {
+        // Set max attribute dynamically
+        birthdateInput.setAttribute("max", maxBirthdate);
+
+        // Real-time validation
+        birthdateInput.addEventListener("input", function() {
+            const selectedDate = new Date(this.value);
+            const maxDate = new Date(maxBirthdate);
+            const todayDate = new Date(today);
+
+            if (selectedDate > maxDate) {
+                this.setCustomValidity("Member must be at least 16 years old.");
+                this.reportValidity();
+            } else if (selectedDate >= todayDate) {
+                this.setCustomValidity("Birthdate cannot be today or in the future.");
+                this.reportValidity();
+            } else {
+                this.setCustomValidity("");
+            }
+            updatePassword();
+        });
+    }
+
+    // Payment Amount Calculation
     const membershipType = document.getElementById("membershipType");
     const customDaysContainer = document.getElementById("customDaysContainer");
     const customDaysInput = document.getElementById("customDays");
     const paymentAmount = document.getElementById("payment_amount");
-    
+
     const paymentRates = {
-        "7": "300",   // 7-day weekly
-        "30": "1800", // 30-day monthly
-        "365": "2000" // 1-year membership
+        "7": {{ $prices['weekly']->amount ?? 300 }},
+        "30": {{ $prices['monthly']->amount ?? 850 }},
+        "365": {{ $prices['annual']->amount ?? 10000 }},
+        "custom": {{ $prices['session']->amount ?? 60 }}
     };
 
     function updatePaymentAmount() {
         if (membershipType.value === 'custom' && customDaysInput.value) {
-            // Calculate custom days payment (60 pesos per day)
-            paymentAmount.value = parseInt(customDaysInput.value) * 60;
+            const days = parseInt(customDaysInput.value);
+            paymentAmount.value = (days > 0 ? days * paymentRates['custom'] : 0).toFixed(2);
         } else {
-            paymentAmount.value = paymentRates[membershipType.value] || "0";
+            paymentAmount.value = (paymentRates[membershipType.value] || "0").toFixed(2);
         }
     }
 
-    // Toggle custom days input visibility
     function toggleCustomDays() {
         if (membershipType.value === 'custom') {
             customDaysContainer.classList.remove('hidden');
@@ -428,6 +455,7 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             customDaysContainer.classList.add('hidden');
             customDaysInput.removeAttribute('required');
+            customDaysInput.value = '';
         }
         updatePaymentAmount();
         updateEndDate();
@@ -437,32 +465,32 @@ document.addEventListener("DOMContentLoaded", function() {
         membershipType.addEventListener("change", toggleCustomDays);
         if (customDaysInput) {
             customDaysInput.addEventListener("input", function() {
+                if (this.value < 1) this.value = 1;
+                if (this.value > 365) this.value = 365;
                 updatePaymentAmount();
                 updateEndDate();
             });
         }
-        toggleCustomDays(); // Initialize on load
+        toggleCustomDays();
     }
 
-    // 2. Expiry Date Calculation
+    // Expiry Date Calculation
     function updateEndDate() {
-        const membershipType = document.getElementById('membershipType');
         const startDateInput = document.getElementById('startDate');
         const endDateInput = document.getElementById('endDate');
 
         if (startDateInput && startDateInput.value && membershipType && membershipType.value) {
             const startDate = new Date(startDateInput.value);
             let duration = 0;
-            
-            if (membershipType.value === 'custom' && customDaysInput.value) {
+
+            if (membershipType.value === 'custom' && customDaysInput && customDaysInput.value) {
                 duration = parseInt(customDaysInput.value);
             } else {
                 duration = parseInt(membershipType.value);
             }
-            
-            if (!isNaN(duration)) {
-                startDate.setDate(startDate.getDate() + duration);
-                
+
+            if (!isNaN(duration) && duration > 0) {
+                startDate.setDate(startDate.getDate() + duration - 1);
                 const day = String(startDate.getDate()).padStart(2, '0');
                 const month = String(startDate.getMonth() + 1).padStart(2, '0');
                 const year = startDate.getFullYear();
@@ -478,15 +506,67 @@ document.addEventListener("DOMContentLoaded", function() {
     
     if (startDateEl) startDateEl.addEventListener('change', updateEndDate);
     if (membershipTypeEl) membershipTypeEl.addEventListener('change', updateEndDate);
-    updateEndDate(); // Initialize on load
+    updateEndDate();
 
-    // =============================================
-    // 3. Form Handling
-    // =============================================
+    // Password Generation
+    function updatePassword() {
+        const lastNameInput = document.getElementById("last_name");
+        const birthdateInput = document.getElementById("birthdate");
+        const passwordField = document.getElementById("password");
+        const hiddenPasswordField = document.getElementById("generated_password");
+        
+        if (!lastNameInput || !birthdateInput || !passwordField || !hiddenPasswordField) {
+            return;
+        }
+
+        const lastNameValue = lastNameInput.value.trim();
+        const birthdateValue = birthdateInput.value;
+
+        if (!lastNameValue || !birthdateValue) {
+            passwordField.value = '';
+            hiddenPasswordField.value = '';
+            passwordField.setAttribute('aria-label', 'Generated password is empty');
+            return;
+        }
+
+        // Sanitize last name: remove non-alphanumeric, convert to lowercase
+        const sanitizedLastName = lastNameValue.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+        if (!sanitizedLastName) {
+            passwordField.value = '';
+            hiddenPasswordField.value = '';
+            passwordField.setAttribute('aria-label', 'Generated password is empty due to invalid last name');
+            return;
+        }
+
+        // Validate birthdate
+        const selectedDate = new Date(birthdateValue);
+        const maxDate = new Date(maxBirthdate);
+        const todayDate = new Date(today);
+
+        if (selectedDate > maxDate || selectedDate >= todayDate || isNaN(selectedDate)) {
+            passwordField.value = '';
+            hiddenPasswordField.value = '';
+            passwordField.setAttribute('aria-label', 'Generated password is empty due to invalid birthdate');
+            return;
+        }
+
+        // Format birthdate as MMDDYYYY
+        const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
+        const day = String(selectedDate.getDate()).padStart(2, '0');
+        const year = String(selectedDate.getFullYear());
+
+        // Generate password
+        const generatedPassword = `${sanitizedLastName}${month}${day}${year}`;
+        passwordField.value = generatedPassword;
+        hiddenPasswordField.value = generatedPassword;
+        passwordField.setAttribute('aria-label', `Generated password is ${generatedPassword}`);
+    }
+
+    // Form Handling
     const form = document.getElementById('registrationForm');
     
     if (form) {
-        // Clear form functionality
         const clearButton = form.querySelector('button[type="button"]');
         if (clearButton) {
             clearButton.addEventListener('click', function() {
@@ -494,31 +574,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     form.reset();
                     document.getElementById('endDate').value = '';
                     document.getElementById('password').value = '';
+                    document.getElementById('generated_password').value = '';
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                     updatePaymentAmount();
                     updateEndDate();
-                    toggleCustomDays(); // Reset custom days visibility
+                    toggleCustomDays();
                 }
             });
-        }
-
-        // Password Generation
-        function updatePassword() {
-            const lastName = document.getElementById("last_name");
-            const birthdate = document.getElementById("birthdate");
-            const passwordField = document.getElementById("password");
-            
-            if (lastName && birthdate && passwordField) {
-                const lastNameValue = lastName.value.toLowerCase();
-                const birthdateValue = birthdate.value;
-                
-                if (lastNameValue && birthdateValue) {
-                    const dateParts = birthdateValue.split("-");
-                    passwordField.value = `${lastNameValue}${dateParts[1]}${dateParts[2]}${dateParts[0]}`;
-                } else {
-                    passwordField.value = '';
-                }
-            }
         }
 
         const lastNameInput = document.getElementById("last_name");
@@ -526,11 +588,11 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (lastNameInput) lastNameInput.addEventListener("input", updatePassword);
         if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
-        updatePassword(); // Initialize on load
+        
+        // Initialize password on page load if old inputs exist
+        updatePassword();
 
-        // Form submission loading state
         form.addEventListener('submit', function(e) {
-            // Validate custom days if selected
             if (membershipType.value === 'custom' && (!customDaysInput.value || parseInt(customDaysInput.value) <= 0)) {
                 e.preventDefault();
                 alert('Please enter a valid number of days for custom membership');
@@ -551,9 +613,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // =============================================
-    // 4. RFID Handling
-    // =============================================
+    // RFID Handling
     function updateRfidStatus(type, message) {
         const rfidStatus = document.getElementById('rfid_status');
         if (!rfidStatus) return;
@@ -588,7 +648,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
+                if (data && data.uid && uidInput) {
                     uidInput.value = data.uid;
                     updateRfidStatus('success', 'Card detected');
                 } else {
@@ -597,9 +657,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 toggleClearButton();
             })
+            .catch(error => {
+                console.error('RFID Fetch Error:', error);
+                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+            });
     }
 
-    // Handle session messages
     @if (session('success'))
         const uidInput = document.getElementById('uid');
         if (uidInput) uidInput.value = '';
@@ -610,75 +673,57 @@ document.addEventListener("DOMContentLoaded", function() {
         updateRfidStatus('error', '{{ session('error') }}');
     @endif
 
-    // Initialize and poll
     fetchLatestUid();
     const rfidPollInterval = setInterval(fetchLatestUid, 2000);
 
-    // Clean up interval when leaving page
     window.addEventListener('beforeunload', function() {
         clearInterval(rfidPollInterval);
     });
+
+    function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
+
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
+        }
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
+
+    function toggleClearButton() {
+        const uidInput = document.getElementById('uid');
+        const clearBtn = document.getElementById('clearRfidBtn');
+
+        if (uidInput && clearBtn) {
+            if (uidInput.value.trim() !== '') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
+            }
+        }
+    }
 });
-
-function clearRfid() {
-    const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
-
-    if (!uid) {
-        updateRfidStatus('error', 'No RFID to clear');
-        return;
-    }
-
-    fetch(`/api/rfid/clear/${uid}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            uidInput.value = '';
-            updateRfidStatus('success', 'RFID cleared');
-        } else {
-            updateRfidStatus('error', data.message || 'Failed to clear RFID');
-        }
-        toggleClearButton();
-    })
-    .catch(error => {
-        console.error(error);
-        updateRfidStatus('error', 'Request failed');
-    });
-}
-
-function toggleClearButton() {
-    const uidInput = document.getElementById('uid');
-    const clearBtn = document.getElementById('clearRfidBtn');
-
-    if (uidInput && clearBtn) {
-        if (uidInput.value.trim() !== '') {
-            clearBtn.classList.remove('hidden');
-        } else {
-            clearBtn.classList.add('hidden');
-        }
-    }
-}
-
-
-</script>
-
-
-<script>
-    document.getElementById('membershipType').addEventListener('change', function() {
-        const customDaysContainer = document.getElementById('customDaysContainer');
-        if (this.value === 'custom') {
-            customDaysContainer.classList.remove('hidden');
-            document.getElementById('customDays').setAttribute('required', 'required');
-        } else {
-            customDaysContainer.classList.add('hidden');
-            document.getElementById('customDays').removeAttribute('required');
-        }
-    });
 </script>
 @endsection
