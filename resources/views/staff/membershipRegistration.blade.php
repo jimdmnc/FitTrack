@@ -675,14 +675,18 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 }
 
-    function toggleClearButton() {
-        const uidInput = document.getElementById('uid');
-        const clearBtn = document.getElementById('clearRfidBtn');
+function toggleClearButton() {
+    const uidInput = document.getElementById('uid');
+    const clearBtn = document.getElementById('clearRfidBtn');
 
-        if (uidInput && clearBtn) {
-            clearBtn.classList.toggle('hidden', !uidInput.value.trim());
+    if (uidInput && clearBtn) {
+        if (uidInput.value.trim() !== '') {
+            clearBtn.classList.remove('hidden');
+        } else {
+            clearBtn.classList.add('hidden');
         }
     }
+}
 
     // Initialize
     function initialize() {
