@@ -595,7 +595,7 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
 
-    async function fetchLatestUid(retryCount = 0) {
+    function fetchLatestUid(retryCount = 0) {
         if (isFetching) return;
         isFetching = true;
 
