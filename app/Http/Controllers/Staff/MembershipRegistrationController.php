@@ -18,16 +18,16 @@ class MembershipRegistrationController extends Controller
 {
     public function index()
     {
-        $prices = [
-            'session' => (object)['amount' => 60],
-            'weekly' => (object)['amount' => 300],
-            'monthly' => (object)['amount' => 850],
-            'annual' => (object)['amount' => 10000],
-        ];
-        $today = Carbon::today()->toDateString();
-        $maxBirthdate = Carbon::today()->subYears(16)->toDateString();
-
-        return view('staff.membershipRegistration', compact('prices', 'today', 'maxBirthdate'));
+        $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
+        if (!$prices->has('session')) {
+            return redirect()->route('staff.membershipRegistration')
+                ->with('error', 'Session price not configured. Please contact the administrator.');
+        }
+        return view('staff.membershipRegistration', [
+            'prices' => $prices,
+            'maxBirthdate' => Carbon::today()->subYears(16)->format('Y-m-d'),
+            'today' => Carbon::today()->format('Y-m-d'), // Pass today to the view
+        ]);
     }
 
     public function store(Request $request)
