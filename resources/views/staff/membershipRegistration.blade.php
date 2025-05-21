@@ -612,7 +612,7 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
 
-    async     function fetchLatestUid() {
+    async function fetchLatestUid() {
         fetch('/api/rfid/latest')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
