@@ -127,38 +127,16 @@ public function handleAttendance(Request $request)
     
         return response()->json(['uid' => $latestRFID->uid]);
     }
-    public function clearRfid($uid)
+    public function clear($uid)
     {
-        try {
-            // Validate UID format (assuming it's a string up to 30 characters)
-            if (empty($uid) || strlen($uid) > 30) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Invalid RFID UID'
-                ], 400);
-            }
+        $tag = RfidTag::where('uid', $uid)->first();
 
-            $deleted = DB::table('rfid_tags')
-                ->where('uid', $uid)
-                ->delete();
-
-            if ($deleted) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'RFID cleared successfully'
-                ], 200);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'RFID not found in database'
-            ], 404);
-        } catch (\Exception $e) {
-            Log::error('Error clearing RFID: ' . $e->getMessage(), ['uid' => $uid]);
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred while clearing the RFID'
-            ], 500);
+        if (!$tag) {
+            return response()->json(['success' => false, 'message' => 'RFID not found'], 404);
         }
+
+        $tag->delete(); // Or you can update registered to 0: $tag->update(['registered' => 0]);
+
+        return response()->json(['success' => true, 'message' => 'RFID cleared']);
     }
 }
