@@ -251,7 +251,7 @@
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
                         </div>
                         <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
-                            ×
+                            X
                         </button>
                     </div>
                 </div>
