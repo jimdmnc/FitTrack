@@ -643,36 +643,90 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    function clearRfid() {
+    async function clearRfid() {
     const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
+    if (!uidInput) {
+        updateRfidStatus('error', 'RFID input field not found');
+        return;
+    }
 
+    const uid = uidInput.value.trim();
     if (!uid) {
         updateRfidStatus('error', 'No RFID to clear');
         return;
     }
 
-    fetch(`/api/rfid/clear/${uid}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
+    const csrfTokenMeta = document.querySelector('meta[name="csrf-token"]');
+    if (!csrfTokenMeta) {
+        updateRfidStatus('error', 'CSRF token not found');
+        console.error('CSRF token meta tag missing');
+        return;
+    }
+
+    const csrfToken = csrfTokenMeta.getAttribute('content');
+    if (!csrfToken) {
+        updateRfidStatus('error', 'Invalid CSRF token');
+        console.error('CSRF token is empty or invalid');
+        return;
+    }
+
+    const clearBtn = document.getElementById('clearRfidBtn');
+    if (clearBtn) {
+        clearBtn.disabled = true;
+        clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+
+    try {
+        // Pause RFID polling to avoid race conditions
+        if (rfidPollInterval) {
+            clearInterval(rfidPollInterval);
+            rfidPollInterval = null;
+        }
+
+        const response = await fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            signal: controller.signal,
+        });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
         if (data.success) {
             uidInput.value = '';
-            updateRfidStatus('success', 'RFID cleared');
+            updateRfidStatus('success', 'RFID cleared successfully');
         } else {
             updateRfidStatus('error', data.message || 'Failed to clear RFID');
         }
+    } catch (error) {
+        if (error.name === 'AbortError') {
+            updateRfidStatus('error', 'Request timed out. Please try again.');
+        } else {
+            console.error('Clear RFID Error:', error);
+            updateRfidStatus('error', error.message || 'Failed to clear RFID');
+        }
+    } finally {
+        if (clearBtn) {
+            clearBtn.disabled = false;
+            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
         toggleClearButton();
-    })
-    .catch(error => {
-        console.error(error);
-        updateRfidStatus('error', 'Request failed');
-    });
+
+        // Resume RFID polling
+        if (!rfidPollInterval) {
+            rfidPollInterval = setInterval(fetchLatestUid, RFID_POLL_INTERVAL);
+        }
+    }
 }
 
     function toggleClearButton() {
