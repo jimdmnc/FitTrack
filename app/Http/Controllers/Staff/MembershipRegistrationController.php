@@ -33,17 +33,7 @@ class MembershipRegistrationController extends Controller
     public function store(Request $request)
     {
         try {
-            $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])->get()->keyBy('type');
-    
-            $input = $request->all();
-            if ($request->input('membership_type') !== 'custom') {
-                $input['custom_days'] = null;
-            }
-            $modifiedRequest = new Request($input);
-    
-            $maxBirthdate = Carbon::today()->subYears(16)->format('Y-m-d');
-    
-            $validatedData = $modifiedRequest->validate([
+            $validatedData = $request->validate([
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'email' => [
@@ -54,78 +44,69 @@ class MembershipRegistrationController extends Controller
                     Rule::unique('users')
                 ],
                 'gender' => 'required|string|in:male,female,other',
-                'phone_number' => [
-                    'required',
-                    'digits:11',
-                    'regex:/^09\d{9}$/'
-                ],
-                'membership_type' => 'required|string|in:custom,7,30,365',
-                'custom_days' => 'nullable|integer|min:1|max:365|required_if:membership_type,custom',
+                'phone_number' => 'required|string|max:15',
+                'membership_type' => 'required|string|in:custom,7,30,365', // Add 'custom' to allowed values
+                'custom_days' => 'required_if:membership_type,custom|integer|min:1',
                 'start_date' => 'required|date|after_or_equal:today',
-                'birthdate' => ['required', 'date', 'before:today', "before_or_equal:{$maxBirthdate}"],
+                'birthdate' => 'required|date|before:today',
                 'uid' => [
                     'required',
                     'string',
                     'max:255',
                     Rule::unique('users', 'rfid_uid')
                 ],
-                'generated_password' => 'required|string|min:8',
             ]);
     
-            $priceType = match ($validatedData['membership_type']) {
-                'custom' => 'session',
-                '7' => 'weekly',
-                '30' => 'monthly',
-                '365' => 'annual',
-                default => throw new \Exception('Invalid membership type'),
-            };
+            // Membership payment rates
+            $paymentRates = [
+                "7" => 300,   // 7-day weekly
+                "30" => 800, // 30-day monthly
+                "365" => 2000 // 1-year membership
+            ];
     
-            $price = $prices[$priceType] ?? throw new \Exception("Price for {$priceType} not found");
+            // Calculate payment amount
+            if ($validatedData['membership_type'] === 'custom') {
+                $days = $validatedData['custom_days'];
+                $paymentAmount = $days * 60; // 60 pesos per day
+                $membershipDays = $days;
+            } else {
+                $paymentAmount = $paymentRates[$validatedData['membership_type']] ?? 0;
+                $membershipDays = $validatedData['membership_type'];
+            }
     
-            $membershipDays = match ($validatedData['membership_type']) {
-                'custom' => $validatedData['custom_days'],
-                '7' => 7,
-                '30' => 30,
-                '365' => 365,
-                default => throw new \Exception('Invalid membership type'),
-            };
+            // Generate password
+            $lastName = strtolower($validatedData['last_name']);
+            $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
+            $generatedPassword = $lastName . $birthdate;
     
-            $paymentAmount = match ($validatedData['membership_type']) {
-                'custom' => $validatedData['custom_days'] * $price->amount,
-                '7', '30', '365' => $price->amount,
-                default => throw new \Exception('Invalid membership type'),
-            };
-    
-            $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $membershipDays) {
-                // Create user with all required fields
+            // Use transaction for data consistency
+            DB::transaction(function () use ($validatedData, $paymentAmount, $generatedPassword, $membershipDays) {
+                // Create user with default session_status as 'pending'
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'phone_number' => $validatedData['phone_number'],
-                    'birthdate' => $validatedData['birthdate'],
-                    'password' => Hash::make($validatedData['generated_password']),
-                    'role' => 'user',
-                    'rfid_uid' => $validatedData['uid'],
-                    'session_status' => 'approved',
                     'membership_type' => $validatedData['membership_type'] === 'custom' 
                         ? $validatedData['custom_days'] 
                         : $validatedData['membership_type'],
-                    'start_date' => $validatedData['start_date'], // Added this line
-                ]);
-    
-                // Create membership record
-                $user->memberships()->create([
-                    'price_id' => $price->id,
-                    'amount_paid' => $paymentAmount,
                     'start_date' => $validatedData['start_date'],
+                    'birthdate' => $validatedData['birthdate'],
+                    'password' => Hash::make($generatedPassword),
+                    'role' => 'user',
+                    'rfid_uid' => $validatedData['uid'],
+                    'session_status' => 'pending', // Default status
                     'end_date' => Carbon::parse($validatedData['start_date'])
-                        ->addDays((int)$membershipDays - 1)
+                        ->addDays((int)$membershipDays)
                         ->format('Y-m-d'),
-                    'status' => 'active',
                 ]);
     
+                // After the user is created, change session_status to 'approved'
+                $user->session_status = 'approved';
+                $user->save();
+    
+                // Create payment record
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
                     'amount' => $paymentAmount,
@@ -133,15 +114,14 @@ class MembershipRegistrationController extends Controller
                     'payment_date' => now(),
                 ]);
     
+                // Update RFID tag
                 RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
-    
-                return $user;
             });
     
             return redirect()->route('staff.membershipRegistration')
                 ->with([
                     'success' => 'Member registered successfully!',
-                    'generated_password' => $validatedData['generated_password']
+                    'generated_password' => $generatedPassword
                 ]);
     
         } catch (\Illuminate\Validation\ValidationException $e) {
