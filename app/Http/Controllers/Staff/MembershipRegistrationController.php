@@ -97,6 +97,7 @@ class MembershipRegistrationController extends Controller
             };
 
             $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $membershipDays) {
+                // Create user with membership_type
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
@@ -108,8 +109,12 @@ class MembershipRegistrationController extends Controller
                     'role' => 'user',
                     'rfid_uid' => $validatedData['uid'],
                     'session_status' => 'approved',
+                    'membership_type' => $validatedData['membership_type'] === 'custom' 
+                        ? $validatedData['custom_days'] 
+                        : $validatedData['membership_type'],
                 ]);
 
+                // Create membership record
                 $user->memberships()->create([
                     'price_id' => $price->id,
                     'amount_paid' => $paymentAmount,
