@@ -103,11 +103,18 @@ class MembershipRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'phone_number' => $validatedData['phone_number'],
+                    'membership_type' => $validatedData['membership_type'] === 'custom' 
+                        ? $validatedData['custom_days'] 
+                        : $validatedData['membership_type'],
+                    'start_date' => $validatedData['start_date'],
                     'birthdate' => $validatedData['birthdate'],
-                    'password' => Hash::make($validatedData['generated_password']),
+                    'password' => Hash::make($generatedPassword),
                     'role' => 'user',
                     'rfid_uid' => $validatedData['uid'],
-                    'session_status' => 'approved',
+                    'session_status' => 'pending', // Default status
+                    'end_date' => Carbon::parse($validatedData['start_date'])
+                        ->addDays((int)$membershipDays)
+                        ->format('Y-m-d'),
                 ]);
 
                 $user->memberships()->create([
