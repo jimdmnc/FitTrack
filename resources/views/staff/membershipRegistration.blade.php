@@ -615,36 +615,36 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function clearRfid() {
-    const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
 
-    if (!uid) {
-        updateRfidStatus('error', 'No RFID to clear');
-        return;
-    }
-
-    fetch(`/api/rfid/clear/${uid}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            uidInput.value = '';
-            updateRfidStatus('success', 'RFID cleared');
-        } else {
-            updateRfidStatus('error', data.message || 'Failed to clear RFID');
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
         }
-        toggleClearButton();
-    })
-    .catch(error => {
-        console.error(error);
-        updateRfidStatus('error', 'Request failed');
-    });
-}
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
 
 function toggleClearButton() {
     const uidInput = document.getElementById('uid');
