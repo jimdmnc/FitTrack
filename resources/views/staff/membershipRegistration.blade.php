@@ -337,14 +337,12 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Birthdate Validation
     const birthdateInput = document.getElementById("birthdate");
-    const maxBirthdate = "{{ $maxBirthdate }}"; // Dynamic max birthdate
-    const today = "{{ $today }}"; // Use the today variable passed from controller
+    const maxBirthdate = "{{ $maxBirthdate }}";
+    const today = "{{ $today }}";
 
     if (birthdateInput) {
-        // Set max attribute dynamically
         birthdateInput.setAttribute("max", maxBirthdate);
 
-        // Real-time validation
         birthdateInput.addEventListener("input", function() {
             const selectedDate = new Date(this.value);
             const maxDate = new Date(maxBirthdate);
@@ -466,7 +464,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // Sanitize last name: remove non-alphanumeric, convert to lowercase
         const sanitizedLastName = lastNameValue.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
 
         if (!sanitizedLastName) {
@@ -476,7 +473,6 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // Validate birthdate
         const selectedDate = new Date(birthdateValue);
         const maxDate = new Date(maxBirthdate);
         const todayDate = new Date(today);
@@ -488,12 +484,10 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // Format birthdate as MMDDYYYY
         const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const day = String(selectedDate.getDate()).padStart(2, '0');
         const year = String(selectedDate.getFullYear());
 
-        // Generate password
         const generatedPassword = `${sanitizedLastName}${month}${day}${year}`;
         passwordField.value = generatedPassword;
         hiddenPasswordField.value = generatedPassword;
@@ -516,6 +510,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     updatePaymentAmount();
                     updateEndDate();
                     toggleCustomDays();
+                    clearRfid(); // Clear RFID on form reset
                 }
             });
         }
@@ -526,7 +521,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (lastNameInput) lastNameInput.addEventListener("input", updatePassword);
         if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
         
-        // Initialize password on page load if old inputs exist
         updatePassword();
 
         form.addEventListener('submit', function(e) {
@@ -551,6 +545,9 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // RFID Handling
+    let lastUid = null; // Track last fetched UID to avoid unnecessary updates
+    let isPolling = false; // Prevent overlapping fetches
+
     function updateRfidStatus(type, message) {
         const rfidStatus = document.getElementById('rfid_status');
         if (!rfidStatus) return;
@@ -578,18 +575,32 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function fetchLatestUid() {
-        fetch('/api/rfid/latest')
+        if (isPolling) return; // Prevent overlapping fetches
+        isPolling = true;
+
+        fetch('/api/rfid/latest', {
+            headers: {
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
             .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 return response.json();
             })
             .then(data => {
                 const uidInput = document.getElementById('uid');
-                if (data && data.uid && uidInput) {
+                if (!uidInput) return;
+
+                if (data && data.uid && data.uid !== lastUid) {
+                    lastUid = data.uid;
                     uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
+                    uidInput.setAttribute('aria-label', `RFID UID: ${data.uid}`);
+                    updateRfidStatus('success', 'Card detected successfully');
+                } else if (!data.uid && lastUid) {
+                    lastUid = null;
+                    uidInput.value = '';
+                    uidInput.setAttribute('aria-label', 'Waiting for card tap');
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                 }
                 toggleClearButton();
@@ -597,25 +608,12 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => {
                 console.error('RFID Fetch Error:', error);
                 updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+                toggleClearButton();
+            })
+            .finally(() => {
+                isPolling = false;
             });
     }
-
-    @if (session('success'))
-        const uidInput = document.getElementById('uid');
-        if (uidInput) uidInput.value = '';
-        updateRfidStatus('success', 'Registration successful!');
-    @endif
-
-    @if (session('error'))
-        updateRfidStatus('error', '{{ session('error') }}');
-    @endif
-
-    fetchLatestUid();
-    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
-
-    window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
 
     function clearRfid() {
         const uidInput = document.getElementById('uid');
@@ -633,20 +631,21 @@ document.addEventListener("DOMContentLoaded", function() {
                 'Accept': 'application/json',
             },
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared');
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-            toggleClearButton();
-        })
-        .catch(error => {
-            console.error(error);
-            updateRfidStatus('error', 'Request failed');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    uidInput.value = '';
+                    lastUid = null;
+                    updateRfidStatus('success', 'RFID cleared successfully');
+                } else {
+                    updateRfidStatus('error', data.message || 'Failed to clear RFID');
+                }
+                toggleClearButton();
+            })
+            .catch(error => {
+                console.error('Clear RFID Error:', error);
+                updateRfidStatus('error', 'Request failed');
+            });
     }
 
     function toggleClearButton() {
@@ -654,13 +653,32 @@ document.addEventListener("DOMContentLoaded", function() {
         const clearBtn = document.getElementById('clearRfidBtn');
 
         if (uidInput && clearBtn) {
-            if (uidInput.value.trim() !== '') {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
+            clearBtn.classList.toggle('hidden', !uidInput.value.trim());
         }
     }
+
+    // Initialize RFID status based on session
+    @if (session('success'))
+        const uidInput = document.getElementById('uid');
+        if (uidInput) {
+            uidInput.value = '';
+            lastUid = null;
+            updateRfidStatus('success', 'Registration successful!');
+        }
+    @endif
+
+    @if (session('error'))
+        updateRfidStatus('error', '{{ session('error') }}');
+    @endif
+
+    // Start polling for RFID
+    fetchLatestUid();
+    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+
+    // Stop polling on page unload
+    window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
 });
 </script>
 @endsection
