@@ -753,18 +753,18 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    function toggleClearButton() {
-        const uidInput = getElement('uid');
-        const clearBtn = getElement('clearRfidBtn');
+    // function toggleClearButton() {
+    //     const uidInput = getElement('uid');
+    //     const clearBtn = getElement('clearRfidBtn');
 
-        if (uidInput && clearBtn) {
-            if (uidInput.value.trim() !== '') {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
-        }
-    }
+    //     if (uidInput && clearBtn) {
+    //         if (uidInput.value.trim() !== '') {
+    //             clearBtn.classList.remove('hidden');
+    //         } else {
+    //             clearBtn.classList.add('hidden');
+    //         }
+    //     }
+    // }
 
     // Initialize
     function initialize() {
