@@ -95,8 +95,12 @@ class MembershipRegistrationController extends Controller
                 '7', '30', '365' => $price->amount,
                 default => throw new \Exception('Invalid membership type'),
             };
+            // Generate password
+            $lastName = strtolower($validatedData['last_name']);
+            $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
+            $generatedPassword = $lastName . $birthdate;
 
-            $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $membershipDays) {
+            $user = DB::transaction(function () use ($validatedData, $paymentAmount, $price, $generatedPassword, $membershipDays) {
                 $user = User::create([
                     'first_name' => $validatedData['first_name'],
                     'last_name' => $validatedData['last_name'],
