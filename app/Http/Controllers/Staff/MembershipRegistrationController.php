@@ -27,7 +27,7 @@ class MembershipRegistrationController extends Controller
         $today = Carbon::today()->toDateString();
         $maxBirthdate = Carbon::today()->subYears(16)->toDateString();
 
-        return view('membership.registration', compact('prices', 'today', 'maxBirthdate'));
+        return view('staff.membershipRegistration', compact('prices', 'today', 'maxBirthdate'));
     }
 
     public function store(Request $request)
