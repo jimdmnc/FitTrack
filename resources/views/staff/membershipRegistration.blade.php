@@ -702,13 +702,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function clearRfid() {
-        const uidInput = getElement('uid');
-        const clearBtn = getElement('clearRfidBtn');
+        const uidInput = document.getElementById('uid');
+        const rfidStatus = document.getElementById('rfid_status');
+        const clearBtn = document.getElementById('clearRfidBtn');
 
-        if (!uidInput || !clearBtn) {
-            updateRfidStatus('error', 'Form elements not found');
-            return;
-        }
+        if (!uidInput || !rfidStatus) return;
 
         const uid = uidInput.value.trim();
         if (!uid) {
@@ -716,24 +714,15 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        // Disable button during request
+        // Disable the clear button to prevent multiple clicks
         clearBtn.disabled = true;
         clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
         updateRfidStatus('waiting', 'Clearing RFID...');
 
-        // Get CSRF token safely
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (!csrfToken) {
-            updateRfidStatus('error', 'CSRF token not found');
-            clearBtn.disabled = false; 
-            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            return;
-        }
-
         fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
             method: 'DELETE',
             headers: {
-                'X-CSRF-TOKEN': csrfToken,
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
@@ -751,15 +740,16 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 updateRfidStatus('error', data.message || 'Failed to clear RFID');
             }
+            toggleClearButton();
+            clearBtn.disabled = false;
+            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         })
         .catch(error => {
             console.error('Error clearing RFID:', error);
             updateRfidStatus('error', 'Failed to clear RFID: ' + error.message);
-        })
-        .finally(() => {
+            toggleClearButton();
             clearBtn.disabled = false;
             clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            toggleClearButton();
         });
     }
 
