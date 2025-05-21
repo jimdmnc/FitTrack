@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/material_orange.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <style>
@@ -125,7 +126,7 @@
             <div class="relative">
                 <label for="birthdate" class="block text-gray-200 font-medium mb-2">Birthdate <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input type="date" id="birthdate" name="birthdate" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('birthdate') }}" max="{{ $maxBirthdate }}" required aria-describedby="birthdate_error">
+                    <input type="date" id="birthdate" name="birthdate" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('birthdate') }}" max="{{ Carbon\Carbon::today()->subYears(16)->format('Y-m-d') }}" required aria-describedby="birthdate_error">
                 </div>
                 <span class="text-xs text-gray-500 mt-1 block">Must be 16 years or older</span>
                 @error('birthdate')
@@ -196,8 +197,8 @@
                     <option value="" selected disabled>Select Membership Type</option>
                     <option value="custom" {{ old('membership_type') == 'custom' ? 'selected' : '' }}>Custom Days (₱{{ number_format($prices['session']->amount ?? 60, 2) }}/day)</option>
                     <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Week (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
-                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
-                    <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days, ₱{{ number_format($prices['annual']->amount ?? 10000, 2) }})</option>
+                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days, ₱{{ number_format($prices['monthly']->amount ?? 800, 2) }})</option>
+                    <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days, ₱{{ number_format($prices['annual']->amount ?? 2000, 2) }})</option>
                 </select>
                 @error('membership_type')
                     <span id="membership_type_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
@@ -245,7 +246,7 @@
                 <div class="relative">
                     <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
                     <div class="absolute inset-y-0 right-3 flex items-center">
-                        <div id="rfid-loading" class="animate-pulse flex items-center">
+                        <div id="rfid-loading" class="animate-pulse flex items-center hidden">
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
@@ -255,6 +256,9 @@
                         </button>
                     </div>
                 </div>
+                <button id="scanRfidBtn" type="button" class="mt-2 bg-[#ff5722] text-white py-2 px-4 rounded-lg hover:bg-opacity-80 focus:outline-none focus:ring-2 focus:ring-[#ff5722] transition-colors" aria-label="Scan RFID card">
+                    Scan RFID Card
+                </button>
                 <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -337,14 +341,11 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Birthdate Validation
     const birthdateInput = document.getElementById("birthdate");
-    const maxBirthdate = "{{ $maxBirthdate }}"; // Dynamic max birthdate
-    const today = "{{ $today }}"; // Use the today variable passed from controller
+    const maxBirthdate = "{{ Carbon\Carbon::today()->subYears(16)->format('Y-m-d') }}";
+    const today = "{{ Carbon\Carbon::today()->format('Y-m-d') }}";
 
     if (birthdateInput) {
-        // Set max attribute dynamically
         birthdateInput.setAttribute("max", maxBirthdate);
-
-        // Real-time validation
         birthdateInput.addEventListener("input", function() {
             const selectedDate = new Date(this.value);
             const maxDate = new Date(maxBirthdate);
@@ -371,8 +372,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const paymentRates = {
         "7": {{ $prices['weekly']->amount ?? 300 }},
-        "30": {{ $prices['monthly']->amount ?? 850 }},
-        "365": {{ $prices['annual']->amount ?? 10000 }},
+        "30": {{ $prices['monthly']->amount ?? 800 }},
+        "365": {{ $prices['annual']->amount ?? 2000 }},
         "custom": {{ $prices['session']->amount ?? 60 }}
     };
 
@@ -462,7 +463,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!lastNameValue || !birthdateValue) {
             passwordField.value = '';
             hiddenPasswordField.value = '';
-            passwordField.setAttribute('aria-label', 'Generated password is empty');
             return;
         }
 
@@ -472,7 +472,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (!sanitizedLastName) {
             passwordField.value = '';
             hiddenPasswordField.value = '';
-            passwordField.setAttribute('aria-label', 'Generated password is empty due to invalid last name');
             return;
         }
 
@@ -484,7 +483,6 @@ document.addEventListener("DOMContentLoaded", function() {
         if (selectedDate > maxDate || selectedDate >= todayDate || isNaN(selectedDate)) {
             passwordField.value = '';
             hiddenPasswordField.value = '';
-            passwordField.setAttribute('aria-label', 'Generated password is empty due to invalid birthdate');
             return;
         }
 
@@ -497,7 +495,6 @@ document.addEventListener("DOMContentLoaded", function() {
         const generatedPassword = `${sanitizedLastName}${month}${day}${year}`;
         passwordField.value = generatedPassword;
         hiddenPasswordField.value = generatedPassword;
-        passwordField.setAttribute('aria-label', `Generated password is ${generatedPassword}`);
     }
 
     // Form Handling
@@ -513,6 +510,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     document.getElementById('password').value = '';
                     document.getElementById('generated_password').value = '';
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
+                    lastFetchedUid = null; // Reset last fetched UID
                     updatePaymentAmount();
                     updateEndDate();
                     toggleCustomDays();
@@ -525,8 +523,6 @@ document.addEventListener("DOMContentLoaded", function() {
         
         if (lastNameInput) lastNameInput.addEventListener("input", updatePassword);
         if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
-        
-        // Initialize password on page load if old inputs exist
         updatePassword();
 
         form.addEventListener('submit', function(e) {
@@ -551,8 +547,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // RFID Handling
+    let lastFetchedUid = null; // Track the last fetched UID
+
     function updateRfidStatus(type, message) {
         const rfidStatus = document.getElementById('rfid_status');
+        const rfidLoading = document.getElementById('rfid-loading');
         if (!rfidStatus) return;
 
         const icons = {
@@ -564,20 +563,32 @@ document.addEventListener("DOMContentLoaded", function() {
             </svg>`,
             error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>`,
+            loading: `<svg class="h-4 w-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>`
         };
 
         const colors = {
             success: 'text-green-500',
             waiting: 'text-blue-500',
-            error: 'text-red-500'
+            error: 'text-red-500',
+            loading: 'text-orange-500'
         };
 
         rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
+        if (rfidLoading) {
+            rfidLoading.classList.toggle('hidden', type !== 'loading');
+        }
     }
 
-    function fetchLatestUid() {
+    function fetchLatestUid(isManual = false) {
+        const scanBtn = document.getElementById('scanRfidBtn');
+        if (isManual && scanBtn) scanBtn.disabled = true;
+        updateRfidStatus('loading', 'Scanning for card...');
+
         fetch('/api/rfid/latest')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
@@ -585,37 +596,26 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(data => {
                 const uidInput = document.getElementById('uid');
-                if (data && data.uid && uidInput) {
+                if (data.uid && uidInput && data.uid !== lastFetchedUid) {
                     uidInput.value = data.uid;
+                    lastFetchedUid = data.uid;
                     updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
+                } else if (!data.uid) {
+                    if (isManual) {
+                        uidInput.value = '';
+                        lastFetchedUid = null;
+                        updateRfidStatus('waiting', 'No card detected. Please tap your card.');
+                    }
                 }
                 toggleClearButton();
+                if (isManual && scanBtn) scanBtn.disabled = false;
             })
             .catch(error => {
-                console.error('RFID Fetch Error:', error);
-                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+                console.error(error);
+                updateRfidStatus('error', 'Failed to scan card. Please try again.');
+                if (isManual && scanBtn) scanBtn.disabled = false;
             });
     }
-
-    @if (session('success'))
-        const uidInput = document.getElementById('uid');
-        if (uidInput) uidInput.value = '';
-        updateRfidStatus('success', 'Registration successful!');
-    @endif
-
-    @if (session('error'))
-        updateRfidStatus('error', '{{ session('error') }}');
-    @endif
-
-    fetchLatestUid();
-    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
-
-    window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
 
     function clearRfid() {
         const uidInput = document.getElementById('uid');
@@ -626,6 +626,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        updateRfidStatus('loading', 'Clearing RFID...');
         fetch(`/api/rfid/clear/${uid}`, {
             method: 'DELETE',
             headers: {
@@ -637,6 +638,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             if (data.success) {
                 uidInput.value = '';
+                lastFetchedUid = null;
                 updateRfidStatus('success', 'RFID cleared');
             } else {
                 updateRfidStatus('error', data.message || 'Failed to clear RFID');
@@ -661,6 +663,35 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         }
     }
+
+    // Initialize RFID status
+    updateRfidStatus('waiting', 'Please Tap Your Card...');
+
+    // Attach event listener to Scan RFID button
+    const scanRfidBtn = document.getElementById('scanRfidBtn');
+    if (scanRfidBtn) {
+        scanRfidBtn.addEventListener('click', () => fetchLatestUid(true));
+    }
+
+    // Polling with UID change detection
+    fetchLatestUid();
+    const rfidPollInterval = setInterval(() => fetchLatestUid(false), 2000);
+
+    // Clean up interval when leaving page
+    window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
+
+    @if (session('success'))
+        const uidInput = document.getElementById('uid');
+        if (uidInput) uidInput.value = '';
+        lastFetchedUid = null;
+        updateRfidStatus('success', 'Registration successful!');
+    @endif
+
+    @if (session('error'))
+        updateRfidStatus('error', '{{ session('error') }}');
+    @endif
 });
 </script>
 @endsection
