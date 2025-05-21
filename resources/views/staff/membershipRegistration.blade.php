@@ -108,7 +108,7 @@
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
                 <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
-                <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required aria-describedby="first_name_error">
+                <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required aria-describedby="first_name_error" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
                 @error('first_name')
                     <span id="first_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
                 @enderror
@@ -116,7 +116,7 @@
 
             <div>
                 <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
-                <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required aria-describedby="last_name_error">
+                <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required aria-describedby="last_name_error" pattern="[A-Za-z\s]+" title="Only letters and spaces are allowed">
                 @error('last_name')
                     <span id="last_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
                 @enderror
@@ -149,14 +149,14 @@
             <div>
                 <label for="phoneNumber" class="block text-gray-200 font-medium mb-2">Phone Number <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input type="tel" id="phoneNumber" name="phone_number" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" pattern="\d{11}" maxlength="11" placeholder="11-digit phone number (09*********)" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '')" aria-describedby="phone_number_error">
+                    <input type="tel" id="phoneNumber" name="phone_number" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" pattern="09[0-9]{9}" maxlength="11" placeholder="11-digit phone number (09*********)" value="{{ old('phone_number') }}" required oninput="this.value = this.value.replace(/\D/g, '').slice(0, 11)" aria-describedby="phone_number_error">
                     <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
                     </div>
                 </div>
-                <span class="text-xs text-gray-500 mt-1 block">Format: 11 digits without spaces or dashes</span>
+                <span class="text-xs text-gray-500 mt-1 block">Format: 11 digits starting with 09</span>
                 @error('phone_number')
                     <span id="phone_number_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
                 @enderror
@@ -220,7 +220,7 @@
             <div class="start-date-container">
                 <label for="startDate" class="block text-gray-200 font-medium mb-2">Start Date <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input type="date" id="startDate" name="start_date" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" required aria-describedby="start_date_error">
+                    <input type="date" id="startDate" name="start_date" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('start_date') ?? date('Y-m-d') }}" min="{{ date('Y-m-d') }}" required aria-describedby="start_date_error">
                 </div>
                 @error('start_date')
                     <span id="start_date_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
@@ -245,7 +245,7 @@
                 <div class="relative">
                     <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
                     <div class="absolute inset-y-0 right-3 flex items-center">
-                        <div id="rfid-loading" class="animate-pulse flex items-center">
+                        <div id="rfid-loading" class="animate-pulse flex items-center hidden">
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
@@ -314,7 +314,7 @@
         <!-- Submit Button -->
         <div class="p-6 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] border-[#121212] shadow-lg">
             <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-                <button type="button" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-full">
+                <button type="button" id="clearFormBtn" class="w-full md:w-1/4 bg-gray-700 text-gray-200 py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-gray-600 focus:outline-none focus:ring-4 focus:ring-gray-500 focus:ring-opacity-50 shadow-full">
                     <span class="flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6l1-1M5 7h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v0a2 2 0 002 2z" />
@@ -322,7 +322,7 @@
                         Clear Form
                     </span>
                 </button>
-                <button type="submit" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
+                <button type="submit" id="submitBtn" class="w-full md:w-3/4 bg-[#ff5722] text-white py-3 px-6 rounded-xl transition duration-300 ease-in-out transform hover:translate-y-[-2px] hover:bg-opacity-80 focus:outline-none focus:ring-4 focus:ring-[#ff5722] focus:ring-opacity-50 shadow-lg flex items-center justify-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
                     </svg>
@@ -455,7 +455,7 @@ document.addEventListener("DOMContentLoaded", function() {
             const day = String(startDate.getDate()).padStart(2, '0');
             const month = String(startDate.getMonth() + 1).padStart(2, '0');
             const year = startDate.getFullYear();
-            endDateInput.value = `${day}/${month}/${year}`;
+            endDateInput.value = `${year}-${month}-${day}`; // Changed to YYYY-MM-DD for consistency
         } else {
             endDateInput.value = '';
         }
@@ -516,12 +516,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const form = document.getElementById('registrationForm');
         if (!form) return;
 
-        const clearButton = form.querySelector('button[type="button"]');
+        const clearButton = document.getElementById('clearFormBtn');
         if (clearButton) {
             clearButton.addEventListener('click', function() {
                 if (confirm('Are you sure you want to clear the form?')) {
                     form.reset();
-                    ['endDate', 'password', 'generated_password'].forEach(id => {
+                    ['endDate', 'password', 'generated_password', 'uid'].forEach(id => {
                         const el = document.getElementById(id);
                         if (el) el.value = '';
                     });
@@ -530,6 +530,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateEndDate();
                     toggleCustomDays();
                     toggleClearButton();
+                    stopRfidPolling();
+                    startRfidPolling();
                 }
             });
         }
@@ -554,7 +556,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
-            const submitBtn = form.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submitBtn');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = `
@@ -564,6 +566,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     </svg>
                     Processing...
                 `;
+                stopRfidPolling(); // Stop polling during submission
             }
         });
     }
@@ -571,6 +574,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // RFID Handling
     function updateRfidStatus(type, message) {
         const rfidStatus = document.getElementById('rfid_status');
+        const rfidLoading = document.getElementById('rfid-loading');
         if (!rfidStatus) return;
 
         const icons = {
@@ -593,6 +597,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
         rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
+        if (rfidLoading) {
+            rfidLoading.classList.toggle('hidden', type !== 'waiting');
+        }
     }
 
     async function fetchLatestUid(retryCount = 0) {
@@ -603,10 +610,12 @@ document.addEventListener("DOMContentLoaded", function() {
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
 
         try {
+            updateRfidStatus('waiting', 'Checking for RFID card...');
             const response = await fetch('/api/rfid/latest', {
                 signal: controller.signal,
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
             });
 
@@ -621,59 +630,60 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if (data?.uid && uidInput) {
                 uidInput.value = data.uid;
-                updateRfidStatus('success', 'Card detected');
+                updateRfidStatus('success', 'Card detected successfully');
             } else {
                 if (uidInput) uidInput.value = '';
                 updateRfidStatus('waiting', 'Please Tap Your Card...');
             }
             toggleClearButton();
         } catch (error) {
-            if (error.name === 'AbortError') {
-                if (retryCount < MAX_RETRIES) {
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    return fetchLatestUid(retryCount + 1);
-                }
-                updateRfidStatus('error', 'Request timed out. Please try again.');
+            if (error.name === 'AbortError' && retryCount < MAX_RETRIES) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                isFetching = false;
+                return fetchLatestUid(retryCount + 1);
             } else {
                 console.error('RFID Fetch Error:', error);
-                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
+                updateRfidStatus('error', error.name === 'AbortError' ? 'Request timed out. Retrying...' : 'Failed to fetch RFID. Please try again.');
             }
         } finally {
             isFetching = false;
         }
     }
 
-    function clearRfid() {
-    const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
+    async function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput?.value?.trim();
 
-    if (!uid) {
-        updateRfidStatus('error', 'No RFID to clear');
-        return;
-    }
-
-    fetch(`/api/rfid/clear/${uid}`, {
-        method: 'DELETE',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-            'Accept': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            uidInput.value = '';
-            updateRfidStatus('success', 'RFID cleared');
-        } else {
-            updateRfidStatus('error', data.message || 'Failed to clear RFID');
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
         }
-        toggleClearButton();
-    })
-    .catch(error => {
-        console.error(error);
-        updateRfidStatus('error', 'Request failed');
-    });
-}
+
+        try {
+            updateRfidStatus('waiting', 'Clearing RFID...');
+            const response = await fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared successfully');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+        } catch (error) {
+            console.error('Clear RFID Error:', error);
+            updateRfidStatus('error', 'Failed to clear RFID. Please try again.');
+        } finally {
+            toggleClearButton();
+        }
+    }
 
     function toggleClearButton() {
         const uidInput = document.getElementById('uid');
@@ -681,6 +691,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (uidInput && clearBtn) {
             clearBtn.classList.toggle('hidden', !uidInput.value.trim());
+        }
+    }
+
+    function startRfidPolling() {
+        if (!rfidPollInterval) {
+            fetchLatestUid();
+            rfidPollInterval = setInterval(fetchLatestUid, RFID_POLL_INTERVAL);
+        }
+    }
+
+    function stopRfidPolling() {
+        if (rfidPollInterval) {
+            clearInterval(rfidPollInterval);
+            rfidPollInterval = null;
         }
     }
 
@@ -695,23 +719,25 @@ document.addEventListener("DOMContentLoaded", function() {
             const uidInput = document.getElementById('uid');
             if (uidInput) uidInput.value = '';
             updateRfidStatus('success', 'Registration successful!');
+            setTimeout(() => {
+                updateRfidStatus('waiting', 'Please Tap Your Card...');
+                startRfidPolling();
+            }, 3000);
         @endif
 
         @if (session('error'))
             updateRfidStatus('error', '{{ session('error') }}');
+            setTimeout(() => {
+                updateRfidStatus('waiting', 'Please Tap Your Card...');
+                startRfidPolling();
+            }, 3000);
         @endif
 
         // Start RFID polling
-        fetchLatestUid();
-        rfidPollInterval = setInterval(fetchLatestUid, RFID_POLL_INTERVAL);
+        startRfidPolling();
 
         // Cleanup
-        window.addEventListener('beforeunload', () => {
-            if (rfidPollInterval) {
-                clearInterval(rfidPollInterval);
-                rfidPollInterval = null;
-            }
-        });
+        window.addEventListener('beforeunload', stopRfidPolling);
     }
 
     initialize();
