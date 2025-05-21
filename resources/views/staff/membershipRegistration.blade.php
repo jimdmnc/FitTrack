@@ -668,7 +668,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
         
-        fetch('/api/rfid/latest', { 
+        fetch('api/rfid/latest', { 
             signal: controller.signal
         })
         .then(response => {
@@ -730,7 +730,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        fetch(`/api/rfid/clear/${encodeURIComponent(uid)}`, {
+        fetch(`api/rfid/clear/${encodeURIComponent(uid)}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
