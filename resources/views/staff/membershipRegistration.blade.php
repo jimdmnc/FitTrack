@@ -593,8 +593,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 updateRfidStatus('success', 'Card detected successfully');
                 toggleClearButton();
             } else if (!data.uid && uidInput && lastUid) {
-                // If no UID is returned but we had one previously, don't clear it
-                // This prevents flickering when the API temporarily returns no data
                 updateRfidStatus('waiting', 'Please Tap Your Card...');
             }
 
@@ -618,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     }
 
-    async function clearRfid() {
+    function clearRfid() {
         const uidInput = getElement('uid');
         const loadingIndicator = getElement('rfid-loading');
         const clearButton = getElement('clearRfidBtn');
@@ -629,54 +627,18 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        const uid = uidInput.value;
-
-        // Show loading state
-        clearButton.disabled = true;
+        // Clear the input field and reset UI
+        uidInput.value = '';
+        lastUid = null;
         clearButton.classList.add('hidden');
         loadingIndicator.classList.remove('hidden');
-        statusElement.innerHTML = `
-            <svg class="animate-spin h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Clearing RFID...
-        `;
-
-        try {
-            const response = await fetch(`/api/rfid/clear/${uid}`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                }
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to clear RFID');
-            }
-
-            const data = await response.json();
-            uidInput.value = '';
-            lastUid = null;
-            loadingIndicator.classList.remove('hidden');
-            clearButton.classList.add('hidden');
-            
-            updateRfidStatus('success', data.message || 'RFID cleared successfully');
-            
-            // Reset status after 3 seconds
-            setTimeout(() => {
-                updateRfidStatus('waiting', 'Please Tap Your Card...');
-            }, 3000);
-        } catch (error) {
-            updateRfidStatus('error', error.message || 'Failed to clear RFID');
-            // Re-enable button in case of error
-            clearButton.disabled = false;
-            clearButton.classList.remove('hidden');
-            loadingIndicator.classList.add('hidden');
-        }
+        
+        updateRfidStatus('success', 'RFID input cleared');
+        
+        // Reset status after 3 seconds
+        setTimeout(() => {
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+        }, 3000);
     }
 
     function toggleClearButton() {
