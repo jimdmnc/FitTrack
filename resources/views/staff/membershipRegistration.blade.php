@@ -787,9 +787,9 @@ document.addEventListener("DOMContentLoaded", function() {
             // Start RFID polling with retry mechanism
             // let retryCount = 0;
             
-            // fetchLatestUid();
+            fetchLatestUid();
             
-            // const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
             console.error('Error initializing form:', error);
         }
