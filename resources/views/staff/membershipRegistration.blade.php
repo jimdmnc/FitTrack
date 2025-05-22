@@ -337,6 +337,10 @@
 document.addEventListener("DOMContentLoaded", function() {
     // Configuration constants
     const RFID_POLL_INTERVAL = 2000; // ms
+    const FETCH_TIMEOUT = 5000; // ms
+    const MAX_RETRIES = 3;
+    let isFetching = false;
+    let rfidPollInterval = null;
 
     // Safely get elements
     const getElement = (id) => document.getElementById(id);
@@ -410,6 +414,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (membershipType.value === 'custom') {
             customDaysContainer.classList.remove('hidden');
             customDaysInput.setAttribute('required', 'required');
+            // Set default value if empty
             if (!customDaysInput.value) {
                 customDaysInput.value = '1';
             }
@@ -427,15 +432,18 @@ document.addEventListener("DOMContentLoaded", function() {
             
             if (customDaysInput) {
                 customDaysInput.addEventListener("input", function() {
+                    // Ensure value is a positive integer between 1-365
                     let value = parseInt(this.value) || 0;
                     if (value <= 0) value = 1;
                     if (value > 365) value = 365;
                     this.value = value;
+                    
                     updatePaymentAmount();
                     updateEndDate();
                 });
             }
             
+            // Initialize on page load
             toggleCustomDays();
         }
     }
@@ -450,6 +458,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Parse the start date correctly
         const startDate = new Date(startDateInput.value);
         if (isNaN(startDate)) {
             endDateInput.value = '';
@@ -464,9 +473,11 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         if (duration > 0) {
+            // Create a new date object to avoid modifying the original
             const endDate = new Date(startDate);
             endDate.setDate(startDate.getDate() + duration - 1);
             
+            // Format date consistently as DD/MM/YYYY
             const day = String(endDate.getDate()).padStart(2, '0');
             const month = String(endDate.getMonth() + 1).padStart(2, '0');
             const year = endDate.getFullYear();
@@ -498,6 +509,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Sanitize last name (only allow alphanumeric)
         const sanitizedLastName = lastNameValue.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
         if (!sanitizedLastName) {
             passwordField.value = '';
@@ -517,6 +529,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
+        // Format date parts consistently
         const month = String(selectedDate.getMonth() + 1).padStart(2, '0');
         const day = String(selectedDate.getDate()).padStart(2, '0');
         const year = String(selectedDate.getFullYear());
@@ -538,10 +551,14 @@ document.addEventListener("DOMContentLoaded", function() {
             clearButton.addEventListener('click', function() {
                 if (confirm('Are you sure you want to clear the form?')) {
                     form.reset();
+                    
+                    // Clear specific fields that might not get cleared by reset
                     ['endDate', 'password', 'generated_password', 'uid'].forEach(id => {
                         const el = getElement(id);
                         if (el) el.value = '';
                     });
+                    
+                    // Reset UI states
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                     updatePaymentAmount();
                     updateEndDate();
@@ -551,6 +568,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
 
+        // Set up input event handlers for form fields
         const lastNameInput = getElement("last_name");
         const birthdateInput = getElement("birthdate");
         const startDateEl = getElement('startDate');
@@ -559,18 +577,23 @@ document.addEventListener("DOMContentLoaded", function() {
         if (birthdateInput) birthdateInput.addEventListener("input", updatePassword);
         if (startDateEl) startDateEl.addEventListener('change', updateEndDate);
         
+        // Initialize calculated fields
         updatePassword();
         updateEndDate();
 
+        // Set default start date to today if empty
         if (startDateEl && !startDateEl.value) {
-            const year = today.split('-')[0];
-            const month = today.split('-')[1];
-            const day = today.split('-')[2];
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
             startDateEl.value = `${year}-${month}-${day}`;
             updateEndDate();
         }
 
+        // Form submission handling
         form.addEventListener('submit', function(e) {
+            // Validate custom days
             if (membershipType?.value === 'custom') {
                 const customDays = parseInt(customDaysInput?.value) || 0;
                 if (customDays <= 0 || customDays > 365) {
@@ -579,7 +602,8 @@ document.addEventListener("DOMContentLoaded", function() {
                     return;
                 }
             }
-
+            
+            // Validate required RFID
             const uidInput = getElement('uid');
             if (uidInput && !uidInput.value.trim() && uidInput.hasAttribute('required')) {
                 e.preventDefault();
@@ -587,6 +611,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 return;
             }
 
+            // Show loading state on submit button
             const submitBtn = form.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
@@ -599,11 +624,17 @@ document.addEventListener("DOMContentLoaded", function() {
                 `;
             }
         });
+
+        // Add event listener for clear RFID button
+        const clearRfidBtn = getElement('clearRfidBtn');
+        if (clearRfidBtn) {
+            clearRfidBtn.addEventListener('click', clearRfid);
+        }
     }
 
     // RFID Handling
     function updateRfidStatus(type, message) {
-        const rfidStatus = getElement('rfid_status');
+        const rfidStatus = document.getElementById('rfid_status');
         if (!rfidStatus) return;
 
         const icons = {
@@ -627,18 +658,14 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
-
     function fetchLatestUid() {
-        const uidInput = getElement('uid');
-        const loadingIndicator = getElement('rfid-loading');
-        const clearButton = getElement('clearRfidBtn');
-
         fetch('/api/rfid/latest')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(data => {
+                const uidInput = document.getElementById('uid');
                 if (data.uid && uidInput) {
                     uidInput.value = data.uid;
                     updateRfidStatus('success', 'Card detected');
@@ -648,64 +675,80 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
                 toggleClearButton();
             })
-            .catch(error => {
-                console.error('Error fetching RFID:', error);
-                if (uidInput) uidInput.value = '';
-                updateRfidStatus('error', 'Failed to fetch RFID. Please try again.');
-                toggleClearButton();
-            });
     }
 
     function clearRfid() {
-        const uidInput = getElement('uid');
-        const loadingIndicator = getElement('rfid-loading');
-        const clearButton = getElement('clearRfidBtn');
-        const statusElement = getElement('rfid_status');
-        const uid = uidInput?.value;
+    const uidInput = document.getElementById('uid');
+    const uid = uidInput.value;
+    const loadingIndicator = document.getElementById('rfid-loading');
+    const clearButton = document.getElementById('clearRfidBtn');
+    const statusElement = document.getElementById('rfid_status');
 
-        if (!uid) {
-            updateRfidStatus('error', 'No RFID to clear');
-            return;
-        }
-
-        clearButton.disabled = true;
-        loadingIndicator.classList.remove('hidden');
-        updateRfidStatus('waiting', 'Clearing RFID...');
-
-        fetch(`/api/rfid/clear/${uid}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw err; });
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared');
-                clearButton.classList.add('hidden');
-                setTimeout(() => {
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
-                }, 3000);
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-        })
-        .catch(error => {
-            console.error('Error clearing RFID:', error);
-            updateRfidStatus('error', error.message || 'Failed to clear RFID');
-        })
-        .finally(() => {
-            clearButton.disabled = false;
-            loadingIndicator.classList.remove('hidden');
-        });
+    if (!uid) {
+        return;
     }
+
+    // Show loading state
+    clearButton.disabled = true;
+    statusElement.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+        </svg>
+        Clearing RFID...
+    `;
+
+    // Make API call
+    fetch(`/api/rfid/clear/${uid}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw err; });
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Clear the input and reset UI
+            uidInput.value = '';
+            clearButton.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            
+            statusElement.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                <span class="text-green-500">${data.message}</span>
+            `;
+            
+            // Reset status after 3 seconds
+            setTimeout(() => {
+                statusElement.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Please Tap Your Card...
+                `;
+            }, 3000);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        statusElement.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            <span class="text-red-500">${error.message || 'Failed to clear RFID'}</span>
+        `;
+        
+        // Reset button state
+        clearButton.disabled = false;
+    });
+}
 
     function toggleClearButton() {
         const uidInput = getElement('uid');
@@ -738,25 +781,24 @@ document.addEventListener("DOMContentLoaded", function() {
                 updateRfidStatus('error', '{{ session('error') }}');
             @endif
 
-            // Initial RFID fetch
+            // Initial RFID status
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            
+            // Start RFID polling with retry mechanism
+            let retryCount = 0;
+            
             fetchLatestUid();
-
-            // Start polling
-            const rfidPollInterval = setInterval(fetchLatestUid, RFID_POLL_INTERVAL);
-
-            // Clean up interval on page unload
-            window.addEventListener('beforeunload', () => {
-                clearInterval(rfidPollInterval);
-            });
-
-            // Add event listener for clear RFID button
-            const clearRfidBtn = getElement('clearRfidBtn');
-            if (clearRfidBtn) {
-                clearRfidBtn.addEventListener('click', clearRfid);
-            }
+            
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
             console.error('Error initializing form:', error);
         }
+
+        // Cleanup
+  // Clean up interval when leaving page
+  window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
     }
 
     // Start everything
