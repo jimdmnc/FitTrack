@@ -771,21 +771,21 @@ document.addEventListener("DOMContentLoaded", function() {
             setupFormHandlers();
 
             // Handle session messages
-            // @if (session('success'))
-            //     const uidInput = getElement('uid');
-            //     if (uidInput) uidInput.value = '';
-            //     updateRfidStatus('success', '{{ session('success') }}');
-            // @endif
+            @if (session('success'))
+                const uidInput = getElement('uid');
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', '{{ session('success') }}');
+            @endif
 
-            // @if (session('error'))
-            //     updateRfidStatus('error', '{{ session('error') }}');
-            // @endif
+            @if (session('error'))
+                updateRfidStatus('error', '{{ session('error') }}');
+            @endif
 
             // Initial RFID status
-            // updateRfidStatus('waiting', 'Please Tap Your Card...');
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
             
             // Start RFID polling with retry mechanism
-            // let retryCount = 0;
+            let retryCount = 0;
             
             fetchLatestUid();
             
