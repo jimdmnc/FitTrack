@@ -671,13 +671,13 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateRfidStatus('success', 'Card detected');
                 } else {
                     if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Csdfdsdsfdfdfdsfard...');
+                    updateRfidStatus('waiting', 'Please Tap Your Card...');
                 }
                 toggleClearButton();
             })
     }
 
-    function clearRfid() {
+   function clearRfid() {
     const uidInput = document.getElementById('uid');
     const uid = uidInput.value;
     const loadingIndicator = document.getElementById('rfid-loading');
@@ -771,25 +771,25 @@ document.addEventListener("DOMContentLoaded", function() {
             setupFormHandlers();
 
             // Handle session messages
-            @if (session('success'))
-                const uidInput = getElement('uid');
-                if (uidInput) uidInput.value = '';
-                updateRfidStatus('success', '{{ session('success') }}');
-            @endif
+            // @if (session('success'))
+            //     const uidInput = getElement('uid');
+            //     if (uidInput) uidInput.value = '';
+            //     updateRfidStatus('success', '{{ session('success') }}');
+            // @endif
 
-            @if (session('error'))
-                updateRfidStatus('error', '{{ session('error') }}');
-            @endif
+            // @if (session('error'))
+            //     updateRfidStatus('error', '{{ session('error') }}');
+            // @endif
 
             // Initial RFID status
-            updateRfidStatus('waiting', 'Please Tap Your Cardsdsdddd...');
+            // updateRfidStatus('waiting', 'Please Tap Your Card...');
             
             // Start RFID polling with retry mechanism
-            let retryCount = 0;
+            // let retryCount = 0;
             
-            fetchLatestUid();
+            // fetchLatestUid();
             
-            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+            // const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
             console.error('Error initializing form:', error);
         }
