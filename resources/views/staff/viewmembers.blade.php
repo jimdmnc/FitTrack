@@ -376,7 +376,7 @@
                                             <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
                                         </button>
                                     </div>
-                                @elseif($member->member_status == 'expired' && $member->getMembershipType() == 'Session')
+                                @elseif($member->member_status == 'active')
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
