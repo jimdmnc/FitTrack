@@ -516,9 +516,11 @@
                 <div>
                     <label for="edit_content" class="block text-sm font-medium text-gray-400 mb-2">Content</label>
                     <textarea name="content" id="edit_content" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
-                        required 
-                        placeholder="Write your announcement details"></textarea>
+                    class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 resize-none overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
+                    rows="3"
+                    required 
+                    placeholder="Write your announcement details"></textarea>
+
                     @error('content')
                         <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
                     @enderror
