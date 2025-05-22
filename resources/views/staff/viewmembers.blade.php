@@ -701,7 +701,7 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-white text-sm sm:text-base" id="viewEndDate">Jan 15, 2025</p>
+                                    <p class="font-medium text-white text-sm sm:text-base" id="viewEndDate">Loading...</p>
                                 </div>
                             </div>
                         </div>
@@ -1343,41 +1343,51 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ======== MODAL FUNCTIONS ========
     function openViewModal(memberID, name, membershipType, startDate, status) {
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-        const start = new Date(startDate);
-        let endDate = new Date(start);
+    const start = new Date(startDate);
+    let endDate = new Date(start);
 
-        switch(membershipType.toLowerCase()) {
-            case 'session':
-            case 'custom':
-                endDate.setDate(start.getDate() + 1);
-                break;
-            case 'week':
-                endDate.setDate(start.getDate() + 7);
-                break;
-            case 'month':
-                endDate.setMonth(start.getMonth() + 1);
-                break;
-            case 'annual':
-                endDate.setFullYear(start.getFullYear() + 1);
-                break;
-            default:
-                endDate = 'N/A';
-        }
-
-        document.getElementById('viewEndDate').textContent = 
-            typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
-
-        const statusBadge = document.getElementById('viewStatus');
-        statusBadge.textContent = status;
-        statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
-
-        animateModalOpen('viewMemberModal', 'viewModalContent');
+    // Set time to 23:59:59 of the previous day for all cases
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'week':
+            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
+            endDate.setDate(start.getDate() + 6);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'month':
+            // 1 month = start date + 1 month minus 1 day
+            endDate.setMonth(start.getMonth() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'annual':
+            // 1 year = start date + 1 year minus 1 day
+            endDate.setFullYear(start.getFullYear() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        default:
+            endDate = 'N/A';
     }
+
+    document.getElementById('viewEndDate').textContent = 
+        typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+    const statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+    animateModalOpen('viewMemberModal', 'viewModalContent');
+}
 
     function closeViewModal() {
         animateModalClose('viewMemberModal', 'viewModalContent');
