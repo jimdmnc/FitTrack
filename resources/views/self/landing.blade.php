@@ -298,7 +298,7 @@
                                     </div>
                                 </div>
                                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                    <p class="text-gray-200 text-center font-semibold text-sm md:text-base">Dan gained strength and defined muscle in just 8 months</p>
+                                    <p class="text-gray-200 text-center font-semibold text-sm md:text-base">Charles gained strength and defined muscle in just 8 months</p>
                                 </div>
                             </div>
 
@@ -320,7 +320,7 @@
 
                             <!-- Healthy Environment with Good People Around -->
                             <div class="min-w-full relative">
-                                <img src="/images/environment.png" class="absolute inset-0 w-full h-full object-cover" alt="Healthy environment with good people around">
+                                <img src="/images/healhtyenvirment.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Healthy environment with good people around">
                                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
                                     <p class="text-gray-200 text-center font-semibold text-sm md:text-base">Surround yourself with good people and embrace a healthy environment</p>
                                 </div>
