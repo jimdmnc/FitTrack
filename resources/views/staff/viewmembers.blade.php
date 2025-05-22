@@ -351,7 +351,7 @@
                                             <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
                                         </button>
                                     </div>
-                                    @elseif($member->member_status == 'expired' && !Str::startsWith($member->rfid_uid, 'DAILY'))
+                                @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
