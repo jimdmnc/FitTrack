@@ -671,7 +671,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateRfidStatus('success', 'Card detected');
                 } else {
                     if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
+                    updateRfidStatus('waiting', 'Please Tap Your Csdfdsdsfdfdfdsfard...');
                 }
                 toggleClearButton();
             })
