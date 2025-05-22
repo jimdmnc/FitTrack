@@ -326,13 +326,10 @@
                         
                             <td class="px-2 sm:px-4 py-2 sm:py-4 text-center text-sm">
                                 @if($member->member_status == 'active')
-                                    <div class="flex flex-col md:flex-row flex-wrap gap-1 sm:gap-2 justify-center items-center">
+                                    <div class="flex flex-col sm:flex-row flex-wrap gap-1 sm:gap-2 justify-center items-center">
                                         <button 
                                             onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                                            class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 
-                                                    bg-blue-600 hover:bg-blue-700 text-white 
-                                                    rounded-md transition duration-300 ease-in-out 
-                                                    font-semibold text-sm shadow-md hover:shadow-lg"                                            
+                                            class="inline-flex items-center justify-center w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-[#Ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm border border-[#ff5722] shadow-sm group min-w-0"
                                             aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="View member details"
                                         >
@@ -383,7 +380,7 @@
                                     <div class="flex flex-col sm:flex-row flex-wrap gap-1 sm:gap-2 justify-center items-center">
                                         <button 
                                             onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
-                                            class="inline-flex items-center justify-center w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-red-900 hover:bg-transparent hover:translate-y-[-2px] text-red-200 rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm border border-[#ff5722] shadow-sm group min-w-0"
+                                            class="inline-flex items-center justify-center w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm border border-[#ff5722] shadow-sm group min-w-0"
                                             aria-label="View reason for revocation"
                                             title="View reason for revocation"
                                         >
