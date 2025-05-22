@@ -746,7 +746,6 @@ document.addEventListener("DOMContentLoaded", function() {
             // Start RFID polling with retry mechanism
             let retryCount = 0;
             
-            fetchLatestUid();
             
             const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
@@ -762,6 +761,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Start everything
     initialize();
+    fetchLatestUid();
+
 });
 </script>
 @endsection
