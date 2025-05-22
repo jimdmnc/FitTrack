@@ -487,76 +487,82 @@
 
 
     <!-- Edit Announcement Modal -->
-    <div id="editAnnouncementModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm p-4">
-        <div class="bg-[#1e1e1e] rounded-lg shadow-2xl border border-gray-800 w-full max-w-sm mx-auto transform transition-all duration-300 ease-in-out scale-95 hover:scale-100 max-h-[90vh] overflow-y-auto">
-            <!-- Compact Header -->
-            <div class="bg-gray-900 rounded-t-lg p-4 border-b border-gray-800">
-                <h2 class="text-lg font-semibold text-gray-100 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    <div id="editAnnouncementModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm">
+        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl border border-gray-800 w-full max-w-md mx-4 transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+            <div class="bg-gray-900 rounded-t-xl p-6 border-b border-gray-800">
+                <h2 class="text-2xl font-semibold text-gray-100 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
                     Edit Announcement
                 </h2>
             </div>
-            
-            <!-- Compact Form -->
-            <form id="editAnnouncementForm" method="POST" class="p-4 space-y-4">
+            <form id="editAnnouncementForm" method="POST" class="p-6 space-y-6">
+                @csrf
+                @method('PUT')
                 <input type="hidden" name="id" id="edit_id">
                 
-                <!-- Title Field -->
                 <div>
-                    <label for="edit_title" class="block text-xs font-medium text-gray-400 mb-1">Title</label>
+                    <label for="edit_title" class="block text-sm font-medium text-gray-400 mb-2">Title</label>
                     <input type="text" name="title" id="edit_title" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF5722] transition duration-300" 
+                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
                         required 
-                        placeholder="Enter title">
+                        placeholder="Enter announcement title">
+                    @error('title')
+                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 
-                <!-- Content Field -->
                 <div>
-                    <label for="edit_content" class="block text-xs font-medium text-gray-400 mb-1">Content</label>
+                    <label for="edit_content" class="block text-sm font-medium text-gray-400 mb-2">Content</label>
                     <textarea name="content" id="edit_content" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md p-2 text-sm min-h-[80px] focus:outline-none focus:ring-1 focus:ring-[#FF5722] transition duration-300" 
+                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
                         required 
-                        placeholder="Write announcement details"></textarea>
+                        placeholder="Write your announcement details"></textarea>
+                    @error('content')
+                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 
-                <!-- Schedule Field -->
                 <div>
-                    <label for="edit_schedule" class="block text-xs font-medium text-gray-400 mb-1">Schedule (Optional)</label>
+                    <label for="edit_schedule" class="block text-sm font-medium text-gray-400 mb-2">Schedule (Optional)</label>
                     <input type="datetime-local" name="schedule" id="edit_schedule" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF5722] transition duration-300">
+                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300">
+                    @error('schedule')
+                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 
-                <!-- Type Field -->
                 <div>
-                    <label for="edit_type" class="block text-xs font-medium text-gray-400 mb-1">Type</label>
+                    <label for="edit_type" class="block text-sm font-medium text-gray-400 mb-2">Type</label>
                     <div class="relative">
                         <select name="type" id="edit_type" 
-                            class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-md p-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#FF5722] transition duration-300 appearance-none" 
+                            class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300 appearance-none" 
                             required>
                             <option value="Maintenance" class="bg-gray-800">Maintenance</option>
                             <option value="Event" class="bg-gray-800">Event</option>
                             <option value="Update" class="bg-gray-800">Update</option>
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-400">
-                            <svg class="fill-current h-3 w-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                                 <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                             </svg>
                         </div>
                     </div>
+                    @error('type')
+                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
+                    @enderror
                 </div>
                 
-                <!-- Compact Buttons -->
-                <div class="flex justify-end space-x-2 pt-2">
+                <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" id="closeEditModalBtn" 
-                        class="bg-gray-800 text-gray-300 px-3 py-1.5 text-sm rounded-md hover:bg-gray-700 transition duration-300 border border-gray-700">
+                        class="bg-gray-800 text-gray-300 px-5 py-2 rounded-lg hover:bg-gray-700 transition duration-300 border border-gray-700">
                         Cancel
                     </button>
                     <button type="submit" 
-                        class="bg-[#FF5722] text-white px-3 py-1.5 text-sm rounded-md hover:bg-[#e64a19] transition duration-300 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        class="bg-[#FF5722] text-white px-5 py-2 rounded-lg hover:bg-[#e64a19] transition duration-300 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                         Save
                     </button>
