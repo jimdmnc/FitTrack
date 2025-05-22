@@ -276,7 +276,7 @@
                                     </div>
                                 </div>
                                 <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3">
-                                    <p class="text-gray-200 text-center font-semibold text-sm md:text-base">From chubby to muscular, Daniel transformed through dedication and hard work, now confident and strong.
+                                    <p class="text-gray-200 text-center font-semibold text-sm md:text-base">From chubby to muscular, Arloyd transformed through dedication and hard work, now confident and strong.
             </p>
                                 </div>
                             </div>
