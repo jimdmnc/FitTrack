@@ -380,7 +380,7 @@
                                     <div class="flex flex-col sm:flex-row flex-wrap gap-1 sm:gap-2 justify-center items-center">
                                         <button 
                                             onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
-                                            class="inline-flex items-center justify-center w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm border border-[#ff5722] shadow-sm group min-w-0"
+                                            class="inline-flex items-center justify-center w-full sm:w-auto px-2 sm:px-3 py-1.5 bg-red-900 hover:bg-transparent hover:translate-y-[-2px] text-red-200 rounded-lg transition-all duration-200 font-medium text-xs sm:text-sm border border-[#ff5722] shadow-sm group min-w-0"
                                             aria-label="View reason for revocation"
                                             title="View reason for revocation"
                                         >
