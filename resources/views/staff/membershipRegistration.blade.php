@@ -677,37 +677,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
     }
 
-    function clearRfid() {
-        const uidInput = document.getElementById('uid');
-        const uid = uidInput.value;
 
-        if (!uid) {
-            updateRfidStatus('error', 'No RFID to clear');
-            return;
-        }
-
-        fetch(`/api/rfid/clear/${uid}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared');
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-            toggleClearButton();
-        })
-        .catch(error => {
-            console.error(error);
-            updateRfidStatus('error', 'Request failed');
-        });
-    }
 
     function toggleClearButton() {
         const uidInput = getElement('uid');
@@ -747,7 +717,6 @@ document.addEventListener("DOMContentLoaded", function() {
             let retryCount = 0;
             
             
-            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
             console.error('Error initializing form:', error);
         }
@@ -762,7 +731,40 @@ document.addEventListener("DOMContentLoaded", function() {
     // Start everything
     initialize();
     fetchLatestUid();
+    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+
 
 });
+function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
+
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
+        }
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
 </script>
 @endsection
