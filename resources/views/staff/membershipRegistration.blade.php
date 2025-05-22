@@ -782,7 +782,7 @@ document.addEventListener("DOMContentLoaded", function() {
             @endif
 
             // Initial RFID status
-            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            updateRfidStatus('waiting', 'Please Tap Your Cardsdsdddd...');
             
             // Start RFID polling with retry mechanism
             let retryCount = 0;
