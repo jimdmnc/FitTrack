@@ -633,76 +633,82 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // RFID Handling
-    function updateRfidStatus(type, message) {
-        const rfidStatus = document.getElementById('rfid_status');
-        if (!rfidStatus) return;
+function updateRfidStatus(type, message) {
+    const rfidStatus = document.getElementById('rfid_status');
+    if (!rfidStatus) return;
 
-        const icons = {
-            success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>`,
-            waiting: `<svg class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>`,
-            error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>`
-        };
+    const icons = {
+        success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>`,
+        waiting: `<svg class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>`,
+        error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>`
+    };
 
-        const colors = {
-            success: 'text-green-500',
-            waiting: 'text-blue-500',
-            error: 'text-red-500'
-        };
+    const colors = {
+        success: 'text-green-500',
+        waiting: 'text-blue-500',
+        error: 'text-red-500'
+    };
 
-        rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
-        rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
-    }
-    function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
-                    uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
-                }
-                toggleClearButton();
-            })
-    }
+    rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
+    rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
+}
 
-    function clearRfid() {
+function fetchLatestUid() {
     const uidInput = document.getElementById('uid');
-    const uid = uidInput.value;
+    const loadingIndicator = document.getElementById('rfid-loading');
+    const clearButton = document.getElementById('clearRfidBtn');
+
+    fetch('/api/rfid/latest')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            if (data.uid && uidInput) {
+                uidInput.value = data.uid;
+                updateRfidStatus('success', 'Card detected');
+            } else {
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('waiting', 'Please Tap Your Card...');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error('Error fetching RFID:', error);
+            if (uidInput) uidInput.value = '';
+            updateRfidStatus('error', 'Failed to fetch RFID');
+            toggleClearButton();
+        });
+}
+
+function clearRfid() {
+    const uidInput = document.getElementById('uid');
     const loadingIndicator = document.getElementById('rfid-loading');
     const clearButton = document.getElementById('clearRfidBtn');
     const statusElement = document.getElementById('rfid_status');
+    const uid = uidInput?.value;
 
     if (!uid) {
+        updateRfidStatus('error', 'No RFID to clear');
         return;
     }
 
     // Show loading state
     clearButton.disabled = true;
-    statusElement.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-spin" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-        </svg>
-        Clearing RFID...
-    `;
+    loadingIndicator.classList.remove('hidden');
+    updateRfidStatus('waiting', 'Clearing RFID...');
 
-    // Make API call
     fetch(`/api/rfid/clear/${uid}`, {
         method: 'DELETE',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json'
         }
     })
     .then(response => {
@@ -713,96 +719,85 @@ document.addEventListener("DOMContentLoaded", function() {
     })
     .then(data => {
         if (data.success) {
-            // Clear the input and reset UI
             uidInput.value = '';
+            updateRfidStatus('success', 'RFID cleared');
             clearButton.classList.add('hidden');
-            loadingIndicator.classList.remove('hidden');
-            
-            statusElement.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                <span class="text-green-500">${data.message}</span>
-            `;
-            
             // Reset status after 3 seconds
             setTimeout(() => {
-                statusElement.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Please Tap Your Card...
-                `;
+                updateRfidStatus('waiting', 'Please Tap Your Card...');
             }, 3000);
+        } else {
+            updateRfidStatus('error', data.message || 'Failed to clear RFID');
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        statusElement.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            <span class="text-red-500">${error.message || 'Failed to clear RFID'}</span>
-        `;
-        
-        // Reset button state
+        console.error('Error clearing RFID:', error);
+        updateRfidStatus('error', error.message || 'Failed to clear RFID');
+    })
+    .finally(() => {
         clearButton.disabled = false;
+        loadingIndicator.classList.remove('hidden');
     });
 }
 
-    function toggleClearButton() {
-        const uidInput = getElement('uid');
-        const clearBtn = getElement('clearRfidBtn');
+function toggleClearButton() {
+    const uidInput = document.getElementById('uid');
+    const clearBtn = document.getElementById('clearRfidBtn');
 
-        if (uidInput && clearBtn) {
-            if (uidInput.value.trim() !== '') {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
-            }
+    if (uidInput && clearBtn) {
+        if (uidInput.value.trim() !== '') {
+            clearBtn.classList.remove('hidden');
+        } else {
+            clearBtn.classList.add('hidden');
         }
     }
+}
 
-    // Initialize
-    function initialize() {
-        try {
-            validateBirthdate();
-            setupMembershipHandlers();
-            setupFormHandlers();
+// Initialize RFID handling
+function initializeRfid() {
+    // Handle session messages
+    @if (session('success'))
+        const uidInput = document.getElementById('uid');
+        if (uidInput) uidInput.value = '';
+        updateRfidStatus('success', '{{ session('success') }}');
+    @endif
 
-            // Handle session messages
-            @if (session('success'))
-                const uidInput = getElement('uid');
-                if (uidInput) uidInput.value = '';
-                updateRfidStatus('success', '{{ session('success') }}');
-            @endif
+    @if (session('error'))
+        updateRfidStatus('error', '{{ session('error') }}');
+    @endif
 
-            @if (session('error'))
-                updateRfidStatus('error', '{{ session('error') }}');
-            @endif
+    // Initial RFID fetch
+    fetchLatestUid();
 
-            // Initial RFID status
-            updateRfidStatus('waiting', 'Please Tap Your Card...');
-            
-            // Start RFID polling with retry mechanism
-            let retryCount = 0;
-            
-            fetchLatestUid();
-            
-            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
-        } catch (error) {
-            console.error('Error initializing form:', error);
-        }
+    // Start polling
+    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
 
-        // Cleanup
-  // Clean up interval when leaving page
-  window.addEventListener('beforeunload', function() {
+    // Clean up interval on page unload
+    window.addEventListener('beforeunload', () => {
         clearInterval(rfidPollInterval);
     });
-    }
 
-    // Start everything
-    initialize();
+    // Add event listener for clear RFID button
+    const clearRfidBtn = document.getElementById('clearRfidBtn');
+    if (clearRfidBtn) {
+        clearRfidBtn.addEventListener('click', clearRfid);
+    }
+}
+
+// Call RFID initialization within the main initialize function
+function initialize() {
+    try {
+        validateBirthdate();
+        setupMembershipHandlers();
+        setupFormHandlers();
+        initializeRfid();
+    } catch (error) {
+        console.error('Error initializing form:', error);
+    }
+}
+
+// Start everything
+initialize();
 });
 </script>
 @endsection
