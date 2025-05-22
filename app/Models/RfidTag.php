@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class RfidTag extends Model
 {
     use HasFactory;
+    protected $table = 'rfid_tags';
 
     protected $fillable = ['uid'];
 
