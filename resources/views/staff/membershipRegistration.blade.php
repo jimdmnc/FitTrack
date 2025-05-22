@@ -709,7 +709,8 @@ document.addEventListener("DOMContentLoaded", function() {
             @if (session('error'))
                 updateRfidStatus('error', '{{ session('error') }}');
             @endif
-
+            fetchLatestUid();
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
             // Initial RFID status
             updateRfidStatus('waiting', 'Please Tap Your Card...');
             
@@ -730,8 +731,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Start everything
     initialize();
-    fetchLatestUid();
-    const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+
 
 
 });
