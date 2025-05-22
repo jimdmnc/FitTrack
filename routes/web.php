@@ -118,7 +118,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/edit-staff/{id}', [StaffController::class, 'editStaff'])->name('staff.editStaff');
         Route::put('/update-staff/{id}', [StaffController::class, 'updateStaff'])->name('staff.updateStaff');
         Route::delete('/delete-staff/{id}', [StaffController::class, 'deleteStaff'])->name('staff.deleteStaff');
-        Route::get('/staff/pending-approval-count', [StaffController::class, 'getPendingApprovalCount'])
+        Route::get('/staff/pending-approval-count', [StaffApprovalController::class, 'getPendingApprovalCount'])
             ->name('staff.pendingApprovalCount')
             ->middleware('auth');
     });
