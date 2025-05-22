@@ -3,15 +3,12 @@
         <!-- Left Section: Brand and Hamburger Menu -->
         <div class="flex items-center space-x-4">
             <!-- Hamburger Menu Button with Animation -->
-            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative" @click="open = !open">
+            <button id="hamburger" class="p-2 rounded-full text-[#FF5722] hover:text-gray-200 transition-all duration-300 relative">
                 <div class="w-6 h-6 relative flex flex-col justify-center items-center">
                     <!-- Hamburger lines with transition effects -->
-                    <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
-                          :class="{'rotate-45': open, '-translate-y-1.5': !open}"></span>
-                    <span id="line2" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
-                          :class="{'opacity-0': open, 'opacity-100': !open}"></span>
-                    <span id="line3" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out" 
-                          :class="{'-rotate-45 translate-y-0': open, 'translate-y-1.5': !open}"></span>
+                    <span id="line1" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out -translate-y-1.5 group-hover:bg-gray-200"></span>
+                    <span id="line2" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out group-hover:bg-gray-200"></span>
+                    <span id="line3" class="w-5 h-0.5 bg-current absolute transform transition-all duration-300 ease-in-out translate-y-1.5 group-hover:bg-gray-200"></span>
                 </div>
                 <span class="sr-only">Toggle menu</span>
             </button>
@@ -25,7 +22,7 @@
                 <polyline points="12 6 12 12 16 14"></polyline>
                 </svg>
             </span>
-            <span id="time-text">Loading time...</span>
+            <span id="time-text">12:00 PM</span>
         </div>
 
         <!-- Right Section: Search, Feedback and Notifications -->
@@ -54,110 +51,28 @@
 
         </div>
     </header>
-        
+    
+    <!-- Mobile Menu (Hidden by Default) -->
+    <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1 bg-white border-t border-gray-200 shadow-lg">
+        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Dashboard</a>
+        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Members</a>
+        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Reports</a>
+        <a href="#" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600">Settings</a>
+
+    </div>
 </nav>
 <script>
-// Using a reliable time API with multiple endpoints as fallback
-const TIME_API_ENDPOINTS = [
-    'https://worldtimeapi.org/api/timezone/Asia/Manila',
-    'https://timeapi.io/api/Time/current/zone?timeZone=Asia/Manila',
-    'https://www.timeapi.io/api/Time/current/zone?timeZone=Asia/Manila'
-];
-
-async function fetchTimeFromAPI(endpoint) {
-    try {
-        const response = await fetch(endpoint, {
-            cache: 'no-store',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        
-        if (!response.ok) throw new Error(`API response not OK: ${response.status}`);
-        
-        const data = await response.json();
-        const datetime = data.datetime || data.dateTime || data.currentDateTime;
-        if (!datetime) throw new Error('No valid datetime field in response');
-        
-        const date = new Date(datetime);
-        if (isNaN(date.getTime())) throw new Error('Invalid date format');
-        
-        return date;
-    } catch (error) {
-        console.error(`Failed to fetch from ${endpoint}:`, error.message);
-        return null;
-    }
+function updateTime() {
+  const now = new Date();
+  const hours = now.getHours();
+  const minutes = now.getMinutes().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const formattedHours = (hours % 12) || 12; // Convert to 12-hour format
+  
+  document.getElementById('time-text').textContent = `${formattedHours}:${minutes} ${ampm}`;
 }
 
-async function getInternetTime() {
-    for (const endpoint of TIME_API_ENDPOINTS) {
-        const date = await fetchTimeFromAPI(endpoint);
-        if (date) return date;
-    }
-    return null; // Return null if all APIs fail
-}
-
-function getLocalTimeForManila() {
-    const now = new Date(); // Client's local time
-    // Get the client's timezone offset in minutes
-    const clientOffset = now.getTimezoneOffset();
-    // Manila is UTC+8 (480 minutes ahead of UTC)
-    const manilaOffset = 480;
-    // Calculate the offset difference in milliseconds
-    const offsetDiff = (manilaOffset - clientOffset) * 60 * 1000;
-    // Adjust the local time to Manila time
-    return new Date(now.getTime() + offsetDiff);
-}
-
-function formatTime(date) {
-    const hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    const formattedHours = (hours % 12) || 12;
-    return `${formattedHours}:${minutes} ${ampm}`;
-}
-
-function updateTimeDisplay(date, isFallback = false) {
-    const timeElement = document.getElementById('time-text');
-    if (timeElement) {
-        timeElement.textContent = formatTime(date);
-        if (isFallback) {
-            timeElement.classList.add('text-gray-200'); // Indicate fallback with yellow color
-        } else {
-            timeElement.classList.remove('text-gray-200', 'text-red-500');
-        }
-    }
-}
-
-async function updateInternetTime() {
-    try {
-        const date = await getInternetTime();
-        if (date) {
-            updateTimeDisplay(date);
-        } else {
-            // Fallback to local time adjusted for Manila
-            console.warn('All time APIs failed, falling back to local time adjusted for Asia/Manila');
-            const localDate = getLocalTimeForManila();
-            updateTimeDisplay(localDate, true);
-        }
-    } catch (error) {
-        console.error('Failed to get internet time:', error.message);
-        // Fallback to local time adjusted for Manila
-        const localDate = getLocalTimeForManila();
-        updateTimeDisplay(localDate, true);
-    }
-}
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // First update
-    updateInternetTime();
-    
-    // Update every minute (60000ms)
-    setInterval(updateInternetTime, 60000);
-    
-    // Also update immediately every second for the first 10 seconds
-    const quickUpdateInterval = setInterval(updateInternetTime, 1000);
-    setTimeout(() => clearInterval(quickUpdateInterval), 10000);
-});
+// Update time immediately and then every second
+updateTime();
+setInterval(updateTime, 1000);
 </script>
