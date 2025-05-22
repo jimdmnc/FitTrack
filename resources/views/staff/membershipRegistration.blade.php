@@ -661,22 +661,18 @@ document.addEventListener("DOMContentLoaded", function() {
 
     function fetchLatestUid() {
         if (isFetching) return;
+        
         isFetching = true;
         
+        // Add timeout handling
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
         
-        fetch(`${API_BASE_URL}/api/rfid/latest`, { 
+        fetch('api/rfid/latest', { 
             signal: controller.signal
         })
         .then(response => {
-            if (!response.ok) {
-                if (response.status === 404) {
-                    updateRfidStatus('waiting', 'RFID endpoint not found, please tap card...');
-                    throw new Error('RFID endpoint not found');
-                }
-                throw new Error('Network response was not ok');
-            }
+            if (!response.ok) throw new Error('Network response was not ok');
             return response.json();
         })
         .then(data => {
@@ -695,8 +691,8 @@ document.addEventListener("DOMContentLoaded", function() {
             if (error.name === 'AbortError') {
                 console.warn('RFID fetch request timed out');
             } else {
-                console.error('Error fetching RFID:', error.message);
-                updateRfidStatus('error', `Failed to detect RFID card: ${error.message}`);
+                console.error('Error fetching RFID:', error);
+                updateRfidStatus('error', 'Failed to detect RFID card');
             }
         })
         .finally(() => {
