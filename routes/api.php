@@ -108,9 +108,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/log-food', [FoodLogController::class, 'logFood']); // Log food
     // Route to get food logs by date
     Route::get('/food_logs', [FoodController::class, 'getFoodLogsByDate']);
-    // Route::delete('/food-logs/{id}', [FoodLogController::class, 'destroy'])
-    // ->name('food-logs.destroy');
-    // Route::get('/food-logs/all', [FoodLogController::class, 'getAllFoodLogs']);
 
 
 
@@ -124,3 +121,4 @@ Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
 Route::post('/attendance', [RFIDController::class, 'handleAttendance']);
 Route::post('/save_rfid', [RFIDController::class, 'saveRFID']);
 Route::get('/rfid/latest', [RFIDController::class, 'getLatestRFID']);
+Route::delete('/rfid/clear/{uid}', [RFIDController::class, 'clear']);

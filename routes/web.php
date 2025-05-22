@@ -155,7 +155,6 @@ Route::middleware('auth')->group(function () {
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
 });
-Route::delete('/rfid/clear/{uid}', [RFIDController::class, 'clear']);
 
 // Authentication routes (login, register, etc.)
 require __DIR__.'/auth.php';

@@ -634,7 +634,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // RFID Handling
     function updateRfidStatus(type, message) {
-        const rfidStatus = getElement('rfid_status');
+        const rfidStatus = document.getElementById('rfid_status');
         if (!rfidStatus) return;
 
         const icons = {
@@ -658,110 +658,56 @@ document.addEventListener("DOMContentLoaded", function() {
         rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
         rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
-
     function fetchLatestUid() {
-        if (isFetching) return;
-        
-        isFetching = true;
-        
-        // Add timeout handling
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
-        
-        fetch('/api/rfid/latest', { 
-            signal: controller.signal
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            const uidInput = getElement('uid');
-            if (data && data.uid && uidInput) {
-                uidInput.value = data.uid;
-                updateRfidStatus('success', 'Card detected');
-            } else {
-                if (uidInput && !uidInput.value) {
+        fetch('/api/rfid/latest')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const uidInput = document.getElementById('uid');
+                if (data.uid && uidInput) {
+                    uidInput.value = data.uid;
+                    updateRfidStatus('success', 'Card detected');
+                } else {
+                    if (uidInput) uidInput.value = '';
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
                 }
-            }
-            toggleClearButton();
-        })
-        .catch(error => {
-            if (error.name === 'AbortError') {
-                console.warn('RFID fetch request timed out');
-            } else {
-                console.error('Error fetching RFID:', error);
-                updateRfidStatus('error', 'Failed to detect RFID card');
-            }
-        })
-        .finally(() => {
-            clearTimeout(timeoutId);
-            isFetching = false;
-        });
+                toggleClearButton();
+            })
     }
 
     function clearRfid() {
-        const uidInput = getElement('uid');
-        const clearBtn = getElement('clearRfidBtn');
+    const uidInput = document.getElementById('uid');
+    const uid = uidInput.value;
 
-        if (!uidInput || !clearBtn) {
-            updateRfidStatus('error', 'Form elements not found');
-            return;
-        }
-
-        const uid = uidInput.value.trim();
-        if (!uid) {
-            updateRfidStatus('error', 'No RFID to clear');
-            return;
-        }
-
-        // Disable button during request
-        clearBtn.disabled = true;
-        clearBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        updateRfidStatus('waiting', 'Clearing RFID...');
-
-        // Get CSRF token safely
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-        if (!csrfToken) {
-            updateRfidStatus('error', 'CSRF token not found');
-            clearBtn.disabled = false; 
-            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            return;
-        }
-
-        fetch(`/rfid/clear/${encodeURIComponent(uid)}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': csrfToken,
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared successfully');
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-        })
-        .catch(error => {
-            console.error('Error clearing RFID:', error);
-            updateRfidStatus('error', 'Failed to clear RFID: ' + error.message);
-        })
-        .finally(() => {
-            clearBtn.disabled = false;
-            clearBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-            toggleClearButton();
-        });
+    if (!uid) {
+        updateRfidStatus('error', 'No RFID to clear');
+        return;
     }
+
+    fetch(`/api/rfid/clear/${uid}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            uidInput.value = '';
+            updateRfidStatus('success', 'RFID cleared');
+        } else {
+            updateRfidStatus('error', data.message || 'Failed to clear RFID');
+        }
+        toggleClearButton();
+    })
+    .catch(error => {
+        console.error(error);
+        updateRfidStatus('error', 'Request failed');
+    });
+}
 
     function toggleClearButton() {
         const uidInput = getElement('uid');
@@ -802,30 +748,16 @@ document.addEventListener("DOMContentLoaded", function() {
             
             fetchLatestUid();
             
-            rfidPollInterval = setInterval(() => {
-                if (isFetching) {
-                    retryCount++;
-                    if (retryCount > MAX_RETRIES) {
-                        isFetching = false;
-                        retryCount = 0;
-                    }
-                    return;
-                }
-                
-                retryCount = 0;
-                fetchLatestUid();
-            }, RFID_POLL_INTERVAL);
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
         } catch (error) {
             console.error('Error initializing form:', error);
         }
 
         // Cleanup
-        window.addEventListener('beforeunload', () => {
-            if (rfidPollInterval) {
-                clearInterval(rfidPollInterval);
-                rfidPollInterval = null;
-            }
-        });
+  // Clean up interval when leaving page
+  window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
     }
 
     // Start everything

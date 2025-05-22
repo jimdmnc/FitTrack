@@ -128,7 +128,6 @@ public function handleAttendance(Request $request)
         return response()->json(['uid' => $latestRFID->uid]);
     }
 
-
     
     public function clear($uid)
     {
