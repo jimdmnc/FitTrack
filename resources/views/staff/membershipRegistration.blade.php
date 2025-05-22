@@ -336,9 +336,12 @@
 <script>
 document.addEventListener("DOMContentLoaded", function() {
     // Configuration constants
-    const RFID_POLL_INTERVAL = 2000; // ms
+    const RFID_POLL_INTERVAL = 5000; // Increased to 5 seconds for less server load
     const FETCH_TIMEOUT = 5000; // ms
     const MAX_RETRIES = 3;
+    const API_BASE_URL = window.location.hostname.includes('localhost')
+        ? 'http://localhost:8000' // Adjust port as needed for local development
+        : 'https://rockiesfitnessph.com';
     let isFetching = false;
     let rfidPollInterval = null;
 
@@ -479,7 +482,9 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Format date consistently as DD/MM/YYYY
             const day = String(endDate.getDate()).padStart(2, '0');
-            const month = String(endDate.getMonth() + 1).padStart(2, '0');
+            const month
+
+ = String(endDate.getMonth() + 1).padStart(2, '0');
             const year = endDate.getFullYear();
             
             endDateInput.value = `${day}/${month}/${year}`;
@@ -666,7 +671,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT);
         
-        fetch(`${API_BASE_URL}/api/rfid/latest`, { 
+        fetch(`${API_BASE_URL}/rfid/latest`, { 
             signal: controller.signal
         })
         .then(response => {
@@ -675,7 +680,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     updateRfidStatus('waiting', 'RFID endpoint not found, please tap card...');
                     throw new Error('RFID endpoint not found');
                 }
-                throw new Error('Network response was not ok');
+                throw new Error(`Network response was not ok: ${response.status}`);
             }
             return response.json();
         })
@@ -684,6 +689,8 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data && data.uid && uidInput) {
                 uidInput.value = data.uid;
                 updateRfidStatus('success', 'Card detected');
+                clearInterval(rfidPollInterval); // Stop polling on success
+                rfidPollInterval = null;
             } else {
                 if (uidInput && !uidInput.value) {
                     updateRfidStatus('waiting', 'Please Tap Your Card...');
@@ -734,7 +741,7 @@ document.addEventListener("DOMContentLoaded", function() {
             return;
         }
 
-        fetch(`api/rfid/clear/${encodeURIComponent(uid)}`, {
+        fetch(`${API_BASE_URL}/rfid/clear/${encodeURIComponent(uid)}`, {
             method: 'DELETE',
             headers: {
                 'X-CSRF-TOKEN': csrfToken,
@@ -752,13 +759,20 @@ document.addEventListener("DOMContentLoaded", function() {
             if (data.success) {
                 uidInput.value = '';
                 updateRfidStatus('success', 'RFID cleared successfully');
+                // Restart polling after clearing RFID
+                if (!rfidPollInterval) {
+                    rfidPollInterval = setInterval(() => {
+                        if (isFetching) return;
+                        fetchLatestUid();
+                    }, RFID_POLL_INTERVAL);
+                }
             } else {
                 updateRfidStatus('error', data.message || 'Failed to clear RFID');
             }
         })
         .catch(error => {
-            console.error('Error clearing RFID:', error);
-            updateRfidStatus('error', 'Failed to clear RFID: ' + error.message);
+            console.error('Error clearing RFID:', error.message);
+            updateRfidStatus('error', `Failed to clear RFID: ${error.message}`);
         })
         .finally(() => {
             clearBtn.disabled = false;
