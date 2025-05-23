@@ -488,90 +488,95 @@
 
     <!-- Edit Announcement Modal -->
     <div id="editAnnouncementModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl border border-gray-800 w-full max-w-md mx-4 transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
-            <div class="bg-gray-900 rounded-t-xl p-6 border-b border-gray-800">
-                <h2 class="text-2xl font-semibold text-gray-100 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Edit Announcement
-                </h2>
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl border border-gray-800 w-full max-w-sm mx-2 transform transition-all duration-300 ease-in-out scale-95 hover:scale-100">
+        <div class="bg-gray-900 rounded-t-xl p-4 border-b border-gray-800">
+            <h2 class="text-xl font-semibold text-gray-100 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#FF5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit Announcement
+            </h2>
+        </div>
+        <form id="editAnnouncementForm" method="POST" class="p-4 space-y-4">
+            @csrf
+            @method('PUT')
+            <input type="hidden" name="id" id="edit_id">
+
+            <!-- Title -->
+            <div>
+                <label for="edit_title" class="block text-sm font-medium text-gray-400 mb-1">Title</label>
+                <input type="text" name="title" id="edit_title" 
+                    class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
+                    required 
+                    placeholder="Enter announcement title">
+                @error('title')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
-            <form id="editAnnouncementForm" method="POST" class="p-6 space-y-6">
-                @csrf
-                @method('PUT')
-                <input type="hidden" name="id" id="edit_id">
-                
-                <div>
-                    <label for="edit_title" class="block text-sm font-medium text-gray-400 mb-2">Title</label>
-                    <input type="text" name="title" id="edit_title" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
-                        required 
-                        placeholder="Enter announcement title">
-                    @error('title')
-                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="edit_content" class="block text-sm font-medium text-gray-400 mb-2">Content</label>
-                    <textarea name="content" id="edit_content" 
-                    class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 resize-none overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
+
+            <!-- Content -->
+            <div>
+                <label for="edit_content" class="block text-sm font-medium text-gray-400 mb-1">Content</label>
+                <textarea name="content" id="edit_content" 
+                    class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-2.5 text-sm resize-none overflow-y-auto focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300" 
                     rows="3"
                     required 
                     placeholder="Write your announcement details"></textarea>
+                @error('content')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-                    @error('content')
-                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="edit_schedule" class="block text-sm font-medium text-gray-400 mb-2">Schedule (Optional)</label>
-                    <input type="datetime-local" name="schedule" id="edit_schedule" 
-                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300">
-                    @error('schedule')
-                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div>
-                    <label for="edit_type" class="block text-sm font-medium text-gray-400 mb-2">Type</label>
-                    <div class="relative">
-                        <select name="type" id="edit_type" 
-                            class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300 appearance-none" 
-                            required>
-                            <option value="Maintenance" class="bg-gray-800">Maintenance</option>
-                            <option value="Event" class="bg-gray-800">Event</option>
-                            <option value="Update" class="bg-gray-800">Update</option>
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
-                            </svg>
-                        </div>
-                    </div>
-                    @error('type')
-                        <p class="text-red-400 text-sm mt-2">{{ $message }}</p>
-                    @enderror
-                </div>
-                
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" id="closeEditModalBtn" 
-                        class="bg-gray-800 text-gray-300 px-5 py-2 rounded-lg hover:bg-gray-700 transition duration-300 border border-gray-700">
-                        Cancel
-                    </button>
-                    <button type="submit" 
-                        class="bg-[#FF5722] text-white px-5 py-2 rounded-lg hover:bg-[#e64a19] transition duration-300 flex items-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            <!-- Schedule -->
+            <div>
+                <label for="edit_schedule" class="block text-sm font-medium text-gray-400 mb-1">Schedule (Optional)</label>
+                <input type="datetime-local" name="schedule" id="edit_schedule" 
+                    class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300">
+                @error('schedule')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Type -->
+            <div>
+                <label for="edit_type" class="block text-sm font-medium text-gray-400 mb-1">Type</label>
+                <div class="relative">
+                    <select name="type" id="edit_type" 
+                        class="w-full bg-gray-800 border border-gray-700 text-gray-100 rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF5722] transition duration-300 appearance-none" 
+                        required>
+                        <option value="Maintenance" class="bg-gray-800">Maintenance</option>
+                        <option value="Event" class="bg-gray-800">Event</option>
+                        <option value="Update" class="bg-gray-800">Update</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-400">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
                         </svg>
-                        Save
-                    </button>
+                    </div>
                 </div>
-            </form>
-        </div>
+                @error('type')
+                    <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex justify-end space-x-2 pt-2">
+                <button type="button" id="closeEditModalBtn" 
+                    class="bg-gray-800 text-gray-300 px-4 py-2 text-sm rounded-lg hover:bg-gray-700 transition duration-300 border border-gray-700">
+                    Cancel
+                </button>
+                <button type="submit" 
+                    class="bg-[#FF5722] text-white px-4 py-2 text-sm rounded-lg hover:bg-[#e64a19] transition duration-300 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Save
+                </button>
+            </div>
+        </form>
     </div>
+</div>
+
 
 
     <!-- Dashboard Grid Charts Section -->
