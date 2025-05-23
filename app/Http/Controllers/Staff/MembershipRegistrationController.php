@@ -61,7 +61,8 @@ class MembershipRegistrationController extends Controller
                 ],
                 'membership_type' => 'required|string|in:custom,7,30,365',
                 'custom_days' => 'nullable|integer|min:1|max:365|required_if:membership_type,custom',
-                'start_date' => 'required|date|after_or_equal:today',
+                // 'start_date' => 'required|date|after_or_equal:today',
+                'start_date' => 'required|date',
                 'birthdate' => ['required', 'date', 'before:today', "before_or_equal:{$maxBirthdate}"],
                 'uid' => [
                     'required',
