@@ -26,7 +26,8 @@ class UsersTableSeeder extends Seeder
             'birthdate' => '1990-01-01',
             'email_verified_at' => now(),
             'password' => Hash::make('admin123'),
-
+            'created_at' => now(),
+            'updated_at' => now(),
             'role' => 'super_admin',
             'member_status' => 'active',
             'revoke_reason' => null,
