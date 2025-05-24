@@ -116,7 +116,7 @@ class MembershipRegistrationController extends Controller
                     'password' => Hash::make($generatedPassword),
                     'role' => 'user',
                     'rfid_uid' => $validatedData['uid'],
-                    'session_status' => 'pending', // Default status
+                    'session_status' => 'approved',
                     'end_date' => Carbon::parse($validatedData['start_date'])
                         ->addDays((int)$membershipDays - 1)
                         ->format('Y-m-d'),
