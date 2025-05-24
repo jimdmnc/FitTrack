@@ -155,49 +155,252 @@
             animation: pulse 2s infinite;
         }
 
-        /* Enhanced Profile Modal Styles */
         .profile-modal {
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .profile-modal-content {
+        backdrop-filter: blur(8px);
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .profile-modal-content {
+        width: 420px;
+        box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
+        animation: slideInRight 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 50%, #991b1b 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        pointer-events: none;
+    }
+    
+    .profile-avatar {
+        border: 4px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+    }
+    
+    .profile-avatar:hover {
+        transform: scale(1.05);
+    }
+    
+    .profile-info-item {
+        background: rgba(31, 41, 55, 0.6);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-info-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.03), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .profile-info-item:hover::before {
+        left: 100%;
+    }
+    
+    .profile-info-item:hover {
+        background: rgba(31, 41, 55, 0.8);
+        border-color: rgba(239, 68, 68, 0.3);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .profile-info-item label {
+        color: #9ca3af;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .profile-info-item p {
+        color: #f3f4f6;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+    
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-top: 4px;
+    }
+    
+    .status-approved {
+        background: rgba(34, 197, 94, 0.1);
+        color: #22c55e;
+        border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    .status-rejected {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .status-pending {
+        background: rgba(251, 191, 36, 0.1);
+        color: #fbbf24;
+        border: 1px solid rgba(251, 191, 36, 0.2);
+    }
+    
+    .status-expired {
+        background: rgba(156, 163, 175, 0.1);
+        color: #9ca3af;
+        border: 1px solid rgba(156, 163, 175, 0.2);
+    }
+    
+    .close-btn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .close-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+    }
+    
+    .attendance-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+    }
+    
+    .attendance-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        animation: pulse 2s infinite;
+    }
+    
+    .attendance-dot.active {
+        background: #22c55e;
+    }
+    
+    .attendance-dot.inactive {
+        background: #ef4444;
+    }
+    
+    .action-button {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+    }
+    
+    .approval-link {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+    
+    .approval-link:hover {
+        color: #2563eb;
+        background: rgba(59, 130, 246, 0.2);
+        transform: translateX(4px);
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideInRight {
+        from {
             transform: translateX(100%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
-            width: 380px;
+            opacity: 0;
         }
-
-        .profile-modal.active .profile-modal-content {
+        to {
             transform: translateX(0);
+            opacity: 1;
         }
-
-        .profile-header {
-            padding: 1.5rem;
-        }
-
-        .profile-avatar {
-            width: 80px;
-            height: 80px;
-            border: 3px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-            background-color: #2c2c2c;
-        }
-
-        .profile-info-item {
-            border-bottom: 1px solid #2c2c2c;
-            padding: 1rem;
-            transition: background-color 0.2s ease;
-        }
-
-        .profile-info-item:hover {
-            background-color: #252525;
-        }
-
-        @media (max-width: 640px) {
-            .profile-modal-content {
-                width: 100%;
-            }
-        }
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
+    }
+    
+    /* Custom Scrollbar */
+    .profile-modal-content .overflow-y-auto::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .profile-modal-content .overflow-y-auto::-webkit-scrollbar-track {
+        background: rgba(31, 41, 55, 0.3);
+        border-radius: 3px;
+    }
+    
+    .profile-modal-content .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: rgba(239, 68, 68, 0.5);
+        border-radius: 3px;
+    }
+    
+    .profile-modal-content .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: rgba(239, 68, 68, 0.7);
+    }
 
         .announcement-card {
             position: relative;
@@ -693,74 +896,115 @@
         </footer>
 
         <!-- Profile Modal -->
-        <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
-            <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-                <div class="profile-header bg-red-600">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-white">User Profile</h3>
-                        <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                    <div class="text-center">
-                        <img src="{{ asset('images/image.png') }}" alt="User Avatar" class="w-20 h-20 rounded-full mx-auto mb-4 profile-avatar">
-                        <h2 class="text-xl font-semibold mt-4 text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h2>
-                        <p class="text-sm text-gray-300">{{ Auth::user()->email }}</p>
-                    </div>
+        <!-- Profile Modal -->
+<div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
+    <div class="profile-modal-content absolute right-0 top-0 h-full text-gray-200">
+        <div class="profile-header p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white">User Profile</h3>
+                <button onclick="hideProfile()" class="close-btn">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="text-center">
+                <div class="relative inline-block">
+                    <img src="{{ asset('images/image.png') }}" alt="User Avatar" class="w-24 h-24 rounded-full mx-auto mb-4 profile-avatar object-cover">
+                    <div class="absolute -bottom-2 -right-2 w-6 h-6 bg-green-500 rounded-full border-3 border-white"></div>
                 </div>
-                <div class="overflow-y-auto h-[calc(100vh-200px)] bg-[#1e1e1e]">
-                    <div class="space-y-2 p-4">
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Gender</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->gender ?? 'Not specified' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Member Since</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Last Activity</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Attendance Status</label>
-                            @if(isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                                <p class="text-green-600 font-medium">Checked in since {{ $attendance->time_in->format('M d, Y H:i') }}</p>
-                            @else
-                                <p class="text-red-600 font-medium">Checked out</p>
-                            @endif
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
-                            <p class="font-medium {{ Auth::user()->session_status === 'approved' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ ucfirst(Auth::user()->session_status) }}
-                                @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
-                                    (Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }})
-                                @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
-                                    - {{ Auth::user()->rejection_reason }}
-                                @endif
-                            </p>
-                        </div>
-                        @if(Auth::user()->session_status === 'pending')
-                            <div class="profile-info-item">
-                                <a href="{{ route('self.waiting') }}" class="text-blue-600 hover:text-blue-800">View Approval Status</a>
-                            </div>
-                        @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
-                            <div class="profile-info-item">
-                                <button onclick="checkRenewalEligibility()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg w-full">
-                                    Renew Membership
-                                </button>
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                <h2 class="text-xl font-semibold text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h2>
+                <p class="text-sm text-gray-300 mt-1">{{ Auth::user()->email }}</p>
             </div>
         </div>
+        <div class="overflow-y-auto h-[calc(100vh-240px)] px-6 pb-6">
+            <div class="space-y-4">
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-phone text-red-500 mr-2"></i>
+                        Phone Number
+                    </label>
+                    <p class="font-medium">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
+                </div>
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-user text-red-500 mr-2"></i>
+                        Gender
+                    </label>
+                    <p class="font-medium">{{ Auth::user()->gender ?? 'Not specified' }}</p>
+                </div>
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-calendar-alt text-red-500 mr-2"></i>
+                        Member Since
+                    </label>
+                    <p class="font-medium">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}</p>
+                </div>
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-clock text-red-500 mr-2"></i>
+                        Last Activity
+                    </label>
+                    <p class="font-medium">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
+                </div>
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-user-check text-red-500 mr-2"></i>
+                        Attendance Status
+                    </label>
+                    @if(isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                        <div class="attendance-indicator">
+                            <div class="attendance-dot active"></div>
+                            <p class="text-green-400 font-medium">Checked in since {{ $attendance->time_in->format('M d, Y H:i') }}</p>
+                        </div>
+                    @else
+                        <div class="attendance-indicator">
+                            <div class="attendance-dot inactive"></div>
+                            <p class="text-red-400 font-medium">Checked out</p>
+                        </div>
+                    @endif
+                </div>
+                <div class="profile-info-item">
+                    <label class="block text-sm mb-1">
+                        <i class="fas fa-id-badge text-red-500 mr-2"></i>
+                        Membership Status
+                    </label>
+                    <div class="status-badge {{ Auth::user()->session_status === 'approved' ? 'status-approved' : (Auth::user()->session_status === 'pending' ? 'status-pending' : (Auth::user()->session_status === 'expired' ? 'status-expired' : 'status-rejected')) }}">
+                        @if(Auth::user()->session_status === 'approved')
+                            <i class="fas fa-check-circle"></i>
+                        @elseif(Auth::user()->session_status === 'pending')
+                            <i class="fas fa-clock"></i>
+                        @elseif(Auth::user()->session_status === 'expired')
+                            <i class="fas fa-exclamation-triangle"></i>
+                        @else
+                            <i class="fas fa-times-circle"></i>
+                        @endif
+                        <span>{{ ucfirst(Auth::user()->session_status) }}</span>
+                    </div>
+                    @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
+                        <div class="text-xs text-gray-400 mt-2">Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }}</div>
+                    @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
+                        <div class="text-xs text-red-400 mt-2">{{ Auth::user()->rejection_reason }}</div>
+                    @endif
+                </div>
+                @if(Auth::user()->session_status === 'pending')
+                    <div class="profile-info-item">
+                        <a href="{{ route('self.waiting') }}" class="approval-link">
+                            <i class="fas fa-external-link-alt"></i>
+                            View Approval Status
+                        </a>
+                    </div>
+                @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
+                    <div class="profile-info-item">
+                        <button onclick="checkRenewalEligibility()" class="action-button">
+                            <i class="fas fa-refresh"></i>
+                            Renew Membership
+                        </button>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Session Renewal Modal -->
         <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
