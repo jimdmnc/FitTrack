@@ -298,7 +298,7 @@ class SelfRegistrationController extends Controller
             $currentTime = Carbon::now();
             $autoCheckoutTime = Carbon::today()->setTime(21, 0, 0);
     
-            if ($currentTime->greaterThan($autoCheckoutTime) {
+            if ($currentTime->greaterThan($autoCheckoutTime)) {
                 if ($attendance && !$attendance->time_out) {
                     // Auto time-out logic if needed
                     $attendance->update([
@@ -317,6 +317,7 @@ class SelfRegistrationController extends Controller
             'sessionPrice' => $sessionPrice ?? null,
         ]);
     }
+
     public function logout(Request $request)
     {
         Auth::logout();
