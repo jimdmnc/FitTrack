@@ -266,6 +266,8 @@
                     </a>
                 </div>
 
+
+            @if(Auth::user()->role === 'userSession')
                 <!-- Workout Timer (Desktop) -->
                 @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                     <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
@@ -293,6 +295,7 @@
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 @endif
+            @endif
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -455,29 +458,27 @@
             </script>
         @endif   
         
-        @if(Auth::user()->role === 'userSession')
-    <!-- Time Out Confirmation Modal -->
-    <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-        <div class="text-center">
-            <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-            <p class="mb-6">Are you sure you want to time out?</p>
-            <div class="flex justify-center gap-4">
-                @auth
-                <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
-                    @csrf
-                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                    <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+        <!-- Time Out Confirmation Modal -->
+        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+                <p class="mb-6">Are you sure you want to time out?</p>
+                <div class="flex justify-center gap-4">
+                    @auth
+                    <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
+                    </form>
+                    @endauth
+                    <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        Cancel
                     </button>
-                </form>
-                @endauth
-                <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                    Cancel
-                </button>
+                </div>
             </div>
-        </div>
-    </dialog>
-@endif
+        </dialog>
 
         <!-- Hero Section with Parallax Effect -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
