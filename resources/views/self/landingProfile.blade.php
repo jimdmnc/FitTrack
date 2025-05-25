@@ -503,6 +503,8 @@
                         Stay updated with the latest announcements from Rockies Fitness
                     </p>
                 </div>
+                @isset($announcements)
+
                 <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
                     @forelse ($announcements as $announcement)
                         <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -522,6 +524,7 @@
                         <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
                     @endforelse
                 </div>
+                @endisset
             </div>
         </div>
     </div>
