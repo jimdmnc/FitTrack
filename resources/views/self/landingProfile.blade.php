@@ -455,27 +455,29 @@
             </script>
         @endif   
         
-        <!-- Time Out Confirmation Modal -->
-        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-                <p class="mb-6">Are you sure you want to time out?</p>
-                <div class="flex justify-center gap-4">
-                    @auth
-                    <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                        <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                        </button>
-                    </form>
-                    @endauth
-                    <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        Cancel
+        @if(Auth::user()->role === 'userSession')
+    <!-- Time Out Confirmation Modal -->
+    <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+        <div class="text-center">
+            <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+            <p class="mb-6">Are you sure you want to time out?</p>
+            <div class="flex justify-center gap-4">
+                @auth
+                <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                    <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                     </button>
-                </div>
+                </form>
+                @endauth
+                <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                    Cancel
+                </button>
             </div>
-        </dialog>
+        </div>
+    </dialog>
+@endif
 
         <!-- Hero Section with Parallax Effect -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
@@ -729,7 +731,7 @@
                         </div>
                         <div class="profile-info-item">
                         <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
-                            <p class="font-medium text-gray-200">
+                            <p class="font-medium text-green-200">
                             @if(Auth::user()->start_date)
                                 {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
                             @else
