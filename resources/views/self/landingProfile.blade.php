@@ -202,7 +202,6 @@
         .announcement-card {
             position: relative;
             z-index: 1;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .announcement-card::before {
@@ -215,11 +214,6 @@
             background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
             z-index: -1;
             border-radius: inherit;
-        }
-
-        .announcement-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 16px rgba(255, 87, 34, 0.2);
         }
 
         .announcement-card:hover::before {
@@ -272,35 +266,36 @@
                     </a>
                 </div>
 
-                @if(Auth::user()->role === 'userSession')
-                    <!-- Workout Timer (Desktop) -->
-                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                        </div>
-                    @endif
 
-                    <!-- Time Out Button (Desktop and Mobile) -->
-                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                        <!-- Desktop Timeout Button -->
-                        <button
-                            id="timeout-button"
-                            onclick="document.getElementById('timeout-modal').showModal()"
-                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
-                        >
-                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                        </button>
-
-                        <!-- Mobile Timeout Button -->
-                        <button
-                            onclick="document.getElementById('timeout-modal').showModal()"
-                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
-                        >
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    @endif
+            @if(Auth::user()->role === 'userSession')
+                <!-- Workout Timer (Desktop) -->
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                    </div>
                 @endif
+
+                <!-- Time Out Button (Desktop and Mobile) -->
+                @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                    <!-- Desktop Timeout Button -->
+                    <button
+                        id="timeout-button"
+                        onclick="document.getElementById('timeout-modal').showModal()"
+                        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                    >
+                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                    </button>
+
+                    <!-- Mobile Timeout Button -->
+                    <button
+                        onclick="document.getElementById('timeout-modal').showModal()"
+                        class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                    >
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                @endif
+            @endif
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -311,12 +306,14 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
-                        @if(Auth::user()->role === 'userSession')
-                            <button type="button" onclick="checkRenewalEligibility()"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-sync-alt mr-1"></i> Renew
-                            </button>
+                    @if(Auth::user()->role === 'userSession')
+
+                        <button type="button" onclick="checkRenewalEligibility()"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-sync-alt mr-1"></i> Renew
+                        </button>
                         @endif
+
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
                             <button type="submit"
@@ -349,31 +346,33 @@
                         <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        @if(Auth::user()->role === 'userSession')
-                            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                                <div class="flex justify-center items-center py-4">
-                                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                                        <span id="mobile-workout-duration" class="text-lg font-medium">
-                                            @if(isset($attendance))
-                                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                                            @else
-                                                00:00:00
-                                            @endif
-                                        </span>
-                                    </div>
+                    @if(Auth::user()->role === 'userSession')
+                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                            <div class="flex justify-center items-center py-4">
+                                <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                                    <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                                    <span id="mobile-workout-duration" class="text-lg font-medium">
+                                        @if(isset($attendance))
+                                            {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                                        @else
+                                            00:00:00
+                                        @endif
+                                    </span>
                                 </div>
-                            @endif
+                            </div>
                         @endif
+                    @endif
+
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                        @if(Auth::user()->role === 'userSession')
-                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-sync-alt mr-2"></i> Renew
-                            </button>
+                    @if(Auth::user()->role === 'userSession')
+                        <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-sync-alt mr-2"></i> Renew
+                        </button>
                         @endif
+
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -540,6 +539,8 @@
             </div>
         </section>
 
+        @include('components.announcements')
+
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
             <div class="container mx-auto px-6">
@@ -654,78 +655,73 @@
             </div>
         </section>
 
-        <!-- In Here Section -->
-        <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
-            <div class="absolute inset-0 bg-black bg-opacity-60"></div>
-            <div class="container mx-auto px-6 z-10 text-center">
-                <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO THE GYM HUB</h2>
-                <p class="text-xl text-gray-200 mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
+<!-- In Here Section -->
+<section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
+    <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+    <div class="container mx-auto px-6 z-10 text-center">
+        <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO THE GYM HUB</h2>
+        <p class="text-xl text-gray-200 mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
 
-                <!-- Announcements Section -->
-                @isset($announcements)
-                    <div class="announcements-section py-8">
-                        <h3 class="text-3xl font-bold text-center mb-8 text-white">
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
-                                Latest Updates
+        <!-- Announcements Section -->
+        @isset($announcements)
+        <div class="announcements-section py-8">
+            <h3 class="text-3xl font-bold text-center mb-8 text-white">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
+                    Latest Updates
+                </span>
+            </h3>
+            
+            <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($announcements as $announcement)
+                <div class="announcement-card relative bg-gray-800 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-red-500/20">
+                    <!-- Decorative element -->
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-600"></div>
+                    
+                    <!-- Card content -->
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4 class="text-xl font-bold text-white">{{ $announcement->title ?? 'Announcement' }}</h4>
+                            @if($announcement->type ?? false)
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold {{
+                                $announcement->type === 'Event' ? 'bg-green-600 text-green-100' :
+                                ($announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' :
+                                ($announcement->type === 'Update' ? 'bg-orange-600 text-orange-100' :
+                                'bg-gray-600 text-white'))
+                                }}">
+                                {{ $announcement->type }}
                             </span>
-                        </h3>
-                        <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @foreach($announcements as $announcement)
-                                <div class="announcement-card relative bg-gray-800 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-red-500/20">
-                                    <!-- Decorative element -->
-                                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-600"></div>
-                                    
-                                    <!-- Card content -->
-                                    <div class="p-6">
-                                        <div class="flex justify-between items-start mb-4">
-                                            <h4 class="text-xl font-bold text-white">{{ $announcement->title ?? 'Announcement' }}</h4>
-                                            @if($announcement->type ?? false)
-                                                <span class="px-3 py-1 rounded-full text-xs font-semibold {{
-                                                    $announcement->type === 'Event' ? 'bg-green-600 text-green-100' :
-                                                    ($announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' :
-                                                    ($announcement->type === 'Update' ? 'bg-orange-600 text-orange-100' :
-                                                    'bg-gray-600 text-white'))
-                                                    }}">
-                                                    {{ $announcement->type }}
-                                                </span>
-                                            @endif
-                                        </div>
-                                        <p class="text-gray-300 mb-6 line-clamp-4">{{ $announcement->content ?? 'No content available' }}</p>
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-orange-400">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                                {{ $announcement->schedule ? $announcement->schedule->format('M d, Y') : 'No date' }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
+                            @endif
                         </div>
-                        @if($announcements->isEmpty())
-                            <div class="text-center py-8">
-                                <div class="inline-block p-4 bg-gray-800 rounded-lg">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                    <p class="mt-4 text-gray-400">No announcements available at this time</p>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                @else
-                    <div class="text-center py-8">
-                        <div class="inline-block p-4 bg-gray-800 rounded-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <p class="mt-4 text-gray-400">No announcements available at this time</p>
+                        
+                        <p class="text-gray-300 mb-6 line-clamp-4">{{ $announcement->content ?? 'No content available' }}</p>
+                        
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-orange-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {{ $announcement->schedule ? $announcement->schedule->format('M d, Y') : 'No date' }}
+                            </span>
                         </div>
                     </div>
-                @endisset
+                </div>
+                @endforeach
             </div>
-        </section>
+            
+            @if($announcements->isEmpty())
+            <div class="text-center py-8">
+                <div class="inline-block p-4 bg-gray-800 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="mt-4 text-gray-400">No announcements available at this time</p>
+                </div>
+            </div>
+            @endif
+        </div>
+        @endisset
+    </div>
+</section>
 
         <!-- Footer -->
         <footer class="bg-black text-gray-200 py-12">
@@ -803,14 +799,13 @@
                             <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
                         </div>
                         <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
+                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
                             <p class="font-medium text-green-200">
-                                @if(Auth::user()->start_date)
-                                    {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
-                                @else
-                                    Not specified
-                                @endif
-                            </p>
+                            @if(Auth::user()->start_date)
+                                {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
+                            @else
+                                Not specified
+                            @endif
                         </div>
                         <div class="profile-info-item">
                             <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
@@ -1350,8 +1345,6 @@
                     }, 300);
                 };
             }
-
-    
 
             function showNotification(title, message, type = 'info') {
                 let notification = document.getElementById('notification');
