@@ -540,11 +540,11 @@
         </section>
 
   <!-- In your landingProfile.blade.php -->
-  <section class="py-8">
+<section class="py-8">
     <div class="container mx-auto px-4">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Announcements</h2>
         
-        @if(!isset($announcements) || $announcements->isEmpty())
+        @if($announcements->isEmpty())
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded">
                 No announcements available at the moment.
             </div>
