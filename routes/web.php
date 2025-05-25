@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\DashboardController;
 use App\Http\Controllers\Staff\MembershipRegistrationController;
 use App\Http\Controllers\Staff\AttendanceController;
+use App\Http\Controllers\UserAttendanceController;
 use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
