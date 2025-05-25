@@ -303,7 +303,6 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
-
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
@@ -361,12 +360,11 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    @if(Auth::user()->role === 'userSession')
-
-                        <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew
-                        </button>
+                        @if(Auth::user()->role === 'userSession')
+                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                                <i class="fas fa-sync-alt mr-2"></i> Renew
+                            </button>
                         @endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
@@ -486,7 +484,7 @@
             </dialog>
         @endif
 
-        <!-- Hero Section with Parallax Effect -->
+        <!-- Hero Section with Announcements -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
                  style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
@@ -497,32 +495,32 @@
                 <div class="container mx-auto px-6 z-10">
                     <div class="flex flex-col items-center">
                         <div class="text-center max-w-2xl mb-12">
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                                WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-6">
+                                WELCOME, <span class="text-red-400">{{ Auth::user()->first_name }}!</span>
                             </h1>
-                            <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                            <p class="text-sm md:text-xl text-gray-300 mb-8">
+                                Stay updated with the latest announcements from Rockies Fitness
                             </p>
-                            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                                <a href="#promotional" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
-                                    Get Started
-                                </a>
-                                <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
-                                   class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
-                                   target="_blank" rel="noopener noreferrer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                                    </svg>
-                                    Download App
-                                </a>
-                            </div>
                         </div>
-                        <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
-                            <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
-                            <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
+                        <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                            @forelse ($announcements as $announcement)
+                                <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                    <h3 class="text-xl font-bold text-white mb-3">{{ $announcement->title }}</h3>
+                                    <p class="text-gray-300 text-sm mb-4">{{ $announcement->content }}</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs text-gray-400">
+                                            {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
+                                        </span>
+                                        <span class="text-xs font-semibold px-2 py-1 rounded-full 
+                                            {{ $announcement->type === 'Update' ? 'bg-blue-600' : 
+                                               $announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600' }}">
+                                            {{ $announcement->type }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @empty
+                                <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -535,8 +533,6 @@
                 </a>
             </div>
         </section>
-
-        @include('components.announcements')
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
@@ -623,8 +619,6 @@
                 </div>
             </div>
         </section>
-
-   
 
         <!-- In Here Section -->
         <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
