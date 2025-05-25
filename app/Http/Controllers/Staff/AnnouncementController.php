@@ -10,11 +10,11 @@ use Illuminate\Support\Facades\Log;
 class AnnouncementController extends Controller
 {
 
-    // public function landing()
-    // {
-    //     $announcements = Announcement::latest()->get();
-    //     return view('self.landingProfile', compact('announcements'));
-    // }
+    public function landing()
+    {
+        $announcements = Announcement::latest()->get();
+        return view('self.landingProfile', compact('announcements'));
+    }
 
 
 
