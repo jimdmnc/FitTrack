@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
     // Announcements
-    Route::resource('announcements', AnnouncementController::class);
+    Route::get('announcements', AnnouncementController::class);
 });
 
 // Authentication routes (login, register, etc.)
