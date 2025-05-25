@@ -589,7 +589,6 @@
         @endif
     </div>
 </div>
-@endisset
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
             <div class="container mx-auto px-6">
