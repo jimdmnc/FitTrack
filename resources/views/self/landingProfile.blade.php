@@ -530,7 +530,7 @@
             </div>
         </section>
 
-        @include('components.announcements')
+        <!-- @include('components.announcements') -->
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
