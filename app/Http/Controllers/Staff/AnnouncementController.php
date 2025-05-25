@@ -21,9 +21,9 @@ class AnnouncementController extends Controller
 
     public function landing()
     {
-        $announcements = Announcement::latest()->get();
+        $announcement = Announcement::latest()->get();
 
-        return view('self.landingProfile', compact('announcements'));
+        return view('self.landingProfile', compact('announcement'));
     }
 
 
