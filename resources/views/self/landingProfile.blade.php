@@ -715,12 +715,14 @@
                             <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
                         </div>
                         <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Attendance Status</label>
-                            @if(isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                                <p class="text-green-600 font-medium">Checked in since {{ $attendance->time_in->format('M d, Y H:i') }}</p>
-                            @else
-                                <p class="text-red-600 font-medium">Checked out</p>
-                            @endif
+                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
+            <p class="font-medium text-gray-200">
+                @if(Auth::user()->start_date)
+                    {{ Auth::user()->start_date->format('M d, Y') }}
+                @else
+                    Not specified
+                @endif
+            </p>
                         </div>
                         <div class="profile-info-item">
                             <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
