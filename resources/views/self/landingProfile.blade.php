@@ -267,7 +267,7 @@
                 </div>
 
 
-            @if(Auth::user()->role === 'userSession')
+            <!-- @if(Auth::user()->role === 'userSession') -->
                 <!-- Workout Timer (Desktop) -->
                 @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                     <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
@@ -295,7 +295,7 @@
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 @endif
-            @endif
+            <!-- @endif -->
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -306,13 +306,13 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
-                    @if(Auth::user()->role === 'userSession')
+                    <!-- @if(Auth::user()->role === 'userSession') -->
 
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
-                        @endif
+                        <!-- @endif -->
 
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
@@ -346,7 +346,7 @@
                         <!-- <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a> -->
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                    @if(Auth::user()->role === 'userSession')
+                    <!-- @if(Auth::user()->role === 'userSession') -->
                         @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                             <div class="flex justify-center items-center py-4">
                                 <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
@@ -361,17 +361,17 @@
                                 </div>
                             </div>
                         @endif
-                    @endif
+                    <!-- @endif -->
 
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    @if(Auth::user()->role === 'userSession')
+                    <!-- @if(Auth::user()->role === 'userSession') -->
                         <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-2"></i> Renew
                         </button>
-                        @endif
+                        <!-- @endif -->
 
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
