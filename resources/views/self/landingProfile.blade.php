@@ -513,8 +513,7 @@
                                     {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
                                 </span>
                                 <span class="text-xs font-semibold px-2 py-1 rounded-full 
-                                    {{ $announcement->type === 'Update' ? 'bg-blue-600' : 
-                                       $announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600' }}">
+                                    {{ $announcement->type === 'Update' ? 'bg-blue-600' : ($announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600') }}">
                                     {{ $announcement->type }}
                                 </span>
                             </div>
