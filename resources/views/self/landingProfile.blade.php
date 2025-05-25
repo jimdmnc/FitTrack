@@ -486,98 +486,56 @@
         @endif
 
 <!-- Hero Section with Announcements -->
-<section id="home" class="relative w-full min-h-screen overflow-hidden">
+<section id="home" class="relative w-full h-screen overflow-hidden">
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
          style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
          id="parallax-bg">
     </div>
-    <div class="absolute inset-0 bg-gradient-to-br from-black/95 via-gray-900/85 to-black/90"></div>
-    
-    <!-- Floating gradient orbs for visual appeal -->
-    <div class="absolute top-20 left-4 w-32 h-32 bg-red-500/20 rounded-full blur-xl animate-pulse"></div>
-    <div class="absolute bottom-32 right-6 w-24 h-24 bg-blue-500/15 rounded-full blur-lg animate-pulse delay-1000"></div>
-    
-    <div class="relative min-h-screen flex items-center py-8">
-        <div class="container mx-auto px-4 z-10 w-full">
-            <div class="flex flex-col items-center space-y-8">
-                
-                <!-- Header Section -->
-                <div class="text-center max-w-sm sm:max-w-lg mb-4">
-                    <div class="mb-6">
-                        <h1 class="text-3xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300 mb-2 leading-tight">
-                            WELCOME,
-                        </h1>
-                        <h2 class="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600 mb-4">
-                            {{ Auth::user()->first_name }}!
-                        </h2>
-                    </div>
-                    <p class="text-sm sm:text-base text-gray-300/90 leading-relaxed px-2">
+    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+    <div class="relative h-full flex items-center">
+        <div class="container mx-auto px-6 z-10">
+            <div class="flex flex-col items-center">
+                <div class="text-center max-w-2xl mb-12">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-6">
+                        WELCOME, <span class="text-red-400">{{ Auth::user()->first_name }}!</span>
+                    </h1>
+                    <p class="text-sm md:text-xl text-gray-300 mb-8">
                         Stay updated with the latest announcements from Rockies Fitness
                     </p>
                 </div>
-
-                <!-- Announcements Section -->
-                <div class="w-full max-w-md sm:max-w-2xl">
-                    <div class="announcements-grid space-y-4">
-                        @if(isset($announcements) && $announcements->isNotEmpty())
-                            @foreach($announcements as $announcement)
-                                <div class="announcement-card group relative overflow-hidden bg-gradient-to-br from-gray-800/90 to-gray-900/90 backdrop-blur-sm border border-gray-700/50 rounded-2xl p-5 sm:p-6 shadow-2xl hover:shadow-red-500/10 transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-br hover:from-gray-800/95 hover:to-gray-900/95">
-                                    
-                                    <!-- Card gradient overlay -->
-                                    <div class="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-red-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"></div>
-                                    
-                                    <div class="relative z-10">
-                                        <!-- Title -->
-                                        <h3 class="text-lg sm:text-xl font-bold text-white mb-3 group-hover:text-red-100 transition-colors duration-300 leading-tight">
-                                            {{ $announcement->title }}
-                                        </h3>
-                                        
-                                        <!-- Content -->
-                                        <p class="text-gray-300 text-sm sm:text-base mb-4 leading-relaxed line-clamp-3">
-                                            {{ $announcement->content }}
-                                        </p>
-                                        
-                                        <!-- Footer -->
-                                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                                            <span class="text-xs text-gray-400 font-medium">
-                                                {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y • H:i') }}
-                                            </span>
-                                            <span class="text-xs font-bold px-3 py-1.5 rounded-full text-white shadow-lg self-start sm:self-auto
-                                                {{ $announcement->type === 'Update' ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 
-                                                   ($announcement->type === 'Maintenance' ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 
-                                                   'bg-gradient-to-r from-green-500 to-green-600') }}">
-                                                {{ $announcement->type }}
-                                            </span>
-                                        </div>
-                                    </div>
+                <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    @if(isset($announcements) && $announcements->isNotEmpty())
+                        @foreach($announcements as $announcement)
+                            <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                <h3 class="text-xl font-bold text-white mb-3">{{ $announcement->title }}</h3>
+                                <p class="text-gray-300 text-sm mb-4">{{ $announcement->content }}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-400">
+                                        {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
+                                    </span>
+                                    <span class="text-xs font-semibold px-2 py-1 rounded-full 
+                                        {{ $announcement->type === 'Update' ? 'bg-blue-600' : ($announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600') }}">
+                                        {{ $announcement->type }}
+                                    </span>
                                 </div>
-                            @endforeach
-                        @else
-                            <div class="text-center py-12">
-                                <div class="mb-4">
-                                    <svg class="w-12 h-12 text-gray-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2M4 13h2m13-8V4a1 1 0 00-1-1H7a1 1 0 00-1 1v1"></path>
-                                    </svg>
-                                </div>
-                                <p class="text-gray-400 text-sm font-medium">No announcements available at the moment.</p>
-                                <p class="text-gray-500 text-xs mt-1">Check back later for updates!</p>
                             </div>
-                        @endif
-                    </div>
+                        @endforeach
+                    @else
+                        <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- Scroll indicator -->
-    <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <a href="#promotional" class="block p-2 rounded-full bg-white/10 backdrop-blur-sm hover:bg-white/20 transition-colors duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#promotional">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
             </svg>
         </a>
     </div>
 </section>
+
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
