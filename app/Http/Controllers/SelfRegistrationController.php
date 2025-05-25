@@ -85,33 +85,36 @@ class SelfRegistrationController extends Controller
     public function checkApproval()
     {
         $user = auth()->user();
-
+    
         if ($user->session_status === 'approved') {
-            $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
-                ->whereNull('time_out')
-                ->whereDate('time_in', Carbon::today())
-                ->first();
-
-            if (!$attendance) {
-                Attendance::create([
-                    'rfid_uid' => $user->rfid_uid,
-                    'attendance_date' => now(),
-                    'time_in' => now(),
-                    'status' => 'present',
-                    'check_in_method' => 'auto',
-                ]);
+            // Only automatically time in for userSession roles
+            if ($user->role === 'userSession') {
+                $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
+                    ->whereNull('time_out')
+                    ->whereDate('time_in', Carbon::today())
+                    ->first();
+    
+                if (!$attendance) {
+                    Attendance::create([
+                        'rfid_uid' => $user->rfid_uid,
+                        'attendance_date' => now(),
+                        'time_in' => now(),
+                        'status' => 'present',
+                        'check_in_method' => 'auto',
+                    ]);
+                }
             }
-
+    
             return response()->json(['approved' => true]);
         }
-
+    
         if ($user->session_status === 'rejected') {
             return response()->json([
                 'rejected' => true,
                 'reason' => $user->rejection_reason ?? 'Your request could not be approved at this time.'
             ]);
         }
-
+    
         return response()->json(['approved' => false]);
     }
 
