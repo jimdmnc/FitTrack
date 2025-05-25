@@ -343,7 +343,7 @@
                     
                     <div class="flex flex-col space-y-6 text-center flex-grow">
                         <a href="{{ route('self.landingProfile') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                        <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
+                        <!-- <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a> -->
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                     @if(Auth::user()->role === 'userSession')
