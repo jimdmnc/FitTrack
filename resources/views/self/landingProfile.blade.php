@@ -297,7 +297,6 @@
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
                     <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
-                    <a href="{{ route('self.landingProfile') }}#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
                     <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
                     
@@ -499,7 +498,7 @@
                                 Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
                             </p>
                             <div class="flex flex-wrap justify-center gap-4 mb-6">
-                                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                                <a href="#promotional" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                     </svg>
@@ -619,33 +618,7 @@
             </div>
         </section>
 
-        <!-- Tutorial Section -->
-        <section id="tutorial" class="py-16 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-12">HOW TO REGISTER FOR GYM SESSIONS</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
-                        <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
-                        <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                        <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
-                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Visit Website" class="rounded-lg mx-auto mt-4">
-                    </div>
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
-                        <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
-                        <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
-                        <img src="{{ asset('images/welcomebgg.jpg') }}" alt="Gym Payment" class="rounded-lg mx-auto">
-                    </div>
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
-                        <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
-                        <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
-                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Time Out" class="rounded-lg mx-auto">
-                    </div>
-                </div>
-            </div>
-        </section>
+   
 
         <!-- In Here Section -->
         <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
@@ -669,7 +642,6 @@
                             <h4 class="text-lg font-bold mb-4">Quick Links</h4>
                             <ul class="space-y-2">
                                 <li><a href="#home" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
-                                <li><a href="#tutorial" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
                                 <li><a href="#inhere" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
                             </ul>
                         </div>
