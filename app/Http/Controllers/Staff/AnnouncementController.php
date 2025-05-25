@@ -21,8 +21,11 @@ class AnnouncementController extends Controller
 
     public function landing()
     {
-        $announcementList = Announcement::latest()->get();
-        return view('self.landingProfile', ['announcements' => $announcementList]);
+        // Get announcements ordered by latest first
+        $announcements = Announcement::orderBy('created_at', 'desc')->get();
+        
+        // Make sure the view path matches exactly where your blade file is located
+        return view('self.landingProfile', compact('announcements'));
     }
 
 
