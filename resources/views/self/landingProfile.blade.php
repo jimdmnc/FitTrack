@@ -530,7 +530,6 @@
             </div>
         </section>
 
-        @include('components.announcements')
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
@@ -653,6 +652,8 @@
                 <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO THE GYM HUB</h2>
                 <p class="text-xl text-gray-200 mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
             </div>
+            @include('components.announcements')
+
         </section>
 
         <!-- Footer -->
