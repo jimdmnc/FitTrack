@@ -487,54 +487,67 @@
 
 <!-- Hero Section with Announcements -->
 <section id="home" class="relative w-full h-screen overflow-hidden">
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-         id="parallax-bg">
-    </div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-    <div class="relative h-full flex items-center">
-        <div class="container mx-auto px-6 z-10">
-            <div class="flex flex-col items-center">
-                <div class="text-center max-w-2xl mb-12">
-                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-6">
-                        WELCOME, <span class="text-red-400">{{ Auth::user()->first_name }}!</span>
-                    </h1>
-                    <p class="text-sm md:text-xl text-gray-300 mb-8">
-                        Stay updated with the latest announcements from Rockies Fitness
-                    </p>
-                </div>
-                @isset($announcements)
+@isset($announcements)
+<div class="announcements-section py-16 bg-gradient-to-b from-gray-900 to-black">
+    <div class="container mx-auto px-4">
+        <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">
+                Latest Updates
+            </span>
+        </h2>
+        
+        <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            @foreach($announcements as $announcement)
+            <div class="announcement-card relative bg-gray-800 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:scale-105 hover:shadow-red-500/20">
+                <!-- Decorative element -->
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-red-600"></div>
+                
+                <!-- Card content -->
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-white">{{ $announcement->title ?? 'Announcement' }}</h3>
+                        @if($announcement->type ?? false)
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold {{
+                            $announcement->type === 'Event' ? 'bg-green-600 text-green-100' :
+                            ($announcement->type === 'Maintenance' ? 'bg-blue-600 text-blue-100' :
+                            ($announcement->type === 'Update' ? 'bg-orange-600 text-orange-100' :
+                            'bg-gray-600 text-white'))
+                            }}">
+                            {{ $announcement->type }}
+                        </span>
 
-                <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    @forelse ($announcements as $announcement)
-                        <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                            <h3 class="text-xl font-bold text-white mb-3">{{ $announcement->title }}</h3>
-                            <p class="text-gray-300 text-sm mb-4">{{ $announcement->content }}</p>
-                            <div class="flex justify-between items-center">
-                                <span class="text-xs text-gray-400">
-                                    {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
-                                </span>
-                                <span class="text-xs font-semibold px-2 py-1 rounded-full 
-                                    {{ $announcement->type === 'Update' ? 'bg-blue-600' : ($announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600') }}">
-                                    {{ $announcement->type }}
-                                </span>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
-                    @endforelse
+                        @endif
+                    </div>
+                    
+                    <p class="text-gray-300 mb-6 line-clamp-4">{{ $announcement->content ?? 'No content available' }}</p>
+                    
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-orange-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            {{ $announcement->schedule ? $announcement->schedule->format('M d, Y') : 'No date' }}
+                        </span>
+                     
+                    </div>
                 </div>
-                @endisset
+            </div>
+            @endforeach
+        </div>
+        
+        @if($announcements->isEmpty())
+        <div class="text-center py-12">
+            <div class="inline-block p-4 bg-gray-800 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p class="mt-4 text-gray-400">No announcements available at this time</p>
             </div>
         </div>
+        @endif
     </div>
-    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-        <a href="#promotional">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-        </a>
-    </div>
+</div>
+@endisset
 </section>
 
         <!-- Promotional Carousel -->
