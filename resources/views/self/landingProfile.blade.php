@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rockies Fitness</title>
+    <title>FitTrack - Gym Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -261,13 +261,11 @@
             <div class="flex justify-between items-center">
                 <!-- Logo Image -->
                 <div class="flex items-center">
-                    <a href="{{ route('self.landingProfile') }}" aria-label="FitTrack Homepage">
+                    <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
                         <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div>
 
-
-            <!-- @if(Auth::user()->role === 'userSession') -->
                 <!-- Workout Timer (Desktop) -->
                 @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                     <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
@@ -295,7 +293,6 @@
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 @endif
-            <!-- @endif -->
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -306,14 +303,10 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
-                    <!-- @if(Auth::user()->role === 'userSession') -->
-
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
-                        <!-- @endif -->
-
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
                             <button type="submit"
@@ -343,10 +336,10 @@
                     
                     <div class="flex flex-col space-y-6 text-center flex-grow">
                         <a href="{{ route('self.landingProfile') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                        <!-- <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a> -->
+                        <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                    <!-- @if(Auth::user()->role === 'userSession') -->
+                        
                         @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                             <div class="flex justify-center items-center py-4">
                                 <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
@@ -361,18 +354,13 @@
                                 </div>
                             </div>
                         @endif
-                    <!-- @endif -->
-
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    <!-- @if(Auth::user()->role === 'userSession') -->
                         <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-2"></i> Renew
                         </button>
-                        <!-- @endif -->
-
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -539,62 +527,7 @@
             </div>
         </section>
 
-  <!-- In your landingProfile.blade.php -->
-<section class="py-8">
-    <div class="container mx-auto px-4">
-        <h2 class="text-2xl font-bold mb-6 text-gray-800">Announcements</h2>
-        
-        @if(!isset($announcements) || $announcements->isEmpty())
-            <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded">
-                No announcements available at the moment.
-            </div>
-        @else
-            <div class="space-y-4">
-                @foreach($announcements as $announcement)
-                    <div class="border rounded-lg shadow-sm overflow-hidden
-                        @switch($announcement->type)
-                            @case('Maintenance') border-l-4 border-yellow-500 @break
-                            @case('Event') border-l-4 border-green-500 @break
-                            @case('Update') border-l-4 border-blue-500 @break
-                            @case('Announcement') border-l-4 border-indigo-500 @break
-                        @endswitch">
-                        <div class="p-4">
-                            <div class="flex justify-between items-start">
-                                <h3 class="text-lg font-semibold text-gray-800">{{ $announcement->title }}</h3>
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    @switch($announcement->type)
-                                        @case('Maintenance') bg-yellow-100 text-yellow-800 @break
-                                        @case('Event') bg-green-100 text-green-800 @break
-                                        @case('Update') bg-blue-100 text-blue-800 @break
-                                        @case('Announcement') bg-indigo-100 text-indigo-800 @break
-                                    @endswitch">
-                                    {{ $announcement->type }}
-                                </span>
-                            </div>
-                            
-                            @if($announcement->schedule)
-                                <div class="mt-1 flex items-center text-sm text-gray-500">
-                                    <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $announcement->schedule->format('M d, Y h:i A') }}
-                                </div>
-                            @endif
-                            
-                            <div class="mt-3 text-gray-600 whitespace-pre-line">
-                                {{ $announcement->content }}
-                            </div>
-                            
-                            <div class="mt-3 text-sm text-gray-500">
-                                Posted on {{ $announcement->created_at->format('M d, Y') }}
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-    </div>
-</section>
+        @include('components.announcements')
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
@@ -682,9 +615,42 @@
             </div>
         </section>
 
- 
+        <!-- Tutorial Section -->
+        <section id="tutorial" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">HOW TO REGISTER FOR GYM SESSIONS</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
+                        <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
+                        <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
+                        <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Visit Website" class="rounded-lg mx-auto mt-4">
+                    </div>
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
+                        <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
+                        <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
+                        <img src="{{ asset('images/welcomebgg.jpg') }}" alt="Gym Payment" class="rounded-lg mx-auto">
+                    </div>
+                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
+                        <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
+                        <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
+                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Time Out" class="rounded-lg mx-auto">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-
+        <!-- In Here Section -->
+        <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
+            <div class="absolute inset-0 bg-black bg-opacity-60"></div>
+            <div class="container mx-auto px-6 z-10 text-center">
+                <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO THE GYM HUB</h2>
+                <p class="text-xl text-gray-200 mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
+            </div>
+        </section>
 
         <!-- Footer -->
         <footer class="bg-black text-gray-200 py-12">
@@ -762,14 +728,12 @@
                             <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
                         </div>
                         <div class="profile-info-item">
-                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
-                            <p class="font-medium text-green-200">
-                            @if(Auth::user()->start_date)
-                                {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
+                            <label class="block text-sm text-gray-400 mb-1">Attendance Status</label>
+                            @if(isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                                <p class="text-green-600 font-medium">Checked in since {{ $attendance->time_in->format('M d, Y H:i') }}</p>
                             @else
-                                Not specified
+                                <p class="text-red-600 font-medium">Checked out</p>
                             @endif
-                            </p>
                         </div>
                         <div class="profile-info-item">
                             <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
@@ -798,7 +762,58 @@
             </div>
         </div>
 
- 
+        <!-- Session Renewal Modal -->
+        <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+            <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+                <div class="mb-6 text-center">
+                    <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
+                    <p class="text-gray-400 mt-1">Confirm your session membership details</p>
+                </div>
+                <div class="border-b border-gray-700 mb-6"></div>
+                <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
+                    @csrf
+                    <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                    <input type="hidden" name="membership_type" id="membership_type" value="session">
+                    <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
+                    <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
+                    <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
+
+                    <!-- Summary -->
+                    <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
+                        <div class="space-y-3">
+                            <div class="flex items-center">
+                                <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                                <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                                <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                                <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                                <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
+                            </div>
+                        </div>
+                        <!-- Validation Errors -->
+                        <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
+                            Cancel
+                        </button>
+                        <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                            Confirm Payment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -900,7 +915,12 @@
                             timerElements.forEach(el => {
                                 el.style.display = 'none';
                             });
-                            
+                            document.body.dataset.timedOut = 'true';
+                            const statusElement = document.querySelector('.profile-info-item:nth-last-child(2) p');
+                            if (statusElement) {
+                                statusElement.className = 'text-red-600 font-medium';
+                                statusElement.textContent = 'Checked out';
+                            }
                         }
                     })
                     .catch(error => {
