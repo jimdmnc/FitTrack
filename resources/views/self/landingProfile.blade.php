@@ -265,33 +265,33 @@
                         <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div>
+                @if(Auth::user()->role === 'userSession')
+                    <!-- Workout Timer (Desktop) -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                        </div>
+                    @endif
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
 
-                <!-- Workout Timer (Desktop) -->
-                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                    </div>
-                @endif
-
-                <!-- Time Out Button (Desktop and Mobile) -->
-                @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                    <!-- Desktop Timeout Button -->
-                    <button
-                        id="timeout-button"
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
-                    >
-                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                    </button>
-
-                    <!-- Mobile Timeout Button -->
-                    <button
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
-                    >
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                        <!-- Mobile Timeout Button -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
                 @endif
 
                 <!-- Desktop Navigation Links -->
@@ -340,20 +340,23 @@
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                         
-                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                            <div class="flex justify-center items-center py-4">
-                                <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                                    <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                                    <span id="mobile-workout-duration" class="text-lg font-medium">
-                                        @if(isset($attendance))
-                                            {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                                        @else
-                                            00:00:00
-                                        @endif
-                                    </span>
+                        @if(Auth::user()->role === 'userSession')
+                            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                                <div class="flex justify-center items-center py-4">
+                                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                                        <span id="mobile-workout-duration" class="text-lg font-medium">
+                                            @if(isset($attendance))
+                                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                                            @else
+                                                00:00:00
+                                            @endif
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         @endif
+s
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
@@ -454,28 +457,30 @@
                 }, 5000);
             </script>
         @endif   
-        
-        <!-- Time Out Confirmation Modal -->
-        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-                <p class="mb-6">Are you sure you want to time out?</p>
-                <div class="flex justify-center gap-4">
-                    @auth
-                    <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                        <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+
+        @if(Auth::user()->role === 'userSession')
+            <!-- Time Out Confirmation Modal -->
+            <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+                    <p class="mb-6">Are you sure you want to time out?</p>
+                    <div class="flex justify-center gap-4">
+                        @auth
+                        <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                            <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                            </button>
+                        </form>
+                        @endauth
+                        <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            Cancel
                         </button>
-                    </form>
-                    @endauth
-                    <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        Cancel
-                    </button>
+                    </div>
                 </div>
-            </div>
-        </dialog>
+            </dialog>
+        @endif
 
         <!-- Hero Section with Parallax Effect -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
