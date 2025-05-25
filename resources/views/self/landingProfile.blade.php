@@ -728,12 +728,13 @@
                             <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
                         </div>
                         <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
-                            @if(isset($user) && $user->start_date)
-                                <p class="text-gray-600 font-medium">{{ $attendance->start_date->format('M d, Y') }}</p>
-                            @else
-                                <p class="text-gray-600 font-medium">Not specified</p>
-                            @endif
+                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
+                            <p class="font-medium text-gray-200">
+                                @if(Auth::user()->start_date)
+                                    {{ Auth::user()->start_date->format('M d, Y') }}
+                                @else
+                                    Not specified
+                                @endif
                         </div>
                         <div class="profile-info-item">
                             <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
