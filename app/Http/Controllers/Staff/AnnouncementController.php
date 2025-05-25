@@ -21,9 +21,9 @@ class AnnouncementController extends Controller
 
     public function landing()
     {
-        $announcements = Announcement::latest()->get();
+        $announcement = Announcement::latest()->get();
 
-        return view('self.landingProfile', compact('announcements'));
+        return view('self.landingProfile', compact('announcement'));
     }
 
 
@@ -31,8 +31,8 @@ class AnnouncementController extends Controller
 
     public function index()
     {
-        $announcements = Announcement::latest()->get();
-        return view('staff.dashboard', compact('announcements'));
+        $announcement = Announcement::latest()->get();
+        return view('staff.dashboard', compact('announcement'));
     }
 
     public function create()
