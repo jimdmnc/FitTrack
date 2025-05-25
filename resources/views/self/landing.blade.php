@@ -244,6 +244,7 @@
                 </a>
             </div>
         </section>
+        @include('components.announcements')
 
 
         <!-- Promotional Carousel -->
