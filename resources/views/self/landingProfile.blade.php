@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FitTrack - Gym Management System</title>
+    <title>Rockies Fitness</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -306,10 +306,14 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
+                    @if(Auth::user()->role === 'userSession')
+
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
+                        @endif
+
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
                             <button type="submit"
@@ -360,10 +364,13 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
+                    @if(Auth::user()->role === 'userSession')
                         <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-2"></i> Renew
                         </button>
+                        @endif
+
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
