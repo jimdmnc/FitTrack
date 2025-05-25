@@ -261,7 +261,7 @@
             <div class="flex justify-between items-center">
                 <!-- Logo Image -->
                 <div class="flex items-center">
-                    <a href="{{ route('self.landingProfile') }}" aria-label="FitTrack Homepage">
+                    <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
                         <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div>
@@ -544,15 +544,15 @@
     <div class="container mx-auto px-4">
         <h2 class="text-2xl font-bold mb-6 text-gray-800">Announcements</h2>
         
-        @if($announcementList->isEmpty())
+        @if($announcements->isEmpty())
             <div class="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded">
                 No announcements available at the moment.
             </div>
         @else
             <div class="space-y-4">
-                @foreach($announcementList as $announcementList)
+                @foreach($announcements as $announcement)
                     <div class="border rounded-lg shadow-sm overflow-hidden
-                        @switch($announcementList->type)
+                        @switch($announcement->type)
                             @case('Maintenance') border-l-4 border-yellow-500 @break
                             @case('Event') border-l-4 border-green-500 @break
                             @case('Update') border-l-4 border-blue-500 @break
@@ -560,33 +560,33 @@
                         @endswitch">
                         <div class="p-4">
                             <div class="flex justify-between items-start">
-                                <h3 class="text-lg font-semibold text-gray-800">{{ $announcementList->title }}</h3>
+                                <h3 class="text-lg font-semibold text-gray-800">{{ $announcement->title }}</h3>
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                    @switch($announcementList->type)
+                                    @switch($announcement->type)
                                         @case('Maintenance') bg-yellow-100 text-yellow-800 @break
                                         @case('Event') bg-green-100 text-green-800 @break
                                         @case('Update') bg-blue-100 text-blue-800 @break
                                         @case('Announcement') bg-indigo-100 text-indigo-800 @break
                                     @endswitch">
-                                    {{ $announcementList->type }}
+                                    {{ $announcement->type }}
                                 </span>
                             </div>
                             
-                            @if($announcementList->schedule)
+                            @if($announcement->schedule)
                                 <div class="mt-1 flex items-center text-sm text-gray-500">
                                     <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
                                     </svg>
-                                    {{ $announcementList->schedule->format('M d, Y h:i A') }}
+                                    {{ $announcement->schedule->format('M d, Y h:i A') }}
                                 </div>
                             @endif
                             
                             <div class="mt-3 text-gray-600 whitespace-pre-line">
-                                {{ $announcementList->content }}
+                                {{ $announcement->content }}
                             </div>
                             
                             <div class="mt-3 text-sm text-gray-500">
-                                Posted on {{ $announcementList->created_at->format('M d, Y') }}
+                                Posted on {{ $announcement->created_at->format('M d, Y') }}
                             </div>
                         </div>
                     </div>
