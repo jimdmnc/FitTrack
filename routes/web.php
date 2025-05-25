@@ -153,6 +153,7 @@ Route::middleware('auth')->group(function () {
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
+    Route::get('/landing-profile', [AnnouncementController::class, 'index'])->name('landing.profile');
 });
 
 // Authentication routes (login, register, etc.)
