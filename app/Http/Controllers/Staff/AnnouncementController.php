@@ -31,8 +31,8 @@ class AnnouncementController extends Controller
 
     public function index()
     {
-        $announcements = Announcement::latest()->get();
-        return view('staff.dashboard', compact('announcements'));
+        $announcement = Announcement::latest()->get();
+        return view('staff.dashboard', compact('announcement'));
     }
 
     public function create()
