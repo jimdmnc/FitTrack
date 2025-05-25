@@ -262,7 +262,7 @@
                 <!-- Logo Image -->
                 <div class="flex items-center">
                     <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
-                        <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
+                        <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div>
                 @if(Auth::user()->role === 'userSession')
