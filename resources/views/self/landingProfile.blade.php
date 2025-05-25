@@ -718,7 +718,7 @@
                         <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
             <p class="font-medium text-gray-200">
                 @if(Auth::user()->start_date)
-                    {{ Auth::user()->start_date->format('M d, Y') }}
+                    {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
                 @else
                     Not specified
                 @endif
