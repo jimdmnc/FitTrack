@@ -485,27 +485,51 @@
             </dialog>
         @endif
 
-        <!-- Hero Section with Parallax Effect -->
+        <!-- Hero Section with Announcements -->
         <section id="home" class="relative w-full h-screen overflow-hidden">
             <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-                 style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-                 id="parallax-bg">
+                style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+                id="parallax-bg">
             </div>
             <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
             <div class="relative h-full flex items-center">
                 <div class="container mx-auto px-6 z-10">
                     <div class="flex flex-col items-center">
                         <div class="text-center max-w-2xl mb-12">
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                                WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
+                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-6">
+                                WELCOME, <span class="text-red-400">{{ Auth::user()->first_name }}!</span>
                             </h1>
-                            <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
+                            <p class="text-sm md:text-xl text-gray-300 mb-8">
+                                Stay updated with the latest announcements from Rockies Fitness
                             </p>
-                            @include('components.announcements')
-
                         </div>
-                       
+                        <!-- Temporary debugging -->
+                        @if(isset($announcements))
+                            <p class="text-gray-300 text-center mb-4">Debug: {{ $announcements->count() }} announcements found</p>
+                        @else
+                            <p class="text-gray-300 text-center mb-4">Debug: $announcements is undefined</p>
+                        @endif
+                        <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                            @if(isset($announcements) && $announcements->isNotEmpty())
+                                @foreach($announcements as $announcement)
+                                    <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                        <h3 class="text-xl font-bold text-white mb-3">{{ $announcement->title }}</h3>
+                                        <p class="text-gray-300 text-sm mb-4">{{ $announcement->content }}</p>
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-xs text-gray-400">
+                                                {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
+                                            </span>
+                                            <span class="text-xs font-semibold px-2 py-1 rounded-full 
+                                                {{ $announcement->type === 'Update' ? 'bg-blue-600' : ($announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600') }}">
+                                                {{ $announcement->type }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
