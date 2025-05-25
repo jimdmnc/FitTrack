@@ -1,4 +1,3 @@
-@isset($announcements)
 <div class="announcements-section py-16 bg-gradient-to-b from-gray-900 to-black">
     <div class="container mx-auto px-4">
         <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 text-white">
@@ -58,4 +57,3 @@
         @endif
     </div>
 </div>
-@endisset
