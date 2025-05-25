@@ -9,7 +9,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Staff\DashboardController;
 use App\Http\Controllers\Staff\MembershipRegistrationController;
 use App\Http\Controllers\Staff\AttendanceController;
-use App\Http\Controllers\UserAttendanceController;
 use App\Http\Controllers\Staff\ViewmembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
 use App\Http\Controllers\Staff\ReportController;
@@ -157,8 +156,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement'])->name('self.landingProfile');});
 
 
-
-    Route::get('/track-attendance', [AttendanceController::class, 'index'])->name('self.trackAttendance');
-
+    
 // Authentication routes (login, register, etc.)
 require __DIR__.'/auth.php';
