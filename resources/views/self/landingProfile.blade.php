@@ -356,7 +356,6 @@
                                 </div>
                             @endif
                         @endif
-s
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
