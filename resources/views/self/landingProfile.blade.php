@@ -539,7 +539,6 @@
             </div>
         </section>
 
-        @include('components.announcements')
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
@@ -627,7 +626,8 @@
             </div>
         </section>
 
- 
+        @include('components.announcements')
+
 
 <!-- In Here Section -->
 <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
