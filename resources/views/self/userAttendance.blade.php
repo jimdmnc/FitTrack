@@ -248,10 +248,11 @@
                 </div>
             </div>
     </nav>
-
-    <div class="mx-auto px-4 py-8"          
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
          style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-         id="parallax-bg"
+         id="parallax-bg">
+    </div>
+    <div class="mx-auto px-4 py-8"          
          x-data="{
         selectedAttendance: {
             user: {
