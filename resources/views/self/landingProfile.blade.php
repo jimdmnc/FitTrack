@@ -900,12 +900,12 @@
                             timerElements.forEach(el => {
                                 el.style.display = 'none';
                             });
-                            document.body.dataset.timedOut = 'true';
-                            const statusElement = document.querySelector('.profile-info-item:nth-last-child(2) p');
-                            if (statusElement) {
-                                statusElement.className = 'text-red-600 font-medium';
-                                statusElement.textContent = 'Checked out';
-                            }
+                            // document.body.dataset.timedOut = 'true';
+                            // const statusElement = document.querySelector('.profile-info-item:nth-last-child(2) p');
+                            // if (statusElement) {
+                            //     statusElement.className = 'text-red-600 font-medium';
+                            //     statusElement.textContent = 'Checked out';
+                            // }
                         }
                     })
                     .catch(error => {
