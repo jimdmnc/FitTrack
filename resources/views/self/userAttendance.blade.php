@@ -389,19 +389,19 @@
                 
                 <!-- Details Grid -->
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
+                    <div class="bg-[#121212] rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">DATE</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayDate"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
+                    <div class="bg-[#121212] rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">DURATION</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayDuration"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
+                    <div class="bg-[#121212] rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">CHECK-IN</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
+                    <div class="bg-[#121212] rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">CHECK-OUT</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
                     </div>
