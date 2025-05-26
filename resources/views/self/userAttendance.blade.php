@@ -82,7 +82,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-900 min-h-screen">
+<body class="bg-[#121212] min-h-screen">
 
    <!-- Navigation Bar -->
     <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50 shadow-lg">
