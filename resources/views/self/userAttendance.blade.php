@@ -37,6 +37,49 @@
             50% { opacity: 1; }
             100% { opacity: 0.7; }
         }
+                /* Enhanced Profile Modal Styles */
+                .profile-modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .profile-modal-content {
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
+            width: 380px;
+        }
+
+        .profile-modal.active .profile-modal-content {
+            transform: translateX(0);
+        }
+
+        .profile-header {
+            padding: 1.5rem;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            background-color: #2c2c2c;
+        }
+
+        .profile-info-item {
+            border-bottom: 1px solid #2c2c2c;
+            padding: 1rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .profile-info-item:hover {
+            background-color: #252525;
+        }
+
+        @media (max-width: 640px) {
+            .profile-modal-content {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
