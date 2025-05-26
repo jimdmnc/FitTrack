@@ -306,8 +306,8 @@
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div>
-                    <h2 class="text-3xl font-bold gradient-text bg-gradient-to-r from-red-500 to-orange-500 mb-2">Your Attendance History</h2>
-                    <p class="text-gray-400">Track your gym visits and workout sessions</p>
+                    <h2 class="text-3xl font-bold gradient-text bg-gradient-to-r from-red-500 to-orange-500 mb-2">Attendance History</h2>
+                    <p class="text-gray-400">Track your gym visits</p>
                 </div>
                 <div class="mt-4 md:mt-0 flex items-center space-x-2">
                     <span class="hidden md:inline-block h-1 w-8 bg-red-500 rounded-full"></span>
