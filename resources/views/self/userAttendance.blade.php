@@ -362,6 +362,12 @@
         </div>
     </div>
         <script>
+ document.addEventListener('DOMContentLoaded', function() {
+                initNavigation();
+                initProfile();
+               
+            });
+
              function initNavigation() {
                 const mobileMenuButton = document.getElementById('mobile-menu-button');
                 const mobileMenu = document.getElementById('mobile-menu');
