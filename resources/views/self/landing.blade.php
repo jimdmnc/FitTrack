@@ -143,39 +143,39 @@
 <body class="bg-gray-100">
     <!-- Navigation Bar -->
     <nav class="bg-black text-gray-200 py-2 px-6 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <!-- Logo Image -->
-            <!-- <div class="flex items-center">
-                <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
-            </div> -->
-            
-            <!-- Navigation Links -->
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
-                <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
-                <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
-                <a href="{{ route('self.login') }}" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300">Login</a>
-            </div>
-
-            <!-- Mobile Menu Button -->
-            <div class="md:hidden">
-                <button id="mobile-menu-button" class="text-gray-200 focus:outline-none">
-                    <i class="fas fa-bars text-2xl"></i>
-                </button>
-            </div>
+    <div class="container mx-auto flex justify-between items-center">
+        <!-- Mobile Menu Button (Left side) -->
+        <div class="md:hidden flex items-center">
+            <button id="mobile-menu-button" class="text-gray-200 focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </div>
+        
+        <!-- Navigation Links (Center - Desktop) -->
+        <div class="hidden md:flex items-center space-x-8 mx-auto">
+            <a href="#home" class="nav-link font-semibold hover:text-red-500 transition duration-300">Home</a>
+            <a href="#tutorial" class="nav-link font-semibold hover:text-red-500 transition duration-300">Tutorial</a>
+            <a href="#inhere" class="nav-link font-semibold hover:text-red-500 transition duration-300">In Here</a>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
-            <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
-            <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
-            <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-        </div>
-
+        <!-- Login Button (Right side) -->
         <div class="flex items-center">
-            <a href="{{ route('self.login') }}" class="block py-2 text-center bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded hover:from-orange-700 hover:to-orange-800 transition duration-300">Login</a>
+            <a href="{{ route('self.login') }}" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300 shadow-lg hover:shadow-orange-800/50">
+                Login
+            </a>
         </div>
-    </nav>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="md:hidden hidden bg-gray-900 mt-4 p-4 rounded-lg">
+        <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
+        <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
+        <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
+        <a href="{{ route('self.login') }}" class="block py-2 text-center bg-gradient-to-r from-orange-600 to-orange-700 text-white rounded-full mt-2 hover:from-orange-700 hover:to-orange-800 transition duration-300">
+            Login
+        </a>
+    </div>
+</nav>
        
      
 
