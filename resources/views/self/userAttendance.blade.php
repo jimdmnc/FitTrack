@@ -379,9 +379,9 @@
             return this.selectedDay === day;
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
-    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-         id="parallax-bg">
+    <div class="absolute inset-0 z-0">
+        <img src="url('{{ asset('images/image1.png') }}')" alt="Background" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
     </div>
     <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
             <!-- Header Section -->
