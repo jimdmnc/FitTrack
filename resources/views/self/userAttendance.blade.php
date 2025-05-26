@@ -328,21 +328,21 @@
                 });
 
                 if (attendanceForDay) {
-    checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], {
-        hour: 'numeric', // Use 'numeric' for 12-hour format
-        minute: '2-digit',
-        hour12: true // Enable 12-hour format
-    });
+                    checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], {
+                        hour: 'numeric', // Use 'numeric' for 12-hour format
+                        minute: '2-digit',
+                        hour12: true // Enable 12-hour format
+                    });
 
-    checkOut = attendanceForDay.time_out ?
-        new Date(attendanceForDay.time_out).toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        }) : 'N/A';
+                    checkOut = attendanceForDay.time_out ?
+                        new Date(attendanceForDay.time_out).toLocaleTimeString([], {
+                            hour: 'numeric',
+                            minute: '2-digit',
+                            hour12: true
+                        }) : 'N/A';
 
-    duration = attendanceForDay.formatted_duration || 'N/A';
-}
+                    duration = attendanceForDay.formatted_duration || 'N/A';
+                }
 
             }
             
@@ -356,7 +356,7 @@
             return this.selectedDay === day;
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
-        <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
+    <div class="rounded-xl p-2 max-w-4xl mx-auto smooth-transition">
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div>
@@ -369,39 +369,39 @@
                 </div>
             </div>
 
-<!-- Attendance Details Card -->
-<div class="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
-    <!-- User Info -->
-    <div class="flex items-center space-x-4 mb-4">
-        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
-            <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
-        </div>
-        <div>
-            <h3 class="text-lg font-semibold text-gray-100" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
-            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
-        </div>
-    </div>
-    
-    <!-- Details Grid -->
-    <div class="grid grid-cols-2 gap-3">
-        <div class="bg-gray-900 rounded p-3">
-            <p class="text-xs text-gray-400 mb-1">DATE</p>
-            <p class="text-sm font-medium text-gray-200" x-text="selectedDayDate"></p>
-        </div>
-        <div class="bg-gray-900 rounded p-3">
-            <p class="text-xs text-gray-400 mb-1">DURATION</p>
-            <p class="text-sm font-medium text-gray-200" x-text="selectedDayDuration"></p>
-        </div>
-        <div class="bg-gray-900 rounded p-3">
-            <p class="text-xs text-gray-400 mb-1">CHECK-IN</p>
-            <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
-        </div>
-        <div class="bg-gray-900 rounded p-3">
-            <p class="text-xs text-gray-400 mb-1">CHECK-OUT</p>
-            <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
-        </div>
-    </div>
-</div>
+            <!-- Attendance Details Card -->
+            <div class="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
+                <!-- User Info -->
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                        <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-100" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
+                        <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
+                    </div>
+                </div>
+                
+                <!-- Details Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-gray-900 rounded p-3">
+                        <p class="text-xs text-gray-400 mb-1">DATE</p>
+                        <p class="text-sm font-medium text-gray-200" x-text="selectedDayDate"></p>
+                    </div>
+                    <div class="bg-gray-900 rounded p-3">
+                        <p class="text-xs text-gray-400 mb-1">DURATION</p>
+                        <p class="text-sm font-medium text-gray-200" x-text="selectedDayDuration"></p>
+                    </div>
+                    <div class="bg-gray-900 rounded p-3">
+                        <p class="text-xs text-gray-400 mb-1">CHECK-IN</p>
+                        <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
+                    </div>
+                    <div class="bg-gray-900 rounded p-3">
+                        <p class="text-xs text-gray-400 mb-1">CHECK-OUT</p>
+                        <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
+                    </div>
+                </div>
+            </div>
 
             <!-- Calendar Section -->
             <div class="bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700">
@@ -523,7 +523,7 @@
             </div>
         </div>
  
-        </div>
+    </div>
     </div>
 
     <script>
