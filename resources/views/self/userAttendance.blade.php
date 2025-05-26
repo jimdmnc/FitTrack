@@ -356,7 +356,15 @@
             return this.selectedDay === day;
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
-    <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
+  <!-- Background Image with Dark Overlay -->
+  <div class="absolute inset-0 z-0">
+        <img src="url('{{ asset('images/image1.png') }}')" alt="Background" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-black opacity-50"></div>
+    </div>
+
+    <!-- Content Container (relative positioning to appear above background) -->
+    <div class="relative z-10">
+        <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div>
@@ -370,7 +378,7 @@
             </div>
 
             <!-- Attendance Details Card -->
-            <div class="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
+            <div class="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700 bg-opacity-90">
                 <!-- User Info -->
                 <div class="flex items-center space-x-4 mb-4">
                     <div class="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
@@ -384,19 +392,19 @@
                 
                 <!-- Details Grid -->
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-gray-900 rounded p-3">
+                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">DATE</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayDate"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3">
+                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">DURATION</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayDuration"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3">
+                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">CHECK-IN</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
                     </div>
-                    <div class="bg-gray-900 rounded p-3">
+                    <div class="bg-gray-900 rounded p-3 bg-opacity-90">
                         <p class="text-xs text-gray-400 mb-1">CHECK-OUT</p>
                         <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
                     </div>
@@ -404,7 +412,7 @@
             </div>
 
             <!-- Calendar Section -->
-            <div class="bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700">
+            <div class="bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700 bg-opacity-90">
                 <!-- Calendar Navigation -->
                 <div class="flex justify-between items-center mb-6">
                     <button @click="prevMonth" class="text-gray-400 hover:text-red-500 smooth-transition transform hover:scale-110">
@@ -451,80 +459,81 @@
                     </template>
                 </div>
             </div>
-                 <!-- Profile Modal -->
-        <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
-            <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-                <div class="profile-header bg-red-600">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-white">User Profile</h3>
-                        <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
+            
+            <!-- Profile Modal -->
+            <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
+                <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
+                <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
+                    <div class="profile-header bg-red-600">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-2xl font-bold text-white">User Profile</h3>
+                            <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+                        <div class="text-center">
+                            <img src="{{ asset('images/image.png') }}" alt="User Avatar" class="w-20 h-20 rounded-full mx-auto mb-4 profile-avatar">
+                            <h2 class="text-xl font-semibold mt-4 text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h2>
+                            <p class="text-sm text-gray-300">{{ Auth::user()->email }}</p>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <img src="{{ asset('images/image.png') }}" alt="User Avatar" class="w-20 h-20 rounded-full mx-auto mb-4 profile-avatar">
-                        <h2 class="text-xl font-semibold mt-4 text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h2>
-                        <p class="text-sm text-gray-300">{{ Auth::user()->email }}</p>
-                    </div>
-                </div>
-                <div class="overflow-y-auto h-[calc(100vh-200px)] bg-[#1e1e1e]">
-                    <div class="space-y-2 p-4">
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Gender</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->gender ?? 'Not specified' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Member Since</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Last Activity</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
-            <p class="font-medium text-gray-200">
-                @if(Auth::user()->start_date)
-                    {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
-                @else
-                    Not specified
-                @endif
-            </p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
-                            <p class="font-medium {{ Auth::user()->session_status === 'approved' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ ucfirst(Auth::user()->session_status) }}
-                                @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
-                                    (Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }})
-                                @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
-                                    - {{ Auth::user()->rejection_reason }}
-                                @endif
-                            </p>
-                        </div>
-                        @if(Auth::user()->session_status === 'pending')
+                    <div class="overflow-y-auto h-[calc(100vh-200px)] bg-[#1e1e1e]">
+                        <div class="space-y-2 p-4">
                             <div class="profile-info-item">
-                                <a href="{{ route('self.waiting') }}" class="text-blue-600 hover:text-blue-800">View Approval Status</a>
+                                <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
+                                <p class="font-medium text-gray-200">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
                             </div>
-                        @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
                             <div class="profile-info-item">
-                                <button onclick="checkRenewalEligibility()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg w-full">
-                                    Renew Membership
-                                </button>
+                                <label class="block text-sm text-gray-400 mb-1">Gender</label>
+                                <p class="font-medium text-gray-200">{{ Auth::user()->gender ?? 'Not specified' }}</p>
                             </div>
-                        @endif
+                            <div class="profile-info-item">
+                                <label class="block text-sm text-gray-400 mb-1">Member Since</label>
+                                <p class="font-medium text-gray-200">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}</p>
+                            </div>
+                            <div class="profile-info-item">
+                                <label class="block text-sm text-gray-400 mb-1">Last Activity</label>
+                                <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
+                            </div>
+                            <div class="profile-info-item">
+                            <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
+                <p class="font-medium text-gray-200">
+                    @if(Auth::user()->start_date)
+                        {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
+                    @else
+                        Not specified
+                    @endif
+                </p>
+                            </div>
+                            <div class="profile-info-item">
+                                <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
+                                <p class="font-medium {{ Auth::user()->session_status === 'approved' ? 'text-green-600' : 'text-red-600' }}">
+                                    {{ ucfirst(Auth::user()->session_status) }}
+                                    @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
+                                        (Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }})
+                                    @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
+                                        - {{ Auth::user()->rejection_reason }}
+                                    @endif
+                                </p>
+                            </div>
+                            @if(Auth::user()->session_status === 'pending')
+                                <div class="profile-info-item">
+                                    <a href="{{ route('self.waiting') }}" class="text-blue-600 hover:text-blue-800">View Approval Status</a>
+                                </div>
+                            @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
+                                <div class="profile-info-item">
+                                    <button onclick="checkRenewalEligibility()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg w-full">
+                                        Renew Membership
+                                    </button>
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
- 
     </div>
-    </div>
+</div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
