@@ -161,7 +161,7 @@
         <!-- Login Button (Right side) -->
         <div class="flex items-center">
             <a href="{{ route('self.login') }}" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300 shadow-lg hover:shadow-orange-800/50">
-                Login
+            Register Now
             </a>
         </div>
     </div>
