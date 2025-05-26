@@ -80,25 +80,6 @@
                 width: 80%;
             }
         }
-        .parallax-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('{{ asset('images/welcomebgg.jpg') }}');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            z-index: -1;
-        }
-
-        /* Mobile optimization - disable fixed background on small screens */
-        @media (max-width: 768px) {
-            .parallax-bg {
-                background-attachment: scroll;
-            }
-        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
@@ -249,11 +230,7 @@
             </div>
     </nav>
 
-
-    
-
-    <div class="mx-auto px-4 py-8"          
-         x-data="{
+    <div class="mx-auto px-4 py-8" x-data="{
         selectedAttendance: {
             user: {
                 first_name: '{{ Auth::user()->first_name }}',
@@ -379,10 +356,6 @@
             return this.selectedDay === day;
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
-    <div class="absolute inset-0 z-0">
-        <img src="url('{{ asset('images/image1.png') }}')" alt="Background" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-black opacity-50"></div>
-    </div>
     <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -557,8 +530,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             initNavigation();
             initProfile();
-            initParallaxEffect();
-
+           
         });
 
          function initNavigation() {
@@ -617,17 +589,6 @@
                 }, 300);
             };
         }
-        function initParallaxEffect() {
-                const parallaxBg = document.getElementById('parallax-bg');
-                if (parallaxBg) {
-                    const isMobile = 'ontouchstart' in window;
-                    const parallaxSpeed = isMobile ? 0.2 : 0.5;
-                    window.addEventListener('scroll', function() {
-                        const scrolled = window.pageYOffset;
-                        parallaxBg.style.transform = `translateY(${scrolled * parallaxSpeed}px) translateZ(0)`;
-                    });
-                }
-            }
     </script>
 </body>
 </html>
