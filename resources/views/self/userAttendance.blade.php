@@ -80,6 +80,26 @@
                 width: 80%;
             }
         }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ asset('images/welcomebgg.jpg') }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+
+        /* Mobile optimization - disable fixed background on small screens */
+        @media (max-width: 768px) {
+            .parallax-bg {
+                background-attachment: scroll;
+            }
+        }
     </style>
 </head>
 <body class="bg-gray-900 min-h-screen">
@@ -357,9 +377,9 @@
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
   <!-- Background Image with Dark Overlay -->
-  <div class="absolute inset-0 z-0">
-        <img src="../public/images/wallpaper1.jpg" alt="Background" class="w-full h-full object-cover">
-        <div class="absolute inset-0 bg-black opacity-30 z-1"></div>
+  <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+         id="parallax-bg">
     </div>
 
     <!-- Content Container (relative positioning to appear above background) -->
