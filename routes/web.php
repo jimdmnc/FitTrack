@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\RFIDController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserAttendanceController;
 use App\Http\Controllers\Staff\DashboardController;
 use App\Http\Controllers\Staff\MembershipRegistrationController;
 use App\Http\Controllers\Staff\AttendanceController;
@@ -157,7 +158,7 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/user/attendance', [AttendanceController::class, 'userAttendance'])->name('self.userAttendance');
+    Route::get('/user/attendance', [UserAttendanceController::class, 'userAttendance'])->name('self.userAttendance');
 
 
     
