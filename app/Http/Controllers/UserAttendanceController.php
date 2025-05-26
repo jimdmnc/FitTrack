@@ -7,11 +7,7 @@ use Illuminate\Http\Request;
 
 class UserAttendanceController extends Controller
 {
-    public function __construct()
-    {
-        // Ensure only authenticated users with 'userSession' role can access
-        $this->middleware(['auth', 'role:userSession']);
-    }
+  
 
     public function userAttendance(Request $request)
     {
