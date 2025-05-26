@@ -187,7 +187,7 @@
             </div>
     </nav>
 
-    <div class="container mx-auto px-4 py-8" x-data="{
+    <div class="mx-auto px-4 py-8" x-data="{
         selectedAttendance: {
             user: {
                 first_name: '{{ Auth::user()->first_name }}',
