@@ -328,11 +328,22 @@
                 });
 
                 if (attendanceForDay) {
-                    checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    checkOut = attendanceForDay.time_out ?
-                        new Date(attendanceForDay.time_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                    duration = attendanceForDay.formatted_duration || 'N/A';
-                }
+    checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], {
+        hour: 'numeric', // Use 'numeric' for 12-hour format
+        minute: '2-digit',
+        hour12: true // Enable 12-hour format
+    });
+
+    checkOut = attendanceForDay.time_out ?
+        new Date(attendanceForDay.time_out).toLocaleTimeString([], {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        }) : 'N/A';
+
+    duration = attendanceForDay.formatted_duration || 'N/A';
+}
+
             }
             
             this.selectedDayDate = formattedDate;
