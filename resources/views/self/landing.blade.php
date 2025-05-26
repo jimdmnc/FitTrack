@@ -160,8 +160,8 @@
 
         <!-- Login Button (Right side) -->
         <div class="flex items-center">
-            <a href="{{ route('self.login') }}" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300 shadow-lg hover:shadow-orange-800/50">
-            Register Now
+            <a href="#tutorials" class="font-semibold bg-gradient-to-r from-orange-600 to-orange-700 text-white px-4 py-2 rounded-full hover:from-orange-700 hover:to-orange-800 transition duration-300 shadow-lg hover:shadow-orange-800/50">
+            Register
             </a>
         </div>
     </div>
@@ -172,7 +172,7 @@
         <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
         <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
         <a href="#tutorial" class="block py-2 text-center text-white rounded-full mt-2 hover:from-orange-700 hover:to-orange-800 transition duration-300">
-            Register Now
+            Register
         </a>
     </div>
 </nav>
