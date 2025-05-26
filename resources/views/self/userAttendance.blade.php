@@ -399,31 +399,7 @@
                 </div>
             </div>
             
-            <!-- Stats Summary -->
-            <div class="mt-8 bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700">
-                <h3 class="text-xl font-semibold text-gray-200 mb-4">Monthly Summary</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 text-center shadow-md">
-                        <p class="text-sm text-gray-400">Total Visits</p>
-                        <p class="text-2xl font-bold text-red-400" x-text="selectedAttendance.user.attendances.filter(a => {
-                            const d = new Date(a.time_in);
-                            return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-                        }).length"></p>
-                    </div>
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 text-center shadow-md">
-                        <p class="text-sm text-gray-400">Avg. Duration</p>
-                        <p class="text-2xl font-bold text-orange-400">--:--</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 text-center shadow-md">
-                        <p class="text-sm text-gray-400">Earliest Visit</p>
-                        <p class="text-xl font-bold text-yellow-400">--:-- AM</p>
-                    </div>
-                    <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-lg p-4 text-center shadow-md">
-                        <p class="text-sm text-gray-400">Latest Visit</p>
-                        <p class="text-xl font-bold text-green-400">--:-- PM</p>
-                    </div>
-                </div>
-            </div>
+ 
         </div>
     </div>
 
