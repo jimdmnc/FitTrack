@@ -248,6 +248,10 @@
                 </div>
             </div>
     </nav>
+
+    <section class="relative w-full h-screen overflow-hidden">
+
+
     <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
          style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
          id="parallax-bg">
@@ -548,7 +552,7 @@
  
     </div>
     </div>
-
+                </section>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initNavigation();
