@@ -85,7 +85,7 @@
 <body class="bg-gray-900 min-h-screen">
 
    <!-- Navigation Bar -->
-   <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50 shadow-lg">
+    <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto">
             <!-- Alerts for Success and Error messages -->
             @if(session('success'))
@@ -230,7 +230,9 @@
             </div>
     </nav>
 
-    <div class="mx-auto px-4 py-8" x-data="{
+    <div class="mx-auto px-4 py-8"          
+        style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+        x-data="{
         selectedAttendance: {
             user: {
                 first_name: '{{ Auth::user()->first_name }}',
