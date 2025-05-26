@@ -356,7 +356,7 @@
             return this.selectedDay === day;
         }
     }" x-init="$nextTick(() => { selectDay(today); })">
-    <div class="rounded-xl p-2 max-w-4xl mx-auto smooth-transition">
+    <div class="rounded-xl p-6 max-w-4xl mx-auto smooth-transition">
             <!-- Header Section -->
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
                 <div>

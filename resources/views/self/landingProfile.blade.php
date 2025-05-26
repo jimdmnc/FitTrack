@@ -260,11 +260,11 @@
             <!-- Main Navigation Content -->
             <div class="flex justify-between items-center">
                 <!-- Logo Image -->
-                <div class="flex items-center">
+                <!-- <div class="flex items-center">
                     <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
                         <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
-                </div>
+                </div> -->
                 @if(Auth::user()->role === 'userSession')
                     <!-- Workout Timer (Desktop) -->
                     @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
