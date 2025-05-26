@@ -362,149 +362,62 @@
         </div>
     </div>
         <script>
-        
-        export function initNavigation() {
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const closeMobileMenuButton = document.getElementById('close-mobile-menu');
+             function initNavigation() {
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                const mobileMenu = document.getElementById('mobile-menu');
+                const closeMobileMenuButton = document.getElementById('close-mobile-menu');
 
-    if (mobileMenuButton && mobileMenu) {
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.remove('hidden');
-            mobileMenuButton.setAttribute('aria-expanded', 'true');
-        });
-    }
+                if (mobileMenuButton && mobileMenu) {
+                    mobileMenuButton.addEventListener('click', () => {
+                        mobileMenu.classList.remove('hidden');
+                        mobileMenuButton.setAttribute('aria-expanded', 'true');
+                    });
+                }
 
-    if (closeMobileMenuButton && mobileMenu) {
-        closeMobileMenuButton.addEventListener('click', () => {
-            closeMobileMenu();
-        });
-    }
+                if (closeMobileMenuButton && mobileMenu) {
+                    closeMobileMenuButton.addEventListener('click', () => {
+                        closeMobileMenu();
+                    });
+                }
 
-    mobileMenu?.querySelectorAll('a').forEach(link => {
-        link.addEventListener('click', () => {
-            closeMobileMenu();
-        });
-    });
-}
-
-export function closeMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    if (mobileMenu) {
-        mobileMenu.classList.add('hidden');
-        if (mobileMenuButton) {
-            mobileMenuButton.setAttribute('aria-expanded', 'false');
-        }
-    }
-}
-
-export function initSessionHandling() {
-    const timeoutButton = document.getElementById('timeout-button');
-    if (timeoutButton) {
-        timeoutButton.addEventListener('click', function() {
-            document.getElementById('timeout-modal').showModal();
-        });
-    }
-}
-
-export function initTimeoutHandling() {
-    const timeoutForm = document.getElementById('timeout-form');
-    const timeoutSubmitBtn = document.getElementById('timeout-submit-btn');
-    const timeoutModal = document.getElementById('timeout-modal');
-
-    if (!timeoutForm) return;
-
-    timeoutForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (timeoutSubmitBtn) {
-            timeoutSubmitBtn.disabled = true;
-            timeoutSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-        }
-
-        const formData = new FormData(this);
-        fetch(this.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            }
-        })
-        .then(response => {
-            if (!response.ok) throw new Error('Network response was not ok');
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                if (timeoutModal) timeoutModal.close();
-                if (typeof window.stopWorkoutTimer === 'function') window.stopWorkoutTimer();
-                const timeoutButtons = document.querySelectorAll('#timeout-button, [onclick*="timeout-modal"]');
-                timeoutButtons.forEach(button => {
-                    if (button) button.style.display = 'none';
+                mobileMenu?.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => {
+                        closeMobileMenu();
+                    });
                 });
-                const timerElements = [
-                    document.getElementById('workout-duration')?.parentElement,
-                    document.getElementById('mobile-workout-duration')?.parentElement?.parentElement
-                ].filter(el => el);
-                timerElements.forEach(el => {
-                    el.style.display = 'none';
-                });
-                window.showNotification('Success', 'You have successfully timed out.', 'success');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);
-            } else {
-                window.showNotification('Error', data.message || 'Failed to time out. Please try again.', 'error');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            window.showNotification('Error', 'An error occurred while processing your request.', 'error');
-        })
-        .finally(() => {
-            if (timeoutSubmitBtn) {
-                timeoutSubmitBtn.disabled = false;
-                timeoutSubmitBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
+
+            function closeMobileMenu() {
+                const mobileMenu = document.getElementById('mobile-menu');
+                const mobileMenuButton = document.getElementById('mobile-menu-button');
+                if (mobileMenu) {
+                    mobileMenu.classList.add('hidden');
+                    if (mobileMenuButton) {
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                }
             }
-        });
-    });
-}
 
-export function initWorkoutTimer(startTime) {
-    const timerElement = document.getElementById('workout-duration');
-    const mobileTimerElement = document.getElementById('mobile-workout-duration');
-    if (!timerElement && !mobileTimerElement) return;
+            function initProfile() {
+                const profileModal = document.getElementById('profile-modal');
+                if (!profileModal) return;
 
-    startTime = startTime ? new Date(startTime).getTime() : null;
-    let intervalId;
+                window.showProfile = function() {
+                    profileModal.classList.remove('hidden');
+                    setTimeout(() => {
+                        profileModal.classList.add('active');
+                        profileModal.classList.remove('opacity-0', 'invisible');
+                    }, 10);
+                };
 
-    function updateTimer() {
-        if (!startTime) {
-            if (timerElement) timerElement.textContent = '00:00:00';
-            if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
-            return;
-        }
-
-        const now = new Date().getTime();
-        const distance = Math.floor((now - startTime) / 1000);
-        const hours = Math.floor(distance / 3600);
-        const minutes = Math.floor((distance % 3600) / 60);
-        const seconds = Math.floor(distance % 60);
-        const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-
-        if (timerElement) timerElement.textContent = formattedTime;
-        if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-    }
-
-    updateTimer();
-    if (startTime) {
-        intervalId = setInterval(updateTimer, 1000);
-    }
-
-    window.stopWorkoutTimer = function() {
-        clearInterval(intervalId);
-    };
-}        </script>
+                window.hideProfile = function() {
+                    profileModal.classList.remove('active');
+                    profileModal.classList.add('opacity-0', 'invisible');
+                    setTimeout(() => {
+                        profileModal.classList.add('hidden');
+                    }, 300);
+                };
+            }
+       </script>
 </body>
 </html>
