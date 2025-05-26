@@ -375,7 +375,7 @@
             </div>
 
             <!-- Attendance Details Card -->
-            <div class="mb-6 bg-[#1e1e1e] rounded-lg p-4 border border-gray-700 bg-opacity-90">
+            <div class="mb-6 bg-[#1e1e1e] rounded-lg p-4 bg-opacity-90">
                 <!-- User Info -->
                 <div class="flex items-center space-x-4 mb-4">
                     <div class="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
@@ -409,7 +409,7 @@
             </div>
 
             <!-- Calendar Section -->
-            <div class="bg-[#1e1e1e] rounded-xl p-6 shadow-inner border border-gray-700 bg-opacity-90">
+            <div class="bg-[#1e1e1e] rounded-xl p-6 shadow-inner bg-opacity-90">
                 <!-- Calendar Navigation -->
                 <div class="flex justify-between items-center mb-6">
                     <button @click="prevMonth" class="text-gray-400 hover:text-red-500 smooth-transition transform hover:scale-110">
