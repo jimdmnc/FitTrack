@@ -156,6 +156,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement'])->name('self.landingProfile');});
 
 
+
+    Route::get('/user/attendance', [AttendanceController::class, 'userAttendance'])->name('self.userAttendance');
+
+
     
 // Authentication routes (login, register, etc.)
 require __DIR__.'/auth.php';
