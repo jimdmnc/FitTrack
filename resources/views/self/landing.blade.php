@@ -145,9 +145,9 @@
     <nav class="bg-black text-gray-200 py-2 px-6 sticky top-0 z-50">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo Image -->
-            <div class="flex items-center">
+            <!-- <div class="flex items-center">
                 <img src="images/image.png" alt="FitTrack Logo" class="h-20 w-20 rounded-full">
-            </div>
+            </div> -->
             
             <!-- Navigation Links -->
             <div class="hidden md:flex items-center space-x-8">
