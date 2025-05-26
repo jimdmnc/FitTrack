@@ -358,7 +358,7 @@
     }" x-init="$nextTick(() => { selectDay(today); })">
   <!-- Background Image with Dark Overlay -->
   <div class="absolute inset-0 z-0">
-        <img src="../public/images/image1.png" alt="Background" class="w-full h-full object-cover">
+        <img src="../public/images/wallpaper.jpg" alt="Background" class="w-full h-full object-cover">
         <div class="absolute inset-0 bg-black opacity-30"></div>
     </div>
 
