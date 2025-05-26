@@ -315,40 +315,39 @@
                 </div>
             </div>
 
-            <!-- Attendance Details Card -->
-            <div class="mb-8 bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700">
-                <div class="flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-6 mb-6">
-                    <div class="flex-shrink-0 h-14 w-14 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
-                        <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-100" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
-                        <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-gray-900 rounded-lg p-4 shadow">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">SELECTED DATE</h4>
-                        <p class="text-lg font-medium text-gray-200" x-text="selectedDayDate"></p>
-                    </div>
-                    
-                    <div class="bg-gray-900 rounded-lg p-4 shadow">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">WORKOUT DURATION</h4>
-                        <p class="text-lg font-medium text-gray-200" x-text="selectedDayDuration"></p>
-                    </div>
-                    
-                    <div class="bg-gray-900 rounded-lg p-4 shadow">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">CHECK-IN TIME</h4>
-                        <p class="text-lg font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
-                    </div>
-                    
-                    <div class="bg-gray-900 rounded-lg p-4 shadow">
-                        <h4 class="text-sm font-medium text-gray-400 mb-2">CHECK-OUT TIME</h4>
-                        <p class="text-lg font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
-                    </div>
-                </div>
-            </div>
+<!-- Attendance Details Card -->
+<div class="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
+    <!-- User Info -->
+    <div class="flex items-center space-x-4 mb-4">
+        <div class="h-10 w-10 rounded-full bg-gradient-to-r from-red-500 to-orange-500 flex items-center justify-center text-white font-bold">
+            <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
+        </div>
+        <div>
+            <h3 class="text-lg font-semibold text-gray-100" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
+            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
+        </div>
+    </div>
+    
+    <!-- Details Grid -->
+    <div class="grid grid-cols-2 gap-3">
+        <div class="bg-gray-900 rounded p-3">
+            <p class="text-xs text-gray-400 mb-1">DATE</p>
+            <p class="text-sm font-medium text-gray-200" x-text="selectedDayDate"></p>
+        </div>
+        <div class="bg-gray-900 rounded p-3">
+            <p class="text-xs text-gray-400 mb-1">DURATION</p>
+            <p class="text-sm font-medium text-gray-200" x-text="selectedDayDuration"></p>
+        </div>
+        <div class="bg-gray-900 rounded p-3">
+            <p class="text-xs text-gray-400 mb-1">CHECK-IN</p>
+            <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckIn"></p>
+        </div>
+        <div class="bg-gray-900 rounded p-3">
+            <p class="text-xs text-gray-400 mb-1">CHECK-OUT</p>
+            <p class="text-sm font-medium text-gray-200" x-text="selectedDayCheckOut"></p>
+        </div>
+    </div>
+</div>
 
             <!-- Calendar Section -->
             <div class="bg-gray-800 rounded-xl p-6 shadow-inner border border-gray-700">
