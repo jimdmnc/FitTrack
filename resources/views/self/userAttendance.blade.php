@@ -46,7 +46,7 @@
             transform: translateX(100%);
             transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: -4px 0 15px rgba(0, 0, 0, 0.5);
-            width: 300px;
+            width: 380px;
         }
 
         .profile-modal.active .profile-modal-content {
@@ -77,7 +77,7 @@
 
         @media (max-width: 640px) {
             .profile-modal-content {
-                width: 100%;
+                width: 80%;
             }
         }
     </style>
