@@ -171,8 +171,8 @@
         <a href="#home" class="block py-2 text-center hover:bg-gray-800 rounded">Home</a>
         <a href="#tutorial" class="block py-2 text-center hover:bg-gray-800 rounded">Tutorial</a>
         <a href="#inhere" class="block py-2 text-center hover:bg-gray-800 rounded">In Here</a>
-        <a href="{{ route('self.login') }}" class="block py-2 text-center text-white rounded-full mt-2 hover:from-orange-700 hover:to-orange-800 transition duration-300">
-            Login
+        <a href="#tutorial" class="block py-2 text-center text-white rounded-full mt-2 hover:from-orange-700 hover:to-orange-800 transition duration-300">
+            Register Now
         </a>
     </div>
 </nav>
@@ -209,11 +209,11 @@
 
                             <!-- App Store Buttons -->
                             <div class="flex flex-wrap justify-center gap-4 mb-6">
-                                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
+                                <a href="{{ route('self.login') }}" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                                     </svg>
-                                    Register Now
+                                    Login
                                 </a>
                                 
                                 <!-- Google Play Store Button -->
