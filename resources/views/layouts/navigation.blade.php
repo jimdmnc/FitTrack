@@ -66,12 +66,7 @@
         <!-- Center: User-Friendly Time Display -->
        <!-- Replace the existing #current-time div with this: -->
 <div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-200 rounded-full bg-[#1E1E1E] px-4 py-2 shadow-sm" id="current-time">
-    <span class="inline-flex">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FF5722] w-6 h-6">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-        </svg>
-    </span>
+
     <div id="digital-clock" class="flex items-center space-x-1">
         <!-- Hours -->
         <div class="digit">
