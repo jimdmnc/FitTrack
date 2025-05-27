@@ -16,44 +16,45 @@ class AttendanceController extends Controller
     {
         // Automatically checkout sessions from previous days
         $this->checkoutPastSessions();
-        
-        $query = Attendance::with('user');
-
+    
+        // Begin query and join users to allow ordering by users.end_date
+        $query = Attendance::select('attendances.*')
+            ->join('users', 'users.rfid_uid', '=', 'attendances.rfid_uid')
+            ->with('user');
+    
         // Search filter
         $search = $request->input('search', '');
         if (!empty($search)) {
-            $query->whereHas('user', function ($q) use ($search) {
-                $q->where(function ($query) use ($search) {
-                    $query->where('first_name', 'like', "%{$search}%")
-                        ->orWhere('last_name', 'like', "%{$search}%")
-                        ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"]);
-                });
+            $query->where(function ($query) use ($search) {
+                $query->where('users.first_name', 'like', "%{$search}%")
+                    ->orWhere('users.last_name', 'like', "%{$search}%")
+                    ->orWhereRaw("CONCAT(users.first_name, ' ', users.last_name) LIKE ?", ["%{$search}%"]);
             });
         }
-
+    
         // Time period filter
         $filter = $request->input('filter', 'all');
         switch ($filter) {
             case 'today':
-                $query->whereDate('time_in', Carbon::today());
+                $query->whereDate('attendances.time_in', Carbon::today());
                 break;
             case 'yesterday':
-                $query->whereDate('time_in', Carbon::yesterday());
+                $query->whereDate('attendances.time_in', Carbon::yesterday());
                 break;
             case 'thisWeek':
-                $query->whereBetween('time_in', [
+                $query->whereBetween('attendances.time_in', [
                     Carbon::now()->startOfWeek(),
                     Carbon::now()->endOfWeek()
                 ]);
                 break;
             case 'lastWeek':
-                $query->whereBetween('time_in', [
+                $query->whereBetween('attendances.time_in', [
                     Carbon::now()->subWeek()->startOfWeek(),
                     Carbon::now()->subWeek()->endOfWeek()
                 ]);
                 break;
             case 'thisMonth':
-                $query->whereBetween('time_in', [
+                $query->whereBetween('attendances.time_in', [
                     Carbon::now()->startOfMonth(),
                     Carbon::now()->endOfMonth()
                 ]);
@@ -62,24 +63,24 @@ class AttendanceController extends Controller
                 // No date filtering needed
                 break;
             default:
-                // Default to all if invalid filter
                 $filter = 'all';
         }
-
-        $attendances = $query->orderBy('time_in', 'desc')
+    
+        // Order by end_date from users table
+        $attendances = $query->orderBy('users.end_date', 'desc')
             ->paginate(10)
             ->appends([
                 'filter' => $filter,
                 'search' => $search,
             ]);
-
+    
         if ($request->ajax()) {
             return response()->json([
                 'table' => view('partials.attendance_table', compact('attendances'))->render(),
                 'pagination' => $attendances->links('vendor.pagination.default')->render(),
             ]);
         }
-
+    
         return view('staff.attendance', compact('attendances', 'filter', 'search'));
     }
     
