@@ -355,7 +355,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-700 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
