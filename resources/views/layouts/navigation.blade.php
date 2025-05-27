@@ -11,7 +11,7 @@
     .segment-d, .segment-e, .segment-f, 
     .segment-g {
         position: absolute;
-        background-color:rgb(9, 255, 0);
+        background-color: #FF5722;
         opacity: 0.1;
         transition: opacity 0.3s ease;
     }
