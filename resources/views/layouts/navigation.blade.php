@@ -65,7 +65,7 @@
 
         <!-- Center: User-Friendly Time Display -->
        <!-- Replace the existing #current-time div with this: -->
-<div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-200 rounded-50 bg-[#1E1E1E] px-4 py-2 shadow-sm" id="current-time">
+<div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-200 rounded-md bg-[#1E1E1E] px-4 py-2 shadow-sm" id="current-time">
 
     <div id="digital-clock" class="flex items-center space-x-1">
         <!-- Hours -->
