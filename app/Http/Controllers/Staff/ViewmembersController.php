@@ -67,7 +67,7 @@ class ViewmembersController extends Controller
                 });
             }
 
-            $query->orderBy('start_date', 'desc');
+            $query->orderBy('end_date', 'desc');
             $members = $query->paginate(10)->appends($request->all());
 
             if ($request->ajax()) {
