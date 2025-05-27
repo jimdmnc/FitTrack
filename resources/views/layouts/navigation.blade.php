@@ -1,37 +1,47 @@
 <style>
-    .digital-clock {
-        font-family: 'Segment7', monospace;
-        font-weight: normal;
-        font-style: italic;
-        color: #FF5722;
-        letter-spacing: 2px;
-    }
-    
-    /* Fallback font using CSS - creates a 7-segment-like appearance */
-    @font-face {
-        font-family: 'Segment7';
-        src: local('Segment7'),
-             url('https://fonts.cdnfonts.com/css/segment7') format('truetype');
-        font-weight: normal;
-        font-style: italic;
-    }
-    
-    /* If the font doesn't load, use this CSS-only approximation */
-    .digital-clock.fallback {
+    /* 7-Segment Display Styling */
+    .digit {
         position: relative;
-        display: inline-block;
+        width: 24px;
+        height: 40px;
+        margin: 0 1px;
     }
     
-    .digital-clock.fallback span {
-        position: relative;
-        display: inline-block;
-        width: 0.6em;
-        height: 1em;
-        margin: 0 0.1em;
+    .segment-a, .segment-b, .segment-c, 
+    .segment-d, .segment-e, .segment-f, 
+    .segment-g {
+        position: absolute;
+        background-color: #FF5722;
+        opacity: 0.1;
+        transition: opacity 0.3s ease;
     }
     
-    /* CSS for creating 7-segment digits (simplified approximation) */
-    /* You would need to implement each digit's segments here */
+    /* Horizontal segments (a, g, d) */
+    .segment-a, .segment-g, .segment-d {
+        height: 4px;
+        width: 18px;
+    }
+    
+    /* Vertical segments (b, c, e, f) */
+    .segment-b, .segment-c, .segment-e, .segment-f {
+        height: 16px;
+        width: 4px;
+    }
+    
+    /* Segment positions */
+    .segment-a { top: 0; left: 3px; }
+    .segment-b { top: 2px; right: 0; }
+    .segment-c { bottom: 2px; right: 0; }
+    .segment-d { bottom: 0; left: 3px; }
+    .segment-e { bottom: 2px; left: 0; }
+    .segment-f { top: 2px; left: 0; }
+    .segment-g { top: 50%; left: 3px; transform: translateY(-50%); }
+    
+    /* Colon (:) */
+    .colon {
+        height: 40px;
+        padding: 0 2px;
+    }
 </style>
 
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-800 sticky top-0 z-50">
@@ -54,16 +64,65 @@
         </div>
 
         <!-- Center: User-Friendly Time Display -->
-        <div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-200 rounded-full bg-[#1E1E1E] px-4 py-2 shadow-sm" id="current-time">
-        <span class="inline-flex">
+       <!-- Replace the existing #current-time div with this: -->
+<div class="hidden md:flex items-center space-x-2 text-lg font-semibold text-gray-200 rounded-full bg-[#1E1E1E] px-4 py-2 shadow-sm" id="current-time">
+    <span class="inline-flex">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-[#FF5722] w-6 h-6">
             <circle cx="12" cy="12" r="10"></circle>
             <polyline points="12 6 12 12 16 14"></polyline>
         </svg>
     </span>
-    <span id="time-text" class="font-[Segment7] text-2xl text-[#FF5722] italic">88:88</span>
-    <span id="ampm-text" class="text-gray-200 ml-1"></span>
+    <div id="digital-clock" class="flex items-center space-x-1">
+        <!-- Hours -->
+        <div class="digit">
+            <div class="segment-a"></div>
+            <div class="segment-b"></div>
+            <div class="segment-c"></div>
+            <div class="segment-d"></div>
+            <div class="segment-e"></div>
+            <div class="segment-f"></div>
+            <div class="segment-g"></div>
         </div>
+        <div class="digit">
+            <div class="segment-a"></div>
+            <div class="segment-b"></div>
+            <div class="segment-c"></div>
+            <div class="segment-d"></div>
+            <div class="segment-e"></div>
+            <div class="segment-f"></div>
+            <div class="segment-g"></div>
+        </div>
+        
+        <!-- Colon (:) -->
+        <div class="colon flex flex-col justify-center items-center space-y-1">
+            <div class="colon-dot bg-[#FF5722] w-2 h-2 rounded-full"></div>
+            <div class="colon-dot bg-[#FF5722] w-2 h-2 rounded-full"></div>
+        </div>
+        
+        <!-- Minutes -->
+        <div class="digit">
+            <div class="segment-a"></div>
+            <div class="segment-b"></div>
+            <div class="segment-c"></div>
+            <div class="segment-d"></div>
+            <div class="segment-e"></div>
+            <div class="segment-f"></div>
+            <div class="segment-g"></div>
+        </div>
+        <div class="digit">
+            <div class="segment-a"></div>
+            <div class="segment-b"></div>
+            <div class="segment-c"></div>
+            <div class="segment-d"></div>
+            <div class="segment-e"></div>
+            <div class="segment-f"></div>
+            <div class="segment-g"></div>
+        </div>
+        
+        <!-- AM/PM -->
+        <div class="ampm text-[#FF5722] ml-1 text-sm font-mono"></div>
+    </div>
+</div>
 
         <!-- Right Section: Search, Feedback and Notifications -->
         <div class="flex items-center space-x-2">
@@ -74,22 +133,50 @@
         
 </nav>
 <script>
+    // Define which segments are ON for each digit (0-9)
+    const digitSegments = [
+        [1, 1, 1, 1, 1, 1, 0], // 0
+        [0, 1, 1, 0, 0, 0, 0], // 1
+        [1, 1, 0, 1, 1, 0, 1], // 2
+        [1, 1, 1, 1, 0, 0, 1], // 3
+        [0, 1, 1, 0, 0, 1, 1], // 4
+        [1, 0, 1, 1, 0, 1, 1], // 5
+        [1, 0, 1, 1, 1, 1, 1], // 6
+        [1, 1, 1, 0, 0, 0, 0], // 7
+        [1, 1, 1, 1, 1, 1, 1], // 8
+        [1, 1, 1, 1, 0, 1, 1]  // 9
+    ];
+
+    function updateDigit(digitElement, number) {
+        const segments = digitElement.querySelectorAll('.segment-a, .segment-b, .segment-c, .segment-d, .segment-e, .segment-f, .segment-g');
+        digitSegments[number].forEach((isOn, index) => {
+            segments[index].style.opacity = isOn ? '1' : '0.1';
+        });
+    }
+
     function updateTime() {
         const now = new Date();
         const hours = now.getHours();
-        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const minutes = now.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
-        const formattedHours = (hours % 12) || 12; // Convert to 12-hour format
+        const formattedHours = (hours % 12) || 12; // 12-hour format
         
-        // Create digital clock display
-        const timeText = document.getElementById('time-text');
-        timeText.innerHTML = `
-            <span class="digital-clock">${formattedHours}:${minutes}</span>
-            <span style="color: #FF5722; margin-left: 4px;">${ampm}</span>
-        `;
+        // Pad with leading zero (e.g., "05" instead of "5")
+        const hourStr = formattedHours.toString().padStart(2, '0');
+        const minuteStr = minutes.toString().padStart(2, '0');
+        
+        // Update each digit
+        const digits = document.querySelectorAll('#digital-clock .digit');
+        updateDigit(digits[0], parseInt(hourStr[0])); // First hour digit
+        updateDigit(digits[1], parseInt(hourStr[1])); // Second hour digit
+        updateDigit(digits[2], parseInt(minuteStr[0])); // First minute digit
+        updateDigit(digits[3], parseInt(minuteStr[1])); // Second minute digit
+        
+        // Update AM/PM
+        document.querySelector('.ampm').textContent = ampm;
     }
 
-    // Update time immediately and then every second
+    // Initialize and update every second
     updateTime();
     setInterval(updateTime, 1000);
 </script>
