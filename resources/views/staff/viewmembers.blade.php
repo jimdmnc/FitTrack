@@ -171,7 +171,7 @@
                         type="text" 
                         name="search" 
                         value="{{ $query }}" 
-                        placeholder="Search" 
+                        placeholder="Search member" 
                         class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
                         aria-label="Search members"
                     >
