@@ -260,8 +260,8 @@
             <!-- Main Navigation Content -->
             <div class="flex justify-between items-center">
               
-                @if(Auth::user()->role === 'userSession')
-                    <!-- Workout Timer (Desktop) -->
+            @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+            <!-- Workout Timer (Desktop) -->
                     @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                         <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
                             <i class="fas fa-stopwatch mr-2 text-red-400"></i>
