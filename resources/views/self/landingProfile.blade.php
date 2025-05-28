@@ -269,7 +269,7 @@
                         </div>
                     @endif
                     <!-- Time Out Button (Desktop and Mobile) -->
-                    <!-- @if(!session('timed_out') && isset($attendance) && !$attendance->time_out) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
                         <!-- Desktop Timeout Button -->
                         <button
                             id="timeout-button"
@@ -286,7 +286,7 @@
                         >
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
-                    <!-- @endif -->
+                    @endif
                 @endif
 
                 <!-- Desktop Navigation Links -->
@@ -840,7 +840,7 @@
                             <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
                                 Cancel
                             </button>
-                            <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                            <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center">
                                 Confirm Payment
                             </button>
                         </div>
