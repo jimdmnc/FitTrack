@@ -300,7 +300,30 @@
                     <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
                     <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
-                    
+                    @if(Auth::user()->role === 'user')
+                        <!-- Time In Button (Desktop and Mobile) -->
+                        @if(!Attendance::where('rfid_uid', Auth::user()->rfid_uid)
+                                    ->whereNull('time_out')
+                                    ->whereDate('time_in', Carbon::today())
+                                    ->exists())
+                            <!-- Desktop Time In Button -->
+                            <button
+                                id="timein-button"
+                                onclick="document.getElementById('timein-modal').showModal()"
+                                class="hidden md:inline-flex bg-green-600 text-gray-200 hover:bg-green-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                            >
+                                <i class="fas fa-sign-in-alt mr-2"></i> Time In
+                            </button>
+
+                            <!-- Mobile Time In Button -->
+                            <button
+                                onclick="document.getElementById('timein-modal').showModal()"
+                                class="inline-flex md:hidden items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                            >
+                                <i class="fas fa-sign-in-alt"></i>
+                            </button>
+                        @endif
+                    @endif
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
@@ -343,7 +366,16 @@
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        
+                        @if(Auth::user()->role === 'user')
+                            @if(!isset($attendance) || (isset($attendance) && $attendance->time_out))
+                                <div class="flex justify-center py-4">
+                                    <button onclick="document.getElementById('timein-modal').showModal(); closeMobileMenu();"
+                                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg flex items-center transition duration-300">
+                                        <i class="fas fa-sign-in-alt mr-2"></i> Time In
+                                    </button>
+                                </div>
+                            @endif
+                        @endif
                         @if(Auth::user()->role === 'userSession')
                             @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                                 <div class="flex justify-center items-center py-4">
@@ -380,7 +412,29 @@
                 </div>
             </div>
     </nav>
-        
+    @if(Auth::user()->role === 'user')
+    <!-- Time In Confirmation Modal -->
+        <dialog id="timein-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+            <div class="text-center">
+                <h3 class="text-xl font-bold mb-4">Confirm Time In</h3>
+                <p class="mb-6">Are you sure you want to time in?</p>
+                <div class="flex justify-center gap-4">
+                    @auth
+                    <form id="timein-form" action="{{ route('attendance.timein') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <button type="submit" id="timein-submit-btn" class="bg-green-600 text-gray-200 hover:bg-green-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            <i class="fas fa-sign-in-alt mr-2"></i> Time In
+                        </button>
+                    </form>
+                    @endauth
+                    <button onclick="document.getElementById('timein-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </dialog>
+    @endif
         <!-- Success Alert Modal -->
         @if(session('success'))
             <div class="fixed inset-0 flex items-center justify-center z-50 animate-fade-in" id="successAlert">
