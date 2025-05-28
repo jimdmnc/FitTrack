@@ -103,12 +103,12 @@ class AttendanceController extends Controller
             $session->time_out = $checkoutTime;
             $session->save();
             
-        //     if ($session->user) {
-        //         $session->user->update([
-        //             'session_status' => 'pending',
-        //             'member_status' => 'expired',
-        //         ]);
-        //     }
+            if ($session->user) {
+                $session->user->update([
+                    'session_status' => 'approved',
+                    'member_status' => 'active',
+                ]);
+            }
         }
         
         // Check out today's sessions if it's after 9 PM
@@ -122,12 +122,12 @@ class AttendanceController extends Controller
                 $session->time_out = $today9PM;
                 $session->save();
                 
-            //     if ($session->user) {
-            //         $session->user->update([
-            //             'session_status' => 'pending',
-            //             'member_status' => 'expired',
-            //         ]);
-            //     }
+                if ($session->user) {
+                    $session->user->update([
+                        'session_status' => 'approved',
+                        'member_status' => 'active',
+                    ]);
+                }
             }
         }
         
