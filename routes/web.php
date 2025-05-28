@@ -160,7 +160,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/user/attendance', [UserAttendanceController::class, 'userAttendance'])->name('self.userAttendance');
 
-    Route::post('/attendance/timein', [AttendanceController::class, 'timeIn'])->name('attendance.timein');
+    Route::post('/attendance/timein', [SelfRegistrationController::class, 'timeIn'])->name('attendance.timein');
     
 // Authentication routes (login, register, etc.)
 require __DIR__.'/auth.php';
