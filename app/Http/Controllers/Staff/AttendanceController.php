@@ -98,10 +98,10 @@ class AttendanceController extends Controller
             ->with('user')
             ->get();
             
-        // foreach ($pastSessions as $session) {
-        //     $checkoutTime = Carbon::parse($session->time_in)->setTime(21, 0, 0);
-        //     $session->time_out = $checkoutTime;
-        //     $session->save();
+        foreach ($pastSessions as $session) {
+            $checkoutTime = Carbon::parse($session->time_in)->setTime(21, 0, 0);
+            $session->time_out = $checkoutTime;
+            $session->save();
             
         //     if ($session->user) {
         //         $session->user->update([
@@ -109,7 +109,7 @@ class AttendanceController extends Controller
         //             'member_status' => 'expired',
         //         ]);
         //     }
-        // }
+        }
         
         // Check out today's sessions if it's after 9 PM
         if (Carbon::now()->gte($today9PM)) {
@@ -118,9 +118,9 @@ class AttendanceController extends Controller
                 ->with('user')
                 ->get();
                 
-            // foreach ($todaysSessions as $session) {
-            //     $session->time_out = $today9PM;
-            //     $session->save();
+            foreach ($todaysSessions as $session) {
+                $session->time_out = $today9PM;
+                $session->save();
                 
             //     if ($session->user) {
             //         $session->user->update([
@@ -128,7 +128,7 @@ class AttendanceController extends Controller
             //             'member_status' => 'expired',
             //         ]);
             //     }
-            // }
+            }
         }
         
         Log::info("Fixed past sessions without checkout");
