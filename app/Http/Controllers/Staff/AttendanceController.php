@@ -105,8 +105,8 @@ class AttendanceController extends Controller
             
             if ($session->user) {
                 $session->user->update([
-                    'session_status' => 'approved',
-                    'member_status' => 'active',
+                    'session_status' => 'pending',
+                    'member_status' => 'expired',
                 ]);
             }
         }
@@ -124,8 +124,8 @@ class AttendanceController extends Controller
                 
                 if ($session->user) {
                     $session->user->update([
-                        'session_status' => 'approved',
-                        'member_status' => 'active',
+                        'session_status' => 'pending',
+                        'member_status' => 'expired',
                     ]);
                 }
             }
