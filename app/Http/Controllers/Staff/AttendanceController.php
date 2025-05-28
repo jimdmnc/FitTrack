@@ -118,17 +118,17 @@ class AttendanceController extends Controller
                 ->with('user')
                 ->get();
                 
-            foreach ($todaysSessions as $session) {
-                $session->time_out = $today9PM;
-                $session->save();
+            // foreach ($todaysSessions as $session) {
+            //     $session->time_out = $today9PM;
+            //     $session->save();
                 
-                if ($session->user) {
-                    $session->user->update([
-                        'session_status' => 'pending',
-                        'member_status' => 'expired',
-                    ]);
-                }
-            }
+            //     if ($session->user) {
+            //         $session->user->update([
+            //             'session_status' => 'pending',
+            //             'member_status' => 'expired',
+            //         ]);
+            //     }
+            // }
         }
         
         Log::info("Fixed past sessions without checkout");
