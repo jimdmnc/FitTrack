@@ -215,7 +215,7 @@
     </table>
 
     <div class="footer">
-        This report is confidential and intended solely for internal use. Generated from {{ isset($gym->name) ? $gym->name : 'Gym' }} Management System.
+        This report is confidential and intended solely for internal use. Generated from Rockies Fitness Management System.
     </div>
 </body>
 </html>
