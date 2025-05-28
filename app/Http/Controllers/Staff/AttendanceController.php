@@ -264,6 +264,8 @@ class AttendanceController extends Controller
     
     public function timeIn(Request $request)
     {
+        $current_time = Carbon::now('Asia/Manila');
+
         try {
             // Validate input
             $request->validate([
