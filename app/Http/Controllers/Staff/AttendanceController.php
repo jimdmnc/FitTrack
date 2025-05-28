@@ -32,7 +32,7 @@ class AttendanceController extends Controller
         }
 
         // Time period filter
-        $filter = $request->input('filter', 'all');
+        $filter = $request->input('filter', 'today');
         switch ($filter) {
             case 'today':
                 $query->whereDate('time_in', Carbon::today());
@@ -62,8 +62,9 @@ class AttendanceController extends Controller
                 // No date filtering needed
                 break;
             default:
-                // Default to all if invalid filter
-                $filter = 'all';
+                    // Default to today if invalid filter
+                $filter = 'today';
+                $query->whereDate('time_in', Carbon::today());
         }
 
         $attendances = $query->orderBy('time_in', 'desc')
