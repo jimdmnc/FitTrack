@@ -274,7 +274,7 @@
                         </div>
                     @endif
                     <!-- Time Out Button (Desktop and Mobile) -->
-                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                    <!-- @if(!session('timed_out') && isset($attendance) && !$attendance->time_out) -->
                         <!-- Desktop Timeout Button -->
                         <button
                             id="timeout-button"
@@ -291,7 +291,7 @@
                         >
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
-                    @endif
+                    <!-- @endif -->
                 @endif
 
                 <!-- Desktop Navigation Links -->
