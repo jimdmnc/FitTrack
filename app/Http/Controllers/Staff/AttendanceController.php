@@ -302,6 +302,8 @@ class AttendanceController extends Controller
             'user_id' => $user->id,
             'rfid_uid' => $rfid_uid,
             'time_in' => Carbon::now(),
+            'attendance_date' => $current_time->toDateString()
+
         ]);
 
         // Update user status
