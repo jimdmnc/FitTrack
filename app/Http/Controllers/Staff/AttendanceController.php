@@ -289,13 +289,13 @@ class AttendanceController extends Controller
         }
 
         // Check if user already checked in today
-        // $todaySession = Attendance::where('rfid_uid', $rfid_uid)
-        //     ->whereDate('time_in', Carbon::today())
-        //     ->exists();
+        $todaySession = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereDate('time_in', Carbon::today())
+            ->exists();
 
-        // if ($todaySession) {
-        //     return back()->with('error', "User {$user->first_name} has already checked in today. Only one check-in per day is allowed.");
-        // }
+        if ($todaySession) {
+            return back()->with('error', "User {$user->first_name} has already checked in today. Only one check-in per day is allowed.");
+        }
 
         // Create new attendance record
         $attendance = Attendance::create([
