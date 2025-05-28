@@ -98,18 +98,18 @@ class AttendanceController extends Controller
             ->with('user')
             ->get();
             
-        foreach ($pastSessions as $session) {
-            $checkoutTime = Carbon::parse($session->time_in)->setTime(21, 0, 0);
-            $session->time_out = $checkoutTime;
-            $session->save();
+        // foreach ($pastSessions as $session) {
+        //     $checkoutTime = Carbon::parse($session->time_in)->setTime(21, 0, 0);
+        //     $session->time_out = $checkoutTime;
+        //     $session->save();
             
-            if ($session->user) {
-                $session->user->update([
-                    'session_status' => 'pending',
-                    'member_status' => 'expired',
-                ]);
-            }
-        }
+        //     if ($session->user) {
+        //         $session->user->update([
+        //             'session_status' => 'pending',
+        //             'member_status' => 'expired',
+        //         ]);
+        //     }
+        // }
         
         // Check out today's sessions if it's after 9 PM
         if (Carbon::now()->gte($today9PM)) {
