@@ -285,20 +285,20 @@ class AttendanceController extends Controller
                 return back()->with('error', "User not found with RFID: $rfid_uid.");
             }
     
-            // Check if user already has an active session
-            $activeSession = Attendance::where('rfid_uid', $rfid_uid)
-                ->whereNull('time_out')
-                ->exists();
+            // // Check if user already has an active session
+            // $activeSession = Attendance::where('rfid_uid', $rfid_uid)
+            //     ->whereNull('time_out')
+            //     ->exists();
     
-            if ($activeSession) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "User {$user->first_name} already has an active session. Please check out first."
-                    ]);
-                }
-                return back()->with('error', "User {$user->first_name} already has an active session. Please check out first.");
-            }
+            // if ($activeSession) {
+            //     if ($request->ajax()) {
+            //         return response()->json([
+            //             'success' => false,
+            //             'message' => "User {$user->first_name} already has an active session. Please check out first."
+            //         ]);
+            //     }
+            //     return back()->with('error', "User {$user->first_name} already has an active session. Please check out first.");
+            // }
     
             // Check if user already checked in today
             $todaySession = Attendance::where('rfid_uid', $rfid_uid)
