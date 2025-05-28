@@ -264,6 +264,8 @@ class AttendanceController extends Controller
     
     public function timeIn(Request $request)
     {
+        $current_time = Carbon::now('Asia/Manila');
+
         try {
             // Validate input
             $request->validate([
@@ -317,9 +319,11 @@ class AttendanceController extends Controller
     
             // Create new attendance record
             $attendance = Attendance::create([
-                'user_id' => $user->id,
                 'rfid_uid' => $rfid_uid,
                 'time_in' => Carbon::now(),
+                'attendance_date' => $current_time->toDateString()
+
+
             ]);
     
             // Update user status
