@@ -270,7 +270,7 @@ class SelfRegistrationController extends Controller
         $user = Auth::user();
         $attendance = null;
         $timedOut = session('timed_out', false);
-        $sessionPrice = null;
+        $sessionPrice = Price::where('type', 'session')->first();
     
         if ($user && $user->rfid_uid) {
             $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
