@@ -29,7 +29,7 @@ Route::get('/landing', function () {
 })->name('self.landing');
 
 // Self-registration routes
-Route::get('session-registration', [SelfRegistrationController::class, 'index']);
+Route::get('session-registration', [SelfRegistrationController::class, 'index'])->name('self.registration');
 Route::post('session-registration', [SelfRegistrationController::class, 'store'])->name('self.registration.store');
 Route::post('membership-renewal', [SelfRegistrationController::class, 'renew'])->name('self.membership.renew');
 Route::get('/attendance/status', [SelfRegistrationController::class, 'checkAttendanceStatus'])->name('self.checkAttendanceStatus');
