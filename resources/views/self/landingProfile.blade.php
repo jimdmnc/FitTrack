@@ -301,29 +301,26 @@
                     <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
                     @if(Auth::user()->role === 'user')
-                        <!-- Time In Button (Desktop and Mobile) -->
-                        @if(!Attendance::where('rfid_uid', Auth::user()->rfid_uid)
-                                    ->whereNull('time_out')
-                                    ->whereDate('time_in', Carbon::today())
-                                    ->exists())
-                            <!-- Desktop Time In Button -->
-                            <button
-                                id="timein-button"
-                                onclick="document.getElementById('timein-modal').showModal()"
-                                class="hidden md:inline-flex bg-green-600 text-gray-200 hover:bg-green-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
-                            >
-                                <i class="fas fa-sign-in-alt mr-2"></i> Time In
-                            </button>
+    <!-- Time In Button (Desktop and Mobile) -->
+    @if(!isset($attendance) || (isset($attendance) && $attendance->time_out))
+        <!-- Desktop Time In Button -->
+        <button
+            id="timein-button"
+            onclick="document.getElementById('timein-modal').showModal()"
+            class="hidden md:inline-flex bg-green-600 text-gray-200 hover:bg-green-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+        >
+            <i class="fas fa-sign-in-alt mr-2"></i> Time In
+        </button>
 
-                            <!-- Mobile Time In Button -->
-                            <button
-                                onclick="document.getElementById('timein-modal').showModal()"
-                                class="inline-flex md:hidden items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
-                            >
-                                <i class="fas fa-sign-in-alt"></i>
-                            </button>
-                        @endif
-                    @endif
+        <!-- Mobile Time In Button -->
+        <button
+            onclick="document.getElementById('timein-modal').showModal()"
+            class="inline-flex md:hidden items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+        >
+            <i class="fas fa-sign-in-alt"></i>
+        </button>
+    @endif
+@endif
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
