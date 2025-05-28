@@ -103,12 +103,12 @@ class AttendanceController extends Controller
             $session->time_out = $checkoutTime;
             $session->save();
             
-            // if ($session->user) {
-            //     $session->user->update([
-            //         'session_status' => 'approved',
-            //         'member_status' => 'active',
-            //     ]);
-            // }
+            if ($session->user) {
+                $session->user->update([
+                    'session_status' => 'pending',
+                    'member_status' => 'expired',
+                ]);
+            }
         }
         
         // Check out today's sessions if it's after 9 PM
@@ -122,12 +122,12 @@ class AttendanceController extends Controller
                 $session->time_out = $today9PM;
                 $session->save();
                 
-                // if ($session->user) {
-                //     $session->user->update([
-                //         'session_status' => 'approved',
-                //         'member_status' => 'active',
-                //     ]);
-                // }
+                if ($session->user) {
+                    $session->user->update([
+                        'session_status' => 'pending',
+                        'member_status' => 'expired',
+                    ]);
+                }
             }
         }
         
@@ -262,5 +262,62 @@ class AttendanceController extends Controller
     }
 
     
+    public function timeIn(Request $request)
+{
+    try {
+        // Validate input
+        $request->validate([
+            'rfid_uid' => 'required|string',
+        ]);
 
+        $rfid_uid = $request->input('rfid_uid');
+
+        // Find the user with RFID
+        $user = User::where('rfid_uid', $rfid_uid)->first();
+
+        if (!$user) {
+            return back()->with('error', "User not found with RFID: $rfid_uid.");
+        }
+
+        // Check if user already has an active session
+        $activeSession = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereNull('time_out')
+            ->exists();
+
+        if ($activeSession) {
+            return back()->with('error', "User {$user->first_name} already has an active session. Please check out first.");
+        }
+
+        // Check if user already checked in today
+        $todaySession = Attendance::where('rfid_uid', $rfid_uid)
+            ->whereDate('time_in', Carbon::today())
+            ->exists();
+
+        if ($todaySession) {
+            return back()->with('error', "User {$user->first_name} has already checked in today. Only one check-in per day is allowed.");
+        }
+
+        // Create new attendance record
+        $attendance = Attendance::create([
+            'user_id' => $user->id,
+            'rfid_uid' => $rfid_uid,
+            'time_in' => Carbon::now(),
+        ]);
+
+        // Update user status
+        $user->update([
+            'session_status' => 'approved',
+            'member_status' => 'active',
+        ]);
+
+        \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Check-in recorded at " . now());
+
+        return back()
+            ->with('success', "✅ Check-in recorded successfully for {$user->first_name}.")
+            ->with('checked_in', true);
+    } catch (\Exception $e) {
+        \Log::error("❌ Check-in error: " . $e->getMessage());
+        return back()->with('error', 'Error: ' . $e->getMessage());
+    }
+}
 }
