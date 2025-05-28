@@ -299,7 +299,6 @@ class AttendanceController extends Controller
 
         // Create new attendance record
         $attendance = Attendance::create([
-            'user_id' => $user->id,
             'rfid_uid' => $rfid_uid,
             'time_in' => Carbon::now(),
             'attendance_date' => $current_time->toDateString()
