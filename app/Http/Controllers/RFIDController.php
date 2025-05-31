@@ -57,7 +57,7 @@ class RFIDController extends Controller
           if (!$user) {
               Log::warning("User not found for UID: {$uid}");
               DB::commit();
-              return response()->json(['message' => 'User not registered.', 'name' => ''], 404);
+              return response()->json(['message' => 'User not registered.'], 404);
           }
 
           $full_name = trim($user->first_name . ' ' . $user->last_name);
