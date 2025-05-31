@@ -11,107 +11,109 @@ use App\Models\RfidTag;
 class RFIDController extends Controller
 {
     // Function to handle attendance (time-in / time-out)
-  // Function to handle attendance (time-in / time-out)
-public function handleAttendance(Request $request)
-{
-    $uid = $request->input('uid');
-    $current_time = Carbon::now('Asia/Manila');
+  public function processRFID(Request $request)
+  {
+      // Validate UID input
+      $uid = $request->input('uid');
+      if (!$uid || !preg_match('/^[0-9A-Fa-f]{8,}$/', $uid)) {
+          Log::warning("Invalid UID format received: {$uid}");
+          return response()->json(['message' => 'Invalid UID format.'], 400);
+      }
+      $uid = strtolower($uid); // Normalize to uppercase
 
-    DB::beginTransaction();
+      // Rate-limiting: Prevent excessive requests for the same UID
+      $cacheKey = 'rfid_scan_' . $uid;
+      if (Cache::has($cacheKey)) {
+          Log::warning("Rate limit exceeded for UID: {$uid}");
+          return response()->json(['message' => 'Please wait a few seconds before scanning again.'], 429);
+      }
+      Cache::put($cacheKey, true, now()->addSeconds(5)); // 5-second lock
 
-    try {
-        // Check if user exists with the given RFID UID
-        $user = DB::table('users')->where('rfid_uid', $uid)->first();
+      $current_time = Carbon::now('Asia/Manila');
 
-        if (!$user) {
-            return response()->json(['message' => 'User not registered.'], 404);
-        }
+      DB::beginTransaction();
 
-        $full_name = $user->first_name . ' ' . $user->last_name;
+      try {
+          // Check if UID exists in rfid_tags
+          $rfidTag = DB::table('rfid_tags')->where('uid', $uid)->first();
 
-        // Check member status
-        if ($user->member_status === 'expired') {
-            return response()->json(['message' => 'Membership expired! Attendance not recorded.'], 403);
-        }
-        
-        if ($user->member_status === 'revoked') {
-            return response()->json(['message' => 'Membership revoked! Attendance not recorded.'], 403);
-        }
+          // If UID not in rfid_tags, add as unregistered
+          if (!$rfidTag) {
+              DB::table('rfid_tags')->insert([
+                  'uid' => $uid,
+                  'registered' => 0,
+                  'created_at' => $current_time,
+              ]);
+              Log::info("Unregistered UID saved: {$uid}");
+          } elseif ($rfidTag->registered == 0) {
+              Log::info("UID pending registration: {$uid}");
+              DB::commit();
+              return response()->json(['message' => 'UID is pending registration.', 'name' => ''], 400);
+          }
 
-        // Check if user has already checked in today
-        $attendance = DB::table('attendances')
-            ->where('rfid_uid', $uid)
-            ->whereDate('time_in', Carbon::today())
-            ->orderBy('time_in', 'desc')
-            ->first();
+          // Check if user exists with the given RFID UID
+          $user = DB::table('users')->where('rfid_uid', $uid)->first();
 
-        if ($attendance) {
-            if (!$attendance->time_out) {
-                // User is checking out (if time_out is null)
-                DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
-                DB::commit();
+          if (!$user) {
+              Log::warning("User not found for UID: {$uid}");
+              DB::commit();
+              return response()->json(['message' => 'User not registered.', 'name' => ''], 404);
+          }
 
-                Log::info("User {$full_name} (UID: {$uid}) Time-out recorded at {$current_time}");
-                return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
-            }
-        }
+          $full_name = trim($user->first_name . ' ' . $user->last_name);
 
-        // If no previous time-in today or already timed out, insert new time-in record
-        DB::table('attendances')->insert([
-            'rfid_uid' => $uid, 
-            'time_in' => $current_time,
-            'attendance_date' => $current_time->toDateString()
-        ]);
-        DB::commit();
+          // Check member status
+          if ($user->member_status === 'expired') {
+              Log::warning("Membership expired for UID: {$uid}");
+              DB::commit();
+              return response()->json(['message' => 'Membership expired! Attendance not recorded.', 'name' => $full_name], 403);
+          }
 
-        Log::info("User {$full_name} (UID: {$uid}) Time-in recorded at {$current_time}");
-        return response()->json(['message' => 'Time-in recorded successfully.', 'name' => $full_name]);
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-}
+          if ($user->member_status === 'revoked') {
+              Log::warning("Membership revoked for UID: {$uid}");
+              DB::commit();
+              return response()->json(['message' => 'Membership revoked! Attendance not recorded.', 'name' => $full_name], 403);
+          }
 
-    // Function to save RFID tag
-    public function saveRFID(Request $request)
-    {
-        $uid = $request->input('uid');
-        $current_time = Carbon::now('Asia/Manila');
-    
-        DB::beginTransaction();
-    
-        try {
-            // Check if the RFID UID already exists in the rfid_tags table
-            $existingTag = DB::table('rfid_tags')->where('uid', $uid)->first();
-    
-            if (!$existingTag) {
-                // Insert the new UID into rfid_tags with registered = 0 (temporary)
-                DB::table('rfid_tags')->insert([
-                    'uid' => $uid,
-                    'registered' => 0,
-                    'created_at' => $current_time
-                ]);
-    
-                DB::commit();
-                return response()->json(['message' => 'RFID UID saved successfully. If not registered, it will be removed in 2 minutes.']);
-            } else {
-                if ($existingTag->registered == 1) {
-                    return response()->json(['message' => 'RFID UID is already registered.'], 400);
-                } else {
-                    return response()->json(['message' => 'UID is pending registration.'], 400);
-                }
-            }
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    
-        // Delete unregistered UIDs older than 2 minutes
-        DB::table('rfid_tags')
-            ->where('registered', 0)
-            ->whereRaw('TIMESTAMPDIFF(MINUTE, created_at, NOW()) >= 2')
-            ->delete();
-    }
+          // Check for recent attendance (within last 24 hours)
+          $attendance = DB::table('attendances')
+              ->where('rfid_uid', $uid)
+              ->where('time_in', '>=', $current_time->copy()->subHours(24))
+              ->whereNull('time_out')
+              ->orderBy('time_in', 'desc')
+              ->first();
+
+          if ($attendance) {
+              // Prevent duplicate time-in within 5 minutes
+              $lastTimeIn = Carbon::parse($attendance->time_in);
+              if ($current_time->diffInSeconds($lastTimeIn) < 300) {
+                  Log::info("Duplicate time-in attempt for UID: {$uid}");
+                  DB::commit();
+                  return response()->json(['message' => 'Please wait before scanning again.', 'name' => $full_name], 429);
+              }
+
+              // Record time-out
+              DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
+              DB::commit();
+              Log::info("User {$full_name} (UID: {$uid}) Time-out recorded at {$current_time}");
+              return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
+          }
+
+          // Record new time-in
+          DB::table('attendances')->insert([
+              'rfid_uid' => $uid,
+              'time_in' => $current_time,
+              'attendance_date' => $current_time->toDateString(),
+          ]);
+          DB::commit();
+          Log::info("User {$full_name} (UID: {$uid}) Time-in recorded at {$current_time}");
+          return response()->json(['message' => 'Time-in recorded successfully.', 'name' => $full_name]);
+      } catch (\Exception $e) {
+          DB::rollBack();
+          Log::error("Error processing RFID UID {$uid}: " . $e->getMessage());
+          return response()->json(['message' => 'Server error occurred.', 'error' => $e->getMessage()], 500);
+      }
+  }
 
     // Fetch the latest RFID UID from the rfid_tags table
     public function getLatestRFID()
