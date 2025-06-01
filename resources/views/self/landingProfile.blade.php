@@ -273,8 +273,6 @@
                             <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                         </div>
                     @endif
-                    <!-- Time Out Button (Desktop and Mobile) -->
-                    <!-- @if(!session('timed_out') && isset($attendance) && !$attendance->time_out) -->
                         <!-- Desktop Timeout Button -->
                         <button
                             id="timeout-button"
@@ -291,8 +289,6 @@
                         >
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
-                    <!-- @endif -->
-                <!-- @endif -->
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
