@@ -40,14 +40,14 @@ class AutoCheckoutCommand extends Command
             $attendance->time_out = Carbon::now();
             $attendance->save();
             
-            // Update user status
-            if ($attendance->user) {
-                $attendance->user->update([
-                    'session_status' => 'pending',
-                    'member_status' => 'expired',
-                ]);
-                $count++;
-            }
+            // // Update user status
+            // if ($attendance->user) {
+            //     $attendance->user->update([
+            //         'session_status' => 'pending',
+            //         'member_status' => 'expired',
+            //     ]);
+            //     $count++;
+            // }
         }
 
         Log::info("Auto-checkout completed: {$count} users checked out automatically");
