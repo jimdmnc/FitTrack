@@ -47,13 +47,13 @@ class ViewmembersController extends Controller
             $status = $request->input('status', 'all');
 
             // Update status for all relevant members
-            $allMembers = User::whereIn('role', ['user', 'userSession'])->get();
+            $allMembers = User::whereIn('role', ['user'])->get();
             foreach ($allMembers as $member) {
                 $this->updateMemberStatus($member);
             }
 
             // Build query
-            $query = User::whereIn('role', ['user', 'userSession']);
+            $query = User::whereIn('role', ['user']);
 
             if ($status !== 'all') {
                 $query->where('member_status', $status);

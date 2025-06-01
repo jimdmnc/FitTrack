@@ -25,8 +25,7 @@ class AppServiceProvider extends ServiceProvider
             $pendingApprovalCount = User::where('session_status', 'pending')
                 ->where('needs_approval', true)
                 ->where(function($query) {
-                    $query->where('role', 'user')
-                          ->orWhere('role', 'userSession');
+                    $query->where('role', 'user');
                 })
                 ->count();
     
