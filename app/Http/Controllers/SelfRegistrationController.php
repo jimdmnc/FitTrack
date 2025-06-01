@@ -49,7 +49,7 @@ class SelfRegistrationController extends Controller
                 $user = Auth::user();
 
                 // Check if the user is an admin trying to access userSession login
-                if ($user->role === 'admin') {
+                if ($user->role === 'admin' || $user->role === 'super_admin') {
                     Auth::logout();
                     $request->session()->invalidate();
                     $request->session()->regenerateToken();
