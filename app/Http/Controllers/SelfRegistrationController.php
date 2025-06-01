@@ -19,8 +19,11 @@ class SelfRegistrationController extends Controller
     // Display the registration form for session membership
     public function index()
     {
+        $announcements = Announcement::latest()->get();
+
+
         $sessionPrice = Price::where('type', 'session')->first();
-        return view('self.registration', compact('sessionPrice'));
+        return view('self.registration', compact('sessionPrice', 'announcements'));
     }
 
     // Display the login form
