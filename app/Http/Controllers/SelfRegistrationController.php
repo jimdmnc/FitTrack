@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\MembersPayment;
-use App\Models\Announcement;
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -21,11 +19,8 @@ class SelfRegistrationController extends Controller
     // Display the registration form for session membership
     public function index()
     {
-        $announcements = Announcement::latest()->get();
-
-
         $sessionPrice = Price::where('type', 'session')->first();
-        return view('self.registration', compact('sessionPrice', 'announcements'));
+        return view('self.registration', compact('sessionPrice'));
     }
 
     // Display the login form
@@ -132,11 +127,7 @@ class SelfRegistrationController extends Controller
 
         return view('self.waiting');
     }
-    public function viewAnnouncement()
-    {
-        $announcements = Announcement::latest()->get();
-        return view('self.landingProfile', compact('announcements'));
-    }
+
     // Store method for handling self-registration
     public function store(Request $request)
     {
