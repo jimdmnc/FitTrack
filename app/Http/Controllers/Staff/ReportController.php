@@ -218,8 +218,7 @@ class ReportController extends Controller
     private function generateMembersReport($period, $startDate = null, $endDate = null)
     {
         $query = User::where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
+            $query->where('role', 'user');
         });
     
         switch ($period) {

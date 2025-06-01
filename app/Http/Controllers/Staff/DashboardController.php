@@ -87,16 +87,14 @@ class DashboardController extends Controller
         
         // Count new members registered this week only (both regular users and session users)
         $currentWeekNewMembers = User::where(function($query) {
-            $query->where('role', 'user')
-                ->orWhere('role', 'userSession');
+            $query->where('role', 'user');
         })
         ->whereBetween('created_at', [$startOfCurrentWeek, $endOfCurrentWeek])
         ->count();
         
         // Count new members registered last week only (both regular users and session users)
         $lastWeekNewMembers = User::where(function($query) {
-            $query->where('role', 'user')
-                ->orWhere('role', 'userSession');
+            $query->where('role', 'user');
         })
         ->whereBetween('created_at', [$startOfLastWeek, $endOfLastWeek])
         ->count();
@@ -356,8 +354,7 @@ private function getMembershipTypeData()
 {
     // Fetch the membership data for active users only, grouped by membership type
     $membershipData = User::where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
+            $query->where('role', 'user');
         })
         // ->where('member_status', 'active')  // Uncomment if you want only active users
         ->selectRaw('membership_type, COUNT(*) as count')
@@ -395,8 +392,7 @@ public function getTopActiveMembers()
 {
     return User::where('member_status', 'active')
         ->where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
+            $query->where('role', 'user');
         })
         ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
         ->select(
