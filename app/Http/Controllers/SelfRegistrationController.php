@@ -127,7 +127,11 @@ class SelfRegistrationController extends Controller
 
         return view('self.waiting');
     }
-
+    public function viewAnnouncement()
+    {
+        $announcements = Announcement::latest()->get();
+        return view('self.landingProfile', compact('announcements'));
+    }
     // Store method for handling self-registration
     public function store(Request $request)
     {
