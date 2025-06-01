@@ -264,7 +264,7 @@
                                 <!-- <span id="sort-icon-2" class="ml-1">↕</span> -->
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                Membership Type 
+                                Type 
                                 <!-- <span id="sort-icon-3" class="ml-1">↕</span> -->
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
