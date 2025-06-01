@@ -47,7 +47,7 @@ Route::middleware('auth')->group(function () {
     // Self-registration routes with approval middleware
     Route::middleware('approved.user')->group(function () {
         Route::get('/landingProfile', [SelfRegistrationController::class, 'landingProfile'])->name('self.landingProfile');
-        Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement'])->name('self.landingProfile');
+        // Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement'])->name('self.landingProfile');
 
         Route::get('/waiting', [SelfRegistrationController::class, 'waiting'])->name('self.waiting');
         Route::get('/check-approval', [SelfRegistrationController::class, 'checkApproval'])->name('self.checkApproval');
