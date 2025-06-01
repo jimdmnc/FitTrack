@@ -268,7 +268,7 @@
                                 <!-- <span id="sort-icon-3" class="ml-1">↕</span> -->
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
-                                Registration Date 
+                                Expiration 
                                 <!-- <span id="sort-icon-4" class="ml-1">↑</span> -->
                             </th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">
@@ -314,7 +314,7 @@
                                     {{ $member->getMembershipType() }}
                                 </span>
                             </td>
-                            <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}</td>
+                            <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->end_date)->format('M d, Y') }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
                                     {{ $member->member_status == 'active' ? ' text-green-400' : 
