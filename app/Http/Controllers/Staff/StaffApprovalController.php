@@ -16,7 +16,8 @@ class StaffApprovalController extends Controller
         $pendingUsers = User::where('session_status', 'pending')
             ->where('needs_approval', true)
             ->where(function($query) {
-                $query->where('role', 'user');
+                $query->where('role', 'user')
+                    ->orWhere('role', 'userSession');
             })
             ->with(['payment' => function ($query) {
                 $query->latest();
@@ -35,7 +36,8 @@ class StaffApprovalController extends Controller
             $query = User::where('session_status', 'pending')
                 ->where('needs_approval', true)
                 ->where(function($query) {
-                    $query->where('role', 'user');
+                    $query->where('role', 'user')
+                        ->orWhere('role', 'userSession');
                 })
                 ->with(['payment' => function ($query) {
                     $query->latest();
