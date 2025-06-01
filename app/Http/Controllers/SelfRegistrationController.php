@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\MembersPayment;
+use App\Models\Announcement;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -271,7 +273,8 @@ class SelfRegistrationController extends Controller
         $attendance = null;
         $timedOut = session('timed_out', false);
         $sessionPrice = null;
-    
+        $announcements = Announcement::latest()->get();
+
         if ($user && $user->rfid_uid) {
             $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
                 ->whereDate('time_in', Carbon::today())
@@ -315,6 +318,7 @@ class SelfRegistrationController extends Controller
             'attendance' => $attendance,
             'timedOut' => $timedOut,
             'sessionPrice' => $sessionPrice ?? null,
+            'announcements' =>  $announcements,
         ]);
     }
 
