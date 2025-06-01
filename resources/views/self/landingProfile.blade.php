@@ -172,7 +172,6 @@
         }
 
         .profile-header {
-            background: linear-gradient(135deg, #ff5722 0%, #ff7043 100%);
             padding: 1.5rem;
         }
 
@@ -261,53 +260,57 @@
             <!-- Main Navigation Content -->
             <div class="flex justify-between items-center">
                 <!-- Logo Image -->
-                <div class="flex items-center">
+                <!-- <div class="flex items-center">
                     <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
-                        <img src="{{ asset('images/image.png') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
+                        <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
-                </div>
+                </div> -->
+                @if(Auth::user()->role === 'userSession')
+                    <!-- Workout Timer (Desktop) -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                        </div>
+                    @endif
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
 
-                <!-- Workout Timer (Desktop) -->
-                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                    </div>
-                @endif
-
-                <!-- Time Out Button (Desktop and Mobile) -->
-                @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                    <!-- Desktop Timeout Button -->
-                    <button
-                        id="timeout-button"
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
-                    >
-                        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                    </button>
-
-                    <!-- Mobile Timeout Button -->
-                    <button
-                        onclick="document.getElementById('timeout-modal').showModal()"
-                        class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
-                    >
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
+                        <!-- Mobile Timeout Button -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
                 @endif
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
-                    <a href="{{ route('self.landing') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
-                    <a href="{{ route('self.landing') }}#tutorial" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Tutorial</a>
-                    <a href="{{ route('self.landing') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
+                    <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
+                    <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
+                    <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
+                    @if(Auth::user()->role === 'userSession')
+
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
+                        @endif
+
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
                             <button type="submit"
@@ -336,32 +339,36 @@
                     </div>
                     
                     <div class="flex flex-col space-y-6 text-center flex-grow">
-                        <a href="{{ route('self.landing') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                        <a href="{{ route('self.registration') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Register</a>
-                        <a href="{{ route('self.landing') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
+                        <a href="{{ route('self.landingProfile') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
+                        <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
+                        <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                         
-                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                            <div class="flex justify-center items-center py-4">
-                                <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                                    <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                                    <span id="mobile-workout-duration" class="text-lg font-medium">
-                                        @if(isset($attendance))
-                                            {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                                        @else
-                                            00:00:00
-                                        @endif
-                                    </span>
+                        @if(Auth::user()->role === 'userSession')
+                            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                                <div class="flex justify-center items-center py-4">
+                                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                                        <span id="mobile-workout-duration" class="text-lg font-medium">
+                                            @if(isset($attendance))
+                                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                                            @else
+                                                00:00:00
+                                            @endif
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
+                            @endif
                         @endif
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                        <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew
-                        </button>
+                        @if(Auth::user()->role === 'userSession')
+                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                                <i class="fas fa-sync-alt mr-2"></i> Renew
+                            </button>
+                        @endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -372,7 +379,7 @@
                     </div>
                 </div>
             </div>
-        </nav>
+    </nav>
         
         <!-- Success Alert Modal -->
         @if(session('success'))
@@ -455,80 +462,82 @@
                 }, 5000);
             </script>
         @endif   
-        
-        <!-- Time Out Confirmation Modal -->
-        <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
-            <div class="text-center">
-                <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
-                <p class="mb-6">Are you sure you want to time out?</p>
-                <div class="flex justify-center gap-4">
-                    @auth
-                    <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
-                        @csrf
-                        <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                        <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                        </button>
-                    </form>
-                    @endauth
-                    <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </dialog>
 
-        <!-- Hero Section with Parallax Effect -->
-        <section id="home" class="relative w-full h-screen overflow-hidden">
-            <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
-                 style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
-                 id="parallax-bg">
-            </div>
-            <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
-            <div class="relative h-full flex items-center">
-                <div class="container mx-auto px-6 z-10">
-                    <div class="flex flex-col items-center">
-                        <div class="text-center max-w-2xl mb-12">
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-2">
-                                WELCOME TO <span class="text-gray-200">ROCKIES FITNESS</span>
-                            </h1>
-                            <p class="text-sm md:text-2xl text-gray-300 mb-8">
-                                Track your workouts, stay consistent, and achieve your fitness goals — all in one place.
-                            </p>
-                            <div class="flex flex-wrap justify-center gap-4 mb-6">
-                                <a href="#tutorial" class="bg-red-600 hover:bg-red-700 text-gray-200 font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                    </svg>
-                                    Get Started
-                                </a>
-                                <a href="https://play.google.com/store/apps/details?id=com.FitTrack.fittrackapp&hl=en" 
-                                   class="bg-white hover:bg-gray-800 hover:text-gray-200 text-black font-bold py-3 px-6 rounded-lg inline-flex items-center text-xs md:text-base transition duration-300 shadow-lg hover:scale-105 transform"
-                                   target="_blank" rel="noopener noreferrer">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 512 512">
-                                        <path fill="currentColor" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.6 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/>
-                                    </svg>
-                                    Download App
-                                </a>
-                            </div>
-                        </div>
-                        <div class="flex flex-row flex-wrap justify-center items-center hide-images" id="phone-container">
-                            <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 1" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone2">
-                            <img src="{{ asset('images/phone12.png') }}" alt="Phone Mockup 2" class="w-40 md:w-50 transition-transform duration-500 hover:scale-105" id="phone1">
-                        </div>
+        @if(Auth::user()->role === 'userSession')
+            <!-- Time Out Confirmation Modal -->
+            <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+                    <p class="mb-6">Are you sure you want to time out?</p>
+                    <div class="flex justify-center gap-4">
+                        @auth
+                        <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                            <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                            </button>
+                        </form>
+                        @endauth
+                        <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            Cancel
+                        </button>
                     </div>
                 </div>
-            </div>
-            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-                <a href="#promotional">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                    </svg>
-                </a>
-            </div>
-        </section>
+            </dialog>
+        @endif
 
-        @include('components.announcements')
+<!-- Hero Section with Announcements -->
+<section id="home" class="relative w-full h-screen overflow-hidden">
+    <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" 
+         style="background-image: url('{{ asset('images/image1.png') }}'); transform: translateZ(0);" 
+         id="parallax-bg">
+    </div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black to-gray-900 opacity-90"></div>
+    <div class="relative h-full flex items-center">
+        <div class="container mx-auto px-6 z-10">
+            <div class="flex flex-col items-center">
+                <div class="text-center max-w-2xl mb-12">
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-200 mb-6">
+                        WELCOME, <span class="text-red-400">{{ Auth::user()->first_name }}!</span>
+                    </h1>
+                    <p class="text-sm md:text-xl text-gray-300 mb-8">
+                        Stay updated with the latest announcements from Rockies Fitness
+                    </p>
+                </div>
+                <div class="announcements-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    @if(isset($announcements) && $announcements->isNotEmpty())
+                        @foreach($announcements as $announcement)
+                            <div class="announcement-card bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                                <h3 class="text-xl font-bold text-white mb-3">{{ $announcement->title }}</h3>
+                                <p class="text-gray-300 text-sm mb-4">{{ $announcement->content }}</p>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-400">
+                                        {{ \Carbon\Carbon::parse($announcement->schedule)->format('M d, Y H:i') }}
+                                    </span>
+                                    <span class="text-xs font-semibold px-2 py-1 rounded-full 
+                                        {{ $announcement->type === 'Update' ? 'bg-blue-600' : ($announcement->type === 'Maintenance' ? 'bg-orange-600' : 'bg-green-600') }}">
+                                        {{ $announcement->type }}
+                                    </span>
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <p class="text-gray-300 text-center col-span-full">No announcements available at the moment.</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <a href="#promotional">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </a>
+    </div>
+</section>
+
 
         <!-- Promotional Carousel -->
         <section class="py-16 bg-gray-900 text-gray-200" id="promotional">
@@ -616,33 +625,7 @@
             </div>
         </section>
 
-        <!-- Tutorial Section -->
-        <section id="tutorial" class="py-16 bg-white">
-            <div class="container mx-auto px-6">
-                <h2 class="text-3xl font-bold text-center mb-12">HOW TO REGISTER FOR GYM SESSIONS</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
-                        <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
-                        <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                        <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
-                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Visit Website" class="rounded-lg mx-auto mt-4">
-                    </div>
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
-                        <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
-                        <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
-                        <img src="{{ asset('images/welcomebgg.jpg') }}" alt="Gym Payment" class="rounded-lg mx-auto">
-                    </div>
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
-                        <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
-                        <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
-                        <img src="{{ asset('images/welcomebg.jpg') }}" alt="Time Out" class="rounded-lg mx-auto">
-                    </div>
-                </div>
-            </div>
-        </section>
+   
 
         <!-- In Here Section -->
         <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
@@ -666,7 +649,6 @@
                             <h4 class="text-lg font-bold mb-4">Quick Links</h4>
                             <ul class="space-y-2">
                                 <li><a href="#home" class="text-gray-400 hover:text-red-500 transition duration-300">Home</a></li>
-                                <li><a href="#tutorial" class="text-gray-400 hover:text-red-500 transition duration-300">Tutorial</a></li>
                                 <li><a href="#inhere" class="text-gray-400 hover:text-red-500 transition duration-300">In Here</a></li>
                             </ul>
                         </div>
@@ -697,7 +679,7 @@
         <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
             <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
             <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-                <div class="profile-header">
+                <div class="profile-header bg-red-600">
                     <div class="flex justify-between items-center mb-6">
                         <h3 class="text-2xl font-bold text-white">User Profile</h3>
                         <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
@@ -729,12 +711,14 @@
                             <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
                         </div>
                         <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Attendance Status</label>
-                            @if(isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                                <p class="text-green-600 font-medium">Checked in since {{ $attendance->time_in->format('M d, Y H:i') }}</p>
-                            @else
-                                <p class="text-red-600 font-medium">Checked out</p>
-                            @endif
+                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
+            <p class="font-medium text-gray-200">
+                @if(Auth::user()->start_date)
+                    {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
+                @else
+                    Not specified
+                @endif
+            </p>
                         </div>
                         <div class="profile-info-item">
                             <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
@@ -764,57 +748,59 @@
         </div>
 
         <!-- Session Renewal Modal -->
-        <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
-            <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
-                <div class="mb-6 text-center">
-                    <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
-                    <p class="text-gray-400 mt-1">Confirm your session membership details</p>
-                </div>
-                <div class="border-b border-gray-700 mb-6"></div>
-                <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
-                    @csrf
-                    <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
-                    <input type="hidden" name="membership_type" id="membership_type" value="session">
-                    <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
-                    <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
-                    <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
+        @if(Auth::user()->role === 'userSession')
+            <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+                <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+                    <div class="mb-6 text-center">
+                        <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
+                        <p class="text-gray-400 mt-1">Confirm your session membership details</p>
+                    </div>
+                    <div class="border-b border-gray-700 mb-6"></div>
+                    <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <input type="hidden" name="membership_type" id="membership_type" value="session">
+                        <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
+                        <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
+                        <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
 
-                    <!-- Summary -->
-                    <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
-                        <div class="space-y-3">
-                            <div class="flex items-center">
-                                <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
-                                <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                        <!-- Summary -->
+                        <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                                    <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                                    <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                                    <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                                    <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
+                                </div>
                             </div>
-                            <div class="flex items-center">
-                                <span class="w-1/3 text-gray-400 text-sm">Type</span>
-                                <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="w-1/3 text-gray-400 text-sm">Period</span>
-                                <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="w-1/3 text-gray-400 text-sm">Amount</span>
-                                <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
-                            </div>
+                            <!-- Validation Errors -->
+                            <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
                         </div>
-                        <!-- Validation Errors -->
-                        <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
-                    </div>
 
-                    <!-- Buttons -->
-                    <div class="flex space-x-4">
-                        <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
-                            Cancel
-                        </button>
-                        <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
-                            Confirm Payment
-                        </button>
-                    </div>
-                </form>
+                        <!-- Buttons -->
+                        <div class="flex space-x-4">
+                            <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        @endif
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -916,12 +902,12 @@
                             timerElements.forEach(el => {
                                 el.style.display = 'none';
                             });
-                            document.body.dataset.timedOut = 'true';
-                            const statusElement = document.querySelector('.profile-info-item:nth-last-child(2) p');
-                            if (statusElement) {
-                                statusElement.className = 'text-red-600 font-medium';
-                                statusElement.textContent = 'Checked out';
-                            }
+                            // document.body.dataset.timedOut = 'true';
+                            // const statusElement = document.querySelector('.profile-info-item:nth-last-child(2) p');
+                            // if (statusElement) {
+                            //     statusElement.className = 'text-red-600 font-medium';
+                            //     statusElement.textContent = 'Checked out';
+                            // }
                         }
                     })
                     .catch(error => {
