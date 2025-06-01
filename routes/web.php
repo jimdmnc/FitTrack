@@ -154,7 +154,11 @@ Route::middleware('auth')->group(function () {
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
-    Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement']);
+    Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement'])
+
+
+
+});
 
 
 
