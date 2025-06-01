@@ -153,9 +153,8 @@ Route::middleware('auth')->group(function () {
     })->name('payment.failed');
 
     // Announcements
-    Route::resource('announcements', AnnouncementController::class);
-    Route::get('/landing-profile', [AnnouncementController::class, 'viewAnnouncement']);
-
+    Route::resource('announcements', SelfRegistrationController::class);
+    Route::get('/landing-profile', [SelfRegistrationController::class, 'viewAnnouncement'])->name('self.landingProfile');
 
 
 });
