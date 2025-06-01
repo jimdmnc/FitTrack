@@ -199,13 +199,13 @@
                         </label>
                         <div class="relative">
                             <input type="password" 
-                                   class="input-field w-full px-4 py-3 pr-12 rounded-lg text-base" 
-                                   id="password" 
-                                   name="password" 
-                                   placeholder="Enter your password"
-                                   required
-                                   minlength="8">
-                            <i class="password-toggle fas fa-eye" onclick="togglePassword()"></i>
+                                class="input-field w-full px-4 py-3 pr-12 rounded-lg text-base" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Enter your password"
+                                required
+                                minlength="8">
+                            <i class="password-toggle fas fa-eye absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer hover:text-orange-400" id="togglePassword"></i>
                         </div>
                         <div id="password_error" class="error-message">
                             Password must be at least 8 characters
@@ -241,6 +241,8 @@
     </div>
 
     <script>
+        document.getElementById('togglePassword').addEventListener('click', togglePassword);
+
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('loginForm');
             const submitBtn = form.querySelector('button[type="submit"]');
@@ -331,19 +333,23 @@
         });
 
         function togglePassword() {
-            const passwordField = document.getElementById('password');
-            const toggleIcon = document.querySelector('.password-toggle');
-            
-            if (passwordField.type === 'password') {
-                passwordField.type = 'text';
-                toggleIcon.classList.remove('fa-eye');
-                toggleIcon.classList.add('fa-eye-slash');
-            } else {
-                passwordField.type = 'password';
-                toggleIcon.classList.remove('fa-eye-slash');
-                toggleIcon.classList.add('fa-eye');
-            }
-        }
+    const passwordField = document.getElementById('password');
+    const toggleIcon = document.getElementById('togglePassword');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+        toggleIcon.setAttribute('title', 'Hide password');
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+        toggleIcon.setAttribute('title', 'Show password');
+    }
+}
+
+// Add event listener for the toggle
     </script>
 </body>
 </html>
