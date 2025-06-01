@@ -265,7 +265,34 @@
                         <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div> -->
-    
+                @if(Auth::user()->role === 'userSession')
+                    <!-- Workout Timer (Desktop) -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                        </div>
+                    @endif
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
+
+                        <!-- Mobile Timeout Button -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
+                @endif
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -276,7 +303,7 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
-                    @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'userSession')
+                    @if(Auth::user()->role === 'userSession')
 
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
