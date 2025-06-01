@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <style>
         body {
-            background-image: url('images/welcomebgg.jpg');
+            background-image: url('images/welcomebggg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
