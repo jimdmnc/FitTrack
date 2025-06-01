@@ -40,12 +40,12 @@ class AuthController extends Controller
                 ], 403);
             }
             
-            if ($user->role === 'userSession') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Not Regular members are not allowed on this app'
-                ], 403);
-            }
+            // if ($user->role === 'userSession') {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Not Regular members are not allowed on this app'
+            //     ], 403);
+            // }
     
             if (!$user->rfid_uid) {
                 return response()->json([
