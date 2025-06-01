@@ -88,7 +88,7 @@ class SelfRegistrationController extends Controller
     
         if ($user->session_status === 'approved') {
             // Only automatically time in for userSession roles
-            if ($user->role === 'user') {
+            if ($user->role === 'userSession') {
                 $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
                     ->whereNull('time_out')
                     ->whereDate('time_in', Carbon::today())
@@ -204,7 +204,7 @@ class SelfRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'membership_type' => $validatedData['membership_type'],
-                    'role' => 'user',
+                    'role' => 'userSession',
                     'session_status' => 'pending',
                     'start_date' => Carbon::now(),
                     'end_date' => Carbon::now(),
@@ -279,7 +279,7 @@ class SelfRegistrationController extends Controller
                 ->first();
     
             // Auto time-in only for userSession roles
-            if ($user->session_status === 'approved' && !$attendance && !$timedOut && $user->role === 'user') {
+            if ($user->session_status === 'approved' && !$attendance && !$timedOut && $user->role === 'userSession') {
                 $attendance = Attendance::create([
                     'rfid_uid' => $user->rfid_uid,
                     'attendance_date' => now(),
