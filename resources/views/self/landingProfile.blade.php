@@ -265,6 +265,7 @@
                         <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div> -->
+                @if(Auth::user()->role === 'userSession')
                     <!-- Workout Timer (Desktop) -->
                     @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                         <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
@@ -291,6 +292,7 @@
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     @endif
+                @endif
 
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
@@ -301,11 +303,13 @@
                     
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
+                    @if(Auth::user()->role === 'userSession')
 
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
+                        @endif
 
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
@@ -340,6 +344,7 @@
                         <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                         
+                        @if(Auth::user()->role === 'userSession')
                             @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                                 <div class="flex justify-center items-center py-4">
                                     <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
@@ -354,13 +359,16 @@
                                     </div>
                                 </div>
                             @endif
+                        @endif
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
+                        @if(Auth::user()->role === 'userSession')
                             <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
                                 class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
                                 <i class="fas fa-sync-alt mr-2"></i> Renew
                             </button>
+                        @endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -455,6 +463,7 @@
             </script>
         @endif   
 
+        @if(Auth::user()->role === 'userSession')
             <!-- Time Out Confirmation Modal -->
             <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
                 <div class="text-center">
@@ -476,6 +485,7 @@
                     </div>
                 </div>
             </dialog>
+        @endif
 
 <!-- Hero Section with Announcements -->
 <section id="home" class="relative w-full h-screen overflow-hidden">
@@ -737,7 +747,60 @@
             </div>
         </div>
 
+        <!-- Session Renewal Modal -->
+        @if(Auth::user()->role === 'userSession')
+            <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+                <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+                    <div class="mb-6 text-center">
+                        <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
+                        <p class="text-gray-400 mt-1">Confirm your session membership details</p>
+                    </div>
+                    <div class="border-b border-gray-700 mb-6"></div>
+                    <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <input type="hidden" name="membership_type" id="membership_type" value="session">
+                        <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
+                        <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
+                        <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
 
+                        <!-- Summary -->
+                        <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                                    <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                                    <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                                    <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                                    <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
+                                </div>
+                            </div>
+                            <!-- Validation Errors -->
+                            <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex space-x-4">
+                            <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
