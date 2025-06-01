@@ -273,7 +273,25 @@
                             <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                         </div>
                     @endif
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
 
+                        <!-- Mobile Timeout Button -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
                 @endif
 
                 <!-- Desktop Navigation Links -->
@@ -445,7 +463,29 @@
             </script>
         @endif   
 
-
+        @if(Auth::user()->role === 'userSession')
+            <!-- Time Out Confirmation Modal -->
+            <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
+                <div class="text-center">
+                    <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
+                    <p class="mb-6">Are you sure you want to time out?</p>
+                    <div class="flex justify-center gap-4">
+                        @auth
+                        <form id="timeout-form" action="{{ route('attendance.timeout') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                            <button type="submit" id="timeout-submit-btn" class="bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                            </button>
+                        </form>
+                        @endauth
+                        <button onclick="document.getElementById('timeout-modal').close()" class="bg-gray-300 text-gray-700 hover:bg-gray-400 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </dialog>
+        @endif
 
 <!-- Hero Section with Announcements -->
 <section id="home" class="relative w-full h-screen overflow-hidden">
@@ -707,7 +747,60 @@
             </div>
         </div>
 
-        
+        <!-- Session Renewal Modal -->
+        @if(Auth::user()->role === 'userSession')
+            <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+                <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
+                    <div class="mb-6 text-center">
+                        <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
+                        <p class="text-gray-400 mt-1">Confirm your session membership details</p>
+                    </div>
+                    <div class="border-b border-gray-700 mb-6"></div>
+                    <form id="renewForm" method="POST" action="{{ route('self.membership.renew') }}">
+                        @csrf
+                        <input type="hidden" name="rfid_uid" id="rfid_uid" value="{{ auth()->user()->rfid_uid }}">
+                        <input type="hidden" name="membership_type" id="membership_type" value="session">
+                        <input type="hidden" name="start_date" id="start_date" value="2025-05-18">
+                        <input type="hidden" name="end_date" id="end_date" value="2025-05-18">
+                        <input type="hidden" name="amount" id="amount" value="{{ $sessionPrice->amount ?? '0' }}">
+
+                        <!-- Summary -->
+                        <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                                    <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                                    <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                                    <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                                    <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
+                                </div>
+                            </div>
+                            <!-- Validation Errors -->
+                            <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="flex space-x-4">
+                            <button type="button" onclick="closeRenewModal()" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition duration-200">
+                                Cancel
+                            </button>
+                            <button type="submit" id="confirm_button" class="w-1/2 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-lg transition duration-200 flex items-center justify-center" {{ !$sessionPrice ? 'disabled' : '' }}>
+                                Confirm Payment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -717,13 +810,13 @@
                 initCarousel();
                 initSessionHandling();
                 initPhoneAnimation();
-                // initTimeoutHandling();
+                initTimeoutHandling();
                 initModals();
                 initRenewModal();
                 initAttendanceCheck();
-                // @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                //     initWorkoutTimer();
-                // @endif
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                    initWorkoutTimer();
+                @endif
             });
 
             function initRenewModal() {
@@ -982,105 +1075,105 @@
                 }
             }
 
-            // function initTimeoutHandling() {
-            //     const timeoutForm = document.getElementById('timeout-form');
-            //     const timeoutSubmitBtn = document.getElementById('timeout-submit-btn');
-            //     const timeoutModal = document.getElementById('timeout-modal');
+            function initTimeoutHandling() {
+                const timeoutForm = document.getElementById('timeout-form');
+                const timeoutSubmitBtn = document.getElementById('timeout-submit-btn');
+                const timeoutModal = document.getElementById('timeout-modal');
 
-            //     if (!timeoutForm) return;
+                if (!timeoutForm) return;
 
-            //     timeoutForm.addEventListener('submit', function(e) {
-            //         e.preventDefault();
-            //         if (timeoutSubmitBtn) {
-            //             timeoutSubmitBtn.disabled = true;
-            //             timeoutSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-            //         }
+                timeoutForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    if (timeoutSubmitBtn) {
+                        timeoutSubmitBtn.disabled = true;
+                        timeoutSubmitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                    }
 
-            //         const formData = new FormData(this);
-            //         fetch(this.action, {
-            //             method: 'POST',
-            //             body: formData,
-            //             headers: {
-            //                 'X-Requested-With': 'XMLHttpRequest',
-            //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-            //             }
-            //         })
-            //         .then(response => {
-            //             if (!response.ok) throw new Error('Network response was not ok');
-            //             return response.json();
-            //         })
-            //         .then(data => {
-            //             if (data.success) {
-            //                 if (timeoutModal) timeoutModal.close();
-            //                 if (typeof stopWorkoutTimer === 'function') stopWorkoutTimer();
-            //                 const timeoutButtons = document.querySelectorAll('#timeout-button, [onclick*="timeout-modal"]');
-            //                 timeoutButtons.forEach(button => {
-            //                     if (button) button.style.display = 'none';
-            //                 });
-            //                 const timerElements = [
-            //                     document.getElementById('workout-duration')?.parentElement,
-            //                     document.getElementById('mobile-workout-duration')?.parentElement?.parentElement
-            //                 ].filter(el => el);
-            //                 timerElements.forEach(el => {
-            //                     el.style.display = 'none';
-            //                 });
-            //                 showNotification('Success', 'You have successfully timed out.', 'success');
-            //                 setTimeout(() => {
-            //                     window.location.reload();
-            //                 }, 2000);
-            //             } else {
-            //                 showNotification('Error', data.message || 'Failed to time out. Please try again.', 'error');
-            //             }
-            //         })
-            //         .catch(error => {
-            //             console.error('Error:', error);
-            //             showNotification('Error', 'An error occurred while processing your request.', 'error');
-            //         })
-            //         .finally(() => {
-            //             if (timeoutSubmitBtn) {
-            //                 timeoutSubmitBtn.disabled = false;
-            //                 timeoutSubmitBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
-            //             }
-            //         });
-            //     });
-            // }
+                    const formData = new FormData(this);
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            if (timeoutModal) timeoutModal.close();
+                            if (typeof stopWorkoutTimer === 'function') stopWorkoutTimer();
+                            const timeoutButtons = document.querySelectorAll('#timeout-button, [onclick*="timeout-modal"]');
+                            timeoutButtons.forEach(button => {
+                                if (button) button.style.display = 'none';
+                            });
+                            const timerElements = [
+                                document.getElementById('workout-duration')?.parentElement,
+                                document.getElementById('mobile-workout-duration')?.parentElement?.parentElement
+                            ].filter(el => el);
+                            timerElements.forEach(el => {
+                                el.style.display = 'none';
+                            });
+                            showNotification('Success', 'You have successfully timed out.', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 2000);
+                        } else {
+                            showNotification('Error', data.message || 'Failed to time out. Please try again.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showNotification('Error', 'An error occurred while processing your request.', 'error');
+                    })
+                    .finally(() => {
+                        if (timeoutSubmitBtn) {
+                            timeoutSubmitBtn.disabled = false;
+                            timeoutSubmitBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
+                        }
+                    });
+                });
+            }
 
-            // function initWorkoutTimer() {
-            //     const timerElement = document.getElementById('workout-duration');
-            //     const mobileTimerElement = document.getElementById('mobile-workout-duration');
-            //     if (!timerElement && !mobileTimerElement) return;
+            function initWorkoutTimer() {
+                const timerElement = document.getElementById('workout-duration');
+                const mobileTimerElement = document.getElementById('mobile-workout-duration');
+                if (!timerElement && !mobileTimerElement) return;
 
-            //     let startTime = @json(isset($attendance) && $attendance ? $attendance->time_in : null);
-            //     startTime = startTime ? new Date(startTime).getTime() : null;
-            //     let intervalId;
+                let startTime = @json(isset($attendance) && $attendance ? $attendance->time_in : null);
+                startTime = startTime ? new Date(startTime).getTime() : null;
+                let intervalId;
 
-            //     function updateTimer() {
-            //         if (!startTime) {
-            //             if (timerElement) timerElement.textContent = '00:00:00';
-            //             if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
-            //             return;
-            //         }
+                function updateTimer() {
+                    if (!startTime) {
+                        if (timerElement) timerElement.textContent = '00:00:00';
+                        if (mobileTimerElement) mobileTimerElement.textContent = '00:00:00';
+                        return;
+                    }
 
-            //         const now = new Date().getTime();
-            //         const distance = Math.floor((now - startTime) / 1000);
-            //         const hours = Math.floor(distance / 3600);
-            //         const minutes = Math.floor((distance % 3600) / 60);
-            //         const seconds = Math.floor(distance % 60);
-            //         const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    const now = new Date().getTime();
+                    const distance = Math.floor((now - startTime) / 1000);
+                    const hours = Math.floor(distance / 3600);
+                    const minutes = Math.floor((distance % 3600) / 60);
+                    const seconds = Math.floor(distance % 60);
+                    const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
-            //         if (timerElement) timerElement.textContent = formattedTime;
-            //         if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
-            //     }
+                    if (timerElement) timerElement.textContent = formattedTime;
+                    if (mobileTimerElement) mobileTimerElement.textContent = formattedTime;
+                }
 
-            //     updateTimer();
-            //     if (startTime) {
-            //         intervalId = setInterval(updateTimer, 1000);
-            //     }
+                updateTimer();
+                if (startTime) {
+                    intervalId = setInterval(updateTimer, 1000);
+                }
 
-            //     window.stopWorkoutTimer = function() {
-            //         clearInterval(intervalId);
-            //     };
-            // }
+                window.stopWorkoutTimer = function() {
+                    clearInterval(intervalId);
+                };
+            }
 
             function checkRenewalEligibility() {
                 // First check if user is timed out
