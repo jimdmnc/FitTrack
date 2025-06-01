@@ -748,7 +748,7 @@
         </div>
 
         <!-- Session Renewal Modal -->
-        @if(Auth::user()->role === 'user' && Str::startsWith($rfidUid, 'DAILY'))
+        @if(Auth::user()->role === 'user' || Str::startsWith($rfidUid, 'DAILY'))
         <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
                 <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
                     <div class="mb-6 text-center">
