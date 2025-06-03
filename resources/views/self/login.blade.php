@@ -8,11 +8,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <style>
-        body {
+          body {
             background-image: url('images/welcomebggg.jpg');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            position: relative;
+        }
+        
+        /* Dark overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* 50% opacity black overlay */
+            z-index: -1;
         }
         
         .glass-form {
