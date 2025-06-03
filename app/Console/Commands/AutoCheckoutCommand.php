@@ -43,7 +43,7 @@ class AutoCheckoutCommand extends Command
             // // Update user status
             // if ($attendance->user) {
             //     $attendance->user->update([
-            //         'session_status' => 'pending',
+            //         'session_status' => '',
             //         'member_status' => 'expired',
             //     ]);
             //     $count++;
