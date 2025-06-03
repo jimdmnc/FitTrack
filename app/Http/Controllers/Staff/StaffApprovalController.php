@@ -116,7 +116,33 @@ class StaffApprovalController extends Controller
 
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
-
+    // public function approveUser($id)
+    // {
+    //     $user = User::findOrFail($id);
+    //     $user->member_status = 'active';
+    //     $user->session_status = 'approved';
+    //     $user->needs_approval = false;
+    //     $user->save();
+    
+    //     $attendanceData = [
+    //         'rfid_uid' => $user->rfid_uid,
+    //         'status' => 'present',
+    //         'attendance_date' => now()->toDateString(),
+    //         'check_in_method' => 'manual',
+    //         'session_id' => null,
+    //         'created_at' => now(),
+    //         'updated_at' => now(),
+    //     ];
+    
+    //     // Add time_in only if the user has session_status of 'approved'
+    //     // (or adjust this condition based on your actual role check)
+    //     if ($user->role === 'userSession') {
+    //         $attendanceData['time_in'] = now();
+    //     }
+    //     DB::table('attendances')->insert($attendanceData);
+    
+    //     return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+    // }
     public function rejectUser(Request $request, $id)
     {
         Log::info('Reject User Request', [
