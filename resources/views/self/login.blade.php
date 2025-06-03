@@ -210,6 +210,12 @@
                         <div id="password_error" class="error-message">
                             Password must be at least 8 characters
                         </div>
+                            <!-- Password Hint -->
+                        <div class="text-sm text-gray-300 mt-2">
+                            <p class="font-medium">Password Hint:</p>
+                            <p>Your password follows this format: <span class="font-mono">lastnameMMDDYYYY</span></p>
+                            <p>Example: If your last name is Smith and birthdate is June 5, 1990 → <span class="font-mono">smith06051990</span></p>
+                        </div>
                     </div>
 
                     <!-- Submit Button -->
