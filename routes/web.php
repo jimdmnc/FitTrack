@@ -57,7 +57,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/attendance/user-timeout', [SelfRegistrationController::class, 'timeout'])->name('attendance.timeout')->middleware('auth');
 
     // Logout route
-    // Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
+    Route::post('/logout-custom', [SelfRegistrationController::class, 'logout'])->name('logout.custom');
 
     // Staff routes
     Route::prefix('staff')->group(function () {
