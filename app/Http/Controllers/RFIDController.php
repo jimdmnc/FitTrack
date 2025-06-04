@@ -37,19 +37,33 @@ class RFIDController extends Controller
                     return response()->json(['message' => 'Membership revoked! Attendance not recorded.'], 403);
                 }
     
+                // Check the most recent attendance record for this user
                 $attendance = DB::table('attendances')
+                    ->where('rfid_uid', $uid)
+                    ->orderBy('time_in', 'desc')
+                    ->first();
+    
+                // Check for 10-second waiting period
+                if ($attendance) {
+                    $last_action_time = $attendance->time_out ? Carbon::parse($attendance->time_out) : Carbon::parse($attendance->time_in);
+                    if ($current_time->diffInSeconds($last_action_time) < 10) {
+                        Log::warning("Double-tap detected for UID: {$uid}. Time since last action: {$current_time->diffInSeconds($last_action_time)} seconds");
+                        return response()->json(['message' => 'Please wait 10 seconds before scanning again.'], 429);
+                    }
+                }
+    
+                // Check for today's attendance to determine time-in or time-out
+                $today_attendance = DB::table('attendances')
                     ->where('rfid_uid', $uid)
                     ->whereDate('time_in', Carbon::today())
                     ->orderBy('time_in', 'desc')
                     ->first();
     
-                if ($attendance) {
-                    if (!$attendance->time_out) {
-                        DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
-                        DB::commit();
-                        Log::info("User {$full_name} (UID: {$uid}) Time-out recorded at {$current_time}");
-                        return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
-                    }
+                if ($today_attendance && !$today_attendance->time_out) {
+                    DB::table('attendances')->where('id', $today_attendance->id)->update(['time_out' => $current_time]);
+                    DB::commit();
+                    Log::info("User {$full_name} (UID: {$uid}) Time-out recorded at {$current_time}");
+                    return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
                 }
     
                 DB::table('attendances')->insert([
