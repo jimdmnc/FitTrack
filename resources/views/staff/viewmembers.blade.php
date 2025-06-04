@@ -406,7 +406,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
                                             onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason }}')"
-                                            class="inline-flex items-center px-3 py-1.5 bg-blue-900 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-blue-900 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-blue-900 shadow-sm group"
                                             aria-label="View reason for revocation"
                                             title="View reason for revocation"
                                         >
