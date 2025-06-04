@@ -320,7 +320,7 @@
                                     {{ $member->member_status == 'active' ? ' text-green-400' : 
                                     ($member->member_status == 'expired' ? ' text-red-400' : 
                                     ($member->member_status == 'revoked' ? ' text-gray-400' : '')) }}">
-                                    {{ $member->member_status }}
+                                    {{ strtoupper($member->member_status) }}
                                 </span>
                             </td>
                         
