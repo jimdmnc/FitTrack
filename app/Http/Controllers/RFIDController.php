@@ -73,7 +73,7 @@ class RFIDController extends Controller
                     DB::commit();
                     Log::info("New RFID UID saved: {$uid}");
                     $this->cleanupUnregisteredUIDs();
-                    return response()->json(['message' => 'RFID UID saved successfully. If not registered, it will be removed in 2 minutes.']);
+                    return response()->json(['message' => 'User not registered.']);
                 } else {
                     Log::info("UID {$uid} already exists in rfid_tags, registered: {$existingTag->registered}");
                     if ($existingTag->registered == 1) {
