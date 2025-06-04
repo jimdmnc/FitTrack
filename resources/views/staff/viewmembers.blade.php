@@ -415,7 +415,7 @@
                                             </svg>
                                             <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Reason</span>
                                         </button>
-                                        <!-- <button 
+                                        <button 
                                             onclick="openRestoreModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')" 
                                             class="inline-flex items-center px-3 py-1.5 bg-green-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-600 shadow-sm group"
                                             aria-label="Restore membership for {{ $member->first_name }} {{ $member->last_name }}"
@@ -425,7 +425,7 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                             </svg>
                                             <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Restore</span>
-                                        </button> -->
+                                        </button>
                                     </div>
                                 @endif
                             </td>
