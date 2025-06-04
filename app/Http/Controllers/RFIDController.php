@@ -15,44 +15,35 @@ class RFIDController extends Controller
     {
         $uid = $request->input('uid');
         $current_time = Carbon::now('Asia/Manila');
-        
+    
         Log::info("Processing RFID UID: {$uid} at {$current_time}");
-        
+    
         DB::beginTransaction();
-        
+    
         try {
             $user = DB::table('users')->where('rfid_uid', $uid)->first();
-        
+    
             if ($user) {
                 $full_name = $user->first_name . ' ' . $user->last_name;
                 Log::info("User found: {$full_name} (UID: {$uid})");
-        
+    
                 if ($user->member_status === 'expired') {
                     Log::warning("Membership expired for UID: {$uid}");
                     return response()->json(['message' => 'Membership expired! Attendance not recorded.'], 403);
                 }
-        
+    
                 if ($user->member_status === 'revoked') {
                     Log::warning("Membership revoked for UID: {$uid}");
                     return response()->json(['message' => 'Membership revoked! Attendance not recorded.'], 403);
                 }
-        
-                // Check the most recent attendance record for this user
+    
                 $attendance = DB::table('attendances')
                     ->where('rfid_uid', $uid)
                     ->whereDate('time_in', Carbon::today())
                     ->orderBy('time_in', 'desc')
                     ->first();
-        
-                // Check for double-tap within 10 seconds
+    
                 if ($attendance) {
-                    $last_action_time = $attendance->time_out ? Carbon::parse($attendance->time_out) : Carbon::parse($attendance->time_in);
-                    if ($current_time->diffInSeconds($last_action_time) < 10) {
-                        Log::warning("Double-tap detected for UID: {$uid}. Time since last action: {$current_time->diffInSeconds($last_action_time)} seconds");
-                        return response()->json(['message' => 'Please wait 10 seconds before scanning again.'], 429);
-                    }
-        
-                    // If no time_out, update with time-out
                     if (!$attendance->time_out) {
                         DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
                         DB::commit();
@@ -60,8 +51,7 @@ class RFIDController extends Controller
                         return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
                     }
                 }
-        
-                // Record new time-in
+    
                 DB::table('attendances')->insert([
                     'rfid_uid' => $uid,
                     'time_in' => $current_time,
@@ -73,7 +63,7 @@ class RFIDController extends Controller
             } else {
                 Log::info("No user found for UID: {$uid}, checking rfid_tags");
                 $existingTag = DB::table('rfid_tags')->where('uid', $uid)->first();
-        
+    
                 if (!$existingTag) {
                     DB::table('rfid_tags')->insert([
                         'uid' => $uid,
