@@ -24,7 +24,7 @@ class RFIDController extends Controller
             $user = DB::table('users')->where('rfid_uid', $uid)->first();
     
             if ($user) {
-                $full_name = $user->first_name . ' ' . $user->last_name;
+                $full_name = $user->first_name;
                 Log::info("User found: {$full_name} (UID: {$uid})");
     
                 if ($user->member_status === 'expired') {
