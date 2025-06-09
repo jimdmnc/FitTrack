@@ -36,18 +36,6 @@ class RFIDController extends Controller
                     Log::warning("Membership revoked for UID: {$uid}");
                     return response()->json(['message' => 'Membership revoked! Attendance not recorded.'], 403);
                 }
-
-                // Check for completed attendance (both time-in and time-out) for today
-                $completedAttendance = DB::table('attendances')
-                    ->where('rfid_uid', $uid)
-                    ->whereDate('time_in', Carbon::today())
-                    ->whereNotNull('time_out')
-                    ->first();
-
-                if ($completedAttendance) {
-                    Log::info("User {$full_name} (UID: {$uid}) already timed out today.");
-                    return response()->json(['message' => 'Already timed out today.', 'name' => $full_name], 400);
-                }
     
                 $attendance = DB::table('attendances')
                     ->where('rfid_uid', $uid)
