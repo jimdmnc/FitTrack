@@ -45,13 +45,20 @@ class RFIDController extends Controller
     
                 if ($attendance) {
                     if (!$attendance->time_out) {
+                        // Time-out case
                         DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
                         DB::commit();
                         Log::info("User {$full_name} (UID: {$uid}) Time-out recorded at {$current_time}");
                         return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name]);
+                    } else {
+                        // Already timed out today - prevent another time-in
+                        DB::commit();
+                        Log::info("User {$full_name} (UID: {$uid}) attempted to time-in after already timing out today");
+                        return response()->json(['message' => 'Time-out recorded successfully.', 'name' => $full_name], 400);
                     }
                 }
     
+                // Regular time-in case (no attendance record for today)
                 DB::table('attendances')->insert([
                     'rfid_uid' => $uid,
                     'time_in' => $current_time,
@@ -60,6 +67,7 @@ class RFIDController extends Controller
                 DB::commit();
                 Log::info("User {$full_name} (UID: {$uid}) Time-in recorded at {$current_time}");
                 return response()->json(['message' => 'Time-in recorded successfully.', 'name' => $full_name]);
+    
             } else {
                 Log::info("No user found for UID: {$uid}, checking rfid_tags");
                 $existingTag = DB::table('rfid_tags')->where('uid', $uid)->first();
