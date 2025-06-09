@@ -393,26 +393,35 @@ private function getMembershipTypeData()
 // table for top 10 active membbers==========================
 public function getTopActiveMembers()
 {
-    return User::where('member_status', 'active')
-        ->where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
-        })
-        ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
-        ->select(
-            'users.id', 
-            'users.rfid_uid', // Include RFID UID
-            'users.first_name', 
-            'users.last_name', 
-            'users.membership_type', // Include membership type
-            'users.member_status', // Include member status
-            \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
-        )
-        ->groupBy('users.id', 'users.rfid_uid', 'users.first_name', 'users.last_name', 'users.membership_type', 'users.member_status')
-        ->orderByDesc('check_ins_count')
-        ->limit(10)
-        ->get();
+    try {
+        return User::whereIn('role', ['user', 'userSession'])
+            ->leftJoin('attendances', 'users.rfid_uid', '=', 'attendances.rfid_uid')
+            ->select(
+                'users.id',
+                'users.rfid_uid',
+                'users.first_name',
+                'users.last_name',
+                'users.membership_type',
+                'users.member_status',
+                \DB::raw('COUNT(attendances.rfid_uid) as check_ins_count')
+            )
+            ->groupBy(
+                'users.id',
+                'users.rfid_uid',
+                'users.first_name',
+                'users.last_name',
+                'users.membership_type',
+                'users.member_status'
+            )
+            ->orderByDesc('check_ins_count')
+            ->take(10)
+            ->get();
+    } catch (\Exception $e) {
+        \Log::error('Error fetching top active members: ' . $e->getMessage());
+        return collect([]);
+    }
 }
+
 // table for top 10 active membbers==========================
 
 
