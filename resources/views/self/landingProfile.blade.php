@@ -233,23 +233,31 @@
 <body data-timed-out="{{ session('timed_out') ? 'true' : 'false' }}" class="bg-gray-100">
     <!-- Navigation Bar -->
     <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
-        <div class="container mx-auto">
-
-            <!-- Main Navigation Content -->
-            <div class="flex justify-between items-center">
-                <!-- Logo Image -->
-                <!-- <div class="flex items-center">
-                    <a href="{{ route('self.landing') }}" aria-label="FitTrack Homepage">
-                        <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
-                    </a>
-                </div> -->
-                @if(Auth::user()->role === 'userSession')
-                    <!-- Workout Timer (Desktop) -->
-                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                        </div>
+    <div class="container mx-auto">
+        <!-- Main Navigation Content -->
+        <div class="flex justify-between items-center">
+            @if(Auth::user()->role === 'userSession')
+                <!-- Workout Timer (Desktop) -->
+                @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                    <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-stopwatch mr-2 text-red-400"></i>
+                        <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
+                    </div>
+                @endif
+                <!-- Time In/Time Out Buttons (Desktop) -->
+                <div class="flex items-center space-x-2">
+                    @if(auth()->check() && auth()->user()->rfid_uid && !isset($attendance) && !session('timed_out'))
+                        <!-- Time In Button (Desktop) -->
+                        <button
+                            id="timein-button"
+                            onclick="startTimer(); document.getElementById('timein-form').submit()"
+                            class="hidden md:inline-flex bg-green-600 text-gray-200 hover:bg-green-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-in-alt mr-2"></i> Time In
+                        </button>
+                        <form id="timein-form" method="POST" action="{{ route('attendance.timein') }}" style="display: none;">
+                            @csrf
+                        </form>
                     @endif
                     @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
                         <!-- Time Out Button (Desktop) -->
