@@ -157,6 +157,12 @@ Route::middleware('auth')->group(function () {
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
 
+    Route::get('/manual-attendance', [App\Http\Controllers\YourController::class, 'showManualAttendance'])->name('self.manualAttendance');
+    Route::post('/manual-time-in', [App\Http\Controllers\RFIDController::class, 'manualTimeIn'])->name('self.manualTimeIn');
+    Route::post('/manual-time-out', [App\Http\Controllers\RFIDController::class, 'manualTimeOut'])->name('self.manualTimeOut');
+
+
+
 });
 
 
