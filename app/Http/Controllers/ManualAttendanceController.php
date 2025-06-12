@@ -30,7 +30,7 @@ class ManualAttendanceController extends Controller
                 ->orderBy('time_in', 'desc')
                 ->first();
 
-            return view('manual_attendance', [
+            return view('self.manualAttendance', [
                 'attendance' => $attendance,
             ]);
         } catch (\Exception $e) {
