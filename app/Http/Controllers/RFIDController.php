@@ -195,6 +195,37 @@ class RFIDController extends Controller
         }
     }
 
+    public function manualTimeOut(Request $request)
+    {
+        $user = Auth::user();
+        $current_time = Carbon::now('Asia/Manila');
+        $uid = $user->rfid_uid;
 
+        Log::info("Processing manual time-out for user: {$user->first_name} (UID: {$uid}) at {$current_time}");
+
+        DB::beginTransaction();
+
+        try {
+            $attendance = DB::table('attendances')
+                ->where('rfid_uid', $uid)
+                ->whereDate('time_in', Carbon::today())
+                ->orderBy('time_in', 'desc')
+                ->first();
+
+            if (!$attendance || $attendance->time_out) {
+                Log::info("No active session for user {$user->first_name} (UID: {$uid})");
+                return redirect()->back()->with('error', 'No active session to time out.');
+            }
+
+            DB::table('attendances')->where('id', $attendance->id)->update(['time_out' => $current_time]);
+            DB::commit();
+            Log::info("User {$user->first_name} (UID: {$uid}) Manual time-out recorded at {$current_time}");
+            return redirect()->back()->with('success', 'Time-out recorded successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error processing manual time-out for UID {$uid}: {$e->getMessage()}");
+            return redirect()->back()->with('error', 'An error occurred while recording time-out.');
+        }
+    }
 
 }
