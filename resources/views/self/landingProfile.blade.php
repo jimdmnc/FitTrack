@@ -396,47 +396,6 @@
         </div>
     </div>
 </nav>
-
-<!-- JavaScript for Timer Functionality -->
-<script>
-    let timerInterval;
-    let startTime;
-
-    function startTimer() {
-        startTime = new Date();
-        localStorage.setItem('startTime', startTime.toISOString());
-        updateTimer();
-        timerInterval = setInterval(updateTimer, 1000);
-    }
-
-    function stopTimer() {
-        clearInterval(timerInterval);
-        localStorage.removeItem('startTime');
-        document.getElementById('workout-duration').textContent = '00:00:00';
-        document.getElementById('mobile-workout-duration').textContent = '00:00:00';
-    }
-
-    function updateTimer() {
-        const now = new Date();
-        const elapsed = Math.floor((now - new Date(localStorage.getItem('startTime'))) / 1000);
-        const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
-        const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
-        const seconds = (elapsed % 60).toString().padStart(2, '0');
-        const timeString = `${hours}:${minutes}:${seconds}`;
-        document.getElementById('workout-duration').textContent = timeString;
-        document.getElementById('mobile-workout-duration').textContent = timeString;
-    }
-
-    // Resume timer if already started
-    window.onload = function() {
-        const savedStartTime = localStorage.getItem('startTime');
-        if (savedStartTime && document.getElementById('workout-duration')) {
-            startTime = new Date(savedStartTime);
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
-        }
-    };
-</script>
         
         <!-- Success Alert Modal -->
         @if(session('success'))
