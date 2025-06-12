@@ -62,7 +62,7 @@ class SelfRegistrationController extends Controller
                 }
 
                 // Determine session status and expiration
-                // $message = 'Login successful! Welcome back.';
+                $message = 'Login successful! Welcome back.';
                 $isExpired = $user->end_date && Carbon::parse($user->end_date)->isPast();
 
                 if ($isExpired) {
