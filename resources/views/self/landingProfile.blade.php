@@ -251,113 +251,184 @@
                             <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                         </div>
                     @endif
-                    <!-- Time Out Button (Desktop and Mobile) -->
                     @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                        <!-- Desktop Timeout Button -->
+                        <!-- Time Out Button (Desktop) -->
                         <button
                             id="timeout-button"
-                            onclick="document.getElementById('timeout-modal').showModal()"
+                            onclick="stopTimer(); document.getElementById('timeout-modal').showModal()"
                             class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
                         >
                             <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                         </button>
-
-                        <!-- Mobile Timeout Button -->
+                    @endif
+                    <!-- Mobile Time In/Time Out Buttons -->
+                    @if(auth()->check() && auth()->user()->rfid_uid && !isset($attendance) && !session('timed_out'))
                         <button
-                            onclick="document.getElementById('timeout-modal').showModal()"
+                            onclick="startTimer(); document.getElementById('timein-form').submit()"
+                            class="inline-flex md:hidden items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-in-alt"></i>
+                        </button>
+                        <form id="timein-form" method="POST" action="{{ route('attendance.timein') }}" style="display: none;">
+                            @csrf
+                        </form>
+                    @endif
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <button
+                            onclick="stopTimer(); document.getElementById('timeout-modal').showModal()"
                             class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
                         >
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     @endif
-                @endif
+                </div>
+            @endif
 
-                <!-- Desktop Navigation Links -->
-                <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
-                    <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
-                    <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
-                    <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
-                    <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
-                    
-                    <!-- Action Buttons -->
-                    <div class="flex items-center space-x-2">
+            <!-- Desktop Navigation Links -->
+            <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
+                <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
+                <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
+                <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
+                <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
+                
+                <!-- Action Buttons -->
+                <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
-
                         <button type="button" onclick="checkRenewalEligibility()"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
                             <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
-                        @endif
-
-                        <form method="POST" action="{{ route('logout.custom') }}">
-                            @csrf
-                            <button type="submit"
-                                class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-door-open mr-1"></i> Sign Out
-                            </button>
-                        </form>
-                    </div>
+                    @endif
+                    <form method="POST" action="{{ route('logout.custom') }}">
+                        @csrf
+                        <button type="submit"
+                            class="bg-gray-700 hover:bg-gray-800 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-door-open mr-1"></i> Sign Out
+                        </button>
+                    </form>
                 </div>
+            </div>
 
-                <!-- Mobile Menu Button -->
-                <div class="md:hidden flex items-center space-x-3">
-                    <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md min-h-[44px] min-w-[44px]" aria-label="Toggle mobile menu" aria-expanded="false">
-                        <i class="fas fa-bars text-xl"></i>
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center space-x-3">
+                <button id="mobile-menu-button" class="text-gray-200 p-1 focus:outline-none bg-gray-800 rounded-md min-h-[44px] min-w-[44px]" aria-label="Toggle mobile menu" aria-expanded="false">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
+            <div class="container mx-auto px-4 py-8 flex flex-col h-full">
+                <div class="flex justify-end mb-6">
+                    <button id="close-mobile-menu" class="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]" aria-label="Close mobile menu">
+                        <i class="fas fa-times text-2xl"></i>
                     </button>
                 </div>
-            </div>
-
-            <!-- Mobile Menu -->
-            <div id="mobile-menu" class="md:hidden hidden fixed inset-0 bg-black bg-opacity-95 z-50 flex flex-col">
-                <div class="container mx-auto px-4 py-8 flex flex-col h-full">
-                    <div class="flex justify-end mb-6">
-                        <button id="close-mobile-menu" class="text-gray-300 hover:text-white min-h-[44px] min-w-[44px]" aria-label="Close mobile menu">
-                            <i class="fas fa-times text-2xl"></i>
-                        </button>
-                    </div>
+                
+                <div class="flex flex-col space-y-6 text-center flex-grow">
+                    <a href="{{ route('self.landingProfile') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
+                    <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
+                    <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
+                    <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
                     
-                    <div class="flex flex-col space-y-6 text-center flex-grow">
-                        <a href="{{ route('self.landingProfile') }}#home" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Home</a>
-                        <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
-                        <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
-                        <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        
-                        @if(Auth::user()->role === 'userSession')
-                            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                                <div class="flex justify-center items-center py-4">
-                                    <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
-                                        <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
-                                        <span id="mobile-workout-duration" class="text-lg font-medium">
-                                            @if(isset($attendance))
-                                                {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
-                                            @else
-                                                00:00:00
-                                            @endif
-                                        </span>
-                                    </div>
+                    @if(Auth::user()->role === 'userSession')
+                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                            <div class="flex justify-center items-center py-4">
+                                <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
+                                    <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
+                                    <span id="mobile-workout-duration" class="text-lg font-medium">
+                                        @if(isset($attendance))
+                                            {{ gmdate('H:i:s', strtotime(now()) - strtotime($attendance->time_in)) }}
+                                        @else
+                                            00:00:00
+                                        @endif
+                                    </span>
                                 </div>
-                            @endif
+                            </div>
                         @endif
-                    </div>
-                    
-                    <div class="grid grid-cols-2 gap-4 mt-6">
-                        @if(Auth::user()->role === 'userSession')
-                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-sync-alt mr-2"></i> Renew
+                        @if(auth()->check() && auth()->user()->rfid_uid && !isset($attendance) && !session('timed_out'))
+                            <button
+                                onclick="startTimer(); document.getElementById('mobile-timein-form').submit()"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]"
+                            >
+                                <i class="fas fa-sign-in-alt mr-2"></i> Time In
+                            </button>
+                            <form id="mobile-timein-form" method="POST" action="{{ route('attendance.timein') }}" style="display: none;">
+                                @csrf
+                            </form>
+                        @endif
+                        @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                            <button
+                                onclick="stopTimer(); document.getElementById('timeout-modal').showModal()"
+                                class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]"
+                            >
+                                <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                             </button>
                         @endif
-                        <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
-                            @csrf
-                            <button type="submit"
-                                class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-door-open mr-2"></i> Sign Out
-                            </button>
-                        </form>
-                    </div>
+                    @endif
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    @if(Auth::user()->role === 'userSession')
+                        <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-sync-alt mr-2"></i> Renew
+                        </button>
+                    @endif
+                    <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
+                        @csrf
+                        <button type="submit"
+                            class="w-full bg-gray-700 hover:bg-gray-800 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-door-open mr-2"></i> Sign Out
+                        </button>
+                    </form>
                 </div>
             </div>
-    </nav>
+        </div>
+    </div>
+</nav>
+
+<!-- JavaScript for Timer Functionality -->
+<script>
+    let timerInterval;
+    let startTime;
+
+    function startTimer() {
+        startTime = new Date();
+        localStorage.setItem('startTime', startTime.toISOString());
+        updateTimer();
+        timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        localStorage.removeItem('startTime');
+        document.getElementById('workout-duration').textContent = '00:00:00';
+        document.getElementById('mobile-workout-duration').textContent = '00:00:00';
+    }
+
+    function updateTimer() {
+        const now = new Date();
+        const elapsed = Math.floor((now - new Date(localStorage.getItem('startTime'))) / 1000);
+        const hours = Math.floor(elapsed / 3600).toString().padStart(2, '0');
+        const minutes = Math.floor((elapsed % 3600) / 60).toString().padStart(2, '0');
+        const seconds = (elapsed % 60).toString().padStart(2, '0');
+        const timeString = `${hours}:${minutes}:${seconds}`;
+        document.getElementById('workout-duration').textContent = timeString;
+        document.getElementById('mobile-workout-duration').textContent = timeString;
+    }
+
+    // Resume timer if already started
+    window.onload = function() {
+        const savedStartTime = localStorage.getItem('startTime');
+        if (savedStartTime && document.getElementById('workout-duration')) {
+            startTime = new Date(savedStartTime);
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+    };
+</script>
         
         <!-- Success Alert Modal -->
         @if(session('success'))
