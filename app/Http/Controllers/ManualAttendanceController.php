@@ -26,7 +26,7 @@ class ManualAttendanceController extends Controller
     public function index()
     {
         // Fetch the latest attendance record for the authenticated user that hasn't been timed out
-        $attendance = Attendance::where('user_id', Auth::id())
+        $attendance = Attendance::where('rfid_uid', Auth::id())
             ->whereNull('time_out')
             ->latest()
             ->first();
