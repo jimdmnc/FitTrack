@@ -300,7 +300,7 @@
                     <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
                     <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
-                    <a href="{{ route('self.manualAttendance') }}" 
+                    <a href="#" 
                         class="nav-link font-medium hover:text-yellow-400 transition duration-300 text-sm lg:text-base">
                         Forgot RFID?
                     </a>
@@ -347,7 +347,7 @@
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        <a href="{{ route('self.manualAttendance') }}" 
+                        <a href="#" 
                             class="py-3 text-xl font-medium hover:text-yellow-400 transition duration-300">
                             Forgot RFID?
                         </a>
