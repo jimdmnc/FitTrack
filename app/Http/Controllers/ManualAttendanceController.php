@@ -10,10 +10,6 @@ use Carbon\Carbon;
 
 class ManualAttendanceController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth'); // Ensure user is authenticated
-    }
 
     public function showManualAttendance(Request $request)
     {
