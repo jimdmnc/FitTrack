@@ -29,8 +29,12 @@ class RFIDController extends Controller
     
                 if ($user->member_status === 'expired') {
                     Log::warning("Membership expired for UID: {$uid}");
-                    return response()->json(['message' => 'Membership expired! Attendance not recorded.'], 403);
+                    return response()->json([
+                        'message' => 'Membership expired! Attendance not recorded.',
+                        'name' => $full_name
+                    ], 403);
                 }
+                
     
                 if ($user->member_status === 'revoked') {
                     Log::warning("Membership revoked for UID: {$uid}");
