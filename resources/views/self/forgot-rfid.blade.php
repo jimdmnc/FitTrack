@@ -116,21 +116,21 @@
                     @csrf
                     <div class="mb-6">
                         <label for="identifier" class="block text-sm font-medium text-gray-300 mb-2">Email or Phone Number</label>
-                        <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" required>
+                        <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" value="{{ auth()->user()->email ?? auth()->user()->phone_number ?? '' }}" required>
                         @error('identifier')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                     <div class="flex space-x-4">
-                        <button type="submit" name="action" value="time_in" class="w-1/2 py-3 btn-primary text-white font-medium rounded-lg flex items-center justify-center transition duration-300">
+                        <button type="submit" name="action" value="time_in" class="w-1/2 py-3 btn-primary text-white font-medium rounded-lg flex items-center justify-center transition duration-300" data-action="time_in">
                             <i class="fas fa-sign-in-alt mr-2"></i> Time In
                         </button>
-                        <button type="submit" name="action" value="time_out" class="w-1/2 py-3 btn-secondary text-white font-medium rounded-lg flex items-center justify-center transition duration-300">
+                        <button type="submit" name="action" value="time_out" class="w-1/2 py-3 btn-secondary text-white font-medium rounded-lg flex items-center justify-center transition duration-300" data-action="time_out">
                             <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                         </button>
                     </div>
                 </form>
-                <div id="form-errors" class="text-red-500 text-sm mt-4 hidden"></div>
+                <div id="form-errors" class="text-red-500 text-sm mt-4"></div>
             </div>
         </div>
     </section>
@@ -218,16 +218,27 @@
 
         function initFormSubmission() {
             const form = document.getElementById('forgot-rfid-form');
-            if (!form) return;
+            if (!form) {
+                console.error('Form with ID "forgot-rfid-form" not found');
+                return;
+            }
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const formData = new FormData(form);
-                const submitButton = form.querySelector(`button[name="action"][value="${formData.get('action')}"]`);
-                const errorDiv = document.getElementById('form-errors');
+                const action = formData.get('action');
+                const submitButton = form.querySelector(`button[data-action="${action}"]`);
+
+                if (!submitButton) {
+                    console.error(`Submit button for action "${action}" not found`);
+                    return;
+                }
+
+                console.log('Form submitted with data:', Object.fromEntries(formData));
 
                 submitButton.disabled = true;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
+                const errorDiv = document.getElementById('form-errors');
 
                 try {
                     const response = await fetch(form.action, {
@@ -239,14 +250,20 @@
                         }
                     });
 
+                    console.log('Response status:', response.status);
                     const data = await response.json();
+                    console.log('Response data:', data);
 
                     if (!response.ok) {
-                        throw new Error(data.message || 'Operation failed');
+                        throw new Error(data.message || `HTTP error! Status: ${response.status}`);
                     }
 
                     if (data.success) {
-                        showNotification('Success', data.message, 'success');
+                        let message = data.message;
+                        if (data.is_birthday) {
+                            message = `Happy Birthday, ${data.name}! ${message}`;
+                        }
+                        showNotification('Success', message, 'success');
                         setTimeout(() => {
                             window.location.href = '{{ route('self.landingProfile') }}';
                         }, 2000);
@@ -254,12 +271,13 @@
                         throw new Error(data.message || 'Operation failed');
                     }
                 } catch (error) {
+                    console.error('Form submission error:', error.message);
                     errorDiv.classList.remove('hidden');
                     errorDiv.textContent = error.message || 'An error occurred. Please try again.';
                     showNotification('Error', error.message || 'Operation failed', 'error');
                 } finally {
                     submitButton.disabled = false;
-                    submitButton.innerHTML = submitButton.value === 'time_in' 
+                    submitButton.innerHTML = submitButton.getAttribute('data-action') === 'time_in' 
                         ? '<i class="fas fa-sign-in-alt mr-2"></i> Time In' 
                         : '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
                 }
