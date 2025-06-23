@@ -38,19 +38,13 @@ class SelfController extends Controller
 
             if (!$user) {
                 Log::warning("No user found for identifier: {$identifier}");
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not found. Please check your email or phone number.',
-                ], 404);
+                return redirect()->back()->with('error', 'User not found. Please check your email or phone number.');
             }
 
             // Verify the request is from the authenticated user
             if ($user->id !== Auth::id()) {
                 Log::warning("Unauthorized attempt by user ID: " . Auth::id() . " for identifier: {$identifier}");
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unauthorized action.',
-                ], 403);
+                return redirect()->back()->with('error', 'Unauthorized action.');
             }
 
             $full_name = $user->first_name;
@@ -64,22 +58,12 @@ class SelfController extends Controller
             // Check membership status
             if ($user->member_status === 'expired') {
                 Log::warning("Membership expired for user ID: {$user->id}");
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Membership expired! Attendance not recorded.',
-                    'name' => $full_name,
-                    'is_birthday' => $is_birthday,
-                ], 403);
+                return redirect()->back()->with('error', 'Membership expired! Attendance not recorded.');
             }
 
             if ($user->member_status === 'revoked') {
                 Log::warning("Membership revoked for user ID: {$user->id}");
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Membership revoked! Attendance not recorded.',
-                    'name' => $full_name,
-                    'is_birthday' => $is_birthday,
-                ], 403);
+                return redirect()->back()->with('error', 'Membership revoked! Attendance not recorded.');
             }
 
             DB::beginTransaction();
@@ -96,12 +80,7 @@ class SelfController extends Controller
                 $time_diff = $current_time->diffInSeconds(Carbon::parse($last_action_time));
                 if ($time_diff < 10) {
                     Log::warning("Double-tap attempt by user ID: {$user->id} within {$time_diff} seconds");
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Please wait " . (10 - $time_diff) . " seconds before recording again.",
-                        'name' => $full_name,
-                        'is_birthday' => $is_birthday,
-                    ], 429);
+                    return redirect()->back()->with('error', "Please wait " . (10 - $time_diff) . " seconds before recording again.");
                 }
             }
 
@@ -110,22 +89,12 @@ class SelfController extends Controller
             if ($action === 'time_in') {
                 if ($attendance && !$attendance->time_out) {
                     Log::info("User {$full_name} (ID: {$user->id}) already timed in today");
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'You are already timed in.',
-                        'name' => $full_name,
-                        'is_birthday' => $is_birthday,
-                    ], 400);
+                    return redirect()->back()->with('error', 'You are already timed in.');
                 }
 
                 if ($attendance && $attendance->time_out) {
                     Log::info("User {$full_name} (ID: {$user->id}) already timed out today");
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'You have already timed out today.',
-                        'name' => $full_name,
-                        'is_birthday' => $is_birthday,
-                    ], 400);
+                    return redirect()->back()->with('error', 'You have already timed out today.');
                 }
 
                 // Record time-in
@@ -139,21 +108,16 @@ class SelfController extends Controller
 
                 DB::commit();
                 Log::info("User {$full_name} (ID: {$user->id}) Time-in recorded at {$current_time}");
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Time-in recorded successfully.',
-                    'name' => $full_name,
-                    'is_birthday' => $is_birthday,
-                ]);
+
+                $message = 'Time-in recorded successfully.';
+                if ($is_birthday) {
+                    $message = "Happy Birthday, {$full_name}! {$message}";
+                }
+                return redirect()->route('self.landingProfile')->with('success', $message);
             } else { // time_out
                 if (!$attendance || $attendance->time_out) {
                     Log::info("User {$full_name} (ID: {$user->id}) has no active time-in record");
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'No active time-in record found.',
-                        'name' => $full_name,
-                        'is_birthday' => $is_birthday,
-                    ], 400);
+                    return redirect()->back()->with('error', 'No active time-in record found.');
                 }
 
                 // Record time-out
@@ -166,27 +130,20 @@ class SelfController extends Controller
 
                 DB::commit();
                 Log::info("User {$full_name} (ID: {$user->id}) Time-out recorded at {$current_time}");
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Time-out recorded successfully.',
-                    'name' => $full_name,
-                    'is_birthday' => $is_birthday,
-                ]);
+
+                $message = 'Time-out recorded successfully.';
+                if ($is_birthday) {
+                    $message = "Happy Birthday, {$full_name}! {$message}";
+                }
+                return redirect()->route('self.landingProfile')->with('success', $message);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::error("Validation error for manual attendance: " . json_encode($e->errors()));
-            return response()->json([
-                'success' => false,
-                'message' => $e->errors()['identifier'][0] ?? 'Invalid input.',
-            ], 422);
+            return redirect()->back()->with('error', $e->errors()['identifier'][0] ?? 'Invalid input.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error processing manual attendance for identifier {$identifier}: {$e->getMessage()}");
-            return response()->json([
-                'success' => false,
-                'message' => 'An error occurred. Please try again.',
-                'is_birthday' => false,
-            ], 500);
+            return redirect()->back()->with('error', 'An error occurred. Please try again.');
         }
     }
 

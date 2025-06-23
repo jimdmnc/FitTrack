@@ -6,7 +6,7 @@
     <title>Forgot RFID - FitTrack</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css'])
     <link rel="icon" type="image/png" sizes="180x180" href="{{ asset('images/rockiesLogo.png') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
@@ -112,7 +112,21 @@
                 Verify your identity to manually record your time-in or time-out.
             </p>
             <div class="form-container max-w-md mx-auto p-6 rounded-lg shadow-xl fade-in">
-                <form id="forgot-rfid-form" action="{{ route('self.manualAttendance') }}" method="POST">
+                <!-- Display Flash Messages -->
+                @if (session('success'))
+                    <div class="bg-green-500 text-white p-4 rounded-lg mb-4 flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="bg-red-500 text-white p-4 rounded-lg mb-4 flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                <form action="{{ route('self.manualAttendance') }}" method="POST">
                     @csrf
                     <div class="mb-6">
                         <label for="identifier" class="block text-sm font-medium text-gray-300 mb-2">Email or Phone Number</label>
@@ -122,15 +136,14 @@
                         @enderror
                     </div>
                     <div class="flex space-x-4">
-                        <button type="submit" name="action" value="time_in" class="w-1/2 py-3 btn-primary text-white font-medium rounded-lg flex items-center justify-center transition duration-300" data-action="time_in">
+                        <button type="submit" name="action" value="time_in" class="w-1/2 py-3 btn-primary text-white font-medium rounded-lg flex items-center justify-center transition duration-300">
                             <i class="fas fa-sign-in-alt mr-2"></i> Time In
                         </button>
-                        <button type="submit" name="action" value="time_out" class="w-1/2 py-3 btn-secondary text-white font-medium rounded-lg flex items-center justify-center transition duration-300" data-action="time_out">
+                        <button type="submit" name="action" value="time_out" class="w-1/2 py-3 btn-secondary text-white font-medium rounded-lg flex items-center justify-center transition duration-300">
                             <i class="fas fa-sign-out-alt mr-2"></i> Time Out
                         </button>
                     </div>
                 </form>
-                <div id="form-errors" class="text-red-500 text-sm mt-4"></div>
             </div>
         </div>
     </section>
@@ -177,7 +190,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             initNavigation();
-            initFormSubmission();
         });
 
         function initNavigation() {
@@ -216,112 +228,9 @@
             }
         }
 
-        function initFormSubmission() {
-            const form = document.getElementById('forgot-rfid-form');
-            if (!form) {
-                console.error('Form with ID "forgot-rfid-form" not found');
-                return;
-            }
-
-            form.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const action = formData.get('action');
-                const submitButton = form.querySelector(`button[data-action="${action}"]`);
-
-                if (!submitButton) {
-                    console.error(`Submit button for action "${action}" not found`);
-                    return;
-                }
-
-                console.log('Form submitted with data:', Object.fromEntries(formData));
-
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
-                const errorDiv = document.getElementById('form-errors');
-
-                try {
-                    const response = await fetch(form.action, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-
-                    console.log('Response status:', response.status);
-                    const data = await response.json();
-                    console.log('Response data:', data);
-
-                    if (!response.ok) {
-                        throw new Error(data.message || `HTTP error! Status: ${response.status}`);
-                    }
-
-                    if (data.success) {
-                        let message = data.message;
-                        if (data.is_birthday) {
-                            message = `Happy Birthday, ${data.name}! ${message}`;
-                        }
-                        showNotification('Success', message, 'success');
-                        setTimeout(() => {
-                            window.location.href = '{{ route('self.landingProfile') }}';
-                        }, 2000);
-                    } else {
-                        throw new Error(data.message || 'Operation failed');
-                    }
-                } catch (error) {
-                    console.error('Form submission error:', error.message);
-                    errorDiv.classList.remove('hidden');
-                    errorDiv.textContent = error.message || 'An error occurred. Please try again.';
-                    showNotification('Error', error.message || 'Operation failed', 'error');
-                } finally {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = submitButton.getAttribute('data-action') === 'time_in' 
-                        ? '<i class="fas fa-sign-in-alt mr-2"></i> Time In' 
-                        : '<i class="fas fa-sign-out-alt mr-2"></i> Time Out';
-                }
-            });
-        }
-
-        function showNotification(title, message, type = 'info') {
-            let notification = document.getElementById('notification');
-            if (!notification) {
-                notification = document.createElement('div');
-                notification.id = 'notification';
-                notification.className = 'fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transform transition-all duration-300 translate-x-full';
-                document.body.appendChild(notification);
-            }
-
-            const bgColor = type === 'success' ? 'bg-green-500' : 
-                           type === 'error' ? 'bg-red-500' : 'bg-blue-500';
-
-            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${bgColor} text-white transform transition-all duration-300`;
-
-            notification.innerHTML = `
-                <div class="flex items-center">
-                    <div class="mr-3">
-                        ${type === 'success' ? '<i class="fas fa-check-circle"></i>' : 
-                        type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : 
-                        '<i class="fas fa-info-circle"></i>'}
-                    </div>
-                    <div>
-                        <h4 class="font-bold">${title}</h4>
-                        <p>${message}</p>
-                    </div>
-                    <button onclick="this.parentElement.parentElement.classList.add('translate-x-full')" class="ml-4">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            `;
-
-            setTimeout(() => {
-                notification.classList.remove('translate-x-full');
-            }, 100);
-
-            setTimeout(() => {
-                notification.classList.add('translate-x-full');
-            }, 5000);
+        function showProfile() {
+            // Implement profile display logic if needed
+            console.log('Show profile clicked');
         }
     </script>
 </body>
