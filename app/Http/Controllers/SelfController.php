@@ -27,9 +27,8 @@ class SelfController extends Controller
         $today = $current_time->format('m-d');
         $identifier = $request->input('identifier');
         $action = $request->input('action');
-        $debug_action = $request->input('debug_action', 'unknown');
     
-        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action}, debug_action: {$debug_action} at {$current_time}");
+        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action} at {$current_time}");
     
         try {
             // Find user by email or phone number
@@ -75,17 +74,6 @@ class SelfController extends Controller
                 ->whereDate('time_in', Carbon::today())
                 ->orderBy('time_in', 'desc')
                 ->first();
-    
-            // Check for double-tap prevention (10-second rule)
-            if ($todays_attendance) {
-                $last_action_time = $todays_attendance->time_out ?? $todays_attendance->time_in;
-                $time_diff = $current_time->diffInSeconds(Carbon::parse($last_action_time));
-                if ($time_diff < 10) {
-                    Log::warning("Double-tap attempt by user ID: {$user->id} within {$time_diff} seconds");
-                    DB::rollBack();
-                    return redirect()->back()->with('error', "Please wait " . (10 - $time_diff) . " seconds before recording again.");
-                }
-            }
     
             if ($action === 'time_in') {
                 if ($todays_attendance && !$todays_attendance->time_out) {
