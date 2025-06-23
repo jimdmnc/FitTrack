@@ -24,77 +24,141 @@ class SelfController extends Controller
         ]);
     
         $current_time = Carbon::now('Asia/Manila');
+        $today = $current_time->format('m-d');
         $identifier = $request->input('identifier');
         $action = $request->input('action');
+        $debug_action = $request->input('debug_action', 'unknown');
+    
+        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action}, debug_action: {$debug_action} at {$current_time}");
     
         try {
-            DB::beginTransaction();
-    
-            // Find user
+            // Find user by email or phone number
             $user = User::where('email', $identifier)
-                      ->orWhere('phone_number', $identifier)
-                      ->firstOrFail();
+                        ->orWhere('phone_number', $identifier)
+                        ->first();
     
-            // Verify authentication
-            if ($user->id !== Auth::id()) {
-                throw new \Exception('Unauthorized action');
+            if (!$user) {
+                Log::warning("No user found for identifier: {$identifier}");
+                return redirect()->back()->with('error', 'User not found. Please check your email or phone number.');
             }
+    
+            // Verify the request is from the authenticated user
+            if ($user->id !== Auth::id()) {
+                Log::warning("Unauthorized attempt by user ID: " . Auth::id() . " for identifier: {$identifier}");
+                return redirect()->back()->with('error', 'Unauthorized action.');
+            }
+    
+            $full_name = $user->first_name;
+            $rfid_uid = $user->rfid_uid;
+            Log::info("User found: {$full_name} (ID: {$user->id}, RFID UID: {$rfid_uid})");
+    
+            // Check if today is the user's birthday
+            $birthdate = $user->birthdate ? Carbon::parse($user->birthdate) : null;
+            $is_birthday = $birthdate && $birthdate->format('m-d') === $today;
     
             // Check membership status
             if ($user->member_status === 'expired') {
-                throw new \Exception('Membership expired! Attendance not recorded.');
-            }
-            if ($user->member_status === 'revoked') {
-                throw new \Exception('Membership revoked! Attendance not recorded.');
+                Log::warning("Membership expired for user ID: {$user->id}");
+                return redirect()->back()->with('error', 'Membership expired! Attendance not recorded.');
             }
     
+            if ($user->member_status === 'revoked') {
+                Log::warning("Membership revoked for user ID: {$user->id}");
+                return redirect()->back()->with('error', 'Membership revoked! Attendance not recorded.');
+            }
+    
+            DB::beginTransaction();
+    
+            // Get today's attendance records
             $todays_attendance = DB::table('attendances')
-                ->where('rfid_uid', $user->rfid_uid)
-                ->whereDate('time_in', $current_time->toDateString())
-                ->latest('time_in')
+                ->where('rfid_uid', $rfid_uid)
+                ->whereDate('time_in', Carbon::today())
+                ->orderBy('time_in', 'desc')
                 ->first();
+    
+            // Check for double-tap prevention (10-second rule)
+            if ($todays_attendance) {
+                $last_action_time = $todays_attendance->time_out ?? $todays_attendance->time_in;
+                $time_diff = $current_time->diffInSeconds(Carbon::parse($last_action_time));
+                if ($time_diff < 10) {
+                    Log::warning("Double-tap attempt by user ID: {$user->id} within {$time_diff} seconds");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', "Please wait " . (10 - $time_diff) . " seconds before recording again.");
+                }
+            }
     
             if ($action === 'time_in') {
                 if ($todays_attendance && !$todays_attendance->time_out) {
-                    throw new \Exception('You are already timed in.');
+                    Log::info("User {$full_name} (ID: {$user->id}) already timed in today");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'You are already timed in.');
                 }
     
+                if ($todays_attendance && $todays_attendance->time_out) {
+                    Log::info("User {$full_name} (ID: {$user->id}) already timed out today");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'You have already timed out today.');
+                }
+    
+                // Record time-in
                 DB::table('attendances')->insert([
-                    'rfid_uid' => $user->rfid_uid,
+                    'rfid_uid' => $rfid_uid,
                     'time_in' => $current_time,
                     'attendance_date' => $current_time->toDateString(),
                     'check_in_method' => 'manual',
-                    'session_id' => $user->session_id,
+                    'session_id' => $user->session_id ?? null,
                 ]);
     
+                DB::commit();
+                Log::info("User {$full_name} (ID: {$user->id}) Time-in recorded at {$current_time}");
+    
                 $message = 'Time-in recorded successfully.';
+                if ($is_birthday) {
+                    $message = "Happy Birthday, {$full_name}! {$message}";
+                }
+                return redirect()->route('self.landingProfile')->with('success', $message);
             } else { // time_out
                 if (!$todays_attendance) {
-                    throw new \Exception('No time-in record found for today.');
-                }
-                if ($todays_attendance->time_out) {
-                    throw new \Exception('You have already timed out today.');
+                    Log::info("User {$full_name} (ID: {$user->id}) has no time-in record today");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'No time-in record found for today. Please time in first.');
                 }
     
-                DB::table('attendances')
+                if ($todays_attendance->time_out) {
+                    Log::info("User {$full_name} (ID: {$user->id}) already timed out today");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'You have already timed out today.');
+                }
+    
+                // Record time-out
+                $updated = DB::table('attendances')
                     ->where('id', $todays_attendance->id)
                     ->update([
                         'time_out' => $current_time,
-                        
                     ]);
     
+                if ($updated === 0) {
+                    Log::warning("Failed to update time-out for attendance ID: {$todays_attendance->id}");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'Failed to record time-out. Please try again.');
+                }
+    
+                DB::commit();
+                Log::info("User {$full_name} (ID: {$user->id}) Time-out recorded at {$current_time}");
+    
                 $message = 'Time-out recorded successfully.';
+                if ($is_birthday) {
+                    $message = "Happy Birthday, {$full_name}! {$message}";
+                }
+                return redirect()->route('self.landingProfile')->with('success', $message);
             }
-    
-            DB::commit();
-            return redirect()->route('self.landingProfile')->with('success', $message);
-    
         } catch (\Illuminate\Validation\ValidationException $e) {
-            return redirect()->back()->withErrors($e->errors());
+            Log::error("Validation error for manual attendance: " . json_encode($e->errors()));
+            return redirect()->back()->with('error', $e->errors()['identifier'][0] ?? 'Invalid input.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Attendance Error: " . $e->getMessage());
-            return redirect()->back()->with('error', $e->getMessage());
+            Log::error("Error processing manual attendance for identifier {$identifier}: {$e->getMessage()}");
+            return redirect()->back()->with('error', 'An error occurred. Please try again.');
         }
     }
 
