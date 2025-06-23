@@ -116,7 +116,7 @@
                     @csrf
                     <div class="mb-6">
                         <label for="identifier" class="block text-sm font-medium text-gray-300 mb-2">Email or Phone Number</label>
-                        <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" value="{{ auth()->user()->email ?? auth()->user()->phone_number ?? '' }}" required>
+                        <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" required>
                         @error('identifier')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
@@ -130,7 +130,7 @@
                         </button>
                     </div>
                 </form>
-                <div id="form-errors" class="text-red-500 text-sm mt-4"></div>
+                <div id="form-errors" class="text-red-500 text-sm mt-4 hidden"></div>
             </div>
         </div>
     </section>
@@ -218,18 +218,13 @@
 
         function initFormSubmission() {
             const form = document.getElementById('forgot-rfid-form');
-            if (!form) {
-                console.error('Form with ID "forgot-rfid-form" not found');
-                return;
-            }
+            if (!form) return;
 
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 const formData = new FormData(form);
                 const submitButton = form.querySelector(`button[name="action"][value="${formData.get('action')}"]`);
                 const errorDiv = document.getElementById('form-errors');
-
-                console.log('Form submitted with data:', Object.fromEntries(formData));
 
                 submitButton.disabled = true;
                 submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
@@ -244,21 +239,14 @@
                         }
                     });
 
-                    console.log('Response status:', response.status);
-
                     const data = await response.json();
-                    console.log('Response data:', data);
 
                     if (!response.ok) {
-                        throw new Error(data.message || `HTTP error! Status: ${response.status}`);
+                        throw new Error(data.message || 'Operation failed');
                     }
 
                     if (data.success) {
-                        let message = data.message;
-                        if (data.is_birthday) {
-                            message = `Happy Birthday, ${data.name}! ${message}`;
-                        }
-                        showNotification('Success', message, 'success');
+                        showNotification('Success', data.message, 'success');
                         setTimeout(() => {
                             window.location.href = '{{ route('self.landingProfile') }}';
                         }, 2000);
@@ -266,7 +254,6 @@
                         throw new Error(data.message || 'Operation failed');
                     }
                 } catch (error) {
-                    console.error('Form submission error:', error.message);
                     errorDiv.classList.remove('hidden');
                     errorDiv.textContent = error.message || 'An error occurred. Please try again.';
                     showNotification('Error', error.message || 'Operation failed', 'error');

@@ -54,8 +54,7 @@ class SelfController extends Controller
             }
 
             $full_name = $user->first_name;
-            $rfid_uid = $user->rfid_uid;
-            Log::info("User found: {$full_name} (ID: {$user->id}, RFID UID: {$rfid_uid})");
+            Log::info("User found: {$full_name} (ID: {$user->id})");
 
             // Check if today is the user's birthday
             $birthdate = $user->birthdate ? Carbon::parse($user->birthdate) : null;
@@ -84,28 +83,11 @@ class SelfController extends Controller
 
             DB::beginTransaction();
 
-            // Check for double-tap prevention (10-second rule)
-            $latest_attendance = DB::table('attendances')
-                ->where('rfid_uid', $rfid_uid)
+            $attendance = DB::table('attendances')
+                ->where('rfid_uid', $user->rfid_uid)
                 ->whereDate('time_in', Carbon::today())
                 ->orderBy('time_in', 'desc')
                 ->first();
-
-            if ($latest_attendance) {
-                $last_action_time = $latest_attendance->time_out ?? $latest_attendance->time_in;
-                $time_diff = $current_time->diffInSeconds(Carbon::parse($last_action_time));
-                if ($time_diff < 10) {
-                    Log::warning("Double-tap attempt by user ID: {$user->id} within {$time_diff} seconds");
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Please wait " . (10 - $time_diff) . " seconds before recording again.",
-                        'name' => $full_name,
-                        'is_birthday' => $is_birthday,
-                    ], 429);
-                }
-            }
-
-            $attendance = $latest_attendance;
 
             if ($action === 'time_in') {
                 if ($attendance && !$attendance->time_out) {
@@ -130,7 +112,7 @@ class SelfController extends Controller
 
                 // Record time-in
                 DB::table('attendances')->insert([
-                    'rfid_uid' => $rfid_uid,
+                    'rfid_uid' => $user->rfid_uid,
                     'time_in' => $current_time,
                     'attendance_date' => $current_time->toDateString(),
                     'check_in_method' => 'manual',
