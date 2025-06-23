@@ -125,7 +125,7 @@ class SelfController extends Controller
                 $updated = DB::table('attendances')
                     ->where('id', $attendance->id)
                     ->whereNull('time_out')
-                    ->insert([
+                    ->update([
                         'time_out' => $current_time,
                         'check_in_method' => 'manual',
                     ]);
