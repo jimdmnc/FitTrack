@@ -27,8 +27,9 @@ class SelfController extends Controller
         $today = $current_time->format('m-d'); // For birthday check
         $identifier = $request->input('identifier');
         $action = $request->input('action');
+        $debug_action = $request->input('debug_action', 'unknown');
 
-        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action} at {$current_time}");
+        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action}, debug_action: {$debug_action} at {$current_time}");
 
         try {
             // Find user by email or phone number
@@ -117,16 +118,23 @@ class SelfController extends Controller
             } else { // time_out
                 if (!$attendance || $attendance->time_out) {
                     Log::info("User {$full_name} (ID: {$user->id}) has no active time-in record");
-                    return redirect()->back()->with('error', 'No active time-in record found.');
+                    return redirect()->back()->with('error', 'No active time-in record found. Please time in first.');
                 }
 
                 // Record time-out
-                DB::table('attendances')
+                $updated = DB::table('attendances')
                     ->where('id', $attendance->id)
+                    ->whereNull('time_out')
                     ->update([
                         'time_out' => $current_time,
                         'check_in_method' => 'manual',
                     ]);
+
+                if ($updated === 0) {
+                    Log::warning("Failed to update time-out for attendance ID: {$attendance->id}");
+                    DB::rollBack();
+                    return redirect()->back()->with('error', 'Failed to record time-out. Please try again.');
+                }
 
                 DB::commit();
                 Log::info("User {$full_name} (ID: {$user->id}) Time-out recorded at {$current_time}");
