@@ -24,6 +24,7 @@ class SelfController extends Controller
         ]);
 
         $current_time = Carbon::now('Asia/Manila');
+        $today = $current_time->format('m-d'); // For birthday check
         $identifier = $request->input('identifier');
         $action = $request->input('action');
 
@@ -55,12 +56,18 @@ class SelfController extends Controller
             $full_name = $user->first_name;
             Log::info("User found: {$full_name} (ID: {$user->id})");
 
+            // Check if today is the user's birthday
+            $birthdate = $user->birthdate ? Carbon::parse($user->birthdate) : null;
+            $is_birthday = $birthdate && $birthdate->format('m-d') === $today;
+
             // Check membership status
             if ($user->member_status === 'expired') {
                 Log::warning("Membership expired for user ID: {$user->id}");
                 return response()->json([
                     'success' => false,
                     'message' => 'Membership expired! Attendance not recorded.',
+                    'name' => $full_name,
+                    'is_birthday' => $is_birthday,
                 ], 403);
             }
 
@@ -69,6 +76,8 @@ class SelfController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Membership revoked! Attendance not recorded.',
+                    'name' => $full_name,
+                    'is_birthday' => $is_birthday,
                 ], 403);
             }
 
@@ -86,6 +95,8 @@ class SelfController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'You are already timed in.',
+                        'name' => $full_name,
+                        'is_birthday' => $is_birthday,
                     ], 400);
                 }
 
@@ -94,6 +105,8 @@ class SelfController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'You have already timed out today.',
+                        'name' => $full_name,
+                        'is_birthday' => $is_birthday,
                     ], 400);
                 }
 
@@ -102,7 +115,8 @@ class SelfController extends Controller
                     'rfid_uid' => $user->rfid_uid,
                     'time_in' => $current_time,
                     'attendance_date' => $current_time->toDateString(),
-                    // 'manual_entry' => true, // Flag for manual entry
+                    'check_in_method' => 'manual',
+                    'session_id' => $user->session_id ?? null,
                 ]);
 
                 DB::commit();
@@ -110,6 +124,8 @@ class SelfController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Time-in recorded successfully.',
+                    'name' => $full_name,
+                    'is_birthday' => $is_birthday,
                 ]);
             } else { // time_out
                 if (!$attendance || $attendance->time_out) {
@@ -117,6 +133,8 @@ class SelfController extends Controller
                     return response()->json([
                         'success' => false,
                         'message' => 'No active time-in record found.',
+                        'name' => $full_name,
+                        'is_birthday' => $is_birthday,
                     ], 400);
                 }
 
@@ -125,7 +143,7 @@ class SelfController extends Controller
                     ->where('id', $attendance->id)
                     ->update([
                         'time_out' => $current_time,
-                        // 'manual_entry' => true, // Update flag
+                        'check_in_method' => 'manual',
                     ]);
 
                 DB::commit();
@@ -133,6 +151,8 @@ class SelfController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Time-out recorded successfully.',
+                    'name' => $full_name,
+                    'is_birthday' => $is_birthday,
                 ]);
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -147,8 +167,10 @@ class SelfController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred. Please try again.',
+                'is_birthday' => false,
             ], 500);
         }
     }
 
+    // ... other methods in SelfController ...
 }
