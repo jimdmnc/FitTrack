@@ -19,34 +19,32 @@ class SelfController extends Controller
     public function manualAttendance(Request $request)
     {
         $request->validate([
-            'identifier' => 'required|string',
+            'rfid_uid' => 'required|string|max:50',
             'action' => 'required|in:time_in,time_out',
         ]);
 
         $current_time = Carbon::now('Asia/Manila');
         $today = $current_time->format('m-d'); // For birthday check
-        $identifier = $request->input('identifier');
+        $rfid_uid = $request->input('rfid_uid');
         $action = $request->input('action');
 
-        Log::info("Processing manual attendance for identifier: {$identifier}, action: {$action} at {$current_time}");
+        Log::info("Processing manual attendance for RFID UID: {$rfid_uid}, action: {$action} at {$current_time}");
 
         try {
-            // Find user by email or phone number
-            $user = User::where('email', $identifier)
-                        ->orWhere('phone_number', $identifier)
-                        ->first();
+            // Find user by rfid_uid
+            $user = User::where('rfid_uid', $rfid_uid)->first();
 
             if (!$user) {
-                Log::warning("No user found for identifier: {$identifier}");
+                Log::warning("No user found for RFID UID: {$rfid_uid}");
                 return response()->json([
                     'success' => false,
-                    'message' => 'User not found. Please check your email or phone number.',
+                    'message' => 'User not found. Please check your RFID UID.',
                 ], 404);
             }
 
             // Verify the request is from the authenticated user
             if ($user->id !== Auth::id()) {
-                Log::warning("Unauthorized attempt by user ID: " . Auth::id() . " for identifier: {$identifier}");
+                Log::warning("Unauthorized attempt by user ID: " . Auth::id() . " for RFID UID: {$rfid_uid}");
                 return response()->json([
                     'success' => false,
                     'message' => 'Unauthorized action.',
@@ -83,11 +81,28 @@ class SelfController extends Controller
 
             DB::beginTransaction();
 
-            $attendance = DB::table('attendances')
-                ->where('rfid_uid', $user->rfid_uid)
+            // Check for double-tap prevention (10-second rule)
+            $latest_attendance = DB::table('attendances')
+                ->where('rfid_uid', $rfid_uid)
                 ->whereDate('time_in', Carbon::today())
                 ->orderBy('time_in', 'desc')
                 ->first();
+
+            if ($latest_attendance) {
+                $last_action_time = $latest_attendance->time_out ?? $latest_attendance->time_in;
+                $time_diff = $current_time->diffInSeconds(Carbon::parse($last_action_time));
+                if ($time_diff < 10) {
+                    Log::warning("Double-tap attempt by user ID: {$user->id} within {$time_diff} seconds");
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Please wait " . (10 - $time_diff) . " seconds before recording again.",
+                        'name' => $full_name,
+                        'is_birthday' => $is_birthday,
+                    ], 429);
+                }
+            }
+
+            $attendance = $latest_attendance;
 
             if ($action === 'time_in') {
                 if ($attendance && !$attendance->time_out) {
@@ -112,7 +127,7 @@ class SelfController extends Controller
 
                 // Record time-in
                 DB::table('attendances')->insert([
-                    'rfid_uid' => $user->rfid_uid,
+                    'rfid_uid' => $rfid_uid,
                     'time_in' => $current_time,
                     'attendance_date' => $current_time->toDateString(),
                     'check_in_method' => 'manual',
@@ -159,11 +174,11 @@ class SelfController extends Controller
             Log::error("Validation error for manual attendance: " . json_encode($e->errors()));
             return response()->json([
                 'success' => false,
-                'message' => $e->errors()['identifier'][0] ?? 'Invalid input.',
+                'message' => $e->errors()['rfid_uid'][0] ?? 'Invalid input.',
             ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Error processing manual attendance for identifier {$identifier}: {$e->getMessage()}");
+            Log::error("Error processing manual attendance for RFID UID {$rfid_uid}: {$e->getMessage()}");
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred. Please try again.',

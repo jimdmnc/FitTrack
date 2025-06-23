@@ -109,15 +109,15 @@
         <div class="container mx-auto px-6">
             <h1 class="text-4xl md:text-5xl font-extrabold text-center text-gray-200 mb-8">Forgot Your RFID Card?</h1>
             <p class="text-lg text-gray-400 text-center mb-12 max-w-2xl mx-auto">
-                Verify your identity to manually record your time-in or time-out.
+                Enter your RFID UID to manually record your time-in or time-out.
             </p>
             <div class="form-container max-w-md mx-auto p-6 rounded-lg shadow-xl fade-in">
                 <form id="forgot-rfid-form" action="{{ route('self.manualAttendance') }}" method="POST">
                     @csrf
                     <div class="mb-6">
-                        <label for="identifier" class="block text-sm font-medium text-gray-300 mb-2">Email or Phone Number</label>
-                        <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" required>
-                        @error('identifier')
+                        <label for="rfid_uid" class="block text-sm font-medium text-gray-300 mb-2">RFID UID</label>
+                        <input type="text" id="rfid_uid" name="rfid_uid" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter your RFID UID" value="{{ auth()->user()->rfid_uid }}" required>
+                        @error('rfid_uid')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
@@ -246,7 +246,11 @@
                     }
 
                     if (data.success) {
-                        showNotification('Success', data.message, 'success');
+                        let message = data.message;
+                        if (data.is_birthday) {
+                            message = `Happy Birthday, ${data.name}! ${message}`;
+                        }
+                        showNotification('Success', message, 'success');
                         setTimeout(() => {
                             window.location.href = '{{ route('self.landingProfile') }}';
                         }, 2000);
