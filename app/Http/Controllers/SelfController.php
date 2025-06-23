@@ -80,7 +80,7 @@ class SelfController extends Controller
                     ->where('id', $todays_attendance->id)
                     ->update([
                         'time_out' => $current_time,
-                        'check_out_method' => 'manual',
+                        
                     ]);
     
                 $message = 'Time-out recorded successfully.';
