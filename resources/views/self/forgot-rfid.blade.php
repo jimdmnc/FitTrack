@@ -126,27 +126,8 @@
                     </div>
                 @endif
 
-                <!-- Display Current Status -->
-                @php
-                    $attendance = DB::table('attendances')
-                        ->where('rfid_uid', auth()->user()->rfid_uid)
-                        ->whereDate('time_in', Carbon::today())
-                        ->orderBy('time_in', 'desc')
-                        ->first();
-                @endphp
-                @if($attendance && !$attendance->time_out)
-                    <p class="text-green-400 text-center mb-4">
-                        You are timed in since {{ Carbon\Carbon::parse($attendance->time_in)->format('h:i A') }}
-                    </p>
-                @else
-                    <p class="text-gray-400 text-center mb-4">
-                        You are not timed in today.
-                    </p>
-                @endif
-
                 <form action="{{ route('self.manualAttendance') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="debug_action" value="{{ request()->input('action', 'unknown') }}">
                     <div class="mb-6">
                         <label for="identifier" class="block text-sm font-medium text-gray-300 mb-2">Email or Phone Number</label>
                         <input type="text" id="identifier" name="identifier" class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500" placeholder="Enter email or phone number" value="{{ auth()->user()->email ?? auth()->user()->phone_number ?? '' }}" required>
@@ -248,6 +229,7 @@
         }
 
         function showProfile() {
+            // Implement profile display logic if needed
             console.log('Show profile clicked');
         }
     </script>
