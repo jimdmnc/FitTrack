@@ -18,6 +18,7 @@ use App\Http\Controllers\Staff\AnnouncementController;
 use App\Http\Controllers\SelfRegistrationController;
 use App\Http\Controllers\PriceController;
 use App\Http\Controllers\StaffController;
+use App\Http\Controllers\SelfController;
 
 // Public routes
 Route::get('/', function () {
@@ -157,6 +158,9 @@ Route::middleware('auth')->group(function () {
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
 
+    //Manual Attendance
+    Route::get('/self/forgot-rfid', [SelfController::class, 'showForgotRfid'])->name('self.forgotRfid');
+    Route::post('/self/manual-attendance', [SelfController::class, 'manualAttendance'])->name('self.manualAttendance');
 });
 
 
