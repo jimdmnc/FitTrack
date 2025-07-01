@@ -603,7 +603,7 @@ function initializeAttendancePage() {
 
     // Set up the current filter based on URL parameters
     const urlParams = new URLSearchParams(window.location.search);
-    const currentFilter = urlParams.get('filter') || 'all';
+    const currentFilter = urlParams.get('filter') || 'today';
 
     // Set initial selected option
     const initialOption = document.querySelector(`[data-value="${currentFilter}"]`);
