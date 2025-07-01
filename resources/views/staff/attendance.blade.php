@@ -156,33 +156,34 @@
             </form>
 
 
-    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
-
-            <div class="relative w-full sm:w-auto">
-                <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center">
-                    <span id="selected-option">today</span>
-                    <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-
-                <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All</li>
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="lastWeek">Last Week</li>
-                    <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisMonth">This Month</li>
-                </ul>
-            </div>
-            <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
-            <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <div class="flex flex-nowrap gap-2 w-full">
+    <!-- Dropdown Button -->
+    <div class="relative flex-1 min-w-0">
+        <button id="select-btn" class="w-full px-4 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center whitespace-nowrap overflow-hidden">
+            <span id="selected-option" class="truncate">Today</span>
+            <svg class="ml-2 w-5 h-5 text-gray-200 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
             </svg>
-            <span id="refreshText">Refresh</span>
         </button>
 
+        <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="all">All</li>
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="today">Today</li>
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="yesterday">Yesterday</li>
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="thisWeek">This Week</li>
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="lastWeek">Last Week</li>
+            <li class="px-4 py-2 text-gray-200 cursor-pointer hover:bg-[#ff5722] truncate" data-value="thisMonth">This Month</li>
+        </ul>
     </div>
+
+    <!-- Refresh Button -->
+    <button id="refreshBtn" class="flex-shrink-0 bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-3 py-2 rounded-md text-sm transition-colors flex items-center btn-touch whitespace-nowrap">
+        <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span id="refreshText" class="hidden sm:inline">Refresh</span>
+    </button>
+</div>
         </div>
 
         <div class="overflow-x-auto sm:rounded-lg table-responsive">
