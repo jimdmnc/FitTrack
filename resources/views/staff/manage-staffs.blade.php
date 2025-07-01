@@ -113,17 +113,32 @@
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex justify-center gap-2 flex-wrap">
-                                <button onclick="openEditModal({{ $staff->id }})" class="bg-blue-600 text-gray-200 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center btn-touch">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <!-- Edit Button -->
+                                <button 
+                                    onclick="openEditModal({{ $staff->id }})" 
+                                    class="group bg-blue-600 hover:bg-blue-500 text-gray-200 p-2 rounded-md hover:translate-y-[-2px] transition-all duration-200 ease-in-out transform flex items-center btn-touch"
+                                    aria-label="Edit"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
-                                    Edit
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100 w-0 group-hover:w-auto overflow-hidden transition-all duration-200">
+                                        Edit
+                                    </span>
                                 </button>
-                                <button onclick="openDeleteModal({{ $staff->id }})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center btn-touch">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                
+                                <!-- Delete Button -->
+                                <button 
+                                    onclick="openDeleteModal({{ $staff->id }})" 
+                                    class="group bg-red-600 hover:bg-red-500 text-gray-200 p-2 rounded-md hover:translate-y-[-2px] transition-all duration-200 ease-in-out transform flex items-center btn-touch"
+                                    aria-label="Delete"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
                                     </svg>
-                                    Delete
+                                    <span class="ml-1 opacity-0 group-hover:opacity-100 w-0 group-hover:w-auto overflow-hidden transition-all duration-200">
+                                        Delete
+                                    </span>
                                 </button>
                             </div>
                         </td>
