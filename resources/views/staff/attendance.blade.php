@@ -176,11 +176,11 @@
                 </ul>
             </div>
             <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
-                <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span id="refreshText">Refresh</span>
-            </button>
+            <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span id="refreshText">Refresh</span>
+        </button>
 
     </div>
         </div>
@@ -536,7 +536,7 @@
         </div>
     </div>
 </div>
-<!-- <script>
+<script>
     document.getElementById('refreshBtn').addEventListener('click', function() {
         const refreshBtn = this;
         const refreshIcon = document.getElementById('refreshIcon');
@@ -554,7 +554,7 @@
         // Simulate refresh action (replace with your actual refresh logic)
         setTimeout(function() {
             // Your actual refresh code would go here
-            // For example: location.reload() or fetch new data
+            location.reload()
             
             // For demonstration, we'll just simulate a refresh
             console.log('Refreshing data...');
@@ -576,7 +576,7 @@
             
         }, 1500); // Simulate 1.5 second refresh time
     });
-</script> -->
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Initial setup
@@ -647,20 +647,6 @@ function initializeAttendancePage() {
             fetchAttendances();
         });
     }
-
-
-
-
-
-
-    const refreshBtn = document.getElementById('refreshBtn');
-        if (refreshBtn) {
-            refreshBtn.addEventListener('click', function() {
-                if (isSubmitting) return;
-                location.reload();
-            });
-        }
-
 
     // Close dropdown when clicking outside
     window.addEventListener('click', (e) => {
