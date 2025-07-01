@@ -116,7 +116,6 @@
 
     <div class="p-4">
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-6 py-4 border-b border-gray-800 gap-4">
-        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
 
             <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
                 <div class="relative flex items-center -ml-4 mb-2">
@@ -148,14 +147,9 @@
 
                 </div>
             </form>
-            <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    Refresh
-            </button>
-    </div>
 
+
+    <div class="flex flex-wrap gap-2 w-full sm:w-auto">
 
             <div class="relative w-full sm:w-auto">
                 <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center">
@@ -174,6 +168,13 @@
                     <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisMonth">This Month</li>
                 </ul>
             </div>
+            <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Refresh
+            </button>
+    </div>
         </div>
 
         <div class="overflow-x-auto sm:rounded-lg table-responsive">
