@@ -179,7 +179,15 @@
                 </div>
                 <div>
                     <label for="create_phone_number" class="block text-sm font-medium text-gray-200">Phone Number</label>
-                    <input type="text" name="phone_number" id="create_phone_number" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                    <input type="tel" 
+                        name="phone_number" 
+                        id="create_phone_number" 
+                        class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" 
+                        required
+                        pattern="[0-9]{11}"
+                        title="Please enter exactly 11 digits (numbers only)"
+                        maxlength="11"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
                 </div>
                 <div>
                     <label for="create_email" class="block text-sm font-medium text-gray-200">Email</label>
