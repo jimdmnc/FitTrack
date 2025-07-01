@@ -134,7 +134,7 @@
                                 <button 
                                     onclick="openDeleteModal({{ $staff->id }})" 
                                     class="inline-flex items-center px-3 py-1.5 bg-red-900 text-gray-200 rounded-lg 
-                                        transition-all duration-200 font-medium text-sm border border-red-900 
+                                        transition-all duration-200 font-medium text-sm 
                                         shadow-sm group hover:bg-red-100 hover:text-red-900 hover:-translate-y-0.5 
                                         focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
                                     aria-label="Delete staff"
