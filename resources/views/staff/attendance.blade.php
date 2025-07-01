@@ -528,7 +528,47 @@
         </div>
     </div>
 </div>
-
+<script>
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        const refreshBtn = this;
+        const refreshIcon = document.getElementById('refreshIcon');
+        const refreshText = document.getElementById('refreshText');
+        
+        // Disable button during refresh
+        refreshBtn.disabled = true;
+        
+        // Add loading animation class
+        refreshIcon.classList.add('animate-spin');
+        
+        // Change text to "Refreshing..."
+        refreshText.textContent = 'Refreshing...';
+        
+        // Simulate refresh action (replace with your actual refresh logic)
+        setTimeout(function() {
+            // Your actual refresh code would go here
+            // For example: location.reload() or fetch new data
+            
+            // For demonstration, we'll just simulate a refresh
+            console.log('Refreshing data...');
+            
+            // After refresh completes:
+            refreshIcon.classList.remove('animate-spin');
+            refreshText.textContent = 'Refresh';
+            refreshBtn.disabled = false;
+            
+            // Optional: Show success indicator
+            const originalColor = refreshBtn.classList.contains('bg-[#212121]') ? '[#212121]' : '[#ff5722]';
+            refreshBtn.classList.remove('bg-[#212121]', 'bg-[#ff5722]');
+            refreshBtn.classList.add('bg-green-600');
+            
+            setTimeout(() => {
+                refreshBtn.classList.remove('bg-green-600');
+                refreshBtn.classList.add(`bg-${originalColor}`);
+            }, 1000);
+            
+        }, 1500); // Simulate 1.5 second refresh time
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Initial setup
