@@ -94,6 +94,13 @@
                 white-space: nowrap;
             }
         }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
 </style>
 <div class="py-8 sm:px-6 lg:px-4" x-data="{
     showModal: false,
