@@ -390,81 +390,7 @@
     </div>
 </div>
 
-<script>
-    // Add these event listeners for the edit modal
-    document.getElementById('edit_password').addEventListener('input', function() {
-        checkEditPasswordStrength(this.value);
-        checkEditPasswordMatch();
-    });
 
-    document.getElementById('edit_password_confirmation').addEventListener('input', checkEditPasswordMatch);
-
-    function checkEditPasswordStrength(password) {
-        const strengthBar = document.getElementById('edit-password-strength-bar');
-        const requirements = {
-            length: password.length >= 8,
-            uppercase: /[A-Z]/.test(password),
-            lowercase: /[a-z]/.test(password),
-            number: /[0-9]/.test(password)
-        };
-
-        // Update requirement indicators
-        document.getElementById('edit-req-length').className = requirements.length ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('edit-req-uppercase').className = requirements.uppercase ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('edit-req-lowercase').className = requirements.lowercase ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('edit-req-number').className = requirements.number ? 'text-green-400' : 'text-gray-400';
-
-        // Calculate strength score
-        let strength = 0;
-        if (requirements.length) strength += 25;
-        if (requirements.uppercase) strength += 25;
-        if (requirements.lowercase) strength += 25;
-        if (requirements.number) strength += 25;
-
-        // Update strength bar
-        strengthBar.style.width = strength + '%';
-        if (strength < 50) {
-            strengthBar.className = 'h-full bg-red-500';
-        } else if (strength < 75) {
-            strengthBar.className = 'h-full bg-yellow-500';
-        } else {
-            strengthBar.className = 'h-full bg-green-500';
-        }
-    }
-
-    function checkEditPasswordMatch() {
-        const password = document.getElementById('edit_password').value;
-        const confirmPassword = document.getElementById('edit_password_confirmation').value;
-        const matchDiv = document.getElementById('edit-password-match');
-        const matchIcon = document.getElementById('edit-match-icon');
-        const matchText = document.getElementById('edit-match-text');
-
-        if (password === '' || confirmPassword === '') {
-            matchDiv.classList.add('hidden');
-            return;
-        }
-
-        matchDiv.classList.remove('hidden');
-        
-        if (password === confirmPassword) {
-            matchDiv.className = 'text-xs mt-2 text-green-400';
-            matchIcon.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-            `;
-            matchText.textContent = 'Passwords match';
-        } else {
-            matchDiv.className = 'text-xs mt-2 text-red-400';
-            matchIcon.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            `;
-            matchText.textContent = 'Passwords do not match';
-        }
-    }
-</script>
 
 <!-- Delete Staff Modal -->
 <div id="deleteModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -494,8 +420,8 @@
     </div>
 </div>
 
-
 <script>
+    // Shared functions
     function togglePasswordVisibility(inputId, toggleId) {
         const input = document.getElementById(inputId);
         const toggle = document.getElementById(toggleId);
@@ -518,15 +444,8 @@
         }
     }
 
-    document.getElementById('create_password').addEventListener('input', function() {
-        checkPasswordStrength(this.value);
-        checkPasswordMatch();
-    });
-
-    document.getElementById('create_password_confirmation').addEventListener('input', checkPasswordMatch);
-
-    function checkPasswordStrength(password) {
-        const strengthBar = document.getElementById('password-strength-bar');
+    function checkPasswordStrength(password, prefix = '') {
+        const strengthBar = document.getElementById(`${prefix}password-strength-bar`);
         const requirements = {
             length: password.length >= 8,
             uppercase: /[A-Z]/.test(password),
@@ -535,10 +454,10 @@
         };
 
         // Update requirement indicators
-        document.getElementById('req-length').className = requirements.length ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('req-uppercase').className = requirements.uppercase ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('req-lowercase').className = requirements.lowercase ? 'text-green-400' : 'text-gray-400';
-        document.getElementById('req-number').className = requirements.number ? 'text-green-400' : 'text-gray-400';
+        document.getElementById(`${prefix}req-length`).className = requirements.length ? 'text-green-400' : 'text-gray-400';
+        document.getElementById(`${prefix}req-uppercase`).className = requirements.uppercase ? 'text-green-400' : 'text-gray-400';
+        document.getElementById(`${prefix}req-lowercase`).className = requirements.lowercase ? 'text-green-400' : 'text-gray-400';
+        document.getElementById(`${prefix}req-number`).className = requirements.number ? 'text-green-400' : 'text-gray-400';
 
         // Calculate strength score
         let strength = 0;
@@ -558,12 +477,12 @@
         }
     }
 
-    function checkPasswordMatch() {
-        const password = document.getElementById('create_password').value;
-        const confirmPassword = document.getElementById('create_password_confirmation').value;
-        const matchDiv = document.getElementById('password-match');
-        const matchIcon = document.getElementById('match-icon');
-        const matchText = document.getElementById('match-text');
+    function checkPasswordMatch(prefix = '') {
+        const password = document.getElementById(`${prefix}password`).value;
+        const confirmPassword = document.getElementById(`${prefix}password_confirmation`).value;
+        const matchDiv = document.getElementById(`${prefix}password-match`);
+        const matchIcon = document.getElementById(`${prefix}match-icon`);
+        const matchText = document.getElementById(`${prefix}match-text`);
 
         if (password === '' || confirmPassword === '') {
             matchDiv.classList.add('hidden');
@@ -590,6 +509,37 @@
             matchText.textContent = 'Passwords do not match';
         }
     }
+
+    // Initialize event listeners for create modal
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create modal listeners
+        const createPassword = document.getElementById('create_password');
+        const createConfirmPassword = document.getElementById('create_password_confirmation');
+        
+        if (createPassword && createConfirmPassword) {
+            createPassword.addEventListener('input', function() {
+                checkPasswordStrength(this.value);
+                checkPasswordMatch();
+            });
+            createConfirmPassword.addEventListener('input', function() {
+                checkPasswordMatch();
+            });
+        }
+
+        // Edit modal listeners
+        const editPassword = document.getElementById('edit_password');
+        const editConfirmPassword = document.getElementById('edit_password_confirmation');
+        
+        if (editPassword && editConfirmPassword) {
+            editPassword.addEventListener('input', function() {
+                checkPasswordStrength(this.value, 'edit-');
+                checkPasswordMatch('edit-');
+            });
+            editConfirmPassword.addEventListener('input', function() {
+                checkPasswordMatch('edit-');
+            });
+        }
+    });
 </script>
 
 
