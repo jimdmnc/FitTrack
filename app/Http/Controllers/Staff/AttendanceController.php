@@ -68,7 +68,7 @@ class AttendanceController extends Controller
         }
 
         $attendances = $query->orderBy('time_in', 'desc')
-            ->paginate(10)
+            ->paginate(20)
             ->appends([
                 'filter' => $filter,
                 'search' => $search,
