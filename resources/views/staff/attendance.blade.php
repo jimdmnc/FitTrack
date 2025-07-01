@@ -536,7 +536,7 @@
         </div>
     </div>
 </div>
-<script>
+<!-- <script>
     document.getElementById('refreshBtn').addEventListener('click', function() {
         const refreshBtn = this;
         const refreshIcon = document.getElementById('refreshIcon');
@@ -576,7 +576,7 @@
             
         }, 1500); // Simulate 1.5 second refresh time
     });
-</script>
+</script> -->
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     // Initial setup
@@ -647,6 +647,20 @@ function initializeAttendancePage() {
             fetchAttendances();
         });
     }
+
+
+
+
+
+
+    const refreshBtn = document.getElementById('refreshBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                if (isSubmitting) return;
+                location.reload();
+            });
+        }
+
 
     // Close dropdown when clicking outside
     window.addEventListener('click', (e) => {
