@@ -112,46 +112,44 @@
                             <span class="text-gray-400 text-sm">{{ $staff->created_at->format('h:i A') }}</span>
                         </td>
                         <td class="p-4 text-center">
-    <div class="flex justify-center gap-3 flex-wrap">
-        <button 
-            onclick="openEditModal({{ $staff->id }})" 
-            class="group relative bg-blue-500 text-white p-2 rounded-lg text-sm font-semibold 
-                   hover:bg-blue-600 hover:shadow-lg transition-all duration-300 ease-in-out 
-                   flex items-center space-x-1 transform hover:-translate-y-0.5 focus:outline-none 
-                   focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
-            title="Edit"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            <span class="absolute left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 
-                         transition-opacity duration-300 text-xs bg-blue-700 text-white 
-                         rounded-md px-2 py-1 -bottom-8 pointer-events-none">
-                Edit
-            </span>
-        </button>
-        <button 
-            onclick="openDeleteModal({{ $staff->id }})" 
-            class="group relative bg-red-500 text-white p-2 rounded-lg text-sm font-semibold 
-                   hover:bg-red-600 hover:shadow-lg transition-all duration-300 ease-in-out 
-                   flex items-center space-x-1 transform hover:-translate-y-0.5 focus:outline-none 
-                   focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
-            title="Delete"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" 
-                      d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" 
-                      clip-rule="evenodd" />
-            </svg>
-            <span class="absolute left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 
-                         transition-opacity duration-300 text-xs bg-red-700 text-white 
-                         rounded-md px-2 py-1 -bottom-8 pointer-events-none">
-                Delete
-            </span>
-        </button>
-    </div>
-</td>
+                            <div class="flex justify-center gap-3 flex-wrap">
+                                <button 
+                                    onclick="openEditModal({{ $staff->id }})" 
+                                    class="group relative bg-blue-500 text-white p-2 rounded-lg text-sm font-semibold 
+                                        hover:bg-blue-600 hover:shadow-lg transition-all duration-300 ease-in-out 
+                                        flex items-center space-x-1 transform hover:-translate-y-0.5 focus:outline-none 
+                                        focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                                    title="Edit"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                    <span class="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 
+                                                transition-all duration-300 text-sm font-medium">
+                                        Edit
+                                    </span>
+                                </button>
+                                <button 
+                                    onclick="openDeleteModal({{ $staff->id }})" 
+                                    class="group relative bg-red-500 text-white p-2 rounded-lg text-sm font-semibold 
+                                        hover:bg-red-600 hover:shadow-lg transition-all duration-300 ease-in-out 
+                                        flex items-center space-x-1 transform hover:-translate-y-0.5 focus:outline-none 
+                                        focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
+                                    title="Delete"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" 
+                                            d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" 
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 
+                                                transition-all duration-300 text-sm font-medium">
+                                        Delete
+                                    </span>
+                                </button>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
