@@ -106,21 +106,40 @@
         </div>
 
         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-                <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
-                <input type="text" id="first_name" name="first_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('first_name') }}" required aria-describedby="first_name_error">
-                @error('first_name')
-                    <span id="first_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
-                @enderror
-            </div>
+        <div>
+            <label for="first_name" class="block text-gray-200 font-medium mb-2">First Name <span class="text-red-500">*</span></label>
+            <input type="text" id="first_name" name="first_name" 
+                class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                value="{{ old('first_name') }}" 
+                required 
+                aria-describedby="first_name_error"
+                oninput="this.value = capitalizeFirstLetter(this.value)">
+            @error('first_name')
+                <span id="first_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+            @enderror
+        </div>
 
-            <div>
-                <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
-                <input type="text" id="last_name" name="last_name" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('last_name') }}" required aria-describedby="last_name_error">
-                @error('last_name')
-                    <span id="last_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
-                @enderror
-            </div>
+        <div>
+            <label for="last_name" class="block text-gray-200 font-medium mb-2">Last Name <span class="text-red-500">*</span></label>
+            <input type="text" id="last_name" name="last_name" 
+                class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" 
+                value="{{ old('last_name') }}" 
+                required 
+                aria-describedby="last_name_error"
+                oninput="this.value = capitalizeFirstLetter(this.value)">
+            @error('last_name')
+                <span id="last_name_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+            @enderror
+        </div>
+
+<script>
+    function capitalizeFirstLetter(str) {
+        // Capitalize first letter of each word (for names with spaces or hyphens)
+        return str.toLowerCase().replace(/(^|\s|-)\S/g, function(letter) {
+            return letter.toUpperCase();
+        });
+    }
+</script>
 
             <div class="relative">
                 <label for="birthdate" class="block text-gray-200 font-medium mb-2">Birthdate <span class="text-red-500">*</span></label>
