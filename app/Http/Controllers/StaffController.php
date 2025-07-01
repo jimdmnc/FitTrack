@@ -56,7 +56,7 @@ class StaffController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'gender' => 'required|in:male,female,other',
-                'phone_number' => 'required|string|max:255',
+                'phone_number' => 'required|string|digits:11|regex:/^[0-9]+$/',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
                 'role' => 'required|in:admin,super_admin',
