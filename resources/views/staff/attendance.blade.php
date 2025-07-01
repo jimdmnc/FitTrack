@@ -156,7 +156,7 @@
             </form>
 
 
-            <div class="flex flex-wrap gap-2 w-full">
+            <div class="flex flex-nowrap gap-2 w-full">
 
                     <div class="relative w-full sm:w-auto">
                         <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center">
