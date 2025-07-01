@@ -132,14 +132,6 @@
             @enderror
         </div>
 
-<script>
-    function capitalizeFirstLetter(str) {
-        // Capitalize first letter of each word (for names with spaces or hyphens)
-        return str.toLowerCase().replace(/(^|\s|-)\S/g, function(letter) {
-            return letter.toUpperCase();
-        });
-    }
-</script>
 
             <div class="relative">
                 <label for="birthdate" class="block text-gray-200 font-medium mb-2">Birthdate <span class="text-red-500">*</span></label>
@@ -754,6 +746,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 });
+function capitalizeFirstLetter(str) {
+        // Capitalize first letter of each word (for names with spaces or hyphens)
+        return str.toLowerCase().replace(/(^|\s|-)\S/g, function(letter) {
+            return letter.toUpperCase();
+        });
+    }
 function clearRfid() {
         const uidInput = document.getElementById('uid');
         const uid = uidInput.value;
