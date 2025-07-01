@@ -192,13 +192,55 @@
                         <option value="super_admin">Super Admin</option>
                     </select>
                 </div>
-                <div>
+                <div class="relative">
                     <label for="create_password" class="block text-sm font-medium text-gray-200">Password</label>
-                    <input type="password" name="password" id="create_password" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                    <div class="relative">
+                        <input type="password" name="password" id="create_password" 
+                               class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722] pr-10" 
+                               required
+                               pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                               title="Must contain at least one number, one uppercase letter, one lowercase letter, and at least 8 or more characters">
+                        <button type="button" onclick="togglePasswordVisibility('create_password', 'create_password_toggle')" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200 mt-1" 
+                                id="create_password_toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="password-strength-meter" class="h-1 mt-2 rounded overflow-hidden">
+                        <div id="password-strength-bar" class="h-full bg-gray-600 w-0"></div>
+                    </div>
+                    <div id="password-requirements" class="text-xs text-gray-400 mt-2">
+                        <p>Password must contain:</p>
+                        <ul class="list-disc list-inside">
+                            <li id="req-length" class="text-gray-400">At least 8 characters</li>
+                            <li id="req-uppercase" class="text-gray-400">One uppercase letter</li>
+                            <li id="req-lowercase" class="text-gray-400">One lowercase letter</li>
+                            <li id="req-number" class="text-gray-400">One number</li>
+                        </ul>
+                    </div>
                 </div>
-                <div>
+                <div class="relative">
                     <label for="create_password_confirmation" class="block text-sm font-medium text-gray-200">Confirm Password</label>
-                    <input type="password" name="password_confirmation" id="create_password_confirmation" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
+                    <div class="relative">
+                        <input type="password" name="password_confirmation" id="create_password_confirmation" 
+                               class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722] pr-10" 
+                               required>
+                        <button type="button" onclick="togglePasswordVisibility('create_password_confirmation', 'create_password_confirmation_toggle')" 
+                                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-200 mt-1" 
+                                id="create_password_confirmation_toggle">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="password-match" class="text-xs mt-2 hidden">
+                        <span id="match-icon" class="inline-block mr-1"></span>
+                        <span id="match-text"></span>
+                    </div>
                 </div>
             </div>
             <div id="create_error_container" class="mt-4 hidden"></div>
@@ -214,6 +256,8 @@
         </form>
     </div>
 </div>
+
+
 
 <!-- Edit Staff Modal -->
 <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -311,6 +355,105 @@
         </form>
     </div>
 </div>
+
+
+<script>
+    function togglePasswordVisibility(inputId, toggleId) {
+        const input = document.getElementById(inputId);
+        const toggle = document.getElementById(toggleId);
+        
+        if (input.type === 'password') {
+            input.type = 'text';
+            toggle.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                </svg>
+            `;
+        } else {
+            input.type = 'password';
+            toggle.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+            `;
+        }
+    }
+
+    document.getElementById('create_password').addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+        checkPasswordMatch();
+    });
+
+    document.getElementById('create_password_confirmation').addEventListener('input', checkPasswordMatch);
+
+    function checkPasswordStrength(password) {
+        const strengthBar = document.getElementById('password-strength-bar');
+        const requirements = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            lowercase: /[a-z]/.test(password),
+            number: /[0-9]/.test(password)
+        };
+
+        // Update requirement indicators
+        document.getElementById('req-length').className = requirements.length ? 'text-green-400' : 'text-gray-400';
+        document.getElementById('req-uppercase').className = requirements.uppercase ? 'text-green-400' : 'text-gray-400';
+        document.getElementById('req-lowercase').className = requirements.lowercase ? 'text-green-400' : 'text-gray-400';
+        document.getElementById('req-number').className = requirements.number ? 'text-green-400' : 'text-gray-400';
+
+        // Calculate strength score
+        let strength = 0;
+        if (requirements.length) strength += 25;
+        if (requirements.uppercase) strength += 25;
+        if (requirements.lowercase) strength += 25;
+        if (requirements.number) strength += 25;
+
+        // Update strength bar
+        strengthBar.style.width = strength + '%';
+        if (strength < 50) {
+            strengthBar.className = 'h-full bg-red-500';
+        } else if (strength < 75) {
+            strengthBar.className = 'h-full bg-yellow-500';
+        } else {
+            strengthBar.className = 'h-full bg-green-500';
+        }
+    }
+
+    function checkPasswordMatch() {
+        const password = document.getElementById('create_password').value;
+        const confirmPassword = document.getElementById('create_password_confirmation').value;
+        const matchDiv = document.getElementById('password-match');
+        const matchIcon = document.getElementById('match-icon');
+        const matchText = document.getElementById('match-text');
+
+        if (password === '' || confirmPassword === '') {
+            matchDiv.classList.add('hidden');
+            return;
+        }
+
+        matchDiv.classList.remove('hidden');
+        
+        if (password === confirmPassword) {
+            matchDiv.className = 'text-xs mt-2 text-green-400';
+            matchIcon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            `;
+            matchText.textContent = 'Passwords match';
+        } else {
+            matchDiv.className = 'text-xs mt-2 text-red-400';
+            matchIcon.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            `;
+            matchText.textContent = 'Passwords do not match';
+        }
+    }
+</script>
+
 
 <script>
     let isSubmitting = false;
