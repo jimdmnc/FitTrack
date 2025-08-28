@@ -14,6 +14,11 @@ return [
     |
     */
 
+    'firebase' => [
+        'credentials' => storage_path(env('FIREBASE_CREDENTIALS')),
+        'project_id' => env('FIREBASE_PROJECT_ID'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
