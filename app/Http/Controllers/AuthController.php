@@ -286,4 +286,18 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    public function saveToken(Request $request)
+    {
+        $token = $request->input('token');
+        $user = $request->user();
+    
+        if ($user && $token) {
+            $user->update(['fcm_token' => $token]);
+            return response()->json(['success' => true]);
+        }
+    
+        return response()->json(['success' => false, 'message' => 'User not authenticated or token missing'], 401);
+    }
+
 }

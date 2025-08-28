@@ -44,6 +44,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'revoke_reason',
         'revoked_at',        
         'profile_image',
+        'fcm_token', // Add this
 
     ];
 

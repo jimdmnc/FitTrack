@@ -17,7 +17,7 @@ use App\Http\Controllers\Api\RenewalController;
 use App\Http\Controllers\Staff\AttendanceController;
 use App\Http\Controllers\Staff\ViewMembersController;
 use App\Http\Controllers\Staff\PaymentTrackingController;
-
+use App\Http\Controllers\Api\NotificationController;
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -109,7 +109,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route to get food logs by date
     Route::get('/food_logs', [FoodController::class, 'getFoodLogsByDate']);
 
-
+    Route::post('/save-token', [AuthController::class, 'saveToken']);
+    Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 
 });
 
