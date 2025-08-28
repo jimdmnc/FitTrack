@@ -289,15 +289,53 @@ class AuthController extends Controller
 
     public function saveToken(Request $request)
     {
-        $token = $request->input('token');
-        $user = $request->user();
+        try {
+            // Validate the incoming token
+            $validator = Validator::make($request->all(), [
+                'token' => 'required|string',
+            ]);
     
-        if ($user && $token) {
+            if ($validator->fails()) {
+                Log::warning('Validation failed for saveToken: ' . $validator->errors()->first());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validation errors',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+    
+            // Get the authenticated user
+            $user = $request->user();
+    
+            if (!$user) {
+                Log::error('User not authenticated in saveToken');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not authenticated'
+                ], 401);
+            }
+    
+            // Update the user's fcm_token
+            $token = $request->input('token');
             $user->update(['fcm_token' => $token]);
-            return response()->json(['success' => true]);
-        }
     
-        return response()->json(['success' => false, 'message' => 'User not authenticated or token missing'], 401);
+            Log::info('FCM token saved successfully', ['user_id' => $user->id, 'fcm_token' => $token]);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'FCM token saved successfully',
+                'data' => ['fcm_token' => $token]
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error saving FCM token: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to save FCM token',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
 }
