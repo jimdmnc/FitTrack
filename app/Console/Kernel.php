@@ -25,6 +25,12 @@ class Kernel extends ConsoleKernel
                     'status' => 'completed',
                 ]);
         })->dailyAt('21:00');
+
+        
+        // New schedule for notifications (e.g., daily at 8 AM)
+        $schedule->command('notifications:send-automated')
+        ->dailyAt('11:40'); // Adjust time as needed (PST)
+
     }
 
     /**
