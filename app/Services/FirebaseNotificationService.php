@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Kreait\Laravel\Firebase\Facades\Firebase;
 use Kreait\Firebase\Messaging\CloudMessage;
+use Kreait\Firebase\Messaging\Notification;
 use Kreait\Firebase\Exception\MessagingException;
 use Illuminate\Support\Facades\Log;
 
@@ -14,15 +15,10 @@ class FirebaseNotificationService
         try {
             $messaging = Firebase::messaging();
 
-            // Ensure we handle a single token at a time
             foreach ($fcmTokens as $token) {
-                $message = CloudMessage::new()
-                    ->withNotification([
-                        'title' => $title,
-                        'body' => $body,
-                    ])
-                    ->withData($data)
-                    ->withTarget('token', $token); // Use single token as string
+                $message = CloudMessage::withTarget('token', $token)
+                    ->withNotification(Notification::create($title, $body))
+                    ->withData($data);
 
                 $response = $messaging->send($message);
 
