@@ -14,20 +14,23 @@ class FirebaseNotificationService
         try {
             $messaging = Firebase::messaging();
 
-            $message = CloudMessage::new()
-                ->withNotification([
-                    'title' => $title,
-                    'body' => $body,
-                ])
-                ->withData($data)
-                ->withTarget('token', $fcmTokens);
+            // Ensure we handle a single token at a time
+            foreach ($fcmTokens as $token) {
+                $message = CloudMessage::new()
+                    ->withNotification([
+                        'title' => $title,
+                        'body' => $body,
+                    ])
+                    ->withData($data)
+                    ->withTarget('token', $token); // Use single token as string
 
-            $response = $messaging->send($message);
+                $response = $messaging->send($message);
 
-            Log::info('Firebase notification sent successfully', [
-                'tokens' => $fcmTokens,
-                'response' => $response
-            ]);
+                Log::info('Firebase notification sent successfully', [
+                    'token' => $token,
+                    'response' => $response
+                ]);
+            }
 
             return true;
         } catch (MessagingException $e) {
