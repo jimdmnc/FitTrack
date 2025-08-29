@@ -77,14 +77,13 @@ foreach ($users as $user) {
     if (!empty($fcmTokens)) {
         $today = Carbon::today()->dayOfYear;
         $lastReminder = $user->last_meal_reminder ? Carbon::parse($user->last_meal_reminder)->dayOfYear : -1;
-
-        if ($today != $lastReminder) {
+        if ($today != $lastReminder || $lastReminder == -1) {
             $title = 'Daily Meal Reminder';
             $body = "Don't forget to log your meal today!";
             $data = ['time' => now()->toDateTimeString()];
             $result = $firebaseService->sendNotification($title, $body, $fcmTokens, $data);
             Log::info('Sent daily meal reminder to user ' . $user->id, ['result' => $result]);
-
+        
             // Update last reminder date
             $user->update(['last_meal_reminder' => Carbon::today()]);
         }

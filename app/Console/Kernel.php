@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         
         // New schedule for notifications (e.g., daily at 8 AM)
         $schedule->command('notifications:send-automated')
-        ->dailyAt('11:40'); // Adjust time as needed (PST)
+        ->dailyAt('11:47'); // Adjust time as needed (PST)
 
     }
 
