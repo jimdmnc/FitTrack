@@ -74,27 +74,25 @@ class UpdateMemberStatus extends Command
         }
 
         // Step 3: Check for daily calorie reminder
-        $users = User::all(); // Or filter active users
-        foreach ($users as $user) {
-            $fcmTokens = $user->fcm_token ? [$user->fcm_token] : [];
-            if (!empty($fcmTokens)) {
-                $today = Carbon::today()->dayOfYear;
-                $prefs = json_decode($user->preferences ?? '{}', true); // Assuming preferences stores reminder state
-                $lastShownDay = $prefs['last_reminder_day'] ?? -1;
+$users = User::all(); // Or filter active users
+foreach ($users as $user) {
+    $fcmTokens = $user->fcm_token ? [$user->fcm_token] : [];
+    if (!empty($fcmTokens)) {
+        $today = Carbon::today()->dayOfYear;
+        $lastReminder = $user->last_meal_reminder ? Carbon::parse($user->last_meal_reminder)->dayOfYear : -1;
 
-                if ($today != $lastShownDay) {
-                    $title = 'Daily Food Reminder';
-                    $body = "Don't forget to log your meal today!";
-                    $data = ['time' => now()->toDateTimeString()];
-                    $result = $firebaseService->sendNotification($title, $body, $fcmTokens, $data);
-                    Log::info('Sent daily reminder to user ' . $user->id, ['result' => $result]);
+        if ($today != $lastReminder) {
+            $title = 'Daily Meal Reminder';
+            $body = "Don't forget to log your meal today!";
+            $data = ['time' => now()->toDateTimeString()];
+            $result = $firebaseService->sendNotification($title, $body, $fcmTokens, $data);
+            Log::info('Sent daily meal reminder to user ' . $user->id, ['result' => $result]);
 
-                    // Update last shown day
-                    $prefs['last_reminder_day'] = $today;
-                    $user->update(['preferences' => json_encode($prefs)]);
-                }
-            }
+            // Update last reminder date
+            $user->update(['last_meal_reminder' => Carbon::today()]);
         }
+    }
+}
 
         $this->info('Member status updates and notifications completed.');
         return 0;
