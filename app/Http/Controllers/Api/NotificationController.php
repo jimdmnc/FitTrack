@@ -14,9 +14,9 @@ class NotificationController extends Controller
     public function sendNotification(Request $request)
     {
         try {
-            // Validate the incoming id
+            // Validate the incoming rfid_uid
             $validator = Validator::make($request->all(), [
-                'id' => 'required|integer|exists:users,id', // Use 'id' instead of 'user_id'
+                'rfid_uid' => 'required|string|exists:users,rfid_uid', // Use rfid_uid instead of id
             ]);
 
             if ($validator->fails()) {
@@ -28,17 +28,17 @@ class NotificationController extends Controller
                 ], 422);
             }
 
-            // Get the user by id
-            $id = $request->input('id');
-            $user = User::find($id);
+            // Get the user by rfid_uid
+            $rfidUid = $request->input('rfid_uid');
+            $user = User::where('rfid_uid', $rfidUid)->first();
 
             if (!$user) {
-                Log::error('User not found in sendNotification', ['id' => $id]);
+                Log::error('User not found in sendNotification', ['rfid_uid' => $rfidUid]);
                 return response()->json(['success' => false, 'message' => 'User not found'], 404);
             }
 
             if (!$user->fcm_token) {
-                Log::error('FCM token not found for user', ['user_id' => $id]);
+                Log::error('FCM token not found for user', ['rfid_uid' => $rfidUid]);
                 return response()->json(['success' => false, 'message' => 'FCM token not found'], 404);
             }
 
@@ -59,7 +59,7 @@ class NotificationController extends Controller
             }
 
             if ($success) {
-                Log::info('Notifications sent successfully', ['user_id' => $id, 'details' => $sentMessages]);
+                Log::info('Notifications sent successfully', ['rfid_uid' => $rfidUid, 'details' => $sentMessages]);
                 return response()->json([
                     'success' => true,
                     'message' => 'Notifications sent',
@@ -96,7 +96,7 @@ class NotificationController extends Controller
         }
 
         // Add status notification ONLY IF EXPIRED
-        if (strtolower($user->member_status) === 'expired') { // Changed to member_status to match your table
+        if (strtolower($user->member_status) === 'expired') {
             $notifications[] = [
                 'title' => 'Membership Status',
                 'body' => 'Your membership has expired! Please renew.',
