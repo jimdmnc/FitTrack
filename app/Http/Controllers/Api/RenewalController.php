@@ -38,9 +38,11 @@ class RenewalController extends Controller
         }
 
         try {
-            // Update only membership_type and status fields, not dates
+            // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
                 'member_status' => 'expired',
                 'session_status' => 'pending',
                 'needs_approval' => 1,
@@ -86,177 +88,104 @@ class RenewalController extends Controller
     }
 
     public function uploadPayment(Request $request)
-    {
-        // Validate the request
-        $request->validate([
-            'payment_screenshot' => 'required|image|mimes:jpeg,png,jpg|max:2048',
-            'rfid_uid' => 'required|exists:users,rfid_uid',
-            'amount' => 'required|numeric|min:0',
-            'membership_type' => 'required|string',
-        ]);
+{
+    // Validate the request
+    $request->validate([
+        'payment_screenshot' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+        'rfid_uid' => 'required|exists:users,rfid_uid',
+        'amount' => 'required|numeric|min:0',
+        'membership_type' => 'required|string',
+    ]);
 
-        try {
-            // Verify members_payments table schema
-            $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date'];
-            foreach ($requiredColumns as $column) {
-                if (!Schema::hasColumn('members_payment', $column)) {
-                    \Log::error("Missing column in members_payments: $column");
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Server error: Missing column '$column' in members_payment table"
-                    ], 500);
-                }
-            }
-
-            // Verify renewals table schema
-            $renewalColumns = ['payment_screenshot', 'payment_method'];
-            foreach ($renewalColumns as $column) {
-                if (!Schema::hasColumn('renewals', $column)) {
-                    \Log::error("Missing column in renewals: $column");
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Server error: Missing column '$column' in renewals table"
-                    ], 500);
-                }
-            }
-
-            // Handle the image upload
-            if ($request->hasFile('payment_screenshot')) {
-                $file = $request->file('payment_screenshot');
-                $filename = 'payment_' . Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
-                $path = $file->storeAs('uploads/payments', $filename, 'public');
-
-                // Find user by RFID
-                $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
-
-                // Save to members_payments table
-                try {
-                    $payment = MembersPayment::create([
-                        'rfid_uid' => $user->rfid_uid,
-                        'amount' => $request->amount,
-                        'payment_method' => 'gcash',
-                        'payment_screenshot' => $path,
-                        'status' => 'pending',
-                        'payment_date' => now(),
-                    ]);
-                } catch (\Exception $e) {
-                    \Log::error('Failed to create MembersPayment: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
-                    throw new \Exception('MembersPayment creation failed: ' . $e->getMessage());
-                }
-
-                // Update renewals table
-                try {
-                    $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
-                        ->where('payment_method', 'gcash')
-                        ->orderBy('created_at', 'desc')
-                        ->first();
-
-                    if ($renewal) {
-                        $renewal->update([
-                            'payment_screenshot' => $path,
-                            'payment_method' => 'gcash',
-                        ]);
-                    } else {
-                        \Log::warning("No pending renewal found for rfid_uid: {$user->rfid_uid}");
-                    }
-                } catch (\Exception $e) {
-                    \Log::error('Failed to update Renewal: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
-                    throw new \Exception('Renewal update failed: ' . $e->getMessage());
-                }
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Payment screenshot uploaded successfully',
-                    'data' => [
-                        'payment_id' => $payment->id,
-                        'screenshot_path' => $path,
-                    ]
-                ], 200);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => 'No screenshot provided'
-            ], 400);
-        } catch (\Exception $e) {
-            \Log::error('Error uploading payment screenshot: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to upload payment screenshot: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function approveRenewal(Request $request)
-    {
-        // Validate request
-        $request->validate([
-            'renewal_id' => 'required|exists:renewals,id',
-            'rfid_uid' => 'required|exists:users,rfid_uid',
-        ]);
-
-        try {
-            // Find the renewal record
-            $renewal = Renewal::where('id', $request->renewal_id)
-                ->where('rfid_uid', $request->rfid_uid)
-                ->where('status', 'pending')
-                ->first();
-
-            if (!$renewal) {
+    try {
+        // Verify members_payments table schema
+        $requiredColumns = ['rfid_uid', 'amount', 'payment_method', 'payment_screenshot', 'status', 'payment_date'];
+        foreach ($requiredColumns as $column) {
+            if (!Schema::hasColumn('members_payment', $column)) {
+                \Log::error("Missing column in members_payments: $column");
                 return response()->json([
                     'success' => false,
-                    'message' => 'Pending renewal not found'
-                ], 404);
+                    'message' => "Server error: Missing column '$column' in members_payment table"
+                ], 500);
             }
+        }
 
-            // Find the user
+        // Verify renewals table schema
+        $renewalColumns = ['payment_screenshot', 'payment_method'];
+        foreach ($renewalColumns as $column) {
+            if (!Schema::hasColumn('renewals', $column)) {
+                \Log::error("Missing column in renewals: $column");
+                return response()->json([
+                    'success' => false,
+                    'message' => "Server error: Missing column '$column' in renewals table"
+                ], 500);
+            }
+        }
+
+        // Handle the image upload
+        if ($request->hasFile('payment_screenshot')) {
+            $file = $request->file('payment_screenshot');
+            $filename = 'payment_' . Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('uploads/payments', $filename, 'public');
+
+            // Find user by RFID
             $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
 
-            // Find the associated payment
-            $payment = MembersPayment::where('rfid_uid', $request->rfid_uid)
-                ->where('status', 'pending')
-                ->where('payment_date', '>=', $renewal->created_at)
-                ->orderBy('created_at', 'desc')
-                ->first();
-
-            if (!$payment) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'No pending payment found for this renewal'
-                ], 404);
+            // Save to members_payments table
+            try {
+                $payment = MembersPayment::create([
+                    'rfid_uid' => $user->rfid_uid,
+                    'amount' => $request->amount,
+                    'payment_method' => 'gcash',
+                    'payment_screenshot' => $path,
+                    'status' => 'pending',
+                    'payment_date' => now(),
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to create MembersPayment: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+                throw new \Exception('MembersPayment creation failed: ' . $e->getMessage());
             }
 
-            // Update user with renewal details
-            $user->update([
-                'start_date' => $renewal->start_date,
-                'end_date' => $renewal->end_date,
-                'member_status' => 'active',
-                'session_status' => 'active',
-                'needs_approval' => 0,
-            ]);
+            // Update renewals table
+            try {
+                $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
+                    ->where('payment_method', 'gcash')
+                    ->orderBy('created_at', 'desc')
+                    ->first();
 
-            // Update renewal status
-            $renewal->update([
-                'status' => 'approved',
-            ]);
-
-            // Update payment status
-            $payment->update([
-                'status' => 'approved',
-            ]);
+                if ($renewal) {
+                    $renewal->update([
+                        'payment_screenshot' => $path,
+                        'payment_method' => 'gcash',
+                    ]);
+                } else {
+                    \Log::warning("No pending renewal found for rfid_uid: {$user->rfid_uid}");
+                }
+            } catch (\Exception $e) {
+                \Log::error('Failed to update Renewal: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+                throw new \Exception('Renewal update failed: ' . $e->getMessage());
+            }
 
             return response()->json([
                 'success' => true,
-                'message' => 'Renewal approved successfully',
-                'user' => $user,
-            ]);
-
-        } catch (\Exception $e) {
-            \Log::error('Approval error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
-            return response()->json([
-                'success' => false,
-                'message' => 'Approval failed: ' . $e->getMessage(),
-            ], 400);
+                'message' => 'Payment screenshot uploaded successfully',
+                'data' => [
+                    'payment_id' => $payment->id,
+                    'screenshot_path' => $path,
+                ]
+            ], 200);
         }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'No screenshot provided'
+        ], 400);
+    } catch (\Exception $e) {
+        \Log::error('Error uploading payment screenshot: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to upload payment screenshot: ' . $e->getMessage()
+        ], 500);
     }
+}
 }
