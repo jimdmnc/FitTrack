@@ -101,6 +101,8 @@ class StaffApprovalController extends Controller
         $user->member_status = 'active';
         $user->session_status = 'approved';
         $user->needs_approval = false;
+        $user->start_date = $request->start_date;
+        $user->end_date = $request->end_date;
         $user->save();
     
         if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
