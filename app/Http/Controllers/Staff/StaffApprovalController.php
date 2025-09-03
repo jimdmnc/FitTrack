@@ -95,32 +95,29 @@ class StaffApprovalController extends Controller
         }
     }
     
-    public function approveUser($id, Request $request)
-    {
-        $user = User::findOrFail($id);
-        $user->update([
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'member_status' => 'active',
-            'session_status' => 'approved',
-            'needs_approval' => false,
+public function approveUser($id)
+{
+    $user = User::findOrFail($id);
+    $user->member_status = 'active';
+    $user->session_status = 'approved';
+    $user->needs_approval = false;
+    $user->save();
+
+    if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
+        DB::table('attendances')->insert([
+            'rfid_uid' => $user->rfid_uid,
+            'time_in' => now(),
+            'status' => 'present',
+            'attendance_date' => now()->toDateString(),
+            'check_in_method' => 'manual',
+            'session_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
-    
-        if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
-            DB::table('attendances')->insert([
-                'rfid_uid' => $user->rfid_uid,
-                'time_in' => now(),
-                'status' => 'present',
-                'attendance_date' => now()->toDateString(),
-                'check_in_method' => 'manual',
-                'session_id' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-    
-        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
+
+    return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+}
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
