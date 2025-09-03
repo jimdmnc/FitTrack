@@ -95,15 +95,16 @@ class StaffApprovalController extends Controller
         }
     }
     
-    public function approveUser($id)
+    public function approveUser($id, Request $request)
     {
         $user = User::findOrFail($id);
-        $user->member_status = 'active';
-        $user->session_status = 'approved';
-        $user->needs_approval = false;
-        $user->start_date = $request->start_date;
-        $user->end_date = $request->end_date;
-        $user->save();
+        $user->update([
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'member_status' => 'active',
+            'session_status' => 'approved',
+            'needs_approval' => false,
+        ]);
     
         if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
             DB::table('attendances')->insert([
