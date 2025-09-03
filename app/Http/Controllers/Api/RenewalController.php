@@ -186,4 +186,77 @@ class RenewalController extends Controller
             ], 500);
         }
     }
+
+    public function approveRenewal(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'renewal_id' => 'required|exists:renewals,id',
+            'rfid_uid' => 'required|exists:users,rfid_uid',
+        ]);
+
+        try {
+            // Find the renewal record
+            $renewal = Renewal::where('id', $request->renewal_id)
+                ->where('rfid_uid', $request->rfid_uid)
+                ->where('status', 'pending')
+                ->first();
+
+            if (!$renewal) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pending renewal not found'
+                ], 404);
+            }
+
+            // Find the user
+            $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
+
+            // Find the associated payment
+            $payment = MembersPayment::where('rfid_uid', $request->rfid_uid)
+                ->where('status', 'pending')
+                ->where('payment_date', '>=', $renewal->created_at)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$payment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No pending payment found for this renewal'
+                ], 404);
+            }
+
+            // Update user with renewal details
+            $user->update([
+                'start_date' => $renewal->start_date,
+                'end_date' => $renewal->end_date,
+                'member_status' => 'active',
+                'session_status' => 'active',
+                'needs_approval' => 0,
+            ]);
+
+            // Update renewal status
+            $renewal->update([
+                'status' => 'approved',
+            ]);
+
+            // Update payment status
+            $payment->update([
+                'status' => 'approved',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Renewal approved successfully',
+                'user' => $user,
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Approval error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+            return response()->json([
+                'success' => false,
+                'message' => 'Approval failed: ' . $e->getMessage(),
+            ], 400);
+        }
+    }
 }
