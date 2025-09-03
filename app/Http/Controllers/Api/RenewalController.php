@@ -41,7 +41,8 @@ class RenewalController extends Controller
             // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
- 
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
                 'member_status' => 'expired',
                 'session_status' => 'pending',
                 'needs_approval' => 1,
