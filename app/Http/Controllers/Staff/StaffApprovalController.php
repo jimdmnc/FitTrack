@@ -95,66 +95,29 @@ class StaffApprovalController extends Controller
         }
     }
     
-    public function approveUser($id)
-    {
-        // Find the user
-        $user = User::findOrFail($id);
+public function approveUser($id)
+{
+    $user = User::findOrFail($id);
+    $user->member_status = 'active';
+    $user->session_status = 'approved';
+    $user->needs_approval = false;
+    $user->save();
 
-        try {
-            // Find the latest pending renewal for the user
-            $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
-                            ->where('status', 'pending')
-                            ->latest()
-                            ->first();
-
-            if (!$renewal) {
-                return redirect()->route('staff.manageApproval')->with('error', 'No pending renewal found for this user.');
-            }
-
-            // Update user membership details
-            $user->update([
-                'membership_type' => $renewal->membership_type,
-                'start_date' => $renewal->start_date,
-                'end_date' => $renewal->end_date,
-                'member_status' => 'active',
-                'session_status' => 'approved',
-                'needs_approval' => false,
-            ]);
-
-            // Update renewal status to approved
-            $renewal->update([
-                'status' => 'approved',
-            ]);
-
-            // Update payment status to approved
-            \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
-                ->where('status', 'pending')
-                ->latest()
-                ->update([
-                    'status' => 'approved',
-                ]);
-
-            // Record attendance for staff users
-            if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
-                DB::table('attendances')->insert([
-                    'rfid_uid' => $user->rfid_uid,
-                    'time_in' => now(),
-                    'status' => 'present',
-                    'attendance_date' => now()->toDateString(),
-                    'check_in_method' => 'manual',
-                    'session_id' => null,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            return redirect()->route('staff.manageApproval')->with('success', 'User approved, membership updated, and attendance recorded successfully!');
-
-        } catch (\Exception $e) {
-            \Log::error('Approval error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
-            return redirect()->route('staff.manageApproval')->with('error', 'Approval failed: ' . $e->getMessage());
-        }
+    if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
+        DB::table('attendances')->insert([
+            'rfid_uid' => $user->rfid_uid,
+            'time_in' => now(),
+            'status' => 'present',
+            'attendance_date' => now()->toDateString(),
+            'check_in_method' => 'manual',
+            'session_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
+
+    return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+}
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
