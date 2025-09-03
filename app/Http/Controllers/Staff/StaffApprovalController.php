@@ -95,29 +95,42 @@ class StaffApprovalController extends Controller
         }
     }
     
-public function approveUser($id)
-{
-    $user = User::findOrFail($id);
-    $user->member_status = 'active';
-    $user->session_status = 'approved';
-    $user->needs_approval = false;
-    $user->save();
-
-    if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
-        DB::table('attendances')->insert([
-            'rfid_uid' => $user->rfid_uid,
-            'time_in' => now(),
-            'status' => 'present',
-            'attendance_date' => now()->toDateString(),
-            'check_in_method' => 'manual',
-            'session_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
+    public function approveUser(Request $request, $id)
+    {
+        // Validate dates before approving
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date'   => 'required|date|after:start_date',
         ]);
+    
+        $user = User::findOrFail($id);
+    
+        // Update membership fields
+        $user->member_status   = 'active';
+        $user->session_status  = 'approved';
+        $user->needs_approval  = false;
+        $user->start_date      = $request->start_date;
+        $user->end_date        = $request->end_date;
+        $user->save();
+    
+        // Optional: Record attendance if RFID is staff
+        if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
+            DB::table('attendances')->insert([
+                'rfid_uid'        => $user->rfid_uid,
+                'time_in'         => now(),
+                'status'          => 'present',
+                'attendance_date' => now()->toDateString(),
+                'check_in_method' => 'manual',
+                'session_id'      => null,
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+        }
+    
+        return redirect()->route('staff.manageApproval')
+            ->with('success', 'User approved and membership dates recorded successfully!');
     }
-
-    return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-}
+    
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
