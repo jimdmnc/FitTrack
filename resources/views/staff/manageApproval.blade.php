@@ -146,7 +146,7 @@
         </div>
         <div class="flex justify-center">
             <img id="screenshotImage" src="" alt="Payment Screenshot"
-                class="max-w-[90vw] max-h-[80vh] object-contain rounded-md shadow-lg" />
+                class="max-w-[500vw] max-h-[80vh] object-contain rounded-md shadow-lg" />
         </div>
         <div class="mt-3 flex justify-center">
             <button onclick="closeScreenshotModal()" class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm">
