@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
+use App\Models\Renewal;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class StaffApprovalController extends Controller
 {
@@ -15,17 +17,17 @@ class StaffApprovalController extends Controller
     {
         $pendingUsers = User::where('session_status', 'pending')
             ->where('needs_approval', true)
-            ->where(function($query) {
+            ->where(function ($query) {
                 $query->where('role', 'user')
                     ->orWhere('role', 'userSession');
             })
-            ->with(['payment' => function ($query) {
-                $query->latest();
+            ->with(['renewal' => function ($query) {
+                $query->where('status', 'pending')->latest();
             }])
             ->get();
 
         $pendingApprovalCount = $pendingUsers->count();
-        
+
         return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
     }
 
@@ -35,12 +37,12 @@ class StaffApprovalController extends Controller
         try {
             $query = User::where('session_status', 'pending')
                 ->where('needs_approval', true)
-                ->where(function($query) {
+                ->where(function ($query) {
                     $query->where('role', 'user')
                         ->orWhere('role', 'userSession');
                 })
-                ->with(['payment' => function ($query) {
-                    $query->latest();
+                ->with(['renewal' => function ($query) {
+                    $query->where('status', 'pending')->latest();
                 }]);
 
             // Apply filters
@@ -52,16 +54,21 @@ class StaffApprovalController extends Controller
             }
 
             $pendingUsers = $query->get()->map(function ($user) {
+                $renewal = $user->renewal;
+                $payment_screenshot = $renewal && $renewal->payment_screenshot
+                    ? (str_starts_with($renewal->payment_screenshot, 'http') 
+                        ? $renewal->payment_screenshot 
+                        : Storage::url($renewal->payment_screenshot))
+                    : Storage::url('uploads/payments/default.png');
+
                 return [
                     'id' => $user->id,
                     'first_name' => $user->first_name,
                     'last_name' => $user->last_name,
                     'gender' => ucfirst($user->gender),
-                    'membership_type' => $user->membership_type,
-                    'payment_method' => $user->payment ? $user->payment->payment_method : null,
-                    'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
-                        ? \Storage::url($user->payment->payment_screenshot) 
-                        : null,
+                    'membership_type' => $renewal ? $renewal->membership_type : $user->membership_type,
+                    'payment_method' => $renewal ? $renewal->payment_method : null,
+                    'payment_screenshot' => $payment_screenshot,
                     'updated_at' => [
                         'date' => $user->updated_at->format('M d, Y'),
                         'time' => $user->updated_at->format('h:i A')
@@ -76,10 +83,10 @@ class StaffApprovalController extends Controller
                 'users' => $pendingUsers
             ]);
         } catch (\Exception $e) {
-            Log::error('Error fetching pending users: ' . $e->getMessage());
+            Log::error('Error fetching pending users: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to fetch pending users'
+                'message' => 'Failed to fetch pending users: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -94,77 +101,72 @@ class StaffApprovalController extends Controller
             return response()->json(['success' => false, 'message' => 'Failed to fetch count'], 500);
         }
     }
-    
-public function approveUser($id)
-{
-    $user = User::findOrFail($id);
-    $user->member_status = 'active';
-    $user->session_status = 'approved';
-    $user->needs_approval = false;
-    $user->save();
 
-    if ($user->rfid_uid && str_starts_with($user->rfid_uid, 'STAFF')) {
-        DB::table('attendances')->insert([
-            'rfid_uid' => $user->rfid_uid,
-            'time_in' => now(),
-            'status' => 'present',
-            'attendance_date' => now()->toDateString(),
-            'check_in_method' => 'manual',
-            'session_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+    public function approveUser($id)
+    {
+        try {
+            $user = User::findOrFail($id);
+            $user->member_status = 'active';
+            $user->session_status = 'approved';
+            $user->needs_approval = false;
+            $user->save();
+
+            $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($renewal) {
+                $renewal->status = 'approved';
+                $renewal->save();
+            }
+
+            $attendanceData = [
+                'rfid_uid' => $user->rfid_uid,
+                'status' => 'present',
+                'attendance_date' => now()->toDateString(),
+                'check_in_method' => 'manual',
+                'session_id' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            // Add time_in for non-staff users
+            if (!str_starts_with($user->rfid_uid, 'STAFF')) {
+                $attendanceData['time_in'] = now();
+            }
+
+            DB::table('attendances')->insert($attendanceData);
+
+            return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+        } catch (\Exception $e) {
+            Log::error('Error approving user: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
+            return redirect()->back()->with('error', 'Error approving user: ' . $e->getMessage());
+        }
     }
 
-    return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-}
-    // public function approveUser($id)
-    // {
-    //     $user = User::findOrFail($id);
-    //     $user->member_status = 'active';
-    //     $user->session_status = 'approved';
-    //     $user->needs_approval = false;
-    //     $user->save();
-    
-    //     $attendanceData = [
-    //         'rfid_uid' => $user->rfid_uid,
-    //         'status' => 'present',
-    //         'attendance_date' => now()->toDateString(),
-    //         'check_in_method' => 'manual',
-    //         'session_id' => null,
-    //         'created_at' => now(),
-    //         'updated_at' => now(),
-    //     ];
-    
-    //     // Add time_in only if the user has session_status of 'approved'
-    //     // (or adjust this condition based on your actual role check)
-    //     if ($user->role === 'userSession') {
-    //         $attendanceData['time_in'] = now();
-    //     }
-    //     DB::table('attendances')->insert($attendanceData);
-    
-    //     return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-    // }
     public function rejectUser(Request $request, $id)
     {
-        Log::info('Reject User Request', [
-            'id' => $id,
-            'request_data' => $request->all(),
-            'method' => $request->method()
-        ]);
-
         try {
             $user = User::findOrFail($id);
             $user->session_status = 'rejected';
-            $user->rejection_reason = $request->rejection_reason;
+            $user->rejection_reason = $request->input('rejection_reason');
             $user->save();
+
+            $renewal = Renewal::where('rfid_uid', $user->rfid_uid)
+                ->where('status', 'pending')
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if ($renewal) {
+                $renewal->status = 'rejected';
+                $renewal->rejection_reason = $request->input('rejection_reason');
+                $renewal->save();
+            }
 
             return redirect()->route('staff.manageApproval')->with('success', 'Membership request rejected');
         } catch (\Exception $e) {
-            Log::error('Error rejecting user', [
-                'id' => $id,
-                'error' => $e->getMessage()
-            ]);
+            Log::error('Error rejecting user: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return redirect()->back()->with('error', 'Error rejecting user: ' . $e->getMessage());
         }
     }
