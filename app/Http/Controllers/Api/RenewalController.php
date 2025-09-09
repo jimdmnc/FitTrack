@@ -24,7 +24,7 @@ class RenewalController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            // 'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
+            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
         ]);
 
         // Find user by RFID
@@ -49,7 +49,7 @@ class RenewalController extends Controller
             ]);
 
             // Process payment screenshot if provided
-            $paymentScreenshotPath = null;
+            $paymentScreenshotPath = $request->payment_screenshot;
 
             // Create Renewal and Payment records
             $renewal = Renewal::create([
@@ -63,14 +63,14 @@ class RenewalController extends Controller
                 'payment_screenshot' => $paymentScreenshotPath,
             ]);
 
-            MembersPayment::create([
-                'rfid_uid' => $user->rfid_uid,
-                'amount' => $request->amount,
-                'payment_method' => $request->payment_method,
-                'payment_date' => now(),
-                'payment_screenshot' => $paymentScreenshotPath,
-                'status' => 'pending',
-            ]);
+            // MembersPayment::create([
+            //     'rfid_uid' => $user->rfid_uid,
+            //     'amount' => $request->amount,
+            //     'payment_method' => $request->payment_method,
+            //     'payment_date' => now(),
+            //     'payment_screenshot' => $paymentScreenshotPath,
+            //     'status' => 'pending',
+            // ]);
 
             return response()->json([
                 'success' => true,
