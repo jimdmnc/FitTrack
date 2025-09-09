@@ -10,24 +10,45 @@ use Illuminate\Support\Facades\Log;
 
 class StaffApprovalController extends Controller
 {
-    // Show pending users (server-side rendering, kept for fallback)
-    public function index()
-    {
-        $pendingUsers = User::where('session_status', 'pending')
-            ->where('needs_approval', true)
-            ->where(function($query) {
-                $query->where('role', 'user')
-                    ->orWhere('role', 'userSession');
-            })
-            ->with(['payment' => function ($query) {
-                $query->latest();
-            }])
-            ->get();
+// Show pending + rejected users (server-side rendering, fallback)
+public function index()
+{
+    // Fetch pending users
+    $pendingUsers = User::where('session_status', 'pending')
+        ->where('needs_approval', true)
+        ->where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        })
+        ->with(['payment' => function ($query) {
+            $query->latest();
+        }])
+        ->get();
 
-        $pendingApprovalCount = $pendingUsers->count();
-        
-        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
-    }
+    // Fetch rejected users
+    $rejectedUsers = User::where('session_status', 'rejected')
+        ->where('needs_approval', true)
+        ->where(function($query) {
+            $query->where('role', 'user')
+                  ->orWhere('role', 'userSession');
+        })
+        ->with(['payment' => function ($query) {
+            $query->latest();
+        }])
+        ->get();
+
+    // Counts
+    $pendingApprovalCount = $pendingUsers->count();
+    $rejectedApprovalCount = $rejectedUsers->count();
+
+    return view('staff.manageApproval', compact(
+        'pendingUsers', 
+        'rejectedUsers', 
+        'pendingApprovalCount', 
+        'rejectedApprovalCount'
+    ));
+}
+
 
     // Fetch pending users for AJAX
     public function getPendingUsers(Request $request)
