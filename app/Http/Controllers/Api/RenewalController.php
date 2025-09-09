@@ -24,21 +24,30 @@ class RenewalController extends Controller
             'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            // 'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
+            'payment_screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048|required_if:payment_method,gcash',
         ]);
-
+    
         // Find user by RFID
         $user = User::where('rfid_uid', $request->rfid_uid)->first();
-
+    
         if (!$user) {
             return response()->json([
                 'success' => false,
                 'message' => 'User not found'
             ], 404);
         }
-
+    
         try {
-            // Update user membership - both payment methods will be pending approval
+            // Process payment screenshot if provided
+            $paymentScreenshotPath = null;
+            if ($request->hasFile('payment_screenshot') && $request->payment_method === 'gcash') {
+                $file = $request->file('payment_screenshot');
+                $filename = 'payment_' . Str::random(10) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $paymentScreenshotPath = $file->storeAs('uploads/payments', $filename, 'public');
+                \Log::info('Stored payment screenshot: ' . $paymentScreenshotPath);
+            }
+    
+            // Update user membership
             $user->update([
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -47,10 +56,7 @@ class RenewalController extends Controller
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
-
-            // Process payment screenshot if provided
-            $paymentScreenshotPath = $request->payment_screenshot;
-
+    
             // Create Renewal and Payment records
             $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
@@ -60,24 +66,25 @@ class RenewalController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => null,
+                'payment_screenshot' => $paymentScreenshotPath,
             ]);
-
+    
             MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_screenshot' => null,
+                'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Renewal request submitted. Waiting for staff approval.',
                 'user' => $user,
+                'screenshot_path' => $paymentScreenshotPath ? Storage::url($paymentScreenshotPath) : null,
             ]);
-
+    
         } catch (\Exception $e) {
             \Log::error('Renewal error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return response()->json([
