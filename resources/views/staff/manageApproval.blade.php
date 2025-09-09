@@ -158,13 +158,12 @@
 </div>
 
 <script>
-   function openScreenshotModal(imageUrl) {
-    console.log('Image URL:', imageUrl);
-    const modal = document.getElementById('screenshotModal');
-    const image = document.getElementById('screenshotImage');
-    image.src = imageUrl;
-    modal.classList.remove('hidden');
-}
+    function openScreenshotModal(imageUrl) {
+        const modal = document.getElementById('screenshotModal');
+        const image = document.getElementById('screenshotImage');
+        image.src = imageUrl;
+        modal.classList.remove('hidden');
+    }
 
     function closeScreenshotModal() {
         const modal = document.getElementById('screenshotModal');
