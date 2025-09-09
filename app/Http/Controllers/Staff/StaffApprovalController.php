@@ -10,45 +10,24 @@ use Illuminate\Support\Facades\Log;
 
 class StaffApprovalController extends Controller
 {
-// Show pending + rejected users (server-side rendering, fallback)
-public function index()
-{
-    // Fetch pending users
-    $pendingUsers = User::where('session_status', 'pending')
-        ->where('needs_approval', true)
-        ->where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
-        })
-        ->with(['payment' => function ($query) {
-            $query->latest();
-        }])
-        ->get();
+    // Show pending users (server-side rendering, kept for fallback)
+    public function index()
+    {
+        $pendingUsers = User::where('session_status', 'pending')
+            ->where('needs_approval', true)
+            ->where(function($query) {
+                $query->where('role', 'user')
+                    ->orWhere('role', 'userSession');
+            })
+            ->with(['payment' => function ($query) {
+                $query->latest();
+            }])
+            ->get();
 
-    // Fetch rejected users
-    $rejectedUsers = User::where('session_status', 'rejected')
-        ->where('needs_approval', true)
-        ->where(function($query) {
-            $query->where('role', 'user')
-                  ->orWhere('role', 'userSession');
-        })
-        ->with(['payment' => function ($query) {
-            $query->latest();
-        }])
-        ->get();
-
-    // Counts
-    $pendingApprovalCount = $pendingUsers->count();
-    $rejectedApprovalCount = $rejectedUsers->count();
-
-    return view('staff.manageApproval', compact(
-        'pendingUsers', 
-        'rejectedUsers', 
-        'pendingApprovalCount', 
-        'rejectedApprovalCount'
-    ));
-}
-
+        $pendingApprovalCount = $pendingUsers->count();
+        
+        return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
+    }
 
     // Fetch pending users for AJAX
     public function getPendingUsers(Request $request)
@@ -176,6 +155,8 @@ public function index()
             $user = User::findOrFail($id);
             $user->session_status = 'rejected';
             $user->rejection_reason = $request->rejection_reason;
+            $user->needs_approval = false;
+
             $user->save();
 
             return redirect()->route('staff.manageApproval')->with('success', 'Membership request rejected');

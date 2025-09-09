@@ -22,7 +22,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::composer('*', function ($view) {
-            // Count pending approvals
             $pendingApprovalCount = User::where('session_status', 'pending')
                 ->where('needs_approval', true)
                 ->where(function($query) {
@@ -31,20 +30,7 @@ class AppServiceProvider extends ServiceProvider
                 })
                 ->count();
     
-            // Count rejected approvals
-            $rejectedApprovalCount = User::where('session_status', 'rejected')
-                ->where('needs_approval', true)
-                ->where(function($query) {
-                    $query->where('role', 'user')
-                          ->orWhere('role', 'userSession');
-                })
-                ->count();
-    
-            // Share both counts to all views
-            $view->with([
-                'pendingApprovalCount' => $pendingApprovalCount,
-                'rejectedApprovalCount' => $rejectedApprovalCount,
-            ]);
+            $view->with('pendingApprovalCount', $pendingApprovalCount);
         });
     
         // Keep your existing scheduled command
@@ -54,5 +40,4 @@ class AppServiceProvider extends ServiceProvider
                 ->everyMinute();
         });
     }
-    
 }
