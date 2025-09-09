@@ -49,7 +49,7 @@ class RenewalController extends Controller
             ]);
 
             // Process payment screenshot if provided
-            $paymentScreenshotPath = $request->payment_screenshot;
+            $paymentScreenshotPath = null;
 
             // Create Renewal and Payment records
             $renewal = Renewal::create([
@@ -60,7 +60,7 @@ class RenewalController extends Controller
                 'payment_method' => $request->payment_method,
                 'status' => 'pending',
                 'payment_reference' => null,
-                'payment_screenshot' => null,
+                'payment_screenshot' => $paymentScreenshotPath,
             ]);
 
             MembersPayment::create([
@@ -68,7 +68,7 @@ class RenewalController extends Controller
                 'amount' => $request->amount,
                 'payment_method' => $request->payment_method,
                 'payment_date' => now(),
-                'payment_screenshot' => null,
+                'payment_screenshot' => $paymentScreenshotPath,
                 'status' => 'pending',
             ]);
 
