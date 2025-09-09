@@ -134,20 +134,19 @@
 </div>
 
 <!-- Modal for Viewing Payment Screenshot -->
-<div id="screenshotModal" class="absolute inset-0 flex items-center justify-center hidden z-50">
-    <div class="bg-gray-800 rounded-lg p-4 w-full max-w-sm mx-4">
-        <div class="flex h-[50px] justify-between items-center mb-3">
+<div id="screenshotModal" class="fixed inset-0 flex items-center justify-center hidden z-50 bg-black bg-opacity-70">
+    <div class="bg-[#1e1e1e] rounded-lg p-4 max-w-5xl w-auto mx-4 relative">
+        <div class="flex justify-between items-center mb-3">
             <h3 class="text-sm font-semibold text-gray-200">Payment Screenshot</h3>
             <button onclick="closeScreenshotModal()" class="text-gray-400 hover:text-gray-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
         <div class="flex justify-center">
-            <div class="max-w-[320px] max-h-[220px] w-full h-sm overflow-hidden rounded-md bg-gray-700">
-                <img id="screenshotImage" src="" alt="Payment Screenshot" class="w-full h-md object-contain rounded-md" />
-            </div>
+            <img id="screenshotImage" src="" alt="Payment Screenshot"
+                class="max-w-[90vw] max-h-[80vh] object-contain rounded-md shadow-lg" />
         </div>
         <div class="mt-3 flex justify-center">
             <button onclick="closeScreenshotModal()" class="bg-gray-600 text-gray-200 px-3 py-1 rounded-md hover:bg-gray-500 text-sm">
@@ -156,6 +155,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
     function openScreenshotModal(imageUrl) {
