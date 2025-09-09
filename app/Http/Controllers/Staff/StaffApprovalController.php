@@ -29,37 +29,59 @@ class StaffApprovalController extends Controller
         return view('staff.manageApproval', compact('pendingUsers', 'pendingApprovalCount'));
     }
 
-    public function pendingUsers(Request $request)
+    // Fetch pending users for AJAX
+    public function getPendingUsers(Request $request)
     {
-        $filter = $request->query('filter', 'all');
-        $query = Renewal::where('status', 'pending')
-            ->join('users', 'renewals.rfid_uid', '=', 'users.rfid_uid');
-    
-        if ($filter === 'today') {
-            $query->whereDate('renewals.created_at', Carbon::today());
-        } elseif ($filter === 'week') {
-            $query->whereBetween('renewals.created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+        try {
+            $query = User::where('session_status', 'pending')
+                ->where('needs_approval', true)
+                ->where(function($query) {
+                    $query->where('role', 'user')
+                        ->orWhere('role', 'userSession');
+                })
+                ->with(['payment' => function ($query) {
+                    $query->latest();
+                }]);
+
+            // Apply filters
+            $filter = $request->query('filter', 'all');
+            if ($filter === 'today') {
+                $query->whereDate('updated_at', today());
+            } elseif ($filter === 'week') {
+                $query->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]);
+            }
+
+            $pendingUsers = $query->get()->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'last_name' => $user->last_name,
+                    'gender' => ucfirst($user->gender),
+                    'membership_type' => $user->membership_type,
+                    'payment_method' => $user->payment ? $user->payment->payment_method : null,
+                    'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
+                        ? \Storage::url($user->payment->payment_screenshot) 
+                        : null,
+                    'updated_at' => [
+                        'date' => $user->updated_at->format('M d, Y'),
+                        'time' => $user->updated_at->format('h:i A')
+                    ],
+                    'approve_url' => route('staff.approveUser', $user->id),
+                    'reject_url' => route('staff.rejectUser', $user->id)
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'users' => $pendingUsers
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching pending users: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch pending users'
+            ], 500);
         }
-    
-        $users = $query->get()->map(function ($renewal) {
-            $user = $renewal->user;
-            return [
-                'id' => $renewal->id, // Use renewal ID for approval/rejection
-                'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'gender' => $user->gender,
-                'membership_type' => $renewal->membership_type,
-                'payment_method' => $renewal->payment_method,
-                'payment_screenshot' => $renewal->payment_screenshot ? Storage::url($renewal->payment_screenshot) : null,
-                'updated_at' => [
-                    'date' => $renewal->updated_at->format('Y-m-d'),
-                    'time' => $renewal->updated_at->format('H:i:s'),
-                ],
-                'approve_url' => route('staff.approveUser', $renewal->id),
-            ];
-        });
-    
-        return response()->json(['success' => true, 'users' => $users]);
     }
 
     public function getPendingApprovalCount()
