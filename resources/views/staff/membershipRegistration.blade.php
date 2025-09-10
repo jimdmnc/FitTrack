@@ -220,6 +220,15 @@
                 <input type="text" id="payment_amount" name="payment_amount" class="w-full px-4 py-3 bg-[#3A3A3A] text-gray-200 border border-[#2c2c2c] rounded-lg cursor-default pointer-events-none select-none" readonly style="box-shadow: none;">
             </div>
 
+            <div>
+                <label for="discount_amount" class="block text-gray-200 font-medium mb-2">Discount Amount (₱)</label>
+                <input type="number" id="discount_amount" name="discount_amount" min="0" step="0.01" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('discount_amount', 0) }}" aria-describedby="discount_amount_error">
+                @error('discount_amount')
+                    <span id="discount_amount_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
+            </div>
+
+
             <div id="customDaysContainer" class="hidden">
                 <label for="customDays" class="block text-gray-200 font-medium mb-2">Number of Days <span class="text-red-500">*</span></label>
                 <input type="number" id="customDays" name="custom_days" min="1" max="365" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('custom_days') }}" aria-describedby="custom_days_error">
