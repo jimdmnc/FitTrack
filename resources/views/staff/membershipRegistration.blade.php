@@ -404,6 +404,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const customDaysContainer = getElement("customDaysContainer");
     const customDaysInput = getElement("customDays");
     const paymentAmount = getElement("payment_amount");
+    const discountPercentInput = getElement("discount_percent"); // New: Get discount input
 
     // Default to empty object if paymentRates is undefined
     const paymentRates = {
@@ -416,16 +417,23 @@ document.addEventListener("DOMContentLoaded", function() {
     function updatePaymentAmount() {
         if (!paymentAmount || !membershipType) return;
 
-        let amount = 0;
+        let baseAmount = 0;
         
+        // Calculate base amount based on membership type
         if (membershipType.value === 'custom' && customDaysInput) {
             const days = parseInt(customDaysInput.value) || 0;
-            amount = days > 0 ? days * (paymentRates['custom'] || 60) : 0;
+            baseAmount = days > 0 ? days * (paymentRates['custom'] || 60) : 0;
         } else {
-            amount = paymentRates[membershipType.value] || 0;
+            baseAmount = paymentRates[membershipType.value] || 0;
         }
         
-        paymentAmount.value = amount.toFixed(2);
+        // Apply discount
+        const discountPercent = parseFloat(discountPercentInput?.value) || 0;
+        const discountMultiplier = 1 - (discountPercent / 100);
+        const finalAmount = baseAmount * discountMultiplier;
+
+        // Update payment amount field
+        paymentAmount.value = finalAmount.toFixed(2);
     }
 
     function toggleCustomDays() {
@@ -460,6 +468,20 @@ document.addEventListener("DOMContentLoaded", function() {
                     
                     updatePaymentAmount();
                     updateEndDate();
+                });
+            }
+
+            
+            // New: Add event listener for discount input
+            if (discountPercentInput) {
+                discountPercentInput.addEventListener("input", function() {
+                    // Ensure value is between 0 and 100
+                    let value = parseFloat(this.value) || 0;
+                    if (value < 0) value = 0;
+                    if (value > 100) value = 100;
+                    this.value = value;
+                    
+                    updatePaymentAmount();
                 });
             }
             
