@@ -455,455 +455,455 @@
 
 
 // Function to update "All Time" option visibility
-function updateAllTimeOption() {
-            const isPayments = reportTypeSelect.value === 'payments';
-            allTimeOption.disabled = isPayments;
-            // If "All Time" is selected and Payments is chosen, reset to "today"
-            if (isPayments && dateFilterSelect.value === '') {
-                dateFilterSelect.value = 'today';
-                submitForm();
-            }
+        function updateAllTimeOption() {
+                const isPayments = reportTypeSelect.value === 'payments';
+                allTimeOption.style.display = isPayments ? 'none' : '';
+                // If "All Time" is selected and Payments is chosen, reset to "today"
+                if (isPayments && dateFilterSelect.value === '') {
+                    dateFilterSelect.value = 'today';
+                    submitForm();
+                }
         }
 
         // Function to submit the form
         function submitForm() {
-            const form = document.createElement('form');
-            form.method = 'GET';
-            form.action = window.location.pathname;
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = window.location.pathname;
 
-            const fields = {
-                type: reportTypeSelect.value,
-                filter: dateFilterSelect.value,
-                start_date: dateFilterSelect.value === 'custom' ? document.getElementById('startDate').value : '',
-                end_date: dateFilterSelect.value === 'custom' ? document.getElementById('endDate').value : '',
-                per_page: document.querySelector('select[name="per_page"]')?.value || '10',
-            };
+                const fields = {
+                    type: reportTypeSelect.value,
+                    filter: dateFilterSelect.value,
+                    start_date: dateFilterSelect.value === 'custom' ? document.getElementById('startDate').value : '',
+                    end_date: dateFilterSelect.value === 'custom' ? document.getElementById('endDate').value : '',
+                    per_page: document.querySelector('select[name="per_page"]')?.value || '10',
+                };
 
-            for (const [name, value] of Object.entries(fields)) {
-                if (value) {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = name;
-                    input.value = value;
-                    form.appendChild(input);
+                for (const [name, value] of Object.entries(fields)) {
+                    if (value) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = name;
+                        input.value = value;
+                        form.appendChild(input);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+
+                // Initialize on page load
+                updateAllTimeOption();
+
+                // Listen for changes to reportType
+                reportTypeSelect.addEventListener('change', () => {
+                    updateAllTimeOption();
+                    submitForm();
+                });
+
+                // Listen for changes to dateFilter
+                dateFilterSelect.addEventListener('change', submitForm);
+
+
+
+
+            // Initialize form values from URL parameters
+            function initializeFromUrl() {
+                // Set report type
+                if (urlParams.has('type')) {
+                    reportTypeSelect.value = urlParams.get('type');
+                    updateReportTypeDisplay();
+                }
+                
+                // Set date filter (using 'filter' parameter)
+                if (urlParams.has('filter')) {
+                    dateFilter.value = urlParams.get('filter');
+                    
+                    if (urlParams.get('filter') === 'custom') {
+                        customRange.classList.remove('hidden');
+                        if (urlParams.has('start_date')) {
+                            startDate.value = urlParams.get('start_date');
+                        }
+                        if (urlParams.has('end_date')) {
+                            endDate.value = urlParams.get('end_date');
+                        }
+                        // Initialize end date constraints
+                        updateEndDateConstraints();
+                    }
                 }
             }
 
-            document.body.appendChild(form);
-            form.submit();
-        }
-
-        // Initialize on page load
-        updateAllTimeOption();
-
-        // Listen for changes to reportType
-        reportTypeSelect.addEventListener('change', () => {
-            updateAllTimeOption();
-            submitForm();
-        });
-
-        // Listen for changes to dateFilter
-        dateFilterSelect.addEventListener('change', submitForm);
-
-
-
-
-    // Initialize form values from URL parameters
-    function initializeFromUrl() {
-        // Set report type
-        if (urlParams.has('type')) {
-            reportTypeSelect.value = urlParams.get('type');
-            updateReportTypeDisplay();
-        }
-        
-        // Set date filter (using 'filter' parameter)
-        if (urlParams.has('filter')) {
-            dateFilter.value = urlParams.get('filter');
+            // Update the visible report type
+            function updateReportTypeDisplay() {
+                const type = reportTypeSelect.value;
+                reportTitle.textContent = type === 'members' ? 'Members Report' : 'Payments Report';
+                
+                if (type === 'members') {
+                    membersReport.classList.remove('hidden');
+                    paymentsReport.classList.add('hidden');
+                } else {
+                    membersReport.classList.add('hidden');
+                    paymentsReport.classList.remove('hidden');
+                }
+            }
             
-            if (urlParams.get('filter') === 'custom') {
-                customRange.classList.remove('hidden');
-                if (urlParams.has('start_date')) {
-                    startDate.value = urlParams.get('start_date');
-                }
-                if (urlParams.has('end_date')) {
-                    endDate.value = urlParams.get('end_date');
-                }
-                // Initialize end date constraints
-                updateEndDateConstraints();
-            }
-        }
-    }
-
-    // Update the visible report type
-    function updateReportTypeDisplay() {
-        const type = reportTypeSelect.value;
-        reportTitle.textContent = type === 'members' ? 'Members Report' : 'Payments Report';
-        
-        if (type === 'members') {
-            membersReport.classList.remove('hidden');
-            paymentsReport.classList.add('hidden');
-        } else {
-            membersReport.classList.add('hidden');
-            paymentsReport.classList.remove('hidden');
-        }
-    }
-    
-    // Update URL with current filters (without reloading)
-    function updateUrlWithFilters() {
-        const url = new URL(window.location);
-        
-        // Always include type
-        url.searchParams.set('type', reportTypeSelect.value);
-        
-        // Handle date filter
-        const filterValue = dateFilter.value;
-        if (filterValue) {
-            url.searchParams.set('filter', filterValue);
-            
-            // For custom range, include dates
-            if (filterValue === 'custom' && startDate.value && endDate.value) {
-                url.searchParams.set('start_date', startDate.value);
-                url.searchParams.set('end_date', endDate.value);
-            } else {
-                // Remove date params if not in custom mode
-                url.searchParams.delete('start_date');
-                url.searchParams.delete('end_date');
-            }
-        } else {
-            // Remove filter if not set
-            url.searchParams.delete('filter');
-            url.searchParams.delete('start_date');
-            url.searchParams.delete('end_date');
-        }
-        
-        // Remove page parameter when filters change
-        url.searchParams.delete('page');
-        
-        // Update URL without reloading
-        window.history.replaceState(null, '', url.toString());
-    }
-
-    // Update end date constraints based on start date
-    function updateEndDateConstraints() {
-        const today = new Date().toISOString().split('T')[0];
-        
-        // Ensure start date isn't in the future
-        if (startDate.value > today) {
-            startDate.value = today;
-        }
-        
-        // Set end date constraints
-        endDate.min = startDate.value;
-        endDate.max = today;
-        
-        // If current end date is invalid, adjust it
-        if (endDate.value && (new Date(endDate.value) < new Date(startDate.value) || endDate.value > today)) {
-            endDate.value = startDate.value;
-        }
-    }
-
-    // Reload page with current filters
-    function reloadWithFilters() {
-        updateUrlWithFilters();
-        const url = new URL(window.location);
-        window.location.href = url.toString();
-    }
-
-    // Reset all filters
-    function resetFilters(tableType) {
-        // Reset all filter controls
-        dateFilter.value = '';
-        startDate.value = '';
-        endDate.value = '';
-        customRange.classList.add('hidden');
-
-        // Reset URL
-        const url = new URL(window.location.pathname);
-        url.searchParams.set('type', reportTypeSelect.value);
-        window.location.href = url.toString();
-    }
-
-    function updatePaginationLinks() {
-        const type = reportTypeSelect.value;
-        const filterValue = dateFilter.value;
-        const startDateValue = startDate.value;
-        const endDateValue = endDate.value;
-        
-        // Target only links within pagination container
-        document.querySelectorAll('.pagination-container a').forEach(link => {
-            try {
-                if (!link.href || !link.href.includes('http')) return;
+            // Update URL with current filters (without reloading)
+            function updateUrlWithFilters() {
+                const url = new URL(window.location);
                 
-                const url = new URL(link.href);
+                // Always include type
+                url.searchParams.set('type', reportTypeSelect.value);
                 
-                // Preserve existing page parameter
-                const pageParam = url.searchParams.get('page');
-                
-                // Update parameters
-                url.searchParams.set('type', type);
-                
+                // Handle date filter
+                const filterValue = dateFilter.value;
                 if (filterValue) {
                     url.searchParams.set('filter', filterValue);
+                    
+                    // For custom range, include dates
+                    if (filterValue === 'custom' && startDate.value && endDate.value) {
+                        url.searchParams.set('start_date', startDate.value);
+                        url.searchParams.set('end_date', endDate.value);
+                    } else {
+                        // Remove date params if not in custom mode
+                        url.searchParams.delete('start_date');
+                        url.searchParams.delete('end_date');
+                    }
                 } else {
+                    // Remove filter if not set
                     url.searchParams.delete('filter');
-                }
-                
-                if (filterValue === 'custom' && startDateValue && endDateValue) {
-                    url.searchParams.set('start_date', startDateValue);
-                    url.searchParams.set('end_date', endDateValue);
-                } else {
                     url.searchParams.delete('start_date');
                     url.searchParams.delete('end_date');
                 }
                 
-                // Restore page parameter if it existed
-                if (pageParam) {
-                    url.searchParams.set('page', pageParam);
+                // Remove page parameter when filters change
+                url.searchParams.delete('page');
+                
+                // Update URL without reloading
+                window.history.replaceState(null, '', url.toString());
+            }
+
+            // Update end date constraints based on start date
+            function updateEndDateConstraints() {
+                const today = new Date().toISOString().split('T')[0];
+                
+                // Ensure start date isn't in the future
+                if (startDate.value > today) {
+                    startDate.value = today;
                 }
                 
-                // Update href without changing the element's structure
-                link.href = url.toString();
-            } catch (e) {
-                console.error("Error updating pagination link:", e);
+                // Set end date constraints
+                endDate.min = startDate.value;
+                endDate.max = today;
+                
+                // If current end date is invalid, adjust it
+                if (endDate.value && (new Date(endDate.value) < new Date(startDate.value) || endDate.value > today)) {
+                    endDate.value = startDate.value;
+                }
             }
+
+            // Reload page with current filters
+            function reloadWithFilters() {
+                updateUrlWithFilters();
+                const url = new URL(window.location);
+                window.location.href = url.toString();
+            }
+
+            // Reset all filters
+            function resetFilters(tableType) {
+                // Reset all filter controls
+                dateFilter.value = '';
+                startDate.value = '';
+                endDate.value = '';
+                customRange.classList.add('hidden');
+
+                // Reset URL
+                const url = new URL(window.location.pathname);
+                url.searchParams.set('type', reportTypeSelect.value);
+                window.location.href = url.toString();
+            }
+
+            function updatePaginationLinks() {
+                const type = reportTypeSelect.value;
+                const filterValue = dateFilter.value;
+                const startDateValue = startDate.value;
+                const endDateValue = endDate.value;
+                
+                // Target only links within pagination container
+                document.querySelectorAll('.pagination-container a').forEach(link => {
+                    try {
+                        if (!link.href || !link.href.includes('http')) return;
+                        
+                        const url = new URL(link.href);
+                        
+                        // Preserve existing page parameter
+                        const pageParam = url.searchParams.get('page');
+                        
+                        // Update parameters
+                        url.searchParams.set('type', type);
+                        
+                        if (filterValue) {
+                            url.searchParams.set('filter', filterValue);
+                        } else {
+                            url.searchParams.delete('filter');
+                        }
+                        
+                        if (filterValue === 'custom' && startDateValue && endDateValue) {
+                            url.searchParams.set('start_date', startDateValue);
+                            url.searchParams.set('end_date', endDateValue);
+                        } else {
+                            url.searchParams.delete('start_date');
+                            url.searchParams.delete('end_date');
+                        }
+                        
+                        // Restore page parameter if it existed
+                        if (pageParam) {
+                            url.searchParams.set('page', pageParam);
+                        }
+                        
+                        // Update href without changing the element's structure
+                        link.href = url.toString();
+                    } catch (e) {
+                        console.error("Error updating pagination link:", e);
+                    }
+                });
+            }
+
+            // Initialize on page load
+            initializeFromUrl();
+            updatePaginationLinks();
+            
+            // Event listeners
+            reportTypeSelect.addEventListener('change', function() {
+                updateReportTypeDisplay();
+                reloadWithFilters();
+            });
+            
+            dateFilter.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customRange.classList.remove('hidden');
+                    const today = new Date().toISOString().split('T')[0];
+                    
+                    // Set max date to today for both inputs
+                    startDate.max = today;
+                    endDate.max = today;
+                    
+                    // Set default values if empty
+                    if (!startDate.value) startDate.value = today;
+                    if (!endDate.value) endDate.value = today;
+                    
+                    // Initialize end date constraints
+                    updateEndDateConstraints();
+                } else {
+                    customRange.classList.add('hidden');
+                }
+                reloadWithFilters();
+            });
+
+            startDate.addEventListener('change', function() {
+                updateEndDateConstraints();
+                reloadWithFilters();
+            });
+
+            endDate.addEventListener('change', function() {
+                // Just reload filters when end date changes
+                reloadWithFilters();
+            });
+
+            // Export button handler
+            exportBtn.addEventListener('click', function() {
+                const selectedType = reportTypeSelect.value;
+                const selectedFilter = dateFilter.value;
+                const startDateValue = startDate.value;
+                const endDateValue = endDate.value;
+                const today = new Date().toISOString().split('T')[0];
+
+                // Validate report type
+                if (!['members', 'payments'].includes(selectedType)) {
+                    showAlert('Please select a valid report type', 'error');
+                    return;
+                }
+
+                // Validate custom date range
+                if (selectedFilter === 'custom') {
+                    if (!startDateValue || !endDateValue) {
+                        showAlert('Please select both start and end dates', 'error');
+                        return;
+                    }
+
+                    if (new Date(startDateValue) > new Date(today)) {
+                        showAlert('Start date cannot be in the future', 'error');
+                        return;
+                    }
+
+                    if (new Date(endDateValue) > new Date(today)) {
+                        showAlert('End date cannot be in the future', 'error');
+                        return;
+                    }
+
+                    if (new Date(endDateValue) < new Date(startDateValue)) {
+                        showAlert('End date cannot be before start date', 'error');
+                        return;
+                    }
+                }
+
+                // Check if there's data available based on the current filters
+                const isDataAvailable = checkDataAvailability(selectedType);
+                if (!isDataAvailable) {
+                    showAlert('No data available for the selected filters. Please adjust your filters and try again.', 'warning');
+                    return;
+                }
+
+                // Build the URL
+                let url = new URL("{{ route('generate.report') }}");
+                url.searchParams.append('type', selectedType);
+                
+                if (selectedFilter) {
+                    url.searchParams.append('filter', selectedFilter);
+                    
+                    if (selectedFilter === 'custom') {
+                        url.searchParams.append('start_date', startDateValue);
+                        url.searchParams.append('end_date', endDateValue);
+                    }
+                }
+
+                window.location.href = url.toString();
+            });
+
+            // Function to check if there's data available for the selected report type and filters
+            function checkDataAvailability(reportType) {
+                if (reportType === 'members') {
+                    // For members report, check if there are visible rows in the members table
+                    const visibleRows = Array.from(document.querySelectorAll('#membersTableBody tr:not(.hidden)'))
+                        .filter(row => !row.id.includes('NoResults'));
+                    return visibleRows.length > 0;
+                } else if (reportType === 'payments') {
+                    // For payments report, check if there are visible rows in the payments table
+                    const visibleRows = Array.from(document.querySelectorAll('#paymentsTableBody tr:not(.hidden)'))
+                        .filter(row => !row.id.includes('NoResults'));
+                    return visibleRows.length > 0;
+                }
+                return false;
+            }
+
+            // Function to show alert messages to the user
+            function showAlert(message, type = 'info') {
+                // Create alert container if it doesn't exist
+                let alertContainer = document.getElementById('alertContainer');
+                if (!alertContainer) {
+                    alertContainer = document.createElement('div');
+                    alertContainer.id = 'alertContainer';
+                    alertContainer.className = 'fixed bottom-4 right-4 z-50 max-w-md';
+                    document.body.appendChild(alertContainer);
+                }
+
+                // Create the alert element
+                const alertElement = document.createElement('div');
+                alertElement.className = `mb-3 p-4 rounded-lg shadow-lg flex items-center justify-between transition-all transform translate-y-0 opacity-100 ${getAlertClasses(type)}`;
+                
+                // Set the icon based on alert type
+                const icon = getAlertIcon(type);
+                
+                // Create alert content
+                alertElement.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 mr-3">
+                            ${icon}
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium">${message}</p>
+                        </div>
+                    </div>
+                    <button class="ml-4 text-gray-400 hover:text-gray-600 focus:outline-none" onclick="this.parentElement.remove()">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                `;
+                
+                // Add to container
+                alertContainer.appendChild(alertElement);
+                
+                // Auto remove after delay
+                setTimeout(() => {
+                    alertElement.classList.replace('translate-y-0', 'translate-y-2');
+                    alertElement.classList.replace('opacity-100', 'opacity-0');
+                    setTimeout(() => alertElement.remove(), 300);
+                }, 5000);
+            }
+
+            // Check for flash messages and display them using the existing alert system
+            @if(session('error'))
+                showAlert("{{ session('error') }}", 'error');
+            @endif
+            
+            @if(session('warning'))
+                showAlert("{{ session('warning') }}", 'warning');
+            @endif
+            
+            @if(session('success'))
+                showAlert("{{ session('success') }}", 'success');
+            @endif
+            
+            @if(session('info'))
+                showAlert("{{ session('info') }}", 'info');
+            @endif
+
+            // Helper function to get the appropriate alert classes based on type
+            function getAlertClasses(type) {
+                switch (type) {
+                    case 'error':
+                        return 'bg-red-900 border-l-4 border-red-500 text-red-100';
+                    case 'success':
+                        return 'bg-green-900 border-l-4 border-green-500 text-green-100';
+                    case 'warning':
+                        return 'bg-yellow-900 border-l-4 border-yellow-500 text-yellow-100';
+                    case 'info':
+                    default:
+                        return 'bg-blue-900 border-l-4 border-blue-500 text-blue-100';
+                }
+            }
+
+            // Helper function to get the appropriate alert icon based on type
+            function getAlertIcon(type) {
+                switch (type) {
+                    case 'error':
+                        return `<svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>`;
+                    case 'success':
+                        return `<svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>`;
+                    case 'warning':
+                        return `<svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>`;
+                    case 'info':
+                    default:
+                        return `<svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>`;
+                }
+            }
+
+            // Add CSS for animations
+            const styleEl = document.createElement('style');
+            styleEl.textContent = `
+                #alertContainer > div {
+                    transition: transform 0.3s ease, opacity 0.3s ease;
+                }
+            `;
+            document.head.appendChild(styleEl);
+            // Reset filters button handler
+            document.querySelectorAll('[onclick^="resetFilters"]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const tableType = this.getAttribute('onclick').match(/'(\w+)'/)[1];
+                    resetFilters(tableType);
+                });
+            });
         });
-    }
-
-    // Initialize on page load
-    initializeFromUrl();
-    updatePaginationLinks();
-    
-    // Event listeners
-    reportTypeSelect.addEventListener('change', function() {
-        updateReportTypeDisplay();
-        reloadWithFilters();
-    });
-    
-    dateFilter.addEventListener('change', function() {
-        if (this.value === 'custom') {
-            customRange.classList.remove('hidden');
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Set max date to today for both inputs
-            startDate.max = today;
-            endDate.max = today;
-            
-            // Set default values if empty
-            if (!startDate.value) startDate.value = today;
-            if (!endDate.value) endDate.value = today;
-            
-            // Initialize end date constraints
-            updateEndDateConstraints();
-        } else {
-            customRange.classList.add('hidden');
-        }
-        reloadWithFilters();
-    });
-
-    startDate.addEventListener('change', function() {
-        updateEndDateConstraints();
-        reloadWithFilters();
-    });
-
-    endDate.addEventListener('change', function() {
-        // Just reload filters when end date changes
-        reloadWithFilters();
-    });
-
-    // Export button handler
-    exportBtn.addEventListener('click', function() {
-        const selectedType = reportTypeSelect.value;
-        const selectedFilter = dateFilter.value;
-        const startDateValue = startDate.value;
-        const endDateValue = endDate.value;
-        const today = new Date().toISOString().split('T')[0];
-
-        // Validate report type
-        if (!['members', 'payments'].includes(selectedType)) {
-            showAlert('Please select a valid report type', 'error');
-            return;
-        }
-
-        // Validate custom date range
-        if (selectedFilter === 'custom') {
-            if (!startDateValue || !endDateValue) {
-                showAlert('Please select both start and end dates', 'error');
-                return;
-            }
-
-            if (new Date(startDateValue) > new Date(today)) {
-                showAlert('Start date cannot be in the future', 'error');
-                return;
-            }
-
-            if (new Date(endDateValue) > new Date(today)) {
-                showAlert('End date cannot be in the future', 'error');
-                return;
-            }
-
-            if (new Date(endDateValue) < new Date(startDateValue)) {
-                showAlert('End date cannot be before start date', 'error');
-                return;
-            }
-        }
-
-        // Check if there's data available based on the current filters
-        const isDataAvailable = checkDataAvailability(selectedType);
-        if (!isDataAvailable) {
-            showAlert('No data available for the selected filters. Please adjust your filters and try again.', 'warning');
-            return;
-        }
-
-        // Build the URL
-        let url = new URL("{{ route('generate.report') }}");
-        url.searchParams.append('type', selectedType);
-        
-        if (selectedFilter) {
-            url.searchParams.append('filter', selectedFilter);
-            
-            if (selectedFilter === 'custom') {
-                url.searchParams.append('start_date', startDateValue);
-                url.searchParams.append('end_date', endDateValue);
-            }
-        }
-
-        window.location.href = url.toString();
-    });
-
-    // Function to check if there's data available for the selected report type and filters
-    function checkDataAvailability(reportType) {
-        if (reportType === 'members') {
-            // For members report, check if there are visible rows in the members table
-            const visibleRows = Array.from(document.querySelectorAll('#membersTableBody tr:not(.hidden)'))
-                .filter(row => !row.id.includes('NoResults'));
-            return visibleRows.length > 0;
-        } else if (reportType === 'payments') {
-            // For payments report, check if there are visible rows in the payments table
-            const visibleRows = Array.from(document.querySelectorAll('#paymentsTableBody tr:not(.hidden)'))
-                .filter(row => !row.id.includes('NoResults'));
-            return visibleRows.length > 0;
-        }
-        return false;
-    }
-
-    // Function to show alert messages to the user
-    function showAlert(message, type = 'info') {
-        // Create alert container if it doesn't exist
-        let alertContainer = document.getElementById('alertContainer');
-        if (!alertContainer) {
-            alertContainer = document.createElement('div');
-            alertContainer.id = 'alertContainer';
-            alertContainer.className = 'fixed bottom-4 right-4 z-50 max-w-md';
-            document.body.appendChild(alertContainer);
-        }
-
-        // Create the alert element
-        const alertElement = document.createElement('div');
-        alertElement.className = `mb-3 p-4 rounded-lg shadow-lg flex items-center justify-between transition-all transform translate-y-0 opacity-100 ${getAlertClasses(type)}`;
-        
-        // Set the icon based on alert type
-        const icon = getAlertIcon(type);
-        
-        // Create alert content
-        alertElement.innerHTML = `
-            <div class="flex items-center">
-                <div class="flex-shrink-0 mr-3">
-                    ${icon}
-                </div>
-                <div>
-                    <p class="text-sm font-medium">${message}</p>
-                </div>
-            </div>
-            <button class="ml-4 text-gray-400 hover:text-gray-600 focus:outline-none" onclick="this.parentElement.remove()">
-                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        `;
-        
-        // Add to container
-        alertContainer.appendChild(alertElement);
-        
-        // Auto remove after delay
-        setTimeout(() => {
-            alertElement.classList.replace('translate-y-0', 'translate-y-2');
-            alertElement.classList.replace('opacity-100', 'opacity-0');
-            setTimeout(() => alertElement.remove(), 300);
-        }, 5000);
-    }
-
-    // Check for flash messages and display them using the existing alert system
-    @if(session('error'))
-        showAlert("{{ session('error') }}", 'error');
-    @endif
-    
-    @if(session('warning'))
-        showAlert("{{ session('warning') }}", 'warning');
-    @endif
-    
-    @if(session('success'))
-        showAlert("{{ session('success') }}", 'success');
-    @endif
-    
-    @if(session('info'))
-        showAlert("{{ session('info') }}", 'info');
-    @endif
-
-    // Helper function to get the appropriate alert classes based on type
-    function getAlertClasses(type) {
-        switch (type) {
-            case 'error':
-                return 'bg-red-900 border-l-4 border-red-500 text-red-100';
-            case 'success':
-                return 'bg-green-900 border-l-4 border-green-500 text-green-100';
-            case 'warning':
-                return 'bg-yellow-900 border-l-4 border-yellow-500 text-yellow-100';
-            case 'info':
-            default:
-                return 'bg-blue-900 border-l-4 border-blue-500 text-blue-100';
-        }
-    }
-
-    // Helper function to get the appropriate alert icon based on type
-    function getAlertIcon(type) {
-        switch (type) {
-            case 'error':
-                return `<svg class="h-5 w-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>`;
-            case 'success':
-                return `<svg class="h-5 w-5 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>`;
-            case 'warning':
-                return `<svg class="h-5 w-5 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>`;
-            case 'info':
-            default:
-                return `<svg class="h-5 w-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>`;
-        }
-    }
-
-    // Add CSS for animations
-    const styleEl = document.createElement('style');
-    styleEl.textContent = `
-        #alertContainer > div {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-    `;
-    document.head.appendChild(styleEl);
-    // Reset filters button handler
-    document.querySelectorAll('[onclick^="resetFilters"]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const tableType = this.getAttribute('onclick').match(/'(\w+)'/)[1];
-            resetFilters(tableType);
-        });
-    });
-});
 
 function reportFilter() {
     return {
