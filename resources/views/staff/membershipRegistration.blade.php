@@ -221,10 +221,10 @@
             </div>
 
             <div>
-                <label for="discount_amount" class="block text-gray-200 font-medium mb-2">Discount Amount (₱)</label>
-                <input type="number" id="discount_amount" name="discount_amount" min="0" step="0.01" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('discount_amount', 0) }}" aria-describedby="discount_amount_error">
-                @error('discount_amount')
-                    <span id="discount_amount_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                <label for="discount_percent" class="block text-gray-200 font-medium mb-2">Discount (%)</label>
+                <input type="number" id="discount_percent" name="discount_percent" min="0" max="100" step="0.01" placeholder="e.g., 15 for 15%" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" value="{{ old('discount_percent', 0) }}" aria-describedby="discount_percent_error">
+                @error('discount_percent')
+                    <span id="discount_percent_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
                 @enderror
             </div>
 
