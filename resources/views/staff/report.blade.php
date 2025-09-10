@@ -188,16 +188,18 @@
                         <div class="w-full sm:w-auto">
                             <label class="block mb-1.5 text-sm font-medium text-gray-200">Time Period</label>
                             <div class="relative">
-                                <select 
-                                    id="dateFilter"
-                                    class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors">
-                                    <option value="">All Time</option>
-                                    <option value="today">Today</option>
-                                    <option value="yesterday">Yesterday</option>
-                                    <option value="last7">Last 7 Days</option>
-                                    <option value="last30">Last 30 Days</option>
-                                    <option value="custom">Custom Range</option>
-                                </select>
+                            <select 
+                                id="dateFilter"
+                                class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
+                                x-model="filter"
+                                @change="updateFilter()">
+                                <option value="" data-all-time>All Time</option>
+                                <option value="today">Today</option>
+                                <option value="yesterday">Yesterday</option>
+                                <option value="last7">Last 7 Days</option>
+                                <option value="last30">Last 30 Days</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
                             </div>
                         </div>
                         
@@ -205,12 +207,14 @@
                         <div class="w-full sm:w-auto">
                             <label class="block mb-1.5 text-sm font-medium text-gray-200">Report Type</label>
                             <div class="relative">
-                                <select 
-                                    id="reportType" 
-                                    class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors">
-                                    <option value="members">Members Report</option>
-                                    <option value="payments">Payments Report</option>
-                                </select>
+                            <select 
+    id="reportType" 
+    class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors"
+    x-model="reportType"
+    @change="submitForm()">
+    <option value="members">Members Report</option>
+    <option value="payments">Payments Report</option>
+</select>
                             </div>
                         </div>
                         
@@ -889,4 +893,105 @@ function reportFilter() {
     }
 }
 </script>
+
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('reportFilter', () => ({
+            reportType: 'members',
+            filter: '',
+            startDate: '',
+            endDate: '',
+
+            init() {
+                // Initialize select elements with current values
+                this.reportType = document.getElementById('reportType').value;
+                this.filter = document.getElementById('dateFilter').value;
+                this.startDate = document.getElementById('startDate').value;
+                this.endDate = document.getElementById('endDate').value;
+
+                // Update filter visibility on initialization
+                this.updateFilterVisibility();
+
+                // Watch for changes in reportType
+                this.$watch('reportType', () => {
+                    this.updateFilterVisibility();
+                    this.submitForm();
+                });
+
+                // Watch for changes in filter
+                this.$watch('filter', () => {
+                    this.updateCustomRangeVisibility();
+                    this.submitForm();
+                });
+
+                // Watch for changes in dates
+                this.$watch('startDate', () => this.submitForm());
+                this.$watch('endDate', () => this.submitForm());
+            },
+
+            updateFilterVisibility() {
+                const allTimeOption = document.querySelector('#dateFilter option[data-all-time]');
+                if (this.reportType === 'payments') {
+                    // Disable or hide "All Time" option
+                    allTimeOption.disabled = true;
+                    // If "All Time" is selected, reset to a valid option (e.g., 'today')
+                    if (this.filter === '') {
+                        this.filter = 'today';
+                        document.getElementById('dateFilter').value = 'today';
+                    }
+                } else {
+                    // Enable "All Time" option for members
+                    allTimeOption.disabled = false;
+                }
+            },
+
+            updateCustomRangeVisibility() {
+                const customRange = document.getElementById('customRange');
+                if (this.filter === 'custom') {
+                    customRange.classList.remove('hidden');
+                } else {
+                    customRange.classList.add('hidden');
+                }
+            },
+
+            submitForm() {
+                // Get the form element and submit it
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = window.location.pathname;
+
+                // Add form inputs
+                const fields = {
+                    type: this.reportType,
+                    filter: this.filter,
+                    start_date: this.filter === 'custom' ? this.startDate : '',
+                    end_date: this.filter === 'custom' ? this.endDate : '',
+                    per_page: document.querySelector('select[name="per_page"]')?.value || '10',
+                };
+
+                for (const [name, value] of Object.entries(fields)) {
+                    if (value) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = name;
+                        input.value = value;
+                        form.appendChild(input);
+                    }
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+            },
+
+            updateEndDatePicker() {
+                const startDate = document.getElementById('startDate').value;
+                if (startDate) {
+                    document.getElementById('endDate').setAttribute('min', startDate);
+                }
+            }
+        }));
+    });
+</script>
+
 @endsection
