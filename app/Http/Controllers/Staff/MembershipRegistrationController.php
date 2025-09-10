@@ -61,7 +61,6 @@ class MembershipRegistrationController extends Controller
                 ],
                 'membership_type' => 'required|string|in:custom,7,30,365',
                 'custom_days' => 'nullable|integer|min:1|max:365|required_if:membership_type,custom',
-                // 'start_date' => 'required|date|after_or_equal:today',
                 'start_date' => 'required|date',
                 'birthdate' => ['required', 'date', 'before:today', "before_or_equal:{$maxBirthdate}"],
                 'uid' => [
@@ -71,6 +70,7 @@ class MembershipRegistrationController extends Controller
                     Rule::unique('users', 'rfid_uid')
                 ],
                 'generated_password' => 'required|string|min:8',
+                'discount_percent' => 'nullable|numeric|min:0|max:100', // New: Validate discount_percent
             ]);
 
             $priceType = match ($validatedData['membership_type']) {
@@ -91,11 +91,17 @@ class MembershipRegistrationController extends Controller
                 default => throw new \Exception('Invalid membership type'),
             };
 
-            $paymentAmount = match ($validatedData['membership_type']) {
+            $basePaymentAmount = match ($validatedData['membership_type']) {
                 'custom' => $validatedData['custom_days'] * $price->amount,
                 '7', '30', '365' => $price->amount,
                 default => throw new \Exception('Invalid membership type'),
             };
+
+            // Apply discount
+            $discountPercent = $validatedData['discount_percent'] ?? 0;
+            $discountMultiplier = 1 - ($discountPercent / 100);
+            $paymentAmount = $basePaymentAmount * $discountMultiplier;
+
             // Generate password
             $lastName = strtolower($validatedData['last_name']);
             $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
@@ -122,19 +128,9 @@ class MembershipRegistrationController extends Controller
                         ->format('Y-m-d'),
                 ]);
 
-                // $user->memberships()->create([
-                //     'price_id' => $price->id,
-                //     'amount_paid' => $paymentAmount,
-                //     'start_date' => $validatedData['start_date'],
-                //     'end_date' => Carbon::parse($validatedData['start_date'])
-                //         ->addDays((int)$membershipDays - 1)
-                //         ->format('Y-m-d'),
-                //     'status' => 'active',
-                // ]);
-
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
-                    'amount' => $paymentAmount,
+                    'amount' => $paymentAmount, // Updated: Use discounted amount
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
@@ -146,7 +142,7 @@ class MembershipRegistrationController extends Controller
 
             return redirect()->route('staff.membershipRegistration')
                 ->with([
-                    'success' => 'Member registered successfully!',
+                    'success' => 'Member registered successfully!' . ($discountPercent > 0 ? " Discount of {$discountPercent}% applied." : ''),
                     'generated_password' => $validatedData['generated_password']
                 ]);
 
