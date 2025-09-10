@@ -674,10 +674,10 @@
             updatePaginationLinks();
             
             // Event listeners
-            reportTypeSelect.addEventListener('change', function() {
-                updateReportTypeDisplay();
-                reloadWithFilters();
-            });
+            // reportTypeSelect.addEventListener('change', function() {
+            //     updateReportTypeDisplay();
+            //     reloadWithFilters();
+            // });
             
             dateFilter.addEventListener('change', function() {
                 if (this.value === 'custom') {
