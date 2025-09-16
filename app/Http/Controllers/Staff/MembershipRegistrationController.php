@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\RfidTag;
-use Carbon\Carbon; // Ensure Carbon is imported
+use Carbon\Carbon;
 use App\Models\MembersPayment;
 use App\Models\Price;
 use App\Models\Membership;
@@ -26,7 +26,7 @@ class MembershipRegistrationController extends Controller
         return view('staff.membershipRegistration', [
             'prices' => $prices,
             'maxBirthdate' => Carbon::today()->subYears(16)->format('Y-m-d'),
-            'today' => Carbon::today()->format('Y-m-d'), // Pass today to the view
+            'today' => Carbon::today()->format('Y-m-d'),
         ]);
     }
 
@@ -70,7 +70,7 @@ class MembershipRegistrationController extends Controller
                     Rule::unique('users', 'rfid_uid')
                 ],
                 'generated_password' => 'required|string|min:8',
-                'discount_percent' => 'nullable|numeric|min:0|max:100', // New: Validate discount_percent
+                'discount_percent' => 'nullable|numeric|min:0|max:100',
             ]);
 
             $priceType = match ($validatedData['membership_type']) {
@@ -114,9 +114,7 @@ class MembershipRegistrationController extends Controller
                     'email' => $validatedData['email'],
                     'gender' => $validatedData['gender'],
                     'phone_number' => $validatedData['phone_number'],
-                    'membership_type' => $validatedData['membership_type'] === 'custom' 
-                        ? $validatedData['custom_days'] 
-                        : $validatedData['membership_type'],
+                    'membership_type' => $validatedData['membership_type'] === 'custom' ? '1' : $validatedData['membership_type'],
                     'start_date' => $validatedData['start_date'],
                     'birthdate' => $validatedData['birthdate'],
                     'password' => Hash::make($generatedPassword),
@@ -130,7 +128,7 @@ class MembershipRegistrationController extends Controller
 
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
-                    'amount' => $paymentAmount, // Updated: Use discounted amount
+                    'amount' => $paymentAmount,
                     'payment_method' => 'cash',
                     'payment_date' => now(),
                 ]);
