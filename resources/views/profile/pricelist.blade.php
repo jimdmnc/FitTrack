@@ -174,30 +174,27 @@
             </div>
         </form>
         
-<!-- Confirmation Modal -->
-<div id="confirmPriceModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50 backdrop-blur-sm">
-    <div class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] p-6 rounded-xl border border-green-600 border-opacity-40 w-full max-w-lg mx-4 transform transition-all duration-300 ease-in-out scale-95 shadow-2xl">
-        <div class="flex items-center mb-4">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h2 class="ml-3 text-lg font-semibold text-gray-100">Confirm Price Changes</h2>
-        </div>
-        <div class="text-gray-300 text-base mb-6">
-            <p class="mb-3">Please review and confirm the updated prices below:</p>
-            <ul id="priceList" class="space-y-2 text-gray-200 text-base"></ul>
-        </div>
-        <div class="flex justify-end space-x-4">
-            <button id="cancelConfirmBtn" class="bg-gray-800 text-gray-200 px-5 py-2.5 rounded-lg hover:bg-gray-700 transition duration-200 text-base font-medium">Cancel</button>
-            <button id="confirmUpdateBtn" class="bg-green-600 text-white px-5 py-2.5 rounded-lg hover:bg-green-700 transition duration-200 flex items-center text-base font-medium">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+        <!-- Confirmation Modal -->
+        <div id="confirmPriceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm">
+            <div class="mb-4 bg-green-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-green-600 border-opacity-30 w-full max-w-md mx-4 transform transition-all duration-300 ease-in-out scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Confirm Changes
-            </button>
+                <div class="ml-3 text-sm text-gray-300">
+                    <span class="font-medium text-green-400">Confirm:</span>
+                    <ul id="priceList" class="mt-2 space-y-1"></ul>
+                    <div class="mt-4 flex justify-end space-x-3">
+                        <button id="cancelConfirmBtn" class="bg-gray-700 text-gray-200 px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200">Cancel</button>
+                        <button id="confirmUpdateBtn" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                            Confirm
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
         <div class="mt-8 pt-6 border-t border-gray-700">
             <h2 class="text-lg font-semibold mb-4 text-gray-200">Pricing Guide</h2>
@@ -274,14 +271,12 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.forEach(input => {
             const type = input.dataset.type;
             const original = parseFloat(input.dataset.original).toFixed(2);
-            const amount = input.value ? parseFloat(input.value).toFixed(2) : null;
-
-            // Check if the input has a valid value and has changed
+            const amount = parseFloat(input.value).toFixed(2);
             if (amount && !isNaN(amount) && amount !== original) {
                 hasChanges = true;
                 const li = document.createElement('li');
-                li.className = 'flex items-center text-base';
-                li.innerHTML = `Are you sure you want to update the <span class="capitalize font-medium">${type}</span> price to ₱${amount}?`;
+                li.className = 'flex items-center text-md';
+                li.innerHTML = `Confirm  <span class="capitalize font-medium"> ${type} </span>  price is now ₱${amount}`;
                 priceList.appendChild(li);
             }
         });
@@ -293,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 confirmModal.querySelector('div').classList.add('scale-100');
             }, 10);
         } else {
-            // If no changes, submit directly
+            // If no changes, submit directly or show a message
             form.submit();
         }
     });
