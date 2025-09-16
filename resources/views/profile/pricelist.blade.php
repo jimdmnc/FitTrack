@@ -94,7 +94,7 @@
     @endif
 
     <div class="bg-[#1e1e1e] rounded-lg shadow-md p-4 sm:p-6">
-        <form method="POST" action="{{ route('profile.pricelist.update') }}">
+        <form id="priceUpdateForm" method="POST" action="{{ route('profile.pricelist.update') }}">
             @csrf
             <div class="responsive-table w-full">
                 <table class="w-full">
@@ -153,6 +153,7 @@
                                             name="prices[{{ $price->id }}]" 
                                             value="{{ $price->amount }}" 
                                             class="bg-[#2c2c2c] border border-gray-700 rounded py-2 px-3 w-full sm:w-40 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent text-gray-200"
+                                            data-type="{{ $price->type }}"
                                         >
                                     </div>
                                 </td>
@@ -163,7 +164,7 @@
             </div>
             
             <div class="mt-6 flex justify-end">
-                <button type="submit" class="bg-orange-600 hover:bg-orange-700 hover:translate-y-[-2px] text-white py-2 px-6 rounded-md font-medium transition duration-200 flex items-center shadow-md btn-touch">
+                <button type="button" id="openConfirmModal" class="bg-orange-600 hover:bg-orange-700 hover:translate-y-[-2px] text-white py-2 px-6 rounded-md font-medium transition duration-200 flex items-center shadow-md btn-touch">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                     </svg>
@@ -172,6 +173,29 @@
             </div>
         </form>
         
+        <!-- Confirmation Modal -->
+        <div id="confirmPriceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 backdrop-blur-sm">
+            <div class="bg-[#1e1e1e] rounded-lg shadow-xl border border-gray-800 w-full max-w-md mx-4 p-6 transform transition-all duration-300 ease-in-out scale-95">
+                <div class="flex items-center mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h2 class="text-xl font-semibold text-gray-100">Confirm Price Updates</h2>
+                </div>
+                <p class="text-gray-300 mb-4">Please confirm the updated prices:</p>
+                <ul id="priceList" class="text-gray-200 mb-6 space-y-2"></ul>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelConfirmBtn" class="bg-gray-700 text-gray-200 px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200">Cancel</button>
+                    <button id="confirmUpdateBtn" class="bg-orange-600 text-white px-4 py-2 rounded-md hover:bg-orange-700 transition duration-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <div class="mt-8 pt-6 border-t border-gray-700">
             <h2 class="text-lg font-semibold mb-4 text-gray-200">Pricing Guide</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -203,27 +227,87 @@
                     <div class="flex items-center mb-2">
                         <span class="text-orange-500 mr-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
-                            </svg>
-                        </span>
-                        <span class="font-medium text-gray-200">Monthly Pricing</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Our most popular option. 30-day access with all standard benefits.</p>
+                            <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+                        </svg>
+                    </span>
+                    <span class="font-medium text-gray-200">Monthly Pricing</span>
                 </div>
-                
-                <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
-                    <div class="flex items-center mb-2">
-                        <span class="text-orange-500 mr-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-                            </svg>
-                        </span>
-                        <span class="font-medium text-gray-200">Annual Pricing</span>
-                    </div>
-                    <p class="text-sm text-gray-400">Best value membership. 365-day access with premium benefits and significant savings.</p>
+                <p class="text-sm text-gray-400">Our most popular option. 30-day access with all standard benefits.</p>
+            </div>
+            
+            <div class="bg-[#2c2c2c] p-4 rounded-lg border border-gray-700 pricing-guide-card">
+                <div class="flex items-center mb-2">
+                    <span class="text-orange-500 mr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                    </span>
+                    <span class="font-medium text-gray-200">Annual Pricing</span>
                 </div>
+                <p class="text-sm text-gray-400">Best value membership. 365-day access with premium benefits and significant savings.</p>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('priceUpdateForm');
+    const confirmModal = document.getElementById('confirmPriceModal');
+    const priceList = document.getElementById('priceList');
+    const openConfirmBtn = document.getElementById('openConfirmModal');
+    const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+    const confirmUpdateBtn = document.getElementById('confirmUpdateBtn');
+
+    openConfirmBtn.addEventListener('click', () => {
+        // Clear previous price list
+        priceList.innerHTML = '';
+
+        // Get all price inputs
+        const inputs = form.querySelectorAll('input[name^="prices"]');
+        inputs.forEach(input => {
+            const priceId = input.name.match(/\d+/)[0];
+            const type = input.dataset.type;
+            const amount = parseFloat(input.value).toFixed(2);
+            if (amount && !isNaN(amount)) {
+                const li = document.createElement('li');
+                li.className = 'flex items-center text-sm';
+                li.innerHTML = `
+                    <span class="capitalize font-medium">${type}</span>: ₱${amount}
+                `;
+                priceList.appendChild(li);
+            }
+        });
+
+        // Show modal with animation
+        confirmModal.classList.remove('hidden');
+        setTimeout(() => {
+            confirmModal.querySelector('div').classList.add('scale-100');
+        }, 10);
+    });
+
+    cancelConfirmBtn.addEventListener('click', () => {
+        // Hide modal with animation
+        confirmModal.querySelector('div').classList.remove('scale-100');
+        setTimeout(() => {
+            confirmModal.classList.add('hidden');
+        }, 300);
+    });
+
+    confirmUpdateBtn.addEventListener('click', () => {
+        // Submit the form
+        form.submit();
+    });
+
+    confirmModal.addEventListener('click', (e) => {
+        if (e.target === confirmModal) {
+            // Hide modal with animation
+            confirmModal.querySelector('div').classList.remove('scale-100');
+            setTimeout(() => {
+                confirmModal.classList.add('hidden');
+            }, 300);
+        }
+    });
+});
+</script>
 @endsection
