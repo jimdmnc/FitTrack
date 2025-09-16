@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 hasChanges = true;
                 const li = document.createElement('li');
                 li.className = 'flex items-center text-sm';
-                li.innerHTML = `Confirm <span class="capitalize font-medium">${type}</span> price is now ₱${amount}`;
+                li.innerHTML = `Confirm  <span class="capitalize font-medium">${type}</span>  price is now ₱${amount}`;
                 priceList.appendChild(li);
             }
         });
