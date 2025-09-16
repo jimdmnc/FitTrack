@@ -838,13 +838,40 @@
 function toggleOtherReasonInput() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
     if (select.value === 'Others') {
         otherInput.classList.remove('hidden');
         otherInput.focus();
+        finalReason.value = otherInput.value || '';
     } else {
         otherInput.classList.add('hidden');
         otherInput.value = '';
+        finalReason.value = select.value;
     }
+}
+
+function updateFinalReason() {
+    const select = document.getElementById('revokeReason');
+    const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
+    if (select.value === 'Others' && otherInput.value.trim()) {
+        finalReason.value = otherInput.value.trim();
+    } else {
+        finalReason.value = select.value;
+    }
+}
+
+// Update final reason on input change
+document.getElementById('otherReasonInput').addEventListener('input', updateFinalReason);
+
+// Update final reason before showing confirmation
+function showConfirmation() {
+    updateFinalReason();
+    // Existing showConfirmation logic here
+    document.getElementById('revokeFormView').classList.add('hidden');
+    document.getElementById('confirmationView').classList.remove('hidden');
 }
 </script>
 
