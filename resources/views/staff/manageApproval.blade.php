@@ -103,6 +103,37 @@
     </div>
 </div>
 
+
+<!-- Add Approval Confirmation Modal after the Reject Confirmation Modal -->
+<div id="approveModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-bold text-gray-200">Approve Membership Request</h3>
+            <button type="button" onclick="closeApproveModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <p class="text-gray-400 mb-4">Are you sure you want to approve this membership request?</p>
+        <form id="approveForm" action="{{ route('staff.approveUser', ['id' => 0]) }}" method="POST">
+            @csrf
+            <input type="hidden" name="_method" value="PUT">
+            <div class="flex justify-end gap-3 mt-3">
+                <button type="button" onclick="closeApproveModal()" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 transition-colors">
+                    Cancel
+                </button>
+                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Approve
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- Reject Confirmation Modal -->
 <div id="rejectModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
     <div class="bg-[#121212] p-6 rounded-lg shadow-xl w-full max-w-md">
@@ -158,6 +189,15 @@
 
 
 <script>
+    function approveUser(id) {
+        const form = document.getElementById('approveForm');
+        let actionUrl = form.getAttribute('action');
+        actionUrl = actionUrl.replace('/0', '/' + id);
+        form.setAttribute('action', actionUrl);
+        document.getElementById('approveModal').classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
     function openScreenshotModal(imageUrl) {
         const modal = document.getElementById('screenshotModal');
         const image = document.getElementById('screenshotImage');
@@ -183,7 +223,11 @@
         form.setAttribute('action', actionUrl);
         document.getElementById('rejectModal').classList.remove('hidden');
         document.body.classList.add('overflow-hidden');
-        console.log('Form will submit to:', form.action);
+    }
+
+    function closeApproveModal() {
+        document.getElementById('approveModal').classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
     }
 
     function initPendingUsersTable() {
