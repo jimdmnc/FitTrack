@@ -664,20 +664,20 @@
             </div>
             
             <!-- Bottom right panel (Subscribers Chart) -->
-            <div class="glass-card p-3 chart-card bg-white shadow-md rounded-lg relative" id="subscribersChartCard">
-                <div class="flex justify-between items-center mb-4">
+            <div class="glass-card p-4 chart-card bg-[#1e1e1e] shadow-lg rounded-xl relative hover:shadow-xl transition-shadow duration-300" id="subscribersChartCard">
+                <div class="flex justify-between items-center mb-5">
                     <div>
-                        <h3 class="text-base font-semibold text-gray-200">Subscribers</h3>
-                        <p class="text-sm text-gray-200">Ongoing Memberships</p>
+                        <h3 class="text-lg font-semibold text-gray-100">Subscribers</h3>
+                        <p class="text-sm text-gray-300 mt-1">Track Ongoing Memberships</p>
                     </div>
                     <div class="chart-action-buttons space-x-2 flex items-center">
-                        <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
+                        <div class="chart-action-button expand-subscribers-btn cursor-pointer bg-gray-800 p-2 rounded-full hover:bg-[#FF5722] hover:text-white transition-all duration-200" title="Expand Chart">
                             <i class="fas fa-expand-alt text-sm"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 190px;">
+                <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 200px;">
                     <canvas id="membershipChart"></canvas>
                 </div>
             </div>
