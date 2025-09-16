@@ -664,7 +664,7 @@
             </div>
             
             <!-- Bottom right panel (Subscribers Chart) -->
-            <div class="glass-card p-3 chart-card bg-white shadow-md rounded-lg relative" id="subscribersChartCard">
+            <div class="glass-card p-3 chart-card bg-[#1e1e1e] shadow-md rounded-lg relative" id="subscribersChartCard">
                 <div class="flex justify-between items-center mb-4">
                     <div>
                         <h3 class="text-base font-semibold text-gray-200">Subscribers</h3>
@@ -677,8 +677,18 @@
                     </div>
                 </div>
 
-                <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 190px;">
+                <div class="relative w-full transition-all duration-300 ease-in-out" id="subscribersChartContainer" style="height: 220px;">
                     <canvas id="membershipChart"></canvas>
+                </div>
+
+                <!-- Custom Legend -->
+                <div class="custom-legend flex justify-center flex-wrap gap-4 mt-4">
+                    @foreach ($membershipData['labels'] as $index => $label)
+                        <div class="legend-item">
+                            <span class="legend-color" style="background-color: {{ ['#FFAD60', '#FF7043', '#F57C00', '#FFA726', '#D84315'][$index] }}"></span>
+                            <span class="legend-text text-gray-200">{{ $label === 'Unknown' ? 'Session' : $label }}</span>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -1598,15 +1608,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 <!-- ============================================= Get the membership data from Laravel =============================================-->
+<!-- Modified Subscribers Chart Script -->
 <script>
-        // Get the membership data from Laravel
+    // Get the membership data from Laravel
     var membershipLabels = {!! json_encode($membershipData['labels']) !!};
     var membershipCounts = {!! json_encode($membershipData['data']) !!};
 
-    // Replace "Unknown" with "Custom Date" in the labels array
-    membershipLabels = membershipLabels.map(label => {
-        return label === 'Unknown' ? 'Session' : label;
-    });
+    // Replace "Unknown" with "Session" in the labels array
+    membershipLabels = membershipLabels.map(label => label === 'Unknown' ? 'Session' : label);
 
     // Render the Chart.js pie chart
     var ctx = document.getElementById('membershipChart').getContext('2d');
@@ -1617,29 +1626,41 @@ document.addEventListener("DOMContentLoaded", function () {
             datasets: [{
                 label: 'Membership Count',
                 data: membershipCounts,
-                backgroundColor: [
-                    '#FFAD60',  // Soft orange (warm & inviting)
-                    '#FF7043',  // Vibrant orange (attention-grabbing)
-                    '#F57C00',  // Rich orange (strong but not harsh)
-                    '#FFA726',  // Light orange (friendly & energetic)
-                    '#D84315'   // Deep burnt orange (good contrast)
-                ],
-                borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-                borderWidth: 1
+                backgroundColor: ['#FFAD60', '#FF7043', '#F57C00', '#FFA726', '#D84315'],
+                borderColor: '#1e1e1e',
+                borderWidth: 2,
+                hoverOffset: 20
             }]
         },
         options: {
-            responsive: true,  
-            maintainAspectRatio: false,  
+            responsive: true,
+            maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    display: true,
-                    position: 'top', // Moves legend below the chart
-                    labels: {
-                        boxWidth: 8, // Adjusts size of the color boxes
-                        padding: 10,   // Adds spacing between labels
+                legend: { display: false }, // Disable default legend
+                tooltip: {
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#1F2937',
+                    bodyColor: '#4B5563',
+                    borderColor: '#E5E7EB',
+                    borderWidth: 1,
+                    padding: 12,
+                    boxPadding: 6,
+                    usePointStyle: true,
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.label || '';
+                            let value = context.raw || 0;
+                            let total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+                            let percentage = ((value / total) * 100).toFixed(1);
+                            return `${label}: ${value} (${percentage}%)`;
+                        }
                     }
                 }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true,
+                duration: 800
             }
         }
     });
