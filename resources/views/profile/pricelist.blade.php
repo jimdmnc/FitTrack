@@ -275,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (amount && !isNaN(amount) && amount !== original) {
                 hasChanges = true;
                 const li = document.createElement('li');
-                li.className = 'flex items-center text-sm';
+                li.className = 'flex items-center text-md';
                 li.innerHTML = `Confirm  <span class="capitalize font-medium"> ${type} </span>  price is now ₱${amount}`;
                 priceList.appendChild(li);
             }
