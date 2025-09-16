@@ -230,114 +230,111 @@
         document.body.classList.remove('overflow-hidden');
     }
 
-    function initPendingUsersTable() {
-        const tableBody = document.getElementById('pending-users-table');
-        const noUsersMessage = document.getElementById('no-users-message');
-        const filterOptions = document.getElementById('filterOptions');
-        const refreshBtn = document.getElementById('refreshBtn');
+    // Update the table row in initPendingUsersTable to use approveUser
+function initPendingUsersTable() {
+    const tableBody = document.getElementById('pending-users-table');
+    const noUsersMessage = document.getElementById('no-users-message');
+    const filterOptions = document.getElementById('filterOptions');
+    const refreshBtn = document.getElementById('refreshBtn');
 
-        async function fetchPendingUsers(filter = 'all') {
-            try {
-                const response = await fetch('{{ route('staff.pendingUsers') }}?filter=' + filter, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    }
-                });
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-
-                if (data.success) {
-                    tableBody.innerHTML = '';
-                    noUsersMessage.classList.add('hidden');
-
-                    if (data.users.length === 0) {
-                        noUsersMessage.classList.remove('hidden');
-                        return;
-                    }
-
-                    data.users.forEach(user => {
-                        const membershipLabels = {
-                            '7': { text: 'Weekly', class: 'bg-green-900 text-green-200' },
-                            '1': { text: 'Session', class: 'bg-yellow-900 text-yellow-200' },
-                            '30': { text: 'Monthly', class: 'bg-blue-900 text-blue-200' },
-                            '365': { text: 'Annual', class: 'bg-purple-900 text-purple-200' }
-                        };
-                        const membership = membershipLabels[user.membership_type] || { 
-                            text: user.membership_type || 'N/A', 
-                            class: 'bg-green-900 text-green-200' 
-                        };
-
-                        const paymentMethod = user.payment_method === 'gcash' 
-                            ? `<button onclick="openScreenshotModal('${user.payment_screenshot}')" class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors">GCASH</button>`
-                            : user.payment_method === 'cash'
-                            ? `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">CASH</span>`
-                            : `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">Unknown</span>`;
-
-                        const row = `
-                            <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
-                                <td class="p-3 font-medium text-gray-200">${user.first_name} ${user.last_name}</td>
-                                <td class="p-3 font-medium text-gray-200">${user.gender}</td>
-                                <td class="p-3 font-medium text-gray-200">
-                                    <span class="px-2 py-1 rounded-full text-xs font-semibold ${membership.class}">
-                                        ${membership.text}
-                                    </span>
-                                </td>
-                                <td class="p-3 font-medium text-gray-200">${paymentMethod}</td>
-                                <td class="p-3 font-medium">
-                                    <span class="text-gray-200">${user.updated_at.date}</span>
-                                    <span class="text-gray-400 text-sm">${user.updated_at.time}</span>
-                                </td>
-                                <td class="p-3 text-center">
-                                    <div class="flex justify-center gap-2">
-                                        <form action="${user.approve_url}" method="POST" class="inline-block">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                                            <input type="hidden" name="_method" value="PUT">
-                                            <button type="submit" class="bg-green-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                                </svg>
-                                                Approve
-                                            </button>
-                                        </form>
-                                        <button onclick="rejectUser(${user.id})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                            </svg>
-                                            Reject
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.insertAdjacentHTML('beforeend', row);
-                    });
-                } else {
-                    console.error('Failed to fetch pending users:', data.message);
-                    showNotification('Error', data.message || 'Failed to load pending users.', 'error');
+    async function fetchPendingUsers(filter = 'all') {
+        try {
+            const response = await fetch('{{ route('staff.pendingUsers') }}?filter=' + filter, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 }
-            } catch (error) {
-                console.error('Error fetching pending users:', error);
-                showNotification('Error', 'Failed to load pending users.', 'error');
+            });
+            if (!response.ok) throw new Error('Network response was not ok');
+            const data = await response.json();
+
+            if (data.success) {
+                tableBody.innerHTML = '';
+                noUsersMessage.classList.add('hidden');
+
+                if (data.users.length === 0) {
+                    noUsersMessage.classList.remove('hidden');
+                    return;
+                }
+
+                data.users.forEach(user => {
+                    const membershipLabels = {
+                        '7': { text: 'Weekly', class: 'bg-green-900 text-green-200' },
+                        '1': { text: 'Session', class: 'bg-yellow-900 text-yellow-200' },
+                        '30': { text: 'Monthly', class: 'bg-blue-900 text-blue-200' },
+                        '365': { text: 'Annual', class: 'bg-purple-900 text-purple-200' }
+                    };
+                    const membership = membershipLabels[user.membership_type] || { 
+                        text: user.membership_type || 'N/A', 
+                        class: 'bg-green-900 text-green-200' 
+                    };
+
+                    const paymentMethod = user.payment_method === 'gcash' 
+                        ? `<button onclick="openScreenshotModal('${user.payment_screenshot}')" class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors">GCASH</button>`
+                        : user.payment_method === 'cash'
+                        ? `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">CASH</span>`
+                        : `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">Unknown</span>`;
+
+                    const row = `
+                        <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
+                            <td class="p-3 font-medium text-gray-200">${user.first_name} ${user.last_name}</td>
+                            <td class="p-3 font-medium text-gray-200">${user.gender}</td>
+                            <td class="p-3 font-medium text-gray-200">
+                                <span class="px-2 py-1 rounded-full text-xs font-semibold ${membership.class}">
+                                    ${membership.text}
+                                </span>
+                            </td>
+                            <td class="p-3 font-medium text-gray-200">${paymentMethod}</td>
+                            <td class="p-3 font-medium">
+                                <span class="text-gray-200">${user.updated_at.date}</span>
+                                <span class="text-gray-400 text-sm">${user.updated_at.time}</span>
+                            </td>
+                            <td class="p-3 text-center">
+                                <div class="flex justify-center gap-2">
+                                    <button onclick="approveUser(${user.id})" class="bg-green-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-green-400 transition-colors flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        Approve
+                                    </button>
+                                    <button onclick="rejectUser(${user.id})" class="bg-red-600 text-gray-200 px-3 py-2 font-bold rounded-md text-md hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+            } else {
+                console.error('Failed to fetch pending users:', data.message);
+                showNotification('Error', data.message || 'Failed to load pending users.', 'error');
             }
+        } catch (error) {
+            console.error('Error fetching pending users:', error);
+            showNotification('Error', 'Failed to load pending users.', 'error');
         }
-
-        // Fetch on page load
-        fetchPendingUsers(filterOptions.value);
-
-        // Filter change
-        filterOptions.addEventListener('change', function() {
-            fetchPendingUsers(this.value);
-        });
-
-        // Refresh button
-        refreshBtn.addEventListener('click', function() {
-            fetchPendingUsers(filterOptions.value);
-        });
-
-        // Poll every 30 seconds
-        setInterval(() => fetchPendingUsers(filterOptions.value), 30000);
     }
+
+    // Fetch on page load
+    fetchPendingUsers(filterOptions.value);
+
+    // Filter change
+    filterOptions.addEventListener('change', function() {
+        fetchPendingUsers(this.value);
+    });
+
+    // Refresh button
+    refreshBtn.addEventListener('click', function() {
+        fetchPendingUsers(filterOptions.value);
+    });
+
+    // Poll every 30 seconds
+    setInterval(() => fetchPendingUsers(filterOptions.value), 30000);
+}
 
     document.addEventListener('DOMContentLoaded', function() {
         initPendingUsersTable();
