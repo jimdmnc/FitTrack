@@ -752,6 +752,7 @@
             <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
                 <input type="hidden" name="rfid_uid" id="revokeMemberID">
+                <input type="hidden" name="final_reason" id="finalReason">
 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
@@ -760,7 +761,7 @@
                 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
-                    <select id="revokeReason" name="reason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
+                    <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
                         <option value="" disabled selected>Select a reason...</option>
                         <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
                         <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
@@ -768,7 +769,7 @@
                         <option value="Health or Medical Issues">Health or Medical Issues</option>
                         <option value="Others">Others</option>
                     </select>
-                    <input type="text" id="otherReasonInput" name="other_reason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
+                    <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
                 </div>
 
                 <!-- Warning Box -->
@@ -838,13 +839,40 @@
 function toggleOtherReasonInput() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
     if (select.value === 'Others') {
         otherInput.classList.remove('hidden');
         otherInput.focus();
+        finalReason.value = otherInput.value || '';
     } else {
         otherInput.classList.add('hidden');
         otherInput.value = '';
+        finalReason.value = select.value;
     }
+}
+
+function updateFinalReason() {
+    const select = document.getElementById('revokeReason');
+    const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
+    if (select.value === 'Others' && otherInput.value.trim()) {
+        finalReason.value = otherInput.value.trim();
+    } else {
+        finalReason.value = select.value;
+    }
+}
+
+// Update final reason on input change
+document.getElementById('otherReasonInput').addEventListener('input', updateFinalReason);
+
+// Update final reason before showing confirmation
+function showConfirmation() {
+    updateFinalReason();
+    // Existing showConfirmation logic here
+    document.getElementById('revokeFormView').classList.add('hidden');
+    document.getElementById('confirmationView').classList.remove('hidden');
 }
 </script>
 
