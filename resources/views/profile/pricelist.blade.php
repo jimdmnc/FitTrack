@@ -272,11 +272,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const type = input.dataset.type;
             const original = parseFloat(input.dataset.original).toFixed(2);
             const amount = parseFloat(input.value).toFixed(2);
+
             if (amount && !isNaN(amount) && amount !== original) {
                 hasChanges = true;
                 const li = document.createElement('li');
                 li.className = 'flex items-center text-md';
-                li.innerHTML = `Confirm  <span class="capitalize font-medium"> ${type} </span>  price is now ₱${amount}`;
+
+                // friendlier confirmation text + fixed spacing
+                li.innerHTML = `Are you sure you want to update the <span class="capitalize font-medium">${type}</span> price to <span class="font-semibold">₱${amount}</span>?`;
+
                 priceList.appendChild(li);
             }
         });
