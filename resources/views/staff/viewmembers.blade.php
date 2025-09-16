@@ -760,7 +760,7 @@
                 
                 <div class="mb-4">
                     <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
-                    <select id="revokeReason" name="reason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
+                    <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
                         <option value="" disabled selected>Select a reason...</option>
                         <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
                         <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
@@ -769,7 +769,9 @@
                         <option value="Others">Others</option>
                     </select>
                     <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
+                    <input type="hidden" name="reason" id="finalReason">
                 </div>
+
 
                 <!-- Warning Box -->
                 <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
@@ -838,24 +840,45 @@
 function toggleOtherReasonInput() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
     if (select.value === 'Others') {
         otherInput.classList.remove('hidden');
         otherInput.focus();
-        select.value = ''; // Clear select value to avoid sending "Others"
+        finalReason.value = otherInput.value || '';
     } else {
         otherInput.classList.add('hidden');
         otherInput.value = '';
+        finalReason.value = select.value;
     }
 }
 
 function confirmRevoke() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
-    if (otherInput.value.trim() && !select.value) {
-        select.value = otherInput.value.trim(); // Set custom reason to select's value
+    const finalReason = document.getElementById('finalReason');
+    
+    if (select.value === 'Others' && otherInput.value.trim()) {
+        finalReason.value = otherInput.value.trim();
+    } else {
+        finalReason.value = select.value;
     }
-    document.getElementById('revokeForm').submit();
+    
+    if (finalReason.value) {
+        document.getElementById('revokeForm').submit();
+    } else {
+        alert('Please select a reason or enter a custom reason.');
+    }
 }
+
+// Update final reason on input change
+document.getElementById('otherReasonInput').addEventListener('input', function() {
+    const finalReason = document.getElementById('finalReason');
+    const select = document.getElementById('revokeReason');
+    if (select.value === 'Others') {
+        finalReason.value = this.value.trim();
+    }
+});
 </script>
 
     <!-- View Reason Modal -->
