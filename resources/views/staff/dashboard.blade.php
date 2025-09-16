@@ -1599,50 +1599,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <!-- ============================================= Get the membership data from Laravel =============================================-->
 <script>
-// Get the membership data from Laravel
-var membershipLabels = {!! json_encode($membershipData['labels']) !!};
-var membershipCounts = {!! json_encode($membershipData['data']) !!};
+        // Get the membership data from Laravel
+    var membershipLabels = {!! json_encode($membershipData['labels']) !!};
+    var membershipCounts = {!! json_encode($membershipData['data']) !!};
 
-// Replace "Custom Day" with "Session" in the labels array
-membershipLabels = membershipLabels.map(label => {
-    return label === 'Custom Day' ? 'Session' : label;
-});
+    // Replace "Unknown" with "Custom Date" in the labels array
+    membershipLabels = membershipLabels.map(label => {
+        return label === 'Unknown' ? 'Session' : label;
+    });
 
-// Render the Chart.js pie chart
-var ctx = document.getElementById('membershipChart').getContext('2d');
-var membershipChart = new Chart(ctx, {
-    type: 'pie',
-    data: {
-        labels: membershipLabels,
-        datasets: [{
-            label: 'Membership Count',
-            data: membershipCounts,
-            backgroundColor: [
-                '#FFAD60',  // Soft orange (warm & inviting)
-                '#FF7043',  // Vibrant orange (attention-grabbing)
-                '#F57C00',  // Rich orange (strong but not harsh)
-                '#FFA726',  // Light orange (friendly & energetic)
-                '#D84315'   // Deep burnt orange (good contrast)
-            ],
-            borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,  
-        maintainAspectRatio: false,  
-        plugins: {
-            legend: {
-                display: true,
-                position: 'top', // Moves legend below the chart
-                labels: {
-                    boxWidth: 8, // Adjusts size of the color boxes
-                    padding: 10,   // Adds spacing between labels
+    // Render the Chart.js pie chart
+    var ctx = document.getElementById('membershipChart').getContext('2d');
+    var membershipChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: membershipLabels,
+            datasets: [{
+                label: 'Membership Count',
+                data: membershipCounts,
+                backgroundColor: [
+                    '#FFAD60',  // Soft orange (warm & inviting)
+                    '#FF7043',  // Vibrant orange (attention-grabbing)
+                    '#F57C00',  // Rich orange (strong but not harsh)
+                    '#FFA726',  // Light orange (friendly & energetic)
+                    '#D84315'   // Deep burnt orange (good contrast)
+                ],
+                borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,  
+            maintainAspectRatio: false,  
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top', // Moves legend below the chart
+                    labels: {
+                        boxWidth: 8, // Adjusts size of the color boxes
+                        padding: 10,   // Adds spacing between labels
+                    }
                 }
             }
         }
-    }
-});
+    });
 </script>
 
 
