@@ -768,7 +768,7 @@
                         <option value="Health or Medical Issues">Health or Medical Issues</option>
                         <option value="Others">Others</option>
                     </select>
-                    <input type="text" id="otherReasonInput" name="other_reason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
+                    <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
                 </div>
 
                 <!-- Warning Box -->
@@ -838,40 +838,23 @@
 function toggleOtherReasonInput() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
-    const finalReason = document.getElementById('finalReason');
-    
     if (select.value === 'Others') {
         otherInput.classList.remove('hidden');
         otherInput.focus();
-        finalReason.value = otherInput.value || '';
+        select.value = ''; // Clear select value to avoid sending "Others"
     } else {
         otherInput.classList.add('hidden');
         otherInput.value = '';
-        finalReason.value = select.value;
     }
 }
 
-function updateFinalReason() {
+function confirmRevoke() {
     const select = document.getElementById('revokeReason');
     const otherInput = document.getElementById('otherReasonInput');
-    const finalReason = document.getElementById('finalReason');
-    
-    if (select.value === 'Others' && otherInput.value.trim()) {
-        finalReason.value = otherInput.value.trim();
-    } else {
-        finalReason.value = select.value;
+    if (otherInput.value.trim() && !select.value) {
+        select.value = otherInput.value.trim(); // Set custom reason to select's value
     }
-}
-
-// Update final reason on input change
-document.getElementById('otherReasonInput').addEventListener('input', updateFinalReason);
-
-// Update final reason before showing confirmation
-function showConfirmation() {
-    updateFinalReason();
-    // Existing showConfirmation logic here
-    document.getElementById('revokeFormView').classList.add('hidden');
-    document.getElementById('confirmationView').classList.remove('hidden');
+    document.getElementById('revokeForm').submit();
 }
 </script>
 
