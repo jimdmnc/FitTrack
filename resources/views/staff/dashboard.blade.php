@@ -683,13 +683,13 @@
 
                 <!-- Custom Legend with Larger Font Size -->
                 <div class="custom-legend flex justify-center flex-wrap gap-4 mt-4">
-                    @foreach ($membershipData['labels'] as $index => $label)
-                        <div class="legend-item">
-                            <span class="legend-color" style="background-color: {{ ['#FFAD60', '#FF7043', '#F57C00', '#FFA726', '#D84315'][$index] }}"></span>
-                            <span class="legend-text text-gray-200 text-sm">{{ $label === 'Unknown' ? 'Session' : $label }}</span>
-                        </div>
-                    @endforeach
-                </div>
+        @foreach ($membershipData['labels'] as $index => $label)
+            <div class="legend-item">
+                <span class="legend-color" style="background-color: {{ ['#FFAD60', '#FF7043', '#F57C00', '#FFA726', '#D84315'][$index] }}"></span>
+                <span class="legend-text text-white text-sm">{{ $label === 'Unknown' ? 'Session' : $label }}</span>
+            </div>
+        @endforeach
+    </div>
             </div>
         </div>
     </div>
