@@ -103,7 +103,7 @@ class MembershipRegistrationController extends Controller
             $paymentAmount = $basePaymentAmount * $discountMultiplier;
 
             // Generate password
-            $lastName = strtolower($validatedData['last_name']);
+            $lastName = str_replace(' ', '', strtolower($validatedData['last_name']));
             $birthdate = Carbon::parse($validatedData['birthdate'])->format('mdY');
             $generatedPassword = $lastName . $birthdate;
 
