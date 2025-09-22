@@ -274,25 +274,36 @@ class SelfRegistrationController extends Controller
         $timedOut = session('timed_out', false);
         $sessionPrice = null;
         $announcements = Announcement::latest()->get();
-    
+
         if ($user && $user->rfid_uid) {
             $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
                 ->whereDate('time_in', Carbon::today())
                 ->latest()
                 ->first();
+    
+            // // Auto time-in only for userSession roles
+            // if ($user->session_status === 'approved' && !$attendance && !$timedOut && $user->role === 'userSession') {
+            //     $attendance = Attendance::create([
+            //         'rfid_uid' => $user->rfid_uid,
+            //         'attendance_date' => now(),
+            //         'time_in' => now(),
+            //         'status' => 'present',
+            //         'check_in_method' => 'auto',
+            //     ]);
+            // }
             
             // Fetch session price
             $sessionPrice = Price::where('type', 'session')->first();
             if (!$sessionPrice) {
                 throw new \Exception('Session price not configured.');
             }
-        
+    
             $currentTime = Carbon::now();
             $autoCheckoutTime = Carbon::today()->setTime(21, 0, 0);
-        
+    
             if ($currentTime->greaterThan($autoCheckoutTime)) {
                 if ($attendance && !$attendance->time_out) {
-                    // Auto time-out logic
+                    // Auto time-out logic if needed
                     $attendance->update([
                         'time_out' => $autoCheckoutTime,
                         'status' => 'present'
@@ -302,12 +313,12 @@ class SelfRegistrationController extends Controller
                 session(['timed_out' => true]);
             }
         }
-        
+    
         return view('self.landingProfile', [
             'attendance' => $attendance,
             'timedOut' => $timedOut,
             'sessionPrice' => $sessionPrice ?? null,
-            'announcements' => $announcements,
+            'announcements' =>  $announcements,
         ]);
     }
 
