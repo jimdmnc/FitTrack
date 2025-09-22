@@ -103,16 +103,16 @@ class StaffApprovalController extends Controller
         $user->needs_approval = false;
         $user->save();
 
-        DB::table('attendances')->insert([
-            'rfid_uid' => $user->rfid_uid,
-            // 'time_in' => now(),
-            'status' => 'present',
-            'attendance_date' => now()->toDateString(),
-            'check_in_method' => 'manual',
-            'session_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // DB::table('attendances')->insert([
+        //     'rfid_uid' => $user->rfid_uid,
+        //     // 'time_in' => now(),
+        //     'status' => 'present',
+        //     'attendance_date' => now()->toDateString(),
+        //     'check_in_method' => 'manual',
+        //     'session_id' => null,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
 
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
