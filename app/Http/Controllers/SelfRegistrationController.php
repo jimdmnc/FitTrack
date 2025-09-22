@@ -96,15 +96,15 @@ class SelfRegistrationController extends Controller
                     ->whereDate('time_in', Carbon::today())
                     ->first();
     
-                // if (!$attendance) {
-                //     Attendance::create([
-                //         'rfid_uid' => $user->rfid_uid,
-                //         'attendance_date' => now(),
-                //         'time_in' => now(),
-                //         'status' => 'present',
-                //         'check_in_method' => 'auto',
-                //     ]);
-                // }
+                if (!$attendance) {
+                    Attendance::create([
+                        'rfid_uid' => $user->rfid_uid,
+                        'attendance_date' => now(),
+                        'time_in' => now(),
+                        'status' => 'present',
+                        'check_in_method' => 'auto',
+                    ]);
+                }
             }
     
             return response()->json(['approved' => true]);
