@@ -31,69 +31,69 @@ class StaffApprovalController extends Controller
 
     // Fetch pending users for AJAX
     public function getPendingUsers(Request $request)
-    {
-        try {
-            $query = User::where('session_status', 'pending')
-                ->where('needs_approval', true)
-                ->where(function($query) {
-                    $query->where('role', 'user')
-                        ->orWhere('role', 'userSession');
-                })
-                ->with(['payment' => function ($query) {
-                    $query->latest();
-                }]);
+        {
+            try {
+                $query = User::where('session_status', 'pending')
+                    ->where('needs_approval', true)
+                    ->where(function($query) {
+                        $query->where('role', 'user')
+                            ->orWhere('role', 'userSession');
+                    })
+                    ->with(['payment' => function ($query) {
+                        $query->latest();
+                    }]);
 
-            // Apply filters
-            $filter = $request->query('filter', 'all');
-            if ($filter === 'today') {
-                $query->whereDate('updated_at', today());
-            } elseif ($filter === 'week') {
-                $query->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                // Apply filters
+                $filter = $request->query('filter', 'all');
+                if ($filter === 'today') {
+                    $query->whereDate('updated_at', today());
+                } elseif ($filter === 'week') {
+                    $query->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()]);
+                }
+
+                $pendingUsers = $query->get()->map(function ($user) {
+                    return [
+                        'id' => $user->id,
+                        'first_name' => $user->first_name,
+                        'last_name' => $user->last_name,
+                        'gender' => ucfirst($user->gender),
+                        'membership_type' => $user->membership_type,
+                        'payment_method' => $user->payment ? $user->payment->payment_method : null,
+                        'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
+                            ? \Storage::url($user->payment->payment_screenshot) 
+                            : null,
+                        'updated_at' => [
+                            'date' => $user->updated_at->format('M d, Y'),
+                            'time' => $user->updated_at->format('h:i A')
+                        ],
+                        'approve_url' => route('staff.approveUser', $user->id),
+                        'reject_url' => route('staff.rejectUser', $user->id)
+                    ];
+                });
+
+                return response()->json([
+                    'success' => true,
+                    'users' => $pendingUsers
+                ]);
+            } catch (\Exception $e) {
+                Log::error('Error fetching pending users: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to fetch pending users'
+                ], 500);
             }
-
-            $pendingUsers = $query->get()->map(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'first_name' => $user->first_name,
-                    'last_name' => $user->last_name,
-                    'gender' => ucfirst($user->gender),
-                    'membership_type' => $user->membership_type,
-                    'payment_method' => $user->payment ? $user->payment->payment_method : null,
-                    'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
-                        ? \Storage::url($user->payment->payment_screenshot) 
-                        : null,
-                    'updated_at' => [
-                        'date' => $user->updated_at->format('M d, Y'),
-                        'time' => $user->updated_at->format('h:i A')
-                    ],
-                    'approve_url' => route('staff.approveUser', $user->id),
-                    'reject_url' => route('staff.rejectUser', $user->id)
-                ];
-            });
-
-            return response()->json([
-                'success' => true,
-                'users' => $pendingUsers
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching pending users: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch pending users'
-            ], 500);
         }
-    }
 
     public function getPendingApprovalCount()
-    {
-        try {
-            $count = User::where('needs_approval', true)->count();
-            return response()->json(['success' => true, 'count' => $count]);
-        } catch (\Exception $e) {
-            Log::error('Error fetching pending approval count: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Failed to fetch count'], 500);
+        {
+            try {
+                $count = User::where('needs_approval', true)->count();
+                return response()->json(['success' => true, 'count' => $count]);
+            } catch (\Exception $e) {
+                Log::error('Error fetching pending approval count: ' . $e->getMessage());
+                return response()->json(['success' => false, 'message' => 'Failed to fetch count'], 500);
+            }
         }
-    }
     
     public function approveUser($id)
     {
@@ -103,16 +103,16 @@ class StaffApprovalController extends Controller
         $user->needs_approval = false;
         $user->save();
 
-        DB::table('attendances')->insert([
-            'rfid_uid' => $user->rfid_uid,
-            // 'time_in' => now(),
-            'status' => 'present',
-            'attendance_date' => now()->toDateString(),
-            'check_in_method' => 'manual',
-            'session_id' => null,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // DB::table('attendances')->insert([
+        //     'rfid_uid' => $user->rfid_uid,
+        //     // 'time_in' => now(),
+        //     'status' => 'present',
+        //     'attendance_date' => now()->toDateString(),
+        //     'check_in_method' => 'manual',
+        //     'session_id' => null,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
 
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
