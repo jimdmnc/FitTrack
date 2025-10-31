@@ -263,61 +263,67 @@ class AttendanceController extends Controller
 
     
     public function timeIn(Request $request)
-{
-    try {
-        // Validate input
-        $request->validate([
-            'rfid_uid' => 'required|string',
-        ]);
-
-        $rfid_uid = $request->input('rfid_uid');
-
-        // Find the user with RFID
-        $user = User::where('rfid_uid', $rfid_uid)->first();
-
-        if (!$user) {
-            return back()->with('error', "User not found with RFID: $rfid_uid.");
+    {
+        try {
+            $request->validate([
+                'uid'       => 'required|string',
+                'timestamp' => 'required|date_format:Y-m-d H:i:s',
+            ]);
+    
+            $uid       = $request->input('uid');
+            $timestamp = $request->input('timestamp'); // ← FROM ESP32
+    
+            $user = User::where('rfid_uid', $uid)->first();
+            if (!$user) {
+                return response()->json([
+                    'message' => 'User not registered.',
+                ], 404);
+            }
+    
+            // Check active session
+            $active = Attendance::where('rfid_uid', $uid)
+                ->whereNull('time_out')
+                ->exists();
+    
+            if ($active) {
+                return response()->json([
+                    'message' => 'Please wait until time-out is recorded.',
+                    'name'    => $user->first_name . ' ' . $user->last_name,
+                ], 400);
+            }
+    
+            // Check if already checked in today (based on timestamp)
+            $date = Carbon::createFromFormat('Y-m-d H:i:s', $timestamp)->startOfDay();
+            $todaySession = Attendance::where('rfid_uid', $uid)
+                ->whereDate('time_in', $date)
+                ->exists();
+    
+            if ($todaySession) {
+                return response()->json([
+                    'message' => 'Please wait until time-out is recorded.',
+                    'name'    => $user->first_name . ' ' . $user->last_name,
+                ], 400);
+            }
+    
+            // USE ESP32 TIMESTAMP
+            Attendance::create([
+                'user_id'  => $user->id,
+                'rfid_uid' => $uid,
+                'time_in'  => $timestamp,
+            ]);
+    
+            \Log::info("Time-in: {$user->first_name} at {$timestamp}");
+    
+            return response()->json([
+                'message' => 'Time-in recorded successfully.',
+                'name'    => $user->first_name . ' ' . $user->last_name,
+            ]);
+    
+        } catch (\Exception $e) {
+            \Log::error("Time-in error: " . $e->getMessage());
+            return response()->json([
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
         }
-
-        // Check if user already has an active session
-        $activeSession = Attendance::where('rfid_uid', $rfid_uid)
-            ->whereNull('time_out')
-            ->exists();
-
-        if ($activeSession) {
-            return back()->with('error', "User {$user->first_name} already has an active session. Please check out first.");
-        }
-
-        // Check if user already checked in today
-        $todaySession = Attendance::where('rfid_uid', $rfid_uid)
-            ->whereDate('time_in', Carbon::today())
-            ->exists();
-
-        if ($todaySession) {
-            return back()->with('error', "User {$user->first_name} has already checked in today. Only one check-in per day is allowed.");
-        }
-
-        // Create new attendance record
-        $attendance = Attendance::create([
-            'user_id' => $user->id,
-            'rfid_uid' => $rfid_uid,
-            'time_in' => Carbon::now(),
-        ]);
-
-        // Update user status
-        $user->update([
-            'session_status' => 'approved',
-            'member_status' => 'active',
-        ]);
-
-        \Log::info("✅ User {$user->first_name} {$user->last_name} (RFID: {$user->rfid_uid}) Check-in recorded at " . now());
-
-        return back()
-            ->with('success', "✅ Check-in recorded successfully for {$user->first_name}.")
-            ->with('checked_in', true);
-    } catch (\Exception $e) {
-        \Log::error("❌ Check-in error: " . $e->getMessage());
-        return back()->with('error', 'Error: ' . $e->getMessage());
     }
-}
 }
