@@ -196,7 +196,7 @@
                                     </span>
                                 </td> -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">₱{{ number_format($payment->amount, 2) }}</td>
-                                <!-- <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if(strtolower($payment->payment_method) == 'cash')
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,11 +213,11 @@
                                         @endif
                                         <span class="text-sm text-gray-200">{{ $payment->payment_method }}</span>
                                     </div>
-                                </td> -->
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                     {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
+                                <!-- <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                     @if(optional($payment->user)->end_date)
                                         <span class="@if(\Carbon\Carbon::parse($payment->user->end_date)->isPast()) text-red-500 @endif">
                                             {{ \Carbon\Carbon::parse($payment->user->end_date)->format('M d, Y') }}
@@ -225,7 +225,7 @@
                                     @else
                                         <span class="text-gray-400">N/A</span>
                                     @endif
-                                </td>
+                                </td> -->
                             </tr>
                             @endforeach
                         @endif
