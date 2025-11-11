@@ -96,40 +96,23 @@ class StaffApprovalController extends Controller
             }
         }
     
-        public function approveUser(Request $request, $id)
-        {
-            // Validate the payment amount first
-            $validated = $request->validate([
-                'amount' => 'required|numeric|min:0',
-            ]);
+    public function approveUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->member_status = 'active';
+        $user->session_status = 'approved';
+        $user->needs_approval = false;
+        $user->save();
+
+        MembersPayment::create([
+            'rfid_uid' => $user->rfid_uid,
+            'amount' => $validated['amount'],
+            'payment_date' => now(),
+        ]);
         
-            $user = User::findOrFail($id);
-            $user->member_status = 'active';
-            $user->session_status = 'approved';
-            $user->needs_approval = false;
-            $user->save();
-        
-            MembersPayment::create([
-                'rfid_uid' => $user->rfid_uid,
-                'amount' => $validated['amount'],
-                'payment_date' => now(),
-            ]);
-            
-        
-            // (Optional) Insert attendance if you want
-            // DB::table('attendances')->insert([
-            //     'rfid_uid' => $user->rfid_uid,
-            //     'status' => 'present',
-            //     'attendance_date' => now()->toDateString(),
-            //     'check_in_method' => 'manual',
-            //     'session_id' => null,
-            //     'created_at' => now(),
-            //     'updated_at' => now(),
-            // ]);
-        
-            return redirect()->route('staff.manageApproval')->with('success', 'User approved and payment recorded successfully!');
-        }
-        
+
+        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+    }
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
