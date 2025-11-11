@@ -13,10 +13,7 @@ class PaymentTrackingController extends Controller
    public function index(Request $request)
    {
     $query = MembersPayment::with('user')
-    ->whereHas('user', function($q) {
-        $q->where('session_status', 'approved');  // ← ONLY approved users
-    })
-    ->where('status', 'completed')  // ← extra safety
+    ->where('status', 'completed')  // ← ONLY SHOW COMPLETED
     ->orderBy('payment_date', 'desc');
         // Search functionality
         if ($request->filled('search')) {

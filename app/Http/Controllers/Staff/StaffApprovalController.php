@@ -99,6 +99,7 @@ class StaffApprovalController extends Controller
         {
             $user = User::findOrFail($id);
         
+            // Check if really pending
             if (!$user->needs_approval || $user->session_status !== 'pending') {
                 return redirect()->route('staff.manageApproval')
                     ->with('error', 'This user has no pending renewal.');
@@ -107,39 +108,33 @@ class StaffApprovalController extends Controller
             DB::beginTransaction();
         
             try {
-                // FIX: Use exact ENUM values (not strings with quotes)
+                // 1. Approve the user
                 $user->update([
+                    'session_status'  => 'approved',
                     'member_status'   => 'active',
-                    'session_status'  => 'approved',    // ← This is correct (string matches ENUM)
                     'needs_approval'  => 0,
                     'role'            => 'userSession',
-                    'updated_at'      => now(),
                 ]);
         
-                // Verify the pending payment
-                $paymentUpdated = MembersPayment::where('rfid_uid', $user->rfid_uid)
+                // 2. Change payment from 'pending' → 'completed'
+                MembersPayment::where('rfid_uid', $user->rfid_uid)
                     ->where('status', 'pending')
                     ->latest()
                     ->update([
-                        'status'      => 'completed',
+                        'status'      => 'completed',     // ← NOW IT APPEARS IN REPORTS
                         'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
-                        'updated_at'  => now(),
+                        'verified_at' => now(),
                     ]);
         
                 DB::commit();
         
                 return redirect()->route('staff.manageApproval')
-                    ->with('success', "Approved successfully! Payment now visible in reports.");
+                    ->with('success', "Approved! {$user->first_name} is now active. Payment is now in reports.");
         
             } catch (\Exception $e) {
                 DB::rollBack();
-                Log::error('Approve User Failed: ' . $e->getMessage(), [
-                    'user_id' => $id,
-                    'trace' => $e->getTraceAsString()
-                ]);
-        
-                return redirect()->route('staff.manageApproval')
-                    ->with('error', 'Approval failed. Check logs.');
+                \Log::error('Approve failed: ' . $e->getMessage());
+                return back()->with('error', 'Error: ' . $e->getMessage());
             }
         }
     // public function approveUser($id)

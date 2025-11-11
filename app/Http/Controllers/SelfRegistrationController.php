@@ -373,10 +373,10 @@ class SelfRegistrationController extends Controller
                 'amount'         => $validated['amount'],
                 'payment_date'   => now(),
                 'payment_method' => 'cash',
-                'status'         => 'pending',     // still use this
+                'status'         => 'pending',     // ← PENDING = not in reports
                 'verified_by'    => null,
+                'verified_at'    => null,
             ]);
-
             DB::commit();
 
             if (!Auth::check()) {
