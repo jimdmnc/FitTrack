@@ -12,8 +12,11 @@ class PaymentTrackingController extends Controller
    // Display all members' payments
    public function index(Request $request)
    {
-        $query = MembersPayment::with('user')->orderBy('payment_date', 'desc');
-
+    $query = MembersPayment::with('user')
+    ->whereHas('user', function($q) {
+        $q->where('session_status', 'approved');  // ONLY approved users
+    })
+    ->orderBy('payment_date', 'desc');
         // Search functionality
         if ($request->filled('search')) {
             $search = $request->search;

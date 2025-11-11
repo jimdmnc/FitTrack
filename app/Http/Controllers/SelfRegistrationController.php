@@ -369,9 +369,12 @@ class SelfRegistrationController extends Controller
             ]);
 
             MembersPayment::create([
-                'rfid_uid' => $user->rfid_uid,
-                'amount' => $validated['amount'],
-                'payment_date' => now(),
+                'rfid_uid'       => $user->rfid_uid,
+                'amount'         => $validated['amount'],
+                'payment_date'   => now(),
+                'payment_method' => 'cash',
+                'status'         => 'pending',     // still use this
+                'verified_by'    => null,
             ]);
 
             DB::commit();

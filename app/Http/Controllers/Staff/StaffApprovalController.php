@@ -95,27 +95,40 @@ class StaffApprovalController extends Controller
             }
         }
     
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->member_status = 'active';
-        $user->session_status = 'approved';
-        $user->needs_approval = false;
-        $user->save();
-
-        // DB::table('attendances')->insert([
-        //     'rfid_uid' => $user->rfid_uid,
-        //     // 'time_in' => now(),
-        //     'status' => 'present',
-        //     'attendance_date' => now()->toDateString(),
-        //     'check_in_method' => 'manual',
-        //     'session_id' => null,
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
-
-        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-    }
+        public function approveUser($id)
+        {
+            $user = User::findOrFail($id);
+        
+            DB::beginTransaction();
+        
+            try {
+                // Activate user
+                $user->update([
+                    'session_status'  => 'approved',
+                    'needs_approval'  => false,
+                    'member_status'   => 'active',
+                    'role'            => 'userSession',
+                ]);
+        
+                // NOW verify the pending payment
+                MembersPayment::where('rfid_uid', $user->rfid_uid)
+                    ->where('status', 'pending')
+                    ->latest()
+                    ->update([
+                        'status'      => 'verified',
+                        'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
+                        'updated_at'  => now(),
+                    ]);
+        
+                DB::commit();
+        
+                return redirect()->route('staff.manageApproval')
+                    ->with('success', 'Approved! Payment now visible in reports.');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->with('error', 'Approval failed.');
+            }
+        }
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
