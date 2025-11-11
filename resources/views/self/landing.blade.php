@@ -369,7 +369,7 @@
                         <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
                         <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
                         <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
-                        <img src="/images/welcomebg.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
+                        <img src="/images/tutorial1.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
                     </div>
                     
                     <!-- Step 2 -->
@@ -384,7 +384,7 @@
                     <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
                         <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
                         <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
-                        <p class="text-gray-700 mb-4">Enjoy your gym session. Once done, click the "Time Out" button to record your departure in the gym management system.</p>
+                        <p class="text-gray-700 mb-4">Once done, click the "Time Out" button to record your departure in the gym management system.</p>
                         <img src="/images/welcomebg.jpg" alt="Time Out" class="rounded-lg mx-auto">
                     </div>
                 </div>
