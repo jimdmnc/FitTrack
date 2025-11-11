@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\MembersPayment;  // ← ADD THIS LINE
+
 class StaffApprovalController extends Controller
 {
     // Show pending users (server-side rendering, kept for fallback)
@@ -95,59 +95,27 @@ class StaffApprovalController extends Controller
             }
         }
     
-        public function approveUser($id)
-        {
-            $user = User::findOrFail($id);
-        
-            if (!$user->needs_approval || $user->session_status !== 'pending') {
-                return redirect()->route('staff.manageApproval')
-                    ->with('error', 'This user has no pending renewal.');
-            }
-        
-            DB::beginTransaction();
-        
-            try {
-                $user->update([
-                    'member_status'   => 'active',
-                    'session_status'  => 'approved',
-                    'needs_approval'  => 0,
-                    'role'            => 'userSession',
-                    'updated_at'      => now(),
-                ]);
-        
-                // SAFELY update payment
-                $payment = MembersPayment::where('rfid_uid', $user->rfid_uid)
-                    ->where('status', 'pending')
-                    ->latest('payment_date')
-                    ->first();
-        
-                if ($payment) {
-                    $payment->update([
-                        'status'      => 'completed',
-                        'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
-                        'verified_at' => now(),
-                        'updated_at'  => now(),
-                    ]);
-                } else {
-                    \Log::warning("No pending payment found for approved user: {$user->rfid_uid}");
-                }
-        
-                DB::commit();
-        
-                return redirect()->route('staff.manageApproval')
-                    ->with('success', "Approved! {$user->first_name} is now active.");
-        
-            } catch (\Exception $e) {
-                DB::rollBack();
-                \Log::error('Approve User Failed: ' . $e->getMessage(), [
-                    'user_id' => $id,
-                    'trace'   => $e->getTraceAsString()
-                ]);
-        
-                return redirect()->route('staff.manageApproval')
-                    ->with('error', 'Approval failed. Check logs.');
-            }
-        }
+    public function approveUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->member_status = 'active';
+        $user->session_status = 'approved';
+        $user->needs_approval = false;
+        $user->save();
+
+        // DB::table('attendances')->insert([
+        //     'rfid_uid' => $user->rfid_uid,
+        //     // 'time_in' => now(),
+        //     'status' => 'present',
+        //     'attendance_date' => now()->toDateString(),
+        //     'check_in_method' => 'manual',
+        //     'session_id' => null,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
+
+        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+    }
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
