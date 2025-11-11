@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\MembersPayment;
 
 class StaffApprovalController extends Controller
 {
@@ -95,27 +96,40 @@ class StaffApprovalController extends Controller
             }
         }
     
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->member_status = 'active';
-        $user->session_status = 'approved';
-        $user->needs_approval = false;
-        $user->save();
-
-        // DB::table('attendances')->insert([
-        //     'rfid_uid' => $user->rfid_uid,
-        //     // 'time_in' => now(),
-        //     'status' => 'present',
-        //     'attendance_date' => now()->toDateString(),
-        //     'check_in_method' => 'manual',
-        //     'session_id' => null,
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
-
-        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-    }
+        public function approveUser(Request $request, $id)
+        {
+            // Validate the payment amount first
+            $validated = $request->validate([
+                'amount' => 'required|numeric|min:0',
+            ]);
+        
+            $user = User::findOrFail($id);
+            $user->member_status = 'active';
+            $user->session_status = 'approved';
+            $user->needs_approval = false;
+            $user->save();
+        
+            // ✅ Insert payment record after approval
+            \App\Models\MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $validated['amount'],
+                'payment_date' => now(),
+            ]);
+        
+            // (Optional) Insert attendance if you want
+            // DB::table('attendances')->insert([
+            //     'rfid_uid' => $user->rfid_uid,
+            //     'status' => 'present',
+            //     'attendance_date' => now()->toDateString(),
+            //     'check_in_method' => 'manual',
+            //     'session_id' => null,
+            //     'created_at' => now(),
+            //     'updated_at' => now(),
+            // ]);
+        
+            return redirect()->route('staff.manageApproval')->with('success', 'User approved and payment recorded successfully!');
+        }
+        
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
