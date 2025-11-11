@@ -364,29 +364,31 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <!-- Step 1 -->
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
-                        <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
-                        <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
-                        <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
-                        <img src="/images/tutorial1.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4">
-                    </div>
-                    
-                    <!-- Step 2 -->
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
-                        <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
-                        <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
-                        <img src="/images/welcomebgg.jpg" alt="Gym Payment" class="rounded-lg mx-auto">
-                    </div>
-                    
-                    <!-- Step 3 -->
-                    <div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
-                        <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
-                        <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
-                        <p class="text-gray-700 mb-4">Once done, click the "Time Out" button to record your departure in the gym management system.</p>
-                        <img src="/images/welcomebg.jpg" alt="Time Out" class="rounded-lg mx-auto">
-                    </div>
+                  <!-- Step 1 -->
+<div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+  <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">1</div>
+  <h3 class="text-xl font-bold mb-4">VISIT THE WEBSITE & FILL THE FORM</h3>
+  <p class="text-gray-700 mb-4">Go to the website, fill out the registration form, and submit it.</p>
+  <a href="{{ route('self.registration') }}" class="text-blue-600 hover:text-blue-800">Click here to register</a>
+  <img src="/images/tutorial1.jpg" alt="Visit Website" class="rounded-lg mx-auto mt-4 w-full h-48 object-cover">
+</div>
+
+<!-- Step 2 -->
+<div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+  <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
+  <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
+  <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
+  <img src="/images/welcomebgg.jpg" alt="Gym Payment" class="rounded-lg mx-auto mt-4 w-full h-48 object-cover">
+</div>
+
+<!-- Step 3 -->
+<div class="bg-gray-100 p-8 rounded-lg shadow-lg text-center">
+  <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">3</div>
+  <h3 class="text-xl font-bold mb-4">ENJOY YOUR SESSION & TIME OUT</h3>
+  <p class="text-gray-700 mb-4">Once done, click the "Time Out" button to record your departure in the gym management system.</p>
+  <img src="/images/welcomebg.jpg" alt="Time Out" class="rounded-lg mx-auto mt-4 w-full h-48 object-cover">
+</div>
+
                 </div>
                 
 
