@@ -149,7 +149,7 @@
                         <tr>
                             <th class="px-6 py-4 text-left">#</th>
                             <th class="px-6 py-4 text-left">Customer</th>
-                            <th class="px-6 py-4 text-left">Membership</th>
+                            <!-- <th class="px-6 py-4 text-left">Membership</th> -->
                             <th class="px-6 py-4 text-left">Amount</th>
                             <th class="px-6 py-4 text-left">Method</th>
                             <th class="px-6 py-4 text-left">Activation</th>
@@ -180,7 +180,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <!-- <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2.5 py-1 text-xs font-medium rounded-full
                                         @if(strtolower(optional($payment->user)->membership_type_name ?? '') == 'annual')
                                             bg-purple-900 text-purple-200
@@ -194,7 +194,7 @@
                                     ">
                                         {{ optional($payment->user)->membership_type_name ?? 'N/A' }}
                                     </span>
-                                </td>
+                                </td> -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">₱{{ number_format($payment->amount, 2) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
