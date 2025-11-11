@@ -99,19 +99,25 @@ class StaffApprovalController extends Controller
         {
             $user = User::findOrFail($id);
         
+            if (!$user->needs_approval || $user->session_status !== 'pending') {
+                return redirect()->route('staff.manageApproval')
+                    ->with('error', 'This user has no pending renewal.');
+            }
+        
             DB::beginTransaction();
         
             try {
-                // Activate user
+                // FIX: Use exact ENUM values (not strings with quotes)
                 $user->update([
-                    'session_status'  => 'approved',
-                    'needs_approval'  => false,
                     'member_status'   => 'active',
+                    'session_status'  => 'approved',    // ← This is correct (string matches ENUM)
+                    'needs_approval'  => 0,
                     'role'            => 'userSession',
+                    'updated_at'      => now(),
                 ]);
         
-                // NOW verify the pending payment
-                MembersPayment::where('rfid_uid', $user->rfid_uid)
+                // Verify the pending payment
+                $paymentUpdated = MembersPayment::where('rfid_uid', $user->rfid_uid)
                     ->where('status', 'pending')
                     ->latest()
                     ->update([
@@ -123,10 +129,17 @@ class StaffApprovalController extends Controller
                 DB::commit();
         
                 return redirect()->route('staff.manageApproval')
-                    ->with('success', 'Approved! Payment now visible in reports.');
+                    ->with('success', "Approved successfully! Payment now visible in reports.");
+        
             } catch (\Exception $e) {
                 DB::rollBack();
-                return back()->with('error', 'Approval failed.');
+                Log::error('Approve User Failed: ' . $e->getMessage(), [
+                    'user_id' => $id,
+                    'trace' => $e->getTraceAsString()
+                ]);
+        
+                return redirect()->route('staff.manageApproval')
+                    ->with('error', 'Approval failed. Check logs.');
             }
         }
     // public function approveUser($id)

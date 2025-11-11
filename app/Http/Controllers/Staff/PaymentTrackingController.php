@@ -14,8 +14,9 @@ class PaymentTrackingController extends Controller
    {
     $query = MembersPayment::with('user')
     ->whereHas('user', function($q) {
-        $q->where('session_status', 'approved');  // ONLY approved users
+        $q->where('session_status', 'approved');  // ← ONLY approved users
     })
+    ->where('status', 'verified')  // ← extra safety
     ->orderBy('payment_date', 'desc');
         // Search functionality
         if ($request->filled('search')) {
