@@ -121,7 +121,7 @@ class StaffApprovalController extends Controller
                     ->where('status', 'pending')
                     ->latest()
                     ->update([
-                        'status'      => 'verified',
+                        'status'      => 'completed',
                         'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
                         'updated_at'  => now(),
                     ]);

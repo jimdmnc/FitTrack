@@ -16,7 +16,7 @@ class PaymentTrackingController extends Controller
     ->whereHas('user', function($q) {
         $q->where('session_status', 'approved');  // ← ONLY approved users
     })
-    ->where('status', 'verified')  // ← extra safety
+    ->where('status', 'completed')  // ← extra safety
     ->orderBy('payment_date', 'desc');
         // Search functionality
         if ($request->filled('search')) {
