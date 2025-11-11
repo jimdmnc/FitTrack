@@ -95,27 +95,26 @@ class StaffApprovalController extends Controller
             }
         }
     
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->member_status = 'active';
-        $user->session_status = 'approved';
-        $user->needs_approval = false;
-        $user->save();
-
-        // DB::table('attendances')->insert([
-        //     'rfid_uid' => $user->rfid_uid,
-        //     // 'time_in' => now(),
-        //     'status' => 'present',
-        //     'attendance_date' => now()->toDateString(),
-        //     'check_in_method' => 'manual',
-        //     'session_id' => null,
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
-
-        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
-    }
+        public function approveUser($id)
+        {
+            $user = User::findOrFail($id);
+            $user->member_status = 'active';
+            $user->session_status = 'approved';
+            $user->needs_approval = false;
+            $user->save();
+        
+            // ONLY THIS PART ADDED — 8 lines total
+            \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
+                ->where('status', 'pending')
+                ->latest()
+                ->update([
+                    'status' => 'completed',
+                    'verified_by' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
+                ]);
+            // END OF ADDED PART
+        
+            return redirect()->route('staff.manageApproval')->with('success', 'User approved and payment now visible in reports!');
+        }
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);
