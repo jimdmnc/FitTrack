@@ -99,7 +99,6 @@ class StaffApprovalController extends Controller
         {
             $user = User::findOrFail($id);
         
-            // Prevent double approval or wrong status
             if (!$user->needs_approval || $user->session_status !== 'pending') {
                 return redirect()->route('staff.manageApproval')
                     ->with('error', 'This user has no pending renewal.');
@@ -108,7 +107,6 @@ class StaffApprovalController extends Controller
             DB::beginTransaction();
         
             try {
-                // 1. Approve the user
                 $user->update([
                     'member_status'   => 'active',
                     'session_status'  => 'approved',
@@ -117,26 +115,27 @@ class StaffApprovalController extends Controller
                     'updated_at'      => now(),
                 ]);
         
-                // 2. Change payment from 'pending' → 'completed'
-                $paymentUpdated = MembersPayment::where('rfid_uid', $user->rfid_uid)
+                // SAFELY update payment
+                $payment = MembersPayment::where('rfid_uid', $user->rfid_uid)
                     ->where('status', 'pending')
                     ->latest('payment_date')
-                    ->update([
-                        'status'      => 'completed',     // ← NOW IT APPEARS IN REPORTS
+                    ->first();
+        
+                if ($payment) {
+                    $payment->update([
+                        'status'      => 'completed',
                         'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
                         'verified_at' => now(),
                         'updated_at'  => now(),
                     ]);
-        
-                // Optional: If no payment found, log it
-                if (!$paymentUpdated) {
+                } else {
                     \Log::warning("No pending payment found for approved user: {$user->rfid_uid}");
                 }
         
                 DB::commit();
         
                 return redirect()->route('staff.manageApproval')
-                    ->with('success', "Approved! {$user->first_name} {$user->last_name} is now active. Payment is now in reports.");
+                    ->with('success', "Approved! {$user->first_name} is now active.");
         
             } catch (\Exception $e) {
                 DB::rollBack();
@@ -146,7 +145,7 @@ class StaffApprovalController extends Controller
                 ]);
         
                 return redirect()->route('staff.manageApproval')
-                    ->with('error', 'Approval failed. Please try again.');
+                    ->with('error', 'Approval failed. Check logs.');
             }
         }
     // public function approveUser($id)
