@@ -153,7 +153,7 @@
                             <th class="px-6 py-4 text-left">Amount</th>
                             <th class="px-6 py-4 text-left">Method</th>
                             <th class="px-6 py-4 text-left">Activation</th>
-                            <th class="px-6 py-4 text-left">Expiry</th>
+                            <!-- <th class="px-6 py-4 text-left">Expiry</th> -->
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-black">
@@ -196,7 +196,7 @@
                                     </span>
                                 </td> -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">₱{{ number_format($payment->amount, 2) }}</td>
-                                <td class="px-6 py-4 whitespace-nowrap">
+                                <!-- <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         @if(strtolower($payment->payment_method) == 'cash')
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-green-500 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -213,7 +213,7 @@
                                         @endif
                                         <span class="text-sm text-gray-200">{{ $payment->payment_method }}</span>
                                     </div>
-                                </td>
+                                </td> -->
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
                                     {{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}
                                 </td>
