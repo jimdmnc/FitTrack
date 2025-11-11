@@ -109,12 +109,12 @@ class StaffApprovalController extends Controller
             $user->needs_approval = false;
             $user->save();
         
-            // ✅ Insert payment record after approval
-            \App\Models\MembersPayment::create([
+            MembersPayment::create([
                 'rfid_uid' => $user->rfid_uid,
                 'amount' => $validated['amount'],
                 'payment_date' => now(),
             ]);
+            
         
             // (Optional) Insert attendance if you want
             // DB::table('attendances')->insert([
