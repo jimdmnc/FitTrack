@@ -95,7 +95,7 @@ class SelfRegistrationController extends Controller
                     ->whereNull('time_out')
                     ->whereDate('time_in', Carbon::today())
                     ->first();
-        
+    
                 if (!$attendance) {
                     Attendance::create([
                         'rfid_uid' => $user->rfid_uid,
@@ -104,19 +104,11 @@ class SelfRegistrationController extends Controller
                         'status' => 'present',
                         'check_in_method' => 'auto',
                     ]);
-        
-                    // ✅ Insert payment record when attendance is auto-created
-                    MembersPayment::create([
-                        'rfid_uid' => $user->rfid_uid,
-                        'amount' => $validated['amount'], // make sure $validated['amount'] exists
-                        'payment_date' => now(),
-                    ]);
                 }
             }
-        
+    
             return response()->json(['approved' => true]);
         }
-        
     
         if ($user->session_status === 'rejected') {
             return response()->json([
@@ -376,7 +368,12 @@ class SelfRegistrationController extends Controller
                 'needs_approval' => true,
             ]);
 
-       
+            MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $validated['amount'],
+                'payment_date' => now(),
+            ]);
+
             DB::commit();
 
             if (!Auth::check()) {
