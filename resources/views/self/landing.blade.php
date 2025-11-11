@@ -378,7 +378,7 @@
   <div class="inline-block bg-red-600 text-gray-200 text-2xl font-bold w-12 h-12 rounded-full flex items-center justify-center mb-4">2</div>
   <h3 class="text-xl font-bold mb-4">GO TO THE GYM FOR PAYMENT & APPROVAL</h3>
   <p class="text-gray-700 mb-4">Head to the gym for payment and approval by the staff. Once approved, the system will time in your visit.</p>
-  <img src="/images/welcomebgg.jpg" alt="Gym Payment" class="rounded-lg mx-auto mt-4 w-full h-48 object-cover">
+  <img src="/images/tutorial2.jpg" alt="Gym Payment" class="rounded-lg mx-auto mt-4 w-full h-48 object-cover">
 </div>
 
 <!-- Step 3 -->
