@@ -95,27 +95,50 @@ class StaffApprovalController extends Controller
             }
         }
     
-    public function approveUser($id)
-    {
-        $user = User::findOrFail($id);
-        $user->member_status = 'active';
-        $user->session_status = 'approved';
-        $user->needs_approval = false;
-        $user->save();
+        public function approveUser($id)
+{
+    $user = User::findOrFail($id);
 
-        // DB::table('attendances')->insert([
-        //     'rfid_uid' => $user->rfid_uid,
-        //     // 'time_in' => now(),
-        //     'status' => 'present',
-        //     'attendance_date' => now()->toDateString(),
-        //     'check_in_method' => 'manual',
-        //     'session_id' => null,
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ]);
-
-        return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
+    if (!$user->needs_approval || $user->session_status !== 'pending') {
+        return redirect()->route('staff.manageApproval')->with('error', 'No pending renewal found.');
     }
+
+    DB::beginTransaction();
+
+    try {
+        // Activate membership
+        $user->update([
+            'member_status'   => 'active',
+            'session_status'  => 'approved',
+            'needs_approval'  => false,
+            'role'            => 'userSession',
+            'updated_at'      => now(),
+        ]);
+
+        // Find and VERIFY the pending payment
+        $pendingPayment = MembersPayment::where('rfid_uid', $user->rfid_uid)
+            ->where('status', 'pending')
+            ->latest('payment_date')
+            ->first();
+
+        if ($pendingPayment) {
+            $pendingPayment->update([
+                'status'      => 'verified',
+                'verified_by' => Auth::user()->first_name . ' ' . Auth::user()->last_name,
+                'updated_at'  => now(),
+            ]);
+        }
+
+        DB::commit();
+
+        return redirect()->route('staff.manageApproval')
+            ->with('success', "Approved! Payment of ₱" . number_format($pendingPayment?->amount ?? 0, 2) . " now verified for {$user->first_name}.");
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Approval failed: ' . $e->getMessage());
+        return back()->with('error', 'Approval failed: ' . $e->getMessage());
+    }
+}
     // public function approveUser($id)
     // {
     //     $user = User::findOrFail($id);

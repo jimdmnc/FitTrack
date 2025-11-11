@@ -368,11 +368,15 @@ class SelfRegistrationController extends Controller
                 'needs_approval' => true,
             ]);
 
-            // MembersPayment::create([
-            //     'rfid_uid' => $user->rfid_uid,
-            //     'amount' => $validated['amount'],
-            //     'payment_date' => now(),
-            // ]);
+                    // In SelfRegistrationController@renew()
+            MembersPayment::create([
+                'rfid_uid'       => $user->rfid_uid,
+                'amount'         => $validated['amount'],
+                'payment_date'   => now(),
+                'payment_method' => 'cash', // or from request
+                'status'         => 'pending',     // ← THIS IS KEY
+                'verified_by'    => null,
+            ]);
 
             DB::commit();
 
