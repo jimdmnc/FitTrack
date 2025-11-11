@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
+use App\Models\MembersPayment;  // ← ADD THIS LINE
 class StaffApprovalController extends Controller
 {
     // Show pending users (server-side rendering, kept for fallback)
