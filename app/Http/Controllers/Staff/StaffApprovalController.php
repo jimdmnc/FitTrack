@@ -7,7 +7,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Models\MembersPayment;
 
 class StaffApprovalController extends Controller
 {
@@ -104,12 +103,16 @@ class StaffApprovalController extends Controller
         $user->needs_approval = false;
         $user->save();
 
-        MembersPayment::create([
-            'rfid_uid' => $user->rfid_uid,
-            'amount' => $validated['amount'],
-            'payment_date' => now(),
-        ]);
-        
+        // DB::table('attendances')->insert([
+        //     'rfid_uid' => $user->rfid_uid,
+        //     // 'time_in' => now(),
+        //     'status' => 'present',
+        //     'attendance_date' => now()->toDateString(),
+        //     'check_in_method' => 'manual',
+        //     'session_id' => null,
+        //     'created_at' => now(),
+        //     'updated_at' => now(),
+        // ]);
 
         return redirect()->route('staff.manageApproval')->with('success', 'User approved and attendance recorded successfully!');
     }
