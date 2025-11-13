@@ -333,7 +333,10 @@ class SelfRegistrationController extends Controller
     public function renew(Request $request)
     {
         Log::info('Renew Request:', $request->all());
-
+// CONVERT 'session' → '1' BEFORE VALIDATION
+if ($request->filled('membership_type') && $request->membership_type === 'session') {
+    $request->merge(['membership_type' => '1']);
+}
         try {
             $validated = $request->validate([
                 'rfid_uid' => 'required|string|exists:users,rfid_uid',
