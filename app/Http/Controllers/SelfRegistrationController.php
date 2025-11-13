@@ -337,7 +337,7 @@ class SelfRegistrationController extends Controller
         try {
             $validated = $request->validate([
                 'rfid_uid' => 'required|string|exists:users,rfid_uid',
-                'membership_type' => 'required|string|in:1', // Updated to accept 'session'
+                'membership_type' => 'required|string|in:session', // Updated to accept 'session'
                 'start_date' => 'required|date',
                 'end_date' => 'required|date|after_or_equal:start_date',
                 'amount' => 'required|numeric|min:0',
