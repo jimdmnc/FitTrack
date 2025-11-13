@@ -19,8 +19,8 @@ class DashboardController extends Controller
         $query = $request->input('search');
     
         // Fetch members with role 'user' and filter by name if a search query is provided
-        $members = User::whereIn('role', ['user', 'userSession'])
-                    ->when($query, function ($queryBuilder) use ($query) {
+        $members = User::where('role', 'user')
+            ->when($query, function ($queryBuilder) use ($query) {
                 $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
                     ->orWhere('first_name', 'like', "%{$query}%")
                     ->orWhere('last_name', 'like', "%{$query}%");
