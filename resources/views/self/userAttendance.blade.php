@@ -84,11 +84,11 @@
 </head>
 <body class="bg-[#121212] min-h-screen">
 
-    <!-- Navigation Bar -->
-    <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
+      <!-- Navigation Bar -->
+      <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
         <div class="container mx-auto">
             <!-- Alerts for Success and Error messages -->
-            @if(session('success'))
+            <!-- @if(session('success'))
                 <div class="alert-banner success-alert mb-2 p-3 bg-green-100 border-l-4 border-green-500 text-green-700 rounded">
                     <div class="flex items-center">
                         <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -108,7 +108,7 @@
                         <span>{{ session('error') }}</span>
                     </div>
                 </div>
-            @endif
+            @endif -->
 
             <!-- Main Navigation Content -->
             <div class="flex justify-between items-center">
@@ -153,7 +153,13 @@
                     <a href="{{ route('self.landingProfile') }}#inhere" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">In Here</a>
                     <a href="{{ route('self.userAttendance') }}" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Attendance</a>
                     <a href="javascript:void(0)" onclick="showProfile()" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Profile</a>
-                    
+                    @if(Auth::check() && !Str::startsWith(Auth::user()->rfid_uid, 'DAILY'))
+                        <a href="{{ route('self.forgotRfid') }}" 
+                        class="nav-link font-medium hover:text-yellow-400 transition duration-300 text-sm lg:text-base">
+                            Forgot RFID?
+                        </a>
+                    @endif
+
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
@@ -196,7 +202,11 @@
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        
+                        <a href="{{ route('self.forgotRfid') }}" 
+                            class="py-3 text-xl font-medium hover:text-yellow-400 transition duration-300">
+                                Forgot RFID?
+                            </a>
+
                         @if(Auth::user()->role === 'userSession')
                             @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                                 <div class="flex justify-center items-center py-4">
