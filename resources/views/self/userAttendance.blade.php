@@ -84,8 +84,8 @@
 </head>
 <body class="bg-[#121212] min-h-screen">
 
-      <!-- Navigation Bar -->
-      <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
+     <!-- Navigation Bar -->
+     <nav class="bg-black text-gray-200 py-3 px-4 md:px-6 sticky top-0 z-50">
         <div class="container mx-auto">
             <!-- Alerts for Success and Error messages -->
             <!-- @if(session('success'))
@@ -202,10 +202,13 @@
                         <a href="{{ route('self.landingProfile') }}#inhere" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">About Us</a>
                         <a href="{{ route('self.userAttendance') }}" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Attendance</a>
                         <a href="javascript:void(0)" onclick="showProfile(); closeMobileMenu();" class="py-3 text-xl font-medium hover:text-red-400 transition duration-300">Profile</a>
-                        <a href="{{ route('self.forgotRfid') }}" 
-                            class="py-3 text-xl font-medium hover:text-yellow-400 transition duration-300">
-                                Forgot RFID?
+                        @if(Auth::check() && !Str::startsWith(Auth::user()->rfid_uid, 'DAILY'))
+                             <a href="{{ route('self.forgotRfid') }}" 
+                                class="py-3 text-xl font-medium hover:text-yellow-400 transition duration-300">
+                                    Forgot RFID?
                             </a>
+                        @endif
+
 
                         @if(Auth::user()->role === 'userSession')
                             @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
