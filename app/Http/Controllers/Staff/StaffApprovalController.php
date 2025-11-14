@@ -39,7 +39,10 @@ class StaffApprovalController extends Controller
                         $query->where('role', 'user')
                             ->orWhere('role', 'userSession');
                     })
-                  ->with(['currentPendingRenewal']); // ← USE RENEWALS
+                    ->with(['payment' => function ($query) {
+                        $query->latest('created_at');
+                    }]);
+
                 // Apply filters
                 $filter = $request->query('filter', 'all');
                 if ($filter === 'today') {
