@@ -40,7 +40,7 @@ class StaffApprovalController extends Controller
                             ->orWhere('role', 'userSession');
                     })
                     ->with(['payment' => function ($query) {
-                        $query->latest();
+                        $query->latest('updated_at');
                     }]);
 
                 // Apply filters

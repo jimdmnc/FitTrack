@@ -154,4 +154,10 @@ public function payment()
 }
 
 
+public function latestRenewal()
+{
+    return $this->hasOne(Renewal::class, 'rfid_uid', 'rfid_uid')
+                ->latest('created_at');
+}
+
 }
