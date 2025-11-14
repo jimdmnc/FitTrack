@@ -599,8 +599,8 @@
             
             <!-- Improved period selector -->
             <div class="period-selector flex flex-wrap p-1 rounded-lg w-fit">
-                <!-- <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
-                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button> -->
+                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
             </div>
@@ -671,9 +671,9 @@
                         <p class="text-sm text-gray-200">Ongoing Memberships</p>
                     </div>
                     <div class="chart-action-buttons space-x-2 flex items-center">
-                        <!-- <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
+                        <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
                             <i class="fas fa-expand-alt text-sm"></i>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
 
@@ -1382,8 +1382,8 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     // Get check-in data from Laravel
-    // var dailyCheckIns = @json($dailyCheckIns);
-    // var weeklyCheckIns = @json($weeklyCheckIns);
+    var dailyCheckIns = @json($dailyCheckIns);
+    var weeklyCheckIns = @json($weeklyCheckIns);
     var monthlyCheckIns = @json($monthlyCheckIns);
     var yearlyCheckIns = @json($yearlyCheckIns);
 
@@ -1503,7 +1503,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 let newData;
                 
                 switch (period) {
-                 
+                    case "weekly":
+                        newData = getChartData(weeklyCheckIns);
+                        updateSummaryStats(weeklyCheckIns);
+                        document.getElementById('h3').textContent = 'Weekly Check-ins';
+                        break;
                     case "monthly":
                         newData = getChartData(monthlyCheckIns);
                         updateSummaryStats(monthlyCheckIns);
@@ -1515,9 +1519,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById('h3').textContent = 'Yearly Check-ins';
                         break;
                     default:
-                        newData = getChartData(yearlyCheckIns);
-                        updateSummaryStats(yearlyCheckIns);
-                        document.getElementById('h3').textContent = 'Yearly Check-ins';
+                        newData = getChartData(dailyCheckIns);
+                        updateSummaryStats(dailyCheckIns);
+                        document.getElementById('h3').textContent = 'Daily Check-ins';
                 }
 
                 myChart.data.labels = newData.labels;
