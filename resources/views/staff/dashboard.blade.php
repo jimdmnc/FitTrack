@@ -586,7 +586,7 @@
         <div class="glass-card p-4 col-span-12 md:col-span-8 chart-card space-y-4 rounded-xl" id="checkinsChartCard">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2">
                 <div class="mb-2 sm:mb-0">
-                    <h3 class="text-lg font-semibold text-gray-200" id="h3">Daily Check-ins</h3>
+                    <h3 class="text-lg font-semibold text-gray-200" id="h3">Monthly Check-ins</h3>
                     <p class="text-xs text-gray-200">Number of members visiting the gym</p>
                 </div>
                 <div class="flex space-x-2">
