@@ -187,51 +187,59 @@ class DashboardController extends Controller
     private function getDailyCheckIns()
     {
         return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
-            ->where('time_in', '>=', Carbon::now()->subDays(7))
+            ->whereNotNull('time_in')
+            ->where('time_in', '>=', Carbon::now()->subMonths(6))  // ← SHOWS YOUR DATA
             ->groupBy('date')
             ->orderBy('date', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($item) {
+                return (object)[
+                    'date' => Carbon::parse($item->date)->format('M d'),
+                    'count' => $item->count
+                ];
+            });
     }
 
 
     private function getPreviousDailyCheckIns()
     {
         return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
-            ->whereBetween('time_in', [
-                Carbon::now()->subDays(14)->startOfDay(),
-                Carbon::now()->subDays(7)->endOfDay()
-            ])
+        ->whereBetween('time_in', [
+            Carbon::now()->subMonths(12)->startOfDay(),
+            Carbon::now()->subMonths(6)->endOfDay()
+        ])
             ->groupBy('date')
             ->orderBy('date', 'asc')
             ->get();
     }
 
     // Get weekly check-ins (last 4 weeks)
-   private function getWeeklyCheckIns()
-   {
-       return Attendance::selectRaw('YEARWEEK(time_in, 1) as week, COUNT(*) as count')
-           ->where('time_in', '>=', Carbon::now()->subWeeks(4))
-           ->groupBy('week')
-           ->orderBy('week', 'asc')
-           ->get()
-           ->map(function ($item) {
-               $year = substr($item->week, 0, 4);
-               $week = substr($item->week, 4, 2);
-               return (object)[
-                   'date' => Carbon::now()->setISODate($year, $week)->format('Y-m-d'),
-                   'count' => $item->count
-               ];
-           });
-   }
+    private function getWeeklyCheckIns()
+    {
+        return Attendance::selectRaw('YEARWEEK(time_in, 1) as week, COUNT(*) as count')
+            ->whereNotNull('time_in')
+            ->where('time_in', '>=', Carbon::now()->subMonths(6))  // ← SHOWS YOUR DATA
+            ->groupBy('week')
+            ->orderBy('week', 'asc')
+            ->get()
+            ->map(function ($item) {
+                $year = substr($item->week, 0, 4);
+                $week = substr($item->week, 4, 2);
+                return (object)[
+                    'date' => "Week " . ltrim($week, '0') . " ($year)",
+                    'count' => $item->count
+                ];
+            });
+    }
 
 
    private function getPreviousWeeklyCheckIns()
    {
        return Attendance::selectRaw('YEARWEEK(time_in, 1) as week, COUNT(*) as count')
-           ->whereBetween('time_in', [
-               Carbon::now()->subWeeks(8),
-               Carbon::now()->subWeeks(4)
-           ])
+       ->whereBetween('time_in', [
+        Carbon::now()->subMonths(12)->startOfDay(),
+        Carbon::now()->subMonths(6)->endOfDay()
+    ])
            ->groupBy('week')
            ->orderBy('week', 'asc')
            ->get()
