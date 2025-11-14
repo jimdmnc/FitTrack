@@ -1503,29 +1503,30 @@ document.addEventListener("DOMContentLoaded", function () {
                 let newData;
                 
                 switch (period) {
-                    case "weekly":
-                        newData = getChartData(weeklyCheckIns);
-                        updateSummaryStats(weeklyCheckIns);
-                        document.getElementById('h3').textContent = 'Weekly Check-ins';
-                        break;
-                    case "daily":
-                    
-                        newData = getChartData(dailyCheckIns);
-                        updateSummaryStats(dailyCheckIns);
-                        document.getElementById('h3').textContent = 'Daily Check-ins';
-                        break;
+    case "weekly":
+        newData = getChartData(weeklyCheckIns);
+        updateSummaryStats(weeklyCheckIns);
+        document.getElementById('h3').textContent = 'Weekly Check-ins';
+        break;
 
+    case "yearly":
+        newData = getChartData(yearlyCheckIns);
+        updateSummaryStats(yearlyCheckIns);
+        document.getElementById('h3').textContent = 'Yearly Check-ins';
+        break;
 
-                    case "yearly":
-                        newData = getChartData(yearlyCheckIns);
-                        updateSummaryStats(yearlyCheckIns);
-                        document.getElementById('h3').textContent = 'Yearly Check-ins';
-                        break;
-                    default:
-                        newData = getChartData(monthlyCheckIns);
-                        updateSummaryStats(monthlyCheckIns);
-                        document.getElementById('h3').textContent = 'Monthly Check-ins';
-                }
+    case "monthly": // still allow switching to monthly manually
+        newData = getChartData(monthlyCheckIns);
+        updateSummaryStats(monthlyCheckIns);
+        document.getElementById('h3').textContent = 'Monthly Check-ins';
+        break;
+
+    default: // 👉 DEFAULT NOW USES MONTHLY
+        newData = getChartData(monthlyCheckIns);
+        updateSummaryStats(monthlyCheckIns);
+        document.getElementById('h3').textContent = 'Monthly Check-ins';
+}
+
 
                 myChart.data.labels = newData.labels;
                 myChart.data.datasets[0].data = newData.dataCounts;
