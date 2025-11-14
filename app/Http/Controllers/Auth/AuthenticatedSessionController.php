@@ -57,27 +57,19 @@ public function store(Request $request)
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
-{
-    // Destroy all sessions
-    Auth::guard('web')->logout();
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+    {
+        Auth::guard('web')->logout();
     
-    // Completely wipe the session storage
-    session()->flush();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        session()->flush();
     
-    // Create a redirect response with nuclear cache headers
-    $response = redirect('/login');
-    
-    // Set extreme cache prevention headers
-    $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
-    $response->headers->set('Pragma', 'no-cache');
-    $response->headers->set('Expires', '0');
-    $response->headers->set('X-Accel-Expires', '0'); 
-    
-    // Add security headers
-    $response->headers->set('Clear-Site-Data', '"cache", "cookies", "storage"');
-    
-    return $response;
-}
+        return redirect('/login')
+            ->withHeaders([
+                'Cache-Control' => 'no-cache, no-store, must-revalidate, private',
+                'Pragma' => 'no-cache',
+                'Expires' => '0',
+                'Clear-Site-Data' => '"cache", "cookies", "storage", "executionContexts"',
+            ]);
+    }
 }
