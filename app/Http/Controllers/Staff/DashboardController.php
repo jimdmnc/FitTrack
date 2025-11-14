@@ -187,6 +187,7 @@ class DashboardController extends Controller
     private function getDailyCheckIns()
     {
         return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
+        ->whereNotNull('time_in')  // ← ADD THIS
             ->where('time_in', '>=', Carbon::now()->subDays(7))
             ->groupBy('date')
             ->orderBy('date', 'asc')
@@ -197,6 +198,7 @@ class DashboardController extends Controller
     private function getPreviousDailyCheckIns()
     {
         return Attendance::selectRaw('DATE(time_in) as date, COUNT(*) as count')
+        ->whereNotNull('time_in')  // ← ADD THIS
             ->whereBetween('time_in', [
                 Carbon::now()->subDays(14)->startOfDay(),
                 Carbon::now()->subDays(7)->endOfDay()
