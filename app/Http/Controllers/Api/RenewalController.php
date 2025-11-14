@@ -16,43 +16,29 @@ class RenewalController extends Controller
 {
     public function renewMembershipApp(Request $request)
     {
-        // === VALIDATION ===
+        // Validate request
         $request->validate([
             'rfid_uid' => 'required|exists:users,rfid_uid',
-            'membership_type' => 'required|string',
+            'membership_type' => 'required',
             'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'end_date' => 'required|date|after:start_date',
             'payment_method' => 'required|in:cash,gcash',
             'amount' => 'required|numeric|min:0',
-            'payment_screenshot' => 'required_if:payment_method,gcash|nullable|string',
+            'payment_screenshot' => 'nullable|string|required_if:payment_method,gcash',
         ]);
-    
-        $user = User::where('rfid_uid', $request->rfid_uid)->firstOrFail();
-    
-        $isGcash = $request->payment_method === 'gcash';
-        $screenshotPath = null;
-    
-        // === HANDLE GCASH SCREENSHOT ===
-        if ($isGcash && $request->payment_screenshot) {
-            if (preg_match('/^data:image\/(\w+);base64,/', $request->payment_screenshot)) {
-                $image = $request->payment_screenshot;
-                $image = str_replace('data:image/jpeg;base64,', '', $image);
-                $image = str_replace(' ', '+', $image);
-                $imageData = base64_decode($image);
-    
-                $fileName = 'gcash_' . $user->rfid_uid . '_' . time() . '.jpg';
-                $path = 'payments/gcash/' . $fileName;
-                \Storage::disk('public')->put($path, $imageData);
-                $screenshotPath = $path;
-            } else {
-                $screenshotPath = $request->payment_screenshot;
-            }
+
+        // Find user by RFID
+        $user = User::where('rfid_uid', $request->rfid_uid)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'User not found'
+            ], 404);
         }
-    
-        DB::beginTransaction();
-    
+
         try {
-            // === UPDATE USER (both go to pending) ===
+            // Update user membership - both payment methods will be pending approval
             $user->update([
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -61,36 +47,43 @@ class RenewalController extends Controller
                 'session_status' => 'pending',
                 'needs_approval' => 1,
             ]);
-    
-            // === CREATE RENEWAL RECORD ===
-            Renewal::create([
+
+            // Process payment screenshot if provided
+            $paymentScreenshotPath = $request->payment_screenshot;
+
+            // Create Renewal and Payment records
+            $renewal = Renewal::create([
                 'rfid_uid' => $user->rfid_uid,
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
                 'payment_method' => $request->payment_method,
-                'amount' => $request->amount,
-                'status' => 'pending', // BOTH PENDING
-                'payment_screenshot' => $screenshotPath,
+                'status' => 'pending',
+                'payment_reference' => null,
+                'payment_screenshot' => $paymentScreenshotPath,
             ]);
-    
-            DB::commit();
-    
+
+            // MembersPayment::create([
+            //     'rfid_uid' => $user->rfid_uid,
+            //     'amount' => $request->amount,
+            //     'payment_method' => $request->payment_method,
+            //     'payment_date' => now(),
+            //     'payment_screenshot' => $paymentScreenshotPath,
+            //     'status' => 'pending',
+            // ]);
+
             return response()->json([
                 'success' => true,
-                'message' => $isGcash
-                    ? 'GCash payment submitted. Waiting for staff to verify screenshot.'
-                    : 'On-site renewal submitted. Waiting for staff approval.',
-                'requires_approval' => true,
+                'message' => 'Renewal request submitted. Waiting for staff approval.',
+                'user' => $user,
             ]);
-    
+
         } catch (\Exception $e) {
-            DB::rollBack();
-            \Log::error('App Renewal Failed: ' . $e->getMessage());
+            \Log::error('Renewal error: ' . $e->getMessage() . ' | Trace: ' . $e->getTraceAsString());
             return response()->json([
                 'success' => false,
-                'message' => 'Renewal failed. Please try again.',
-            ], 500);
+                'message' => 'Renewal failed: ' . $e->getMessage(),
+            ], 400);
         }
     }
 
