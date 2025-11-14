@@ -599,9 +599,9 @@
             
             <!-- Improved period selector -->
             <div class="period-selector flex flex-wrap p-1 rounded-lg w-fit">
-                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
-                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
+                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
             </div>
             
@@ -1415,8 +1415,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Initial dataset
-    var { labels, dataCounts } = getChartData(dailyCheckIns);
-    updateSummaryStats(dailyCheckIns);
+    var { labels, dataCounts } = getChartData(monthlyCheckIns);
+    updateSummaryStats(monthlyCheckIns);
 
     var myChart = new Chart(document.getElementById("checkins-chart").getContext("2d"), {
         type: 'bar',
