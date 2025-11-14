@@ -150,7 +150,8 @@ public function foodLogs()
 }
 public function payment()
 {
-    return $this->hasOne(Payment::class, 'rfid_uid', 'rfid_uid');
+    return $this->hasOne(Payment::class, 'rfid_uid', 'rfid_uid')
+                ->latest('created_at');
 }
 
 
