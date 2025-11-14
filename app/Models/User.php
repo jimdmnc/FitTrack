@@ -154,10 +154,10 @@ public function payment()
                 ->latest('created_at');
 }
 
-
-public function latestRenewal()
+public function currentPendingRenewal()
 {
     return $this->hasOne(Renewal::class, 'rfid_uid', 'rfid_uid')
+                ->where('status', 'pending')
                 ->latest('created_at');
 }
 
