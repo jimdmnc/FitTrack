@@ -218,7 +218,7 @@ class DashboardController extends Controller
                $year = substr($item->week, 0, 4);
                $week = substr($item->week, 4, 2);
                return (object)[
-                    'date' => "Week " . $week . " ($year)",
+                   'date' => Carbon::now()->setISODate($year, $week)->format('Y-m-d'),
                    'count' => $item->count
                ];
            });
@@ -239,7 +239,7 @@ class DashboardController extends Controller
                $year = substr($item->week, 0, 4);
                $week = substr($item->week, 4, 2);
                return (object)[
-                    'date' => "Week " . $week . " ($year)",
+                   'date' => Carbon::now()->setISODate($year, $week)->format('Y-m-d'),
                    'count' => $item->count
                ];
            });
