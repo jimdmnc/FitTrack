@@ -1518,10 +1518,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         updateSummaryStats(yearlyCheckIns);
                         document.getElementById('h3').textContent = 'Yearly Check-ins';
                         break;
-                    default:
-                        newData = getChartData(dailyCheckIns);
-                        updateSummaryStats(dailyCheckIns);
-                        document.getElementById('h3').textContent = 'Daily Check-ins';
+                    default: // 👉 DEFAULT NOW MONTHLY
+                            newData = getChartData(monthlyCheckIns);
+                            updateSummaryStats(monthlyCheckIns);
+                            document.getElementById('h3').textContent = 'Monthly Check-ins';
                 }
 
                 myChart.data.labels = newData.labels;
