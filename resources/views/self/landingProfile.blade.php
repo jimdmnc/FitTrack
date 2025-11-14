@@ -641,7 +641,7 @@
         <section id="inhere" class="in-here-section h-screen flex items-center justify-center relative" style="background-image: url('{{ asset('images/welcomebgg.jpg') }}'); background-size: cover; background-position: center;">
             <div class="absolute inset-0 bg-black bg-opacity-60"></div>
             <div class="container mx-auto px-6 z-10 text-center">
-                <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO THE GYM HUB</h2>
+                <h2 class="text-5xl font-extrabold text-gray-200 mb-6">WELCOME TO ROCKIES FITNESS</h2>
                 <p class="text-xl text-gray-200 mb-8">Your fitness journey starts here. Access exclusive workouts, track your progress, and connect with our community.</p>
             </div>
         </section>
