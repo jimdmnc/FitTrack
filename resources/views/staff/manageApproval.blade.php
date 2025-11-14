@@ -270,10 +270,19 @@ function initPendingUsersTable() {
                     };
 
                     const paymentMethod = user.payment_method === 'gcash' 
-                        ? `<button onclick="openScreenshotModal('${user.payment_screenshot}')" class="px-2 py-1 rounded-full text-xs font-semibold bg-green-900 text-green-200 hover:bg-green-700 transition-colors">GCASH</button>`
-                        : user.payment_method === 'cash'
-                        ? `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-900 text-yellow-200">CASH</span>`
-                        : `<span class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-500 text-white">Unknown</span>`;
+    ? `<button 
+         onclick="openScreenshotModal('${user.payment_screenshot}')" 
+         class="px-3 py-1.5 rounded-full text-xs font-bold bg-green-700 text-green-100 hover:bg-green-600 hover:shadow-md transition-all duration-200 flex items-center gap-1 shadow-sm">
+         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+         VIEW GCASH
+       </button>`
+    : user.payment_method === 'cash'
+    ? `<span class="px-3 py-1.5 rounded-full text-xs font-bold bg-yellow-700 text-yellow-100 shadow-sm">
+         CASH
+       </span>`
+    : `<span class="px-3 py-1.5 rounded-full text-xs font-semibold bg-gray-500 text-white">
+         Unknown
+       </span>`;
 
                     const row = `
                         <tr class="bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] text-gray-200 text-sm border-b border-black">
