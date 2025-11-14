@@ -320,4 +320,23 @@ class AttendanceController extends Controller
         return back()->with('error', 'Error: ' . $e->getMessage());
     }
 }
+
+
+
+
+public function checkToday()
+{
+    $user = Auth::user();
+    $today = now()->format('Y-m-d');
+
+    $hasAttendance = $user->attendances()
+        ->whereDate('time_in', $today)
+        ->exists();
+
+    return response()->json([
+        'has_attended' => $hasAttendance
+    ]);
+}
+
+
 }

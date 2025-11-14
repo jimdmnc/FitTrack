@@ -158,6 +158,21 @@ Route::middleware('auth')->group(function () {
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
 
+
+
+
+
+
+    Route::post('/check-today-attendance', [AttendanceController::class, 'checkToday'])
+    ->middleware('auth')
+    ->name('attendance.check-today');
+
+
+
+
+
+
+
     //Manual Attendance
     Route::get('/self/forgot-rfid', [SelfController::class, 'showForgotRfid'])->name('self.forgotRfid');
     Route::post('/self/manual-attendance', [SelfController::class, 'manualAttendance'])->name('self.manualAttendance');
