@@ -671,9 +671,9 @@
                         <p class="text-sm text-gray-200">Ongoing Memberships</p>
                     </div>
                     <div class="chart-action-buttons space-x-2 flex items-center">
-                        <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
+                        <!-- <div class="chart-action-button expand-subscribers-btn cursor-pointer" title="Expand">
                             <i class="fas fa-expand-alt text-sm"></i>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
 
