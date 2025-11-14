@@ -599,9 +599,9 @@
             
             <!-- Improved period selector -->
             <div class="period-selector flex flex-wrap p-1 rounded-lg w-fit">
-                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
+                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="daily">Daily</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="weekly">Weekly</button>
-                <button class="period-button active rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
+                <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="monthly">Monthly</button>
                 <button class="period-button rounded-md px-3 py-1.5 text-sm font-medium transition-all" data-period="yearly">Yearly</button>
             </div>
             
@@ -1509,19 +1509,22 @@ document.addEventListener("DOMContentLoaded", function () {
                         document.getElementById('h3').textContent = 'Weekly Check-ins';
                         break;
                     case "monthly":
-                        newData = getChartData(monthlyCheckIns);
-                        updateSummaryStats(monthlyCheckIns);
-                        document.getElementById('h3').textContent = 'Monthly Check-ins';
+                    
+                        newData = getChartData(dailyCheckIns);
+                        updateSummaryStats(dailyCheckIns);
+                        document.getElementById('h3').textContent = 'Daily Check-ins';
                         break;
+
+
                     case "yearly":
                         newData = getChartData(yearlyCheckIns);
                         updateSummaryStats(yearlyCheckIns);
                         document.getElementById('h3').textContent = 'Yearly Check-ins';
                         break;
-                    default: // 👉 DEFAULT NOW MONTHLY
-                            newData = getChartData(monthlyCheckIns);
-                            updateSummaryStats(monthlyCheckIns);
-                            document.getElementById('h3').textContent = 'Monthly Check-ins';
+                    default:
+                        newData = getChartData(monthlyCheckIns);
+                        updateSummaryStats(monthlyCheckIns);
+                        document.getElementById('h3').textContent = 'Monthly Check-ins';
                 }
 
                 myChart.data.labels = newData.labels;
