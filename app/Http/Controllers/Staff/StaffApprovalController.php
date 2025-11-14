@@ -39,8 +39,7 @@ class StaffApprovalController extends Controller
                         $query->where('role', 'user')
                             ->orWhere('role', 'userSession');
                     })
-                    ->with(['currentPendingRenewal']); // ← USE RENEWALS
-
+                  ->with(['currentPendingRenewal']); // ← USE RENEWALS
                 // Apply filters
                 $filter = $request->query('filter', 'all');
                 if ($filter === 'today') {
@@ -56,9 +55,9 @@ class StaffApprovalController extends Controller
                         'last_name' => $user->last_name,
                         'gender' => ucfirst($user->gender),
                         'membership_type' => $user->membership_type,
-                        'payment_method' => $user->currentPendingRenewal?->payment_method ?? 'unknown',
-                        'payment_screenshot' => $user->currentPendingRenewal?->payment_screenshot 
-                            ? \Storage::url($user->currentPendingRenewal->payment_screenshot) 
+                        'payment_method' => $user->payment ? $user->payment->payment_method : null,
+                        'payment_screenshot' => $user->payment && $user->payment->payment_screenshot 
+                            ? \Storage::url($user->payment->payment_screenshot) 
                             : null,
                         'updated_at' => [
                             'date' => $user->updated_at->format('M d, Y'),
