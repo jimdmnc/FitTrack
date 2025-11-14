@@ -63,14 +63,14 @@ class RenewalController extends Controller
                 'payment_screenshot' => $paymentScreenshotPath,
             ]);
 
-            // MembersPayment::create([
-            //     'rfid_uid' => $user->rfid_uid,
-            //     'amount' => $request->amount,
-            //     'payment_method' => $request->payment_method,
-            //     'payment_date' => now(),
-            //     'payment_screenshot' => $paymentScreenshotPath,
-            //     'status' => 'pending',
-            // ]);
+            MembersPayment::create([
+                'rfid_uid' => $user->rfid_uid,
+                'amount' => $request->amount,
+                'payment_method' => $request->payment_method,
+                'payment_date' => now(),
+                'payment_screenshot' => $paymentScreenshotPath,
+                'status' => 'pending',
+            ]);
 
             return response()->json([
                 'success' => true,
@@ -156,7 +156,7 @@ class RenewalController extends Controller
                 if ($renewal) {
                     $renewal->update([
                         'payment_screenshot' => $path,
-                        // 'payment_method' => 'gcash',
+                        'payment_method' => 'gcash',
                     ]);
                 } else {
                     \Log::warning("No pending renewal found for rfid_uid: {$user->rfid_uid}");
