@@ -425,14 +425,14 @@
                             </ul>
                         </div>
                         
-                        <div>
+                        <!-- <div>
                             <h4 class="text-lg font-bold mb-4">Support</h4>
                             <ul class="space-y-2">
                                 <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Help Center</a></li>
                                 <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">Contact Us</a></li>
                                 <li><a href="#" class="text-gray-400 hover:text-red-500 transition duration-300">FAQ</a></li>
                             </ul>
-                        </div>
+                        </div> -->
                         
                         <div>
                             <h4 class="text-lg font-bold mb-4">Connect</h4>
