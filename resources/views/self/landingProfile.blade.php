@@ -310,13 +310,12 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
-                        <button 
-                            type="button" 
-                            id="renew-button"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew
+
+                        <button type="button" onclick="checkRenewalEligibility()"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-sync-alt mr-1"></i> Renew
                         </button>
-                    @endif
+                        @endif
 
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
@@ -377,29 +376,12 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    @if(Auth::user()->role === 'userSession')
-                        <button 
-                            type="button" 
-                            id="renew-button"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-2"></i> Renew
-                        </button>
-                    @endif
-                    <!-- Modal -->
-<div id="already-worked-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg p-6 max-w-sm w-full shadow-xl">
-        <div class="flex items-center mb-4">
-            <i class="fas fa-check-circle text-green-500 text-2xl mr-2"></i>
-            <h3 class="text-lg font-semibold">Already Worked Out!</h3>
-        </div>
-        <p class="text-gray-600 mb-4">You've already checked in today. Come back tomorrow!</p>
-        <button 
-            onclick="closeAlreadyWorkedModal()"
-            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition">
-            OK
-        </button>
-    </div>
-</div>
+                        @if(Auth::user()->role === 'userSession')
+                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                                <i class="fas fa-sync-alt mr-2"></i> Renew
+                            </button>
+                        @endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -1334,49 +1316,5 @@
 
             window.showNotification = showNotification;
         </script>
-        <script>
-    document.getElementById('renew-button')?.addEventListener('click', function() {
-        // Show loading or disable button (optional)
-        this.disabled = true;
-        this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Checking...';
-
-        fetch('{{ route("attendance.check-today") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.has_attended) {
-                // Show modal
-                document.getElementById('already-worked-modal').classList.remove('hidden');
-            } else {
-                // Proceed with renewal
-                checkRenewalEligibility();
-                closeMobileMenu();
-            }
-        })
-        .catch(() => {
-            alert('Error checking attendance. Please try again.');
-        })
-        .finally(() => {
-            // Reset button
-            this.disabled = false;
-            this.innerHTML = '<i class="fas fa-sync-alt mr-2"></i> Renew';
-        });
-    });
-
-    function closeAlreadyWorkedModal() {
-        document.getElementById('already-worked-modal').classList.add('hidden');
-    }
-
-    // Close modal when clicking outside
-    document.getElementById('already-worked-modal')?.addEventListener('click', function(e) {
-        if (e.target === this) closeAlreadyWorkedModal();
-    });
-</script>
     </body>
 </html>

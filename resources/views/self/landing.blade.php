@@ -437,7 +437,7 @@
                         <div>
                             <h4 class="text-lg font-bold mb-4">Connect</h4>
                             <div class="flex space-x-4">
-                                <a href="https://www.facebook.com/rockies.fitness" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
+                                <a href="https://www.facebook.com/profile.php?id=61577058506357" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
                                 <a href="#" class="text-gray-400 hover:text-red-500 transition duration-300"><i class="fab fa-instagram text-xl"></i></a>
                             </div>
                         </div>
