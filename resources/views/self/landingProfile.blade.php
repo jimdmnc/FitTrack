@@ -760,15 +760,6 @@
                     </p>
                 </div>
 
-                <!-- Last Activity -->
-                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
-                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
-                        <i class="fas fa-clock"></i> Last Activity
-                    </label>
-                    <p class="font-medium text-gray-100 text-lg">
-                        {{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}
-                    </p>
-                </div>
 
                 <!-- Issued Date -->
                 <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
