@@ -689,77 +689,181 @@
         </footer>
 
         <!-- Profile Modal -->
-        <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
-            <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-                <div class="profile-header bg-red-600">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-2xl font-bold text-white">User Profile</h3>
-                        <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
-                            <i class="fas fa-times text-xl"></i>
-                        </button>
-                    </div>
-                    <div class="text-center">
-                        <img src="{{ asset('images/image.png') }}" alt="User Avatar" class="w-20 h-20 rounded-full mx-auto mb-4 profile-avatar">
-                        <h2 class="text-xl font-semibold mt-4 text-white">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</h2>
-                        <p class="text-sm text-gray-300">{{ Auth::user()->email }}</p>
-                    </div>
+        <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden overflow-hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black bg-opacity-70 transition-opacity" onclick="hideProfile()"></div>
+
+    <!-- Modal Content (Slide-in from right) -->
+    <div class="profile-modal-content absolute right-0 top-0 h-full w-full max-w-md bg-[#1e1e1e] text-gray-200 shadow-2xl transform transition-transform duration-300 ease-out translate-x-full">
+        
+        <!-- Header with Orange Background -->
+        <div class="profile-header bg-gradient-to-br from-orange-500 to-orange-600 p-6 pb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-2">
+                    <i class="fas fa-user-circle"></i> User Profile
+                </h3>
+                <button onclick="hideProfile()" 
+                        class="text-white hover:bg-white hover:bg-opacity-20 p-2 rounded-full transition-all duration-200 transform hover:scale-110">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Avatar & Name -->
+            <div class="text-center -mt-4">
+                <div class="relative inline-block">
+                    <img src="{{ asset('images/image.png') }}" 
+                         alt="User Avatar" 
+                         class="w-24 h-24 rounded-full mx-auto border-4 border-white shadow-lg object-cover profile-avatar">
+                    <div class="absolute bottom-0 right-0 bg-green-500 w-6 h-6 rounded-full border-2 border-white"></div>
                 </div>
-                <div class="overflow-y-auto h-[calc(100vh-200px)] bg-[#1e1e1e]">
-                    <div class="space-y-2 p-4">
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Phone Number</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->phone_number ?? 'Not provided' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Gender</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->gender ?? 'Not specified' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Member Since</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Last Activity</label>
-                            <p class="font-medium text-gray-200">{{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}</p>
-                        </div>
-                        <div class="profile-info-item">
-                        <label class="block text-sm text-gray-400 mb-1">Issued Date</label>
-            <p class="font-medium text-gray-200">
-                @if(Auth::user()->start_date)
-                    {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
-                @else
-                    Not specified
-                @endif
-            </p>
-                        </div>
-                        <div class="profile-info-item">
-                            <label class="block text-sm text-gray-400 mb-1">Membership Status</label>
-                            <p class="font-medium {{ Auth::user()->session_status === 'approved' ? 'text-green-600' : 'text-red-600' }}">
-                                {{ ucfirst(Auth::user()->session_status) }}
-                                @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
-                                    (Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }})
-                                @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
-                                    - {{ Auth::user()->rejection_reason }}
-                                @endif
-                            </p>
-                        </div>
-                        @if(Auth::user()->session_status === 'pending')
-                            <div class="profile-info-item">
-                                <a href="{{ route('self.waiting') }}" class="text-blue-600 hover:text-blue-800">View Approval Status</a>
-                            </div>
-                        @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
-                            <div class="profile-info-item">
-                                <button onclick="checkRenewalEligibility()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg w-full">
-                                    Renew Membership
-                                </button>
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                <h2 class="text-xl font-semibold mt-4 text-white drop-shadow-md">
+                    {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                </h2>
+                <p class="text-sm text-orange-100 flex items-center justify-center gap-1 mt-1">
+                    <i class="fas fa-envelope text-xs"></i> {{ Auth::user()->email }}
+                </p>
             </div>
         </div>
 
+        <!-- Scrollable Content -->
+        <div class="overflow-y-auto h-[calc(100vh-220px)] p-5 space-y-5 bg-[#1e1e1e]">
+            
+            <!-- Info Cards -->
+            <div class="space-y-4">
+                <!-- Phone -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-phone-alt"></i> Phone Number
+                    </label>
+                    <p class="font-medium text-gray-100 text-lg">
+                        {{ Auth::user()->phone_number ?? '<span class="text-gray-500">Not provided</span>' }}
+                    </p>
+                </div>
+
+                <!-- Gender -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-venus-mars"></i> Gender
+                    </label>
+                    <p class="font-medium text-gray-100 text-lg">
+                        {{ Auth::user()->gender ?? '<span class="text-gray-500">Not specified</span>' }}
+                    </p>
+                </div>
+
+                <!-- Member Since -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-calendar-check"></i> Member Since
+                    </label>
+                    <p class="font-medium text-gray-100 text-lg">
+                        {{ Auth::user()->created_at ? Auth::user()->created_at->format('M d, Y') : 'N/A' }}
+                    </p>
+                </div>
+
+                <!-- Last Activity -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-clock"></i> Last Activity
+                    </label>
+                    <p class="font-medium text-gray-100 text-lg">
+                        {{ Auth::user()->last_login_at ? Auth::user()->last_login_at->diffForHumans() : 'N/A' }}
+                    </p>
+                </div>
+
+                <!-- Issued Date -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border border-gray-700 hover:border-orange-500 transition-colors">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-id-card"></i> Issued Date
+                    </label>
+                    <p class="font-medium text-gray-100 text-lg">
+                        @if(Auth::user()->start_date)
+                            {{ \Carbon\Carbon::parse(Auth::user()->start_date)->format('M d, Y') }}
+                        @else
+                            <span class="text-gray-500">Not specified</span>
+                        @endif
+                    </p>
+                </div>
+
+                <!-- Membership Status -->
+                <div class="bg-[#2a2a2a] p-4 rounded-xl border {{ Auth::user()->session_status === 'approved' ? 'border-green-500' : 'border-red-500' }} transition-all">
+                    <label class="flex items-center gap-2 text-xs text-gray-400 mb-1">
+                        <i class="fas fa-shield-alt"></i> Membership Status
+                    </label>
+                    <p class="font-bold text-lg {{ Auth::user()->session_status === 'approved' ? 'text-green-400' : 'text-red-400' }}">
+                        {{ ucfirst(Auth::user()->session_status) }}
+                        @if(Auth::user()->session_status === 'approved' && Auth::user()->end_date)
+                            <span class="block text-sm font-normal text-orange-300 mt-1">
+                                <i class="fas fa-calendar-times"></i>
+                                Expires {{ \Carbon\Carbon::parse(Auth::user()->end_date)->format('M d, Y') }}
+                            </span>
+                        @elseif(Auth::user()->session_status === 'rejected' && Auth::user()->rejection_reason)
+                            <span class="block text-sm font-normal text-red-300 mt-1">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                {{ Auth::user()->rejection_reason }}
+                            </span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="mt-6 space-y-3">
+                @if(Auth::user()->session_status === 'pending')
+                    <a href="{{ route('self.waiting') }}" 
+                       class="block text-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                        <i class="fas fa-hourglass-half"></i> View Approval Status
+                    </a>
+                @elseif(in_array(Auth::user()->session_status, ['expired', 'rejected']))
+                    <button onclick="checkRenewalEligibility()" 
+                            class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-2">
+                        <i class="fas fa-sync-alt"></i> Renew Membership
+                    </button>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript to handle show/hide with animation -->
+<script>
+    function showProfile() {
+        const modal = document.getElementById('profile-modal');
+        const content = modal.querySelector('.profile-modal-content');
+        modal.classList.remove('hidden');
+        setTimeout(() => content.classList.remove('translate-x-full'), 10);
+    }
+
+    function hideProfile() {
+        const modal = document.getElementById('profile-modal');
+        const content = modal.querySelector('.profile-modal-content');
+        content.classList.add('translate-x-full');
+        setTimeout(() => modal.classList.add('hidden'), 300);
+    }
+
+    // Optional: Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !document.getElementById('profile-modal').classList.contains('hidden')) {
+            hideProfile();
+        }
+    });
+</script>
+
+<!-- Optional: Add smooth scroll behavior -->
+<style>
+    .overflow-y-auto::-webkit-scrollbar {
+        width: 6px;
+    }
+    .overflow-y-auto::-webkit-scrollbar-track {
+        background: #1e1e1e;
+    }
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: #555;
+        border-radius: 3px;
+    }
+    .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+        background: #777;
+    }
+</style>
         <!-- Session Renewal Modal -->
         @if(Auth::user()->role === 'userSession')
             <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
