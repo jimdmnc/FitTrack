@@ -11,67 +11,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
-use App\Models\Price;
+
 class RenewalController extends Controller
 {
-
-
-
-
-
-    public function getGcashPaymentDetails(Request $request)
-    {
-        $request->validate([
-            'membership_type' => 'required|string|in:session,weekly,monthly,annual'
-        ]);
-    
-        $type = strtolower($request->membership_type);
-    
-        $price = Price::whereRaw('LOWER(type) = ?', [$type])->first();
-    
-        if (!$price) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Price not found for membership type: ' . $request->membership_type
-            ], 404);
-        }
-    
-        // Optional: Different QR per membership (recommended)
-        $qrMap = [
-            'session' => 'gcash_session.jpg',
-            'weekly'  => 'gcash_weekly.jpg',
-            'monthly' => 'gcash_monthly.jpg',
-            'annual'  => 'gcash_annual.jpg',
-        ];
-    
-        $qrFile = $qrMap[$type] ?? 'gcash_default.jpg';
-    
-        // Full public URL
-        $qrUrl = asset('storage/gcash_qrs/' . $qrFile);
-    
-        // Fallback if file doesn't exist (optional but safe)
-        $fullPath = public_path('storage/gcash_qrs/' . $qrFile);
-        if (!file_exists($fullPath)) {
-            $qrUrl = asset('storage/gcash_qrs/gcash_default.jpg'); // make sure this exists!
-        }
-    
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'amount'         => number_format($price->amount, 2),   // "855.00"
-                'amount_raw'     => (float)$price->amount,              // 855.0  → Android will treat as number
-                'qr_code_url'    => $qrUrl,
-                'membership_type'=> $type,
-                'currency'       => 'PHP'
-            ]
-        ]);
-    }
-
-
-
-
-
-
     public function renewMembershipApp(Request $request)
     {
         // Validate request

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserCalorieController;
 use App\Http\Controllers\UsdaFoodController;
 use App\Http\Controllers\UserController;
-
+use App\Http\Controllers\Api\PriceApiController;
 use App\Http\Controllers\Api\UserDetailsController;
 use App\Http\Controllers\Api\FoodController;
 use App\Http\Controllers\Api\FoodLogController;
@@ -111,11 +111,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/save-token', [AuthController::class, 'saveToken']);
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
-
-
-    Route::post('/gcash-payment-details', [RenewalController::class, 'getGcashPaymentDetails']);
-
-
+    Route::get('/prices', [PriceApiController::class, 'index']);
 });
 
 
