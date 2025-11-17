@@ -112,6 +112,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/save-token', [AuthController::class, 'saveToken']);
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
 
+
+    Route::post('/gcash-payment-details', [RenewalController::class, 'getGcashPaymentDetails']);
+
+
 });
 
 
