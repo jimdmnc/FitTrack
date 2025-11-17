@@ -111,9 +111,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/save-token', [AuthController::class, 'saveToken']);
     Route::post('/send-notification', [NotificationController::class, 'sendNotification']);
-    Route::get('/prices', [PriceApiController::class, 'index']);
 });
 
+Route::get('/prices', [PriceApiController::class, 'index']);
 
 Route::post('/forgot-password', [ForgotPasswordController::class, 'store'])
 ->middleware(['guest'])
