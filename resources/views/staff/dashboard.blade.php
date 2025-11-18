@@ -1245,34 +1245,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Open View Modal
-    function openViewModal(rfid, name, membershipType, startDate, status) {
-    // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = startDate;
-        document.getElementById('viewStatus').textContent = status;
+     // ======== MODAL FUNCTIONS ========
+     function openViewModal(memberID, name, membershipType, startDate, status) {
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "text-sm font-semibold text-green-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-        } else {
-            statusBadge.className = "text-sm font-semibold text-red-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-        }
+    const start = new Date(startDate);
+    let endDate = new Date(start);
 
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-        
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
+    // Set time to 23:59:59 of the previous day for all cases
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'week':
+            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
+            endDate.setDate(start.getDate() + 6);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'month':
+            // 1 month = start date + 1 month minus 1 day
+            endDate.setMonth(start.getMonth() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'annual':
+            // 1 year = start date + 1 year minus 1 day
+            endDate.setFullYear(start.getFullYear() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        default:
+            endDate = 'N/A';
     }
+
+    document.getElementById('viewEndDate').textContent = 
+        typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+    const statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+    animateModalOpen('viewMemberModal', 'viewModalContent');
+}
 
     // Function to close the modal
     function closeViewModal() {
