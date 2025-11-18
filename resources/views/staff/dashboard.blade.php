@@ -1626,6 +1626,8 @@ document.addEventListener("DOMContentLoaded", function () {
     } else {
         console.error("Error: Canvas element 'time-of-day-chart' not found.");
     }
+    window.openViewModal = openViewModal;
+
 </script>
 
 
