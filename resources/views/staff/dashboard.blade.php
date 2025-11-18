@@ -1244,56 +1244,35 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 
 
-  // Open View Modal
-function openViewModal(rfid, name, membershipType, startDate, status, endDate = null, profileImage = null) {
-    // Set modal text fields
-    document.getElementById('viewMemberName').textContent = name;
-    document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-    document.getElementById('viewMembershipType').textContent = membershipType;
-    document.getElementById('viewStartDate').textContent = startDate || 'N/A';
-    document.getElementById('viewEndDate').textContent = endDate || 'N/A';
-    document.getElementById('viewStatus').textContent = status.charAt(0).toUpperCase() + status.slice(1);
+    // Open View Modal
+    function openViewModal(rfid, name, membershipType, startDate, status) {
+    // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = startDate;
+        document.getElementById('viewStatus').textContent = status;
 
-    // Set profile image if provided
-    const avatar = document.querySelector('#viewMemberModal .rounded-full');
-    if (profileImage) {
-        avatar.innerHTML = `<img src="${profileImage}" alt="Profile Image" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-orange-500 shadow-lg">`;
-    } else {
-        avatar.innerHTML = `
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 sm:h-16 sm:w-16 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-        `;
+        // Change status color based on status
+        let statusBadge = document.getElementById('viewStatus');
+        if (status.toLowerCase() === 'active') {
+            statusBadge.className = "text-sm font-semibold text-green-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
+        } else {
+            statusBadge.className = "text-sm font-semibold text-red-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
+        }
+
+        // Show modal
+        const modal = document.getElementById('viewMemberModal');
+        const modalContent = document.getElementById('viewModalContent');
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
     }
-
-    // Change status badge color based on status
-    const statusBadge = document.getElementById('viewStatus');
-    const badgeContainer = statusBadge.parentElement;
-
-    if (status.toLowerCase() === 'active') {
-        statusBadge.className = "text-sm font-semibold text-green-200";
-        badgeContainer.className = "px-3 py-1 rounded-full bg-green-900";
-    } else if (status.toLowerCase() === 'expired') {
-        statusBadge.className = "text-sm font-semibold text-yellow-200";
-        badgeContainer.className = "px-3 py-1 rounded-full bg-yellow-900";
-    } else if (status.toLowerCase() === 'revoked') {
-        statusBadge.className = "text-sm font-semibold text-red-200";
-        badgeContainer.className = "px-3 py-1 rounded-full bg-red-900";
-    } else {
-        statusBadge.className = "text-sm font-semibold text-gray-200";
-        badgeContainer.className = "px-3 py-1 rounded-full bg-gray-800";
-    }
-
-    // Show modal with animation
-    const modal = document.getElementById('viewMemberModal');
-    const modalContent = document.getElementById('viewModalContent');
-
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
 
     // Function to close the modal
     function closeViewModal() {
