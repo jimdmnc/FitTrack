@@ -72,6 +72,28 @@ class DashboardController extends Controller
     
 
 
+    public function getMember($id)
+{
+    $user = User::where('role', 'user')->find($id);
+
+    if (!$user) {
+        return response()->json(['error' => 'User not found'], 404);
+    }
+
+    return response()->json([
+        'id' => $user->id,
+        'first_name' => $user->first_name,
+        'last_name' => $user->last_name,
+        'membership_type' => $user->membership_type,
+        'start_date' => $user->start_date ? $user->start_date->format('Y-m-d') : null,
+        'end_date' => $user->end_date ? $user->end_date->format('Y-m-d') : null,
+        'rfid_uid' => $user->rfid_uid,
+        'member_status' => $user->member_status,
+        'profile_image' => $user->profile_image,
+    ]);
+}
+
+
  
 // cards========================================================
     private function getNewMembersData()
