@@ -157,7 +157,7 @@ Route::middleware('auth')->group(function () {
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
-    Route::get('/staff/member/{id}', [DashboardController::class, 'getMember'])->name('staff.member');
+    Route::get('/staff/member/{rfid}', [DashboardController::class, 'getMember']);
 
     //Manual Attendance
     Route::get('/self/forgot-rfid', [SelfController::class, 'showForgotRfid'])->name('self.forgotRfid');

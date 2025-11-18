@@ -85,7 +85,14 @@ class DashboardController extends Controller
         ));
     }
     
-    
+    public function getMember($rfid)
+{
+    $member = User::where('rfid_uid', $rfid)->firstOrFail();
+    // update status if needed
+    $this->updateMemberStatus($member);
+    return response()->json($member);
+}
+
 
 
  

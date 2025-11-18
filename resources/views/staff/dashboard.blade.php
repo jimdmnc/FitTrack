@@ -1244,35 +1244,38 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 
 
-    // Open View Modal
-    function openViewModal(rfid, name, membershipType, startDate, status) {
-    // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = startDate;
-        document.getElementById('viewStatus').textContent = status;
+function openViewModal(rfid) {
+    fetch(`/staff/member/${rfid}`) // Make a new route in Laravel to return member JSON
+        .then(response => response.json())
+        .then(member => {
+            document.getElementById('viewMemberName').textContent = member.first_name + ' ' + member.last_name;
+            document.getElementById('viewRfid').textContent = 'ID: ' + member.rfid_uid;
+            document.getElementById('viewMembershipType').textContent = member.membership_type;
+            document.getElementById('viewStartDate').textContent = member.start_date;
+            document.getElementById('viewEndDate').textContent = member.end_date; // optional
+            document.getElementById('viewStatus').textContent = member.member_status;
 
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "text-sm font-semibold text-green-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-        } else {
-            statusBadge.className = "text-sm font-semibold text-red-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-        }
+            // Change status color
+            let statusBadge = document.getElementById('viewStatus');
+            if (member.member_status.toLowerCase() === 'active') {
+                statusBadge.className = "text-sm font-semibold text-green-200";
+                statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
+            } else {
+                statusBadge.className = "text-sm font-semibold text-red-200";
+                statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
+            }
 
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-        
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
-    }
+            // Show modal
+            const modal = document.getElementById('viewMemberModal');
+            const modalContent = document.getElementById('viewModalContent');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        })
+        .catch(error => console.error('Error fetching member data:', error));
+}
 
     // Function to close the modal
     function closeViewModal() {
