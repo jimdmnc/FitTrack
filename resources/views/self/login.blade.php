@@ -245,7 +245,6 @@
                 </a>
             </p>
         </div>
-        
     </div>
 
     <script>

@@ -1387,12 +1387,33 @@ document.addEventListener("DOMContentLoaded", function () {
     var monthlyCheckIns = @json($monthlyCheckIns);
     var yearlyCheckIns = @json($yearlyCheckIns);
 
-    function getChartData(dataSet) {
-        return {
-            labels: dataSet.map(item => item.date),
-            dataCounts: dataSet.map(item => item.count)
-        };
+    function getChartData(rawData) {
+    // Define all months in order (you can adjust based on period)
+    const allMonths = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    // If rawData is an object like: { "2025-01": 15, "2025-03": 8, ... }
+    const dataMap = rawData || {}; // assuming it's { "YYYY-MM": count }
+
+    // Get current year or extract from data
+    const currentYear = new Date().getFullYear();
+
+    // Build labels and dataCounts with zeros where missing
+    const labels = [];
+    const dataCounts = [];
+
+    for (let month = 1; month <= 12; month++) {
+        const monthKey = `${currentYear}-${String(month).padStart(2, '0')}`;
+        const monthName = allMonths[month - 1];
+
+        labels.push(monthName);
+        dataCounts.push(dataMap[monthKey] || 0); // Default to 0 if no data
     }
+
+    return { labels, dataCounts };
+}
 
     function updateSummaryStats(dataSet) {
         const counts = dataSet.map(item => item.count);
