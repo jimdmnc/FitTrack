@@ -245,15 +245,7 @@
                 </a>
             </p>
         </div>
-
-        <!-- Help Section -->
-        <div class="mt-6 text-center">
-            <a href="tel:+18005551234" 
-               class="inline-flex items-center justify-center gap-3 help-glass rounded-lg px-4 py-3 link-glass">
-                <i class="fas fa-phone-alt text-orange-400"></i>
-                <span class="font-medium">Need help? Call us</span>
-            </a>
-        </div>
+        
     </div>
 
     <script>
