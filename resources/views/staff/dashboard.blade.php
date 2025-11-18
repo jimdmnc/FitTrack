@@ -834,7 +834,7 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <button 
-                    onclick="openViewModal(
+onclick="openViewModal(
     '{{ $member->rfid_uid }}',
     '{{ addslashes($member->first_name . ' ' . $member->last_name) }}',
     '{{ $member->getMembershipType() }}',
@@ -1251,49 +1251,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Open View Modal
-    function openViewModal(rfid, name, membershipType, startDate, endDate, status) {
-    document.getElementById('viewMemberName').textContent = name;
-    document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-    document.getElementById('viewMembershipType').textContent = membershipType;
-    document.getElementById('viewStartDate').textContent = startDate;
-    document.getElementById('viewEndDate').textContent = endDate; // ← Now correctly set!
+    function openViewModal(rfid, name, membershipType, startDate, status) {
+    // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = startDate;
+        document.getElementById('viewStatus').textContent = status;
 
-    // Update status badge
-    let statusBadge = document.getElementById('viewStatus');
-    if (status.toLowerCase() === 'active') {
-        statusBadge.textContent = 'Active';
-        statusBadge.className = "text-sm font-semibold text-green-200";
-        statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-    } else {
-        statusBadge.textContent = 'Expired';
-        statusBadge.className = "text-sm font-semibold text-red-200";
-        statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-    }
-
-    // Highlight if expiring soon (optional enhancement)
-    const today = new Date();
-    if (endDate && endDate !== 'Expired / N/A') {
-        const expDate = new Date(endDate);
-        const diffDays = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
-        if (diffDays <= 7 && diffDays >= 0) {
-            document.getElementById('viewEndDate').classList.add('text-orange-400', 'font-bold');
-            document.getElementById('viewEndDate').textContent = endDate + ' (Expiring Soon!)';
-        } else if (diffDays < 0) {
-            document.getElementById('viewEndDate').classList.add('text-red-400');
+        // Change status color based on status
+        let statusBadge = document.getElementById('viewStatus');
+        if (status.toLowerCase() === 'active') {
+            statusBadge.className = "text-sm font-semibold text-green-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
         } else {
-            document.getElementById('viewEndDate').classList.remove('text-orange-400', 'text-red-400', 'font-bold');
+            statusBadge.className = "text-sm font-semibold text-red-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
         }
-    }
 
-    // Show modal
-    const modal = document.getElementById('viewMemberModal');
-    const GmodalContent = document.getElementById('viewModalContent');
-    modal.classList.remove('hidden');
-    setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacity-0');
-        modalContent.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
+        // Show modal
+        const modal = document.getElementById('viewMemberModal');
+        const modalContent = document.getElementById('viewModalContent');
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
 
     // Function to close the modal
     function closeViewModal() {
