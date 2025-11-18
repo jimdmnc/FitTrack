@@ -18,7 +18,7 @@ class DashboardController extends Controller
         // Get the search query from the request
         $query = $request->input('search');
     
-        // Fetch members with role 'user' first
+        // Fetch members with role 'user' and filter by name if a search query is provided
         $members = User::where('role', 'user')
             ->when($query, function ($queryBuilder) use ($query) {
                 $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
@@ -28,11 +28,6 @@ class DashboardController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
-    
-        // ====== UPDATE MEMBER STATUS ======
-        foreach ($members as $member) {
-            $this->updateMemberStatus($member); // Call the helper to update status
-        }
     
         // Calculate active members and new members data
         $newMembersData = $this->getNewMembersData();
@@ -45,13 +40,13 @@ class DashboardController extends Controller
         $monthlyCheckIns = $this->getMonthlyCheckIns();
         $yearlyCheckIns = $this->getYearlyCheckIns();
         $topActiveMembers = $this->getTopActiveMembers(); // Get top 10 active members
-    
+
         $previousDailyCheckIns = $this->getPreviousDailyCheckIns();
         $previousWeeklyCheckIns = $this->getPreviousWeeklyCheckIns();
         $previousMonthlyCheckIns = $this->getPreviousMonthlyCheckIns();
         $previousYearlyCheckIns = $this->getPreviousYearlyCheckIns();
         $announcements = Announcement::latest()->get();
-    
+
         return view('staff.dashboard', compact(
             'members', 
             'query', 
@@ -73,7 +68,6 @@ class DashboardController extends Controller
             'announcements'
         ));
     }
-    
 
     
 
