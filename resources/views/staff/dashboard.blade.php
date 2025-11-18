@@ -959,20 +959,33 @@
                                 </div>
                             </div>
                             
-                        <!-- expiration date -->
+                <!-- Expiration Date Section -->
 <div class="mb-2 sm:mb-5">
     <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
-    <div class="flex items-center mt-2">                  
+    <div class="flex items-center mt-2">
         <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
         </div>
         <div>
-                <p class="font-medium text-white" id="viewEndDate">
-                    {{ \Carbon\Carbon::parse(auth()->user()->end_date)->format('M d, Y') }}
+            @if($user->end_date)
+                @php
+                    $endDate   = \Carbon\Carbon::parse($user->end_date);
+                    $daysLeft = \Carbon\Carbon::now()->diffInDays($endDate, false); // false = allow negative
+                @endphp
+
+                <p class="font-medium {{ $daysLeft < 0 ? 'text-red-400' : ($daysLeft <= 14 ? 'text-yellow-400' : 'text-white') }}" id="viewEndDate">
+                    {{ $endDate->format('M d, Y') }}
+                    @if($daysLeft < 0)
+                        <span class="text-xs opacity-80">(Expired)</span>
+                    @elseif($daysLeft <= 14)
+                        <span class="text-xs opacity-80">(Expiring soon)</span>
+                    @endif
                 </p>
-              
+            @else
+                <p class="font-medium text-white/60" id="viewEndDate">Lifetime / No expiration</p>
+            @endif
         </div>
     </div>
 </div>
