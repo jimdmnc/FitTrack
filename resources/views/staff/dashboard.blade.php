@@ -835,15 +835,17 @@
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <button 
                     onclick="openViewModal(
-                                            '{{ $member->rfid_uid }}',
-                                            '{{ addslashes($member->first_name . ' ' . $member->last_name) }}',
-                                            '{{ $member->getMembershipType() }}',
-                                            '{{ $member->start_date ? \Carbon\Carbon::parse($member->start_date)->format('M d, Y') : 'N/A' }}',
-                                            '{{ $member->end_date 
-                                                ? \Carbon\Carbon::parse($member->end_date)->format('M d, Y') 
-                                                : ($member->getMembershipType() == 'Session' ? 'Per Session' : 'Not Set') }}',
-                                            '{{ $member->member_status 
-                                        )"                        
+    '{{ $member->rfid_uid }}',
+    {{ json_encode($member->first_name . ' ' . $member->last_name) }},
+    {{ json_encode($member->getMembershipType()) }},
+    {{ json_encode($member->start_date ? \Carbon\Carbon::parse($member->start_date)->format('M d, Y') : 'N/A') }},
+    {{ json_encode(
+        $member->end_date 
+            ? \Carbon\Carbon::parse($member->end_date)->format('M d, Y')
+            : ($member->getMembershipType() === 'Session' ? 'Per Session' : 'Not Set')
+    ) }},
+    {{ json_encode($member->member_status) }}
+)"                  
                                         class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
