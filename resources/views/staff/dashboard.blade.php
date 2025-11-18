@@ -959,9 +959,9 @@
                                 </div>
                             </div>
                             
-                      <!-- Expiration Date (for the logged-in staff member) -->
+                      <!-- Your Own Membership Expiration (for logged-in staff) -->
 <div class="mb-2 sm:mb-5">
-    <p class="text-xs text-gray-400 uppercase tracking-wider">Your Membership Expires</p>
+    <p class="text-xs text-gray-400 uppercase tracking-wider">Your Access Expires</p>
     <div class="flex items-center mt-2">
         <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -969,22 +969,28 @@
             </svg>
         </div>
         <div>
-            @if(auth()->user()->end_date)
-                @php
-                    $endDate = \Carbon\Carbon::parse(auth()->user()->end_date);
-                    $daysLeft = now()->diffInDays($endDate, false);
-                @endphp
+            @php
+                $staff = auth()->user();
+                $endDate = $staff->end_date ? \Carbon\Carbon::parse($staff->end_date) : null;
+                $daysLeft = $endDate ? now()->diffInDays($endDate, false) : null;
+            @endphp
 
-                <p class="font-medium {{ $daysLeft < 0 ? 'text-red-400' : ($daysLeft <= 14 ? 'text-yellow-400' : 'text-white') }}" id="viewEndDate">
+            @if($endDate)
+                <p class="font-medium {{ 
+                    $daysLeft < 0 ? 'text-red-400' : 
+                    ($daysLeft <= 14 ? 'text-yellow-400' : 'text-white') 
+                }}" id="viewEndDate">
                     {{ $endDate->format('M d, Y') }}
                     @if($daysLeft < 0)
                         <span class="text-xs opacity-80"> (Expired)</span>
                     @elseif($daysLeft <= 14)
-                        <span class="text-xs opacity-80"> ({{ $daysLeft }} days left)</span>
+                        <span class="text-xs opacity-80"> ({{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} left)</span>
                     @endif
                 </p>
             @else
-                <p class="font-medium text-white/60" id="viewEndDate">Lifetime Access</p>
+                <p class="font-medium text-white/60" id="viewEndDate">
+                    Lifetime Access
+                </p>
             @endif
         </div>
     </div>
