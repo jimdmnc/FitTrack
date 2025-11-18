@@ -1295,19 +1295,7 @@ function openViewModal(rfid, name, membershipType, startDate, status, endDate = 
     }, 10);
 }
 
-    // Function to close the modal
-    function closeViewModal() {
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
 
-        // Animate closing
-        modalContent.classList.remove('scale-100', 'opacity-100');
-        modalContent.classList.add('scale-95', 'opacity-0');
-        
-        setTimeout(() => {
-            modal.classList.add('hidden'); // Hide after animation
-        }, 300);
-    }
 
     // Close View Modal
     function closeViewModal() {
