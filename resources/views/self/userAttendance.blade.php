@@ -478,7 +478,7 @@
             <div id="profile-modal" class="profile-modal fixed inset-0 z-50 hidden">
                 <div class="absolute inset-0 bg-black bg-opacity-70" onclick="hideProfile()"></div>
                 <div class="profile-modal-content absolute right-0 top-0 h-full bg-[#1e1e1e] text-gray-200">
-                    <div class="profile-header bg-red-600">
+                    <div class="profile-header bg-gradient-to-br from-orange-500 to-orange-600">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-2xl font-bold text-white">User Profile</h3>
                             <button onclick="hideProfile()" class="text-white hover:text-gray-300 transition-colors">
