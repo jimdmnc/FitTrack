@@ -15,38 +15,55 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        // Get the search query from the request
         $query = $request->input('search');
     
-        // Fetch members with role 'user' and filter by name if a search query is provided
-        $members = User::where('role', 'user')
+        // Step 1: Update all members' status based on end_date
+        $currentDate = Carbon::now();
+        $allMembers = User::whereIn('role', ['user', 'userSession'])->get();
+        
+        foreach ($allMembers as $member) {
+            if ($member->end_date && Carbon::parse($member->end_date)->lt($currentDate)) {
+                if (!in_array($member->member_status, ['expired', 'revoked'])) {
+                    $member->member_status = 'expired';
+                    $member->save();
+                }
+            } elseif ($member->end_date && Carbon::parse($member->end_date)->gt($currentDate)) {
+                if ($member->member_status === 'expired') {
+                    $member->member_status = 'active';
+                    $member->save();
+                }
+            }
+        }
+    
+        // Step 2: Fetch members from 'users' table, optionally filtered by search
+        $members = User::whereIn('role', ['user', 'userSession'])
             ->when($query, function ($queryBuilder) use ($query) {
                 $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
-                    ->orWhere('first_name', 'like', "%{$query}%")
-                    ->orWhere('last_name', 'like', "%{$query}%");
+                             ->orWhere('first_name', 'like', "%{$query}%")
+                             ->orWhere('last_name', 'like', "%{$query}%")
+                             ->orWhere('rfid_uid', 'like', "%{$query}%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
     
-        // Calculate active members and new members data
+        // Step 3: Fetch other dashboard data
         $newMembersData = $this->getNewMembersData();
         $todaysCheckInsData = $this->getTodaysCheckInsData();
         $expiringMemberships = $this->getExpiringMemberships();
         $peakHours = $this->getPeakHours();
-        $membershipData = $this->getMembershipTypeData(); // Fetch membership type data
+        $membershipData = $this->getMembershipTypeData();
         $dailyCheckIns = $this->getDailyCheckIns();
         $weeklyCheckIns = $this->getWeeklyCheckIns();
         $monthlyCheckIns = $this->getMonthlyCheckIns();
         $yearlyCheckIns = $this->getYearlyCheckIns();
-        $topActiveMembers = $this->getTopActiveMembers(); // Get top 10 active members
-
+        $topActiveMembers = $this->getTopActiveMembers();
         $previousDailyCheckIns = $this->getPreviousDailyCheckIns();
         $previousWeeklyCheckIns = $this->getPreviousWeeklyCheckIns();
         $previousMonthlyCheckIns = $this->getPreviousMonthlyCheckIns();
         $previousYearlyCheckIns = $this->getPreviousYearlyCheckIns();
         $announcements = Announcement::latest()->get();
-
+    
         return view('staff.dashboard', compact(
             'members', 
             'query', 
@@ -55,12 +72,11 @@ class DashboardController extends Controller
             'expiringMemberships', 
             'peakHours', 
             'membershipData',
-            'dailyCheckIns',  // Last 7 days
-            'weeklyCheckIns', // Last 4 weeks
-            'monthlyCheckIns', // Last 12 months
-            'yearlyCheckIns',  // Last 5 years
-            'topActiveMembers', // Pass to view
-                // new previous period datasets
+            'dailyCheckIns',
+            'weeklyCheckIns',
+            'monthlyCheckIns',
+            'yearlyCheckIns',
+            'topActiveMembers',
             'previousDailyCheckIns',
             'previousWeeklyCheckIns',
             'previousMonthlyCheckIns',
@@ -68,30 +84,8 @@ class DashboardController extends Controller
             'announcements'
         ));
     }
-
     
-
-
-    public function getMember($id)
-{
-    $user = User::where('role', 'user')->find($id);
-
-    if (!$user) {
-        return response()->json(['error' => 'User not found'], 404);
-    }
-
-    return response()->json([
-        'id' => $user->id,
-        'first_name' => $user->first_name,
-        'last_name' => $user->last_name,
-        'membership_type' => $user->membership_type,
-        'start_date' => $user->start_date ? $user->start_date->format('Y-m-d') : null,
-        'end_date' => $user->end_date ? $user->end_date->format('Y-m-d') : null,
-        'rfid_uid' => $user->rfid_uid,
-        'member_status' => $user->member_status,
-        'profile_image' => $user->profile_image,
-    ]);
-}
+    
 
 
  
