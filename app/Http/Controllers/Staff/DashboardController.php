@@ -15,55 +15,38 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        // Get the search query from the request
         $query = $request->input('search');
     
-        // Step 1: Update all members' status based on end_date
-        $currentDate = Carbon::now();
-        $allMembers = User::whereIn('role', ['user', 'userSession'])->get();
-        
-        foreach ($allMembers as $member) {
-            if ($member->end_date && Carbon::parse($member->end_date)->lt($currentDate)) {
-                if (!in_array($member->member_status, ['expired', 'revoked'])) {
-                    $member->member_status = 'expired';
-                    $member->save();
-                }
-            } elseif ($member->end_date && Carbon::parse($member->end_date)->gt($currentDate)) {
-                if ($member->member_status === 'expired') {
-                    $member->member_status = 'active';
-                    $member->save();
-                }
-            }
-        }
-    
-        // Step 2: Fetch members from 'users' table, optionally filtered by search
-        $members = User::whereIn('role', ['user', 'userSession'])
+        // Fetch members with role 'user' and filter by name if a search query is provided
+        $members = User::where('role', 'user')
             ->when($query, function ($queryBuilder) use ($query) {
                 $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
-                             ->orWhere('first_name', 'like', "%{$query}%")
-                             ->orWhere('last_name', 'like', "%{$query}%")
-                             ->orWhere('rfid_uid', 'like', "%{$query}%");
+                    ->orWhere('first_name', 'like', "%{$query}%")
+                    ->orWhere('last_name', 'like', "%{$query}%");
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10)
             ->withQueryString();
     
-        // Step 3: Fetch other dashboard data
+        // Calculate active members and new members data
         $newMembersData = $this->getNewMembersData();
         $todaysCheckInsData = $this->getTodaysCheckInsData();
         $expiringMemberships = $this->getExpiringMemberships();
         $peakHours = $this->getPeakHours();
-        $membershipData = $this->getMembershipTypeData();
+        $membershipData = $this->getMembershipTypeData(); // Fetch membership type data
         $dailyCheckIns = $this->getDailyCheckIns();
         $weeklyCheckIns = $this->getWeeklyCheckIns();
         $monthlyCheckIns = $this->getMonthlyCheckIns();
         $yearlyCheckIns = $this->getYearlyCheckIns();
-        $topActiveMembers = $this->getTopActiveMembers();
+        $topActiveMembers = $this->getTopActiveMembers(); // Get top 10 active members
+
         $previousDailyCheckIns = $this->getPreviousDailyCheckIns();
         $previousWeeklyCheckIns = $this->getPreviousWeeklyCheckIns();
         $previousMonthlyCheckIns = $this->getPreviousMonthlyCheckIns();
         $previousYearlyCheckIns = $this->getPreviousYearlyCheckIns();
         $announcements = Announcement::latest()->get();
-    
+
         return view('staff.dashboard', compact(
             'members', 
             'query', 
@@ -72,11 +55,12 @@ class DashboardController extends Controller
             'expiringMemberships', 
             'peakHours', 
             'membershipData',
-            'dailyCheckIns',
-            'weeklyCheckIns',
-            'monthlyCheckIns',
-            'yearlyCheckIns',
-            'topActiveMembers',
+            'dailyCheckIns',  // Last 7 days
+            'weeklyCheckIns', // Last 4 weeks
+            'monthlyCheckIns', // Last 12 months
+            'yearlyCheckIns',  // Last 5 years
+            'topActiveMembers', // Pass to view
+                // new previous period datasets
             'previousDailyCheckIns',
             'previousWeeklyCheckIns',
             'previousMonthlyCheckIns',
@@ -84,15 +68,8 @@ class DashboardController extends Controller
             'announcements'
         ));
     }
-    
-    public function getMember($rfid)
-{
-    $member = User::where('rfid_uid', $rfid)->firstOrFail();
-    // update status if needed
-    $this->updateMemberStatus($member);
-    return response()->json($member);
-}
 
+    
 
 
  

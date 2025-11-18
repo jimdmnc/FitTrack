@@ -833,13 +833,16 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                <button 
-    onclick="openViewModal('{{ $member->rfid_uid }}')"
-    class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
->
-    View
-</button>
-
+                    <button 
+                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        View
+                    </button>
                 </td>
             </tr>
         @endforeach
@@ -1241,38 +1244,35 @@ document.addEventListener("DOMContentLoaded", function () {
 <script>
 
 
-function openViewModal(rfid) {
-    fetch(`/staff/member/${rfid}`) // Make a new route in Laravel to return member JSON
-        .then(response => response.json())
-        .then(member => {
-            document.getElementById('viewMemberName').textContent = member.first_name + ' ' + member.last_name;
-            document.getElementById('viewRfid').textContent = 'ID: ' + member.rfid_uid;
-            document.getElementById('viewMembershipType').textContent = member.membership_type;
-            document.getElementById('viewStartDate').textContent = member.start_date;
-            document.getElementById('viewEndDate').textContent = member.end_date; // optional
-            document.getElementById('viewStatus').textContent = member.member_status;
+    // Open View Modal
+    function openViewModal(rfid, name, membershipType, startDate, status) {
+    // Set modal data
+        document.getElementById('viewMemberName').textContent = name;
+        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
+        document.getElementById('viewMembershipType').textContent = membershipType;
+        document.getElementById('viewStartDate').textContent = startDate;
+        document.getElementById('viewStatus').textContent = status;
 
-            // Change status color
-            let statusBadge = document.getElementById('viewStatus');
-            if (member.member_status.toLowerCase() === 'active') {
-                statusBadge.className = "text-sm font-semibold text-green-200";
-                statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-            } else {
-                statusBadge.className = "text-sm font-semibold text-red-200";
-                statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-            }
+        // Change status color based on status
+        let statusBadge = document.getElementById('viewStatus');
+        if (status.toLowerCase() === 'active') {
+            statusBadge.className = "text-sm font-semibold text-green-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
+        } else {
+            statusBadge.className = "text-sm font-semibold text-red-200";
+            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
+        }
 
-            // Show modal
-            const modal = document.getElementById('viewMemberModal');
-            const modalContent = document.getElementById('viewModalContent');
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        })
-        .catch(error => console.error('Error fetching member data:', error));
-}
+        // Show modal
+        const modal = document.getElementById('viewMemberModal');
+        const modalContent = document.getElementById('viewModalContent');
+        
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
 
     // Function to close the modal
     function closeViewModal() {
