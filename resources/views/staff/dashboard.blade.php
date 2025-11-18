@@ -834,8 +834,17 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <button 
-                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
+                    onclick="openViewModal(
+                                            '{{ $member->rfid_uid }}',
+                                            '{{ addslashes($member->first_name . ' ' . $member->last_name) }}',
+                                            '{{ $member->getMembershipType() }}',
+                                            '{{ $member->start_date ? \Carbon\Carbon::parse($member->start_date)->format('M d, Y') : 'N/A' }}',
+                                            '{{ $member->end_date 
+                                                ? \Carbon\Carbon::parse($member->end_date)->format('M d, Y') 
+                                                : ($member->getMembershipType() == 'Session' ? 'Per Session' : 'Not Set') }}',
+                                            '{{ $member->member_status 
+                                        )"                        
+                                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -1245,34 +1254,55 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Open View Modal
-    function openViewModal(rfid, name, membershipType, startDate, status) {
-    // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = startDate;
-        document.getElementById('viewStatus').textContent = status;
+    function openViewModal(rfid, name, membershipType, startDate, endDate, status) {
+    // Set basic info
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = startDate;
+    document.getElementById('viewEndDate').textContent = endDate; // ← This is the key line!
 
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "text-sm font-semibold text-green-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-        } else {
-            statusBadge.className = "text-sm font-semibold text-red-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-        }
-
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-        
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
+    // Update status badge
+    const statusBadge = document.getElementById('viewStatus');
+    if (status.toLowerCase() === 'active') {
+        statusBadge.textContent = 'Active';
+        statusBadge.className = "text-sm font-semibold text-green-200";
+        statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
+    } else {
+        statusBadge.textContent = status === 'expired' ? 'Expired' : 'Revoked';
+        statusBadge.className = "text-sm font-semibold text-red-200";
+        statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
     }
+
+    // Optional: Color the end date red if expired, orange if expiring soon
+    const endDateText = document.getElementById('viewEndDate');
+    endDateText.classList.remove('text-red-400', 'text-orange-400', 'text-white');
+
+    if (endDate && !endDate.includes('Session') && !endDate.includes('Not Set')) {
+        const today = new Date();
+        const expiry = new Date(endDate);
+        const daysLeft = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24));
+
+        if (daysLeft < 0) {
+            endDateText.classList.add('text-red-400', 'font-bold');
+        } else if (daysLeft <= 7) {
+            endDateText.classList.add('text-orange-400', 'font-bold');
+        } else {
+            endDateText.classList.add('text-white');
+        }
+    } else {
+        endDateText.classList.add('text-gray-400');
+    }
+
+    // Show modal with animation
+    const modal = document.getElementById('viewMemberModal');
+    const modalContent = document.getElementById('viewModalContent');
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
 
     // Function to close the modal
     function closeViewModal() {
