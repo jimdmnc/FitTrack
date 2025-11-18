@@ -1278,7 +1278,10 @@ document.addEventListener("DOMContentLoaded", function () {
     
     modal.classList.remove('hidden');
     setTimeout(() => {
-        modalContent.classList.remove('scale-95', 'opacit
+        modalContent.classList.remove('scale-95', 'opacity-0');
+        modalContent.classList.add('scale-100', 'opacity-100');
+    }, 10);
+}
 
 
     // Function to close the modal
