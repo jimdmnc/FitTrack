@@ -1408,7 +1408,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ======== MODAL FUNCTIONS ========
-    function openViewModal(memberID, name, membershipType, startDate, status) {
+function openViewModal(memberID, name, membershipType, startDate, status) {
     document.getElementById('viewMemberName').textContent = name;
     document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
     document.getElementById('viewMembershipType').textContent = membershipType;
