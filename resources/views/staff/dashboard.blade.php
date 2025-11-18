@@ -959,42 +959,20 @@
                                 </div>
                             </div>
                             
-                      <!-- Your Own Membership Expiration (for logged-in staff) -->
-<div class="mb-2 sm:mb-5">
-    <p class="text-xs text-gray-400 uppercase tracking-wider">Your Access Expires</p>
-    <div class="flex items-center mt-2">
-        <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        </div>
-        <div>
-            @php
-                $staff = auth()->user();
-                $endDate = $staff->end_date ? \Carbon\Carbon::parse($staff->end_date) : null;
-                $daysLeft = $endDate ? now()->diffInDays($endDate, false) : null;
-            @endphp
-
-            @if($endDate)
-                <p class="font-medium {{ 
-                    $daysLeft < 0 ? 'text-red-400' : 
-                    ($daysLeft <= 14 ? 'text-yellow-400' : 'text-white') 
-                }}" id="viewEndDate">
-                    {{ $endDate->format('M d, Y') }}
-                    @if($daysLeft < 0)
-                        <span class="text-xs opacity-80"> (Expired)</span>
-                    @elseif($daysLeft <= 14)
-                        <span class="text-xs opacity-80"> ({{ $daysLeft }} day{{ $daysLeft == 1 ? '' : 's' }} left)</span>
-                    @endif
-                </p>
-            @else
-                <p class="font-medium text-white/60" id="viewEndDate">
-                    Lifetime Access
-                </p>
-            @endif
-        </div>
-    </div>
-</div>
+                            <!-- expiration date -->
+                            <div class="mb-2 sm:mb-5">
+                                <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
+                                <div class="flex items-center mt-2">                           
+                                    <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-white" id="viewEndDate">Jan 15, 2025</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
