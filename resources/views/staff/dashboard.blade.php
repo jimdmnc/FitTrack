@@ -969,9 +969,9 @@
             </svg>
         </div>
         <div>
-                <p class="font-medium text-white" id="viewEndDate">
-                    {{ \Carbon\Carbon::parse(auth()->user()->end_date)->format('M d, Y') }}
-                </p>
+        <p class="font-medium text-white" id="viewEndDate">
+    {{ $user->end_date ? \Carbon\Carbon::parse($user->end_date)->format('M d, Y') : 'No expiration date' }}
+</p>
               
         </div>
     </div>
