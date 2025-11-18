@@ -833,10 +833,12 @@
                     </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                    <button 
-                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
-                    >
+                <button 
+                                            onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+                                            aria-label="View details for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="View member details"
+                                        >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -1245,34 +1247,53 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     // Open View Modal
-    function openViewModal(rfid, name, membershipType, startDate, status) {
-    // Set modal data
-        document.getElementById('viewMemberName').textContent = name;
-        document.getElementById('viewRfid').textContent = 'ID: ' + rfid;
-        document.getElementById('viewMembershipType').textContent = membershipType;
-        document.getElementById('viewStartDate').textContent = startDate;
-        document.getElementById('viewStatus').textContent = status;
+      // ======== MODAL FUNCTIONS ========
+      function openViewModal(memberID, name, membershipType, startDate, status) {
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-        // Change status color based on status
-        let statusBadge = document.getElementById('viewStatus');
-        if (status.toLowerCase() === 'active') {
-            statusBadge.className = "text-sm font-semibold text-green-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-green-900";
-        } else {
-            statusBadge.className = "text-sm font-semibold text-red-200";
-            statusBadge.parentElement.className = "px-3 py-1 rounded-full bg-red-900";
-        }
+    const start = new Date(startDate);
+    let endDate = new Date(start);
 
-        // Show modal
-        const modal = document.getElementById('viewMemberModal');
-        const modalContent = document.getElementById('viewModalContent');
-        
-        modal.classList.remove('hidden');
-        setTimeout(() => {
-            modalContent.classList.remove('scale-95', 'opacity-0');
-            modalContent.classList.add('scale-100', 'opacity-100');
-        }, 10);
+    // Set time to 23:59:59 of the previous day for all cases
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'week':
+            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
+            endDate.setDate(start.getDate() + 6);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'month':
+            // 1 month = start date + 1 month minus 1 day
+            endDate.setMonth(start.getMonth() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'annual':
+            // 1 year = start date + 1 year minus 1 day
+            endDate.setFullYear(start.getFullYear() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        default:
+            endDate = 'N/A';
     }
+
+    document.getElementById('viewEndDate').textContent = 
+        typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+    const statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+    animateModalOpen('viewMemberModal', 'viewModalContent');
+}
 
     // Function to close the modal
     function closeViewModal() {
