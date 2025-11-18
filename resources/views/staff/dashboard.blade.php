@@ -834,14 +834,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
                     <button 
-onclick="openViewModal(
-    '{{ $member->rfid_uid }}',
-    '{{ addslashes($member->first_name . ' ' . $member->last_name) }}',
-    '{{ $member->getMembershipType() }}',
-    '{{ $member->start_date ? \Carbon\Carbon::parse($member->start_date)->format('M d, Y') : 'N/A' }}',
-    '{{ $member->end_date ? \Carbon\Carbon::parse($member->end_date)->format('M d, Y') : 'Expired / N/A' }}',
-    '{{ $member->member_status }}'
-)"                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
+                        onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+                        class="inline-flex items-center px-3 py-1.5 border border-[#ff5722] rounded-md text-gray-200 bg-transparent hover:bg-[#ff5722] hover:text-gray-200 hover:translate-y-[-2px] transition-colors duration-150"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
