@@ -959,20 +959,26 @@
                                 </div>
                             </div>
                             
-                            <!-- expiration date -->
-                            <div class="mb-2 sm:mb-5">
-                                <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
-                                <div class="flex items-center mt-2">                           
-                                    <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <p class="font-medium text-white" id="viewEndDate">Jan 15, 2025</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- expiration date -->
+<div class="mb-2 sm:mb-5">
+    <p class="text-xs text-gray-400 uppercase tracking-wider">Expiration Date</p>
+    <div class="flex items-center mt-2">                  
+        <div class="bg-orange-500 bg-opacity-20 p-2 rounded-lg mr-3">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+        </div>
+        <div>
+            @if(auth()->user()->end_date)
+                <p class="font-medium text-white" id="viewEndDate">
+                    {{ \Carbon\Carbon::parse(auth()->user()->end_date)->format('M d, Y') }}
+                </p>
+            @else
+                <p class="font-medium text-white text-opacity-60" id="viewEndDate">No expiration date</p>
+            @endif
+        </div>
+    </div>
+</div>
                         </div>
                     </div>
                     
