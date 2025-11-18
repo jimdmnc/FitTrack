@@ -969,13 +969,15 @@
             </svg>
         </div>
         <div>
-            @if(auth()->user()->end_date)
-                <p class="font-medium text-white" id="viewEndDate">
-                    {{ \Carbon\Carbon::parse(auth()->user()->end_date)->format('M d, Y') }}
-                </p>
-            @else
-                <p class="font-medium text-white text-opacity-60" id="viewEndDate">No expiration date</p>
-            @endif
+        @if($user->end_date)
+    <p class="font-medium text-white" id="viewEndDate">
+        {{ \Carbon\Carbon::parse($user->end_date)->format('M d, Y') }}
+    </p>
+@else
+    <p class="font-medium text-white text-opacity-60" id="viewEndDate">
+        No expiration date
+    </p>
+@endif
         </div>
     </div>
 </div>
