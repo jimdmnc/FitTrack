@@ -19,17 +19,15 @@ class DashboardController extends Controller
         $query = $request->input('search');
     
         // Fetch members with role 'user' and filter by name if a search query is provided
-        $members = User::select('id', 'first_name', 'last_name', 'start_date', 'end_date', 'role', 'created_at')
-        ->where('role', 'user')
-        ->when($query, function ($queryBuilder) use ($query) {
-            $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
-                ->orWhere('first_name', 'like', "%{$query}%")
-                ->orWhere('last_name', 'like', "%{$query}%");
-        })
-        ->orderBy('created_at', 'desc')
-        ->paginate(10)
-        ->withQueryString();
-    
+        $members = User::where('role', 'user')
+            ->when($query, function ($queryBuilder) use ($query) {
+                $queryBuilder->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"])
+                    ->orWhere('first_name', 'like', "%{$query}%")
+                    ->orWhere('last_name', 'like', "%{$query}%");
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10)
+            ->withQueryString();
     
         // Calculate active members and new members data
         $newMembersData = $this->getNewMembersData();
