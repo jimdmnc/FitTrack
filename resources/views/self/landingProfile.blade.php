@@ -299,7 +299,6 @@
     </button>
 @endif
 
-{{-- TIME OUT BUTTON - Show whenever user has time_in today (active OR already timed out) --}}
 @if($attendance && $attendance->time_in)
     <!-- Desktop Timeout Button -->
     <button
