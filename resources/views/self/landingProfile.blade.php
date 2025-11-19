@@ -874,24 +874,28 @@
 
                         <!-- Summary -->
                         <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
-                                    <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="w-1/3 text-gray-400 text-sm">Type</span>
-                                    <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="w-1/3 text-gray-400 text-sm">Period</span>
-                                    <span id="summary_period" class="w-2/3 font-medium text-white">May 18, 2025</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <span class="w-1/3 text-gray-400 text-sm">Amount</span>
-                                    <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">₱{{ number_format($sessionPrice->amount ?? 0, 2) }}</span>
-                                </div>
-                            </div>
+                        <div class="space-y-3">
+    <div class="flex items-center">
+        <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+        <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+    </div>
+    <div class="flex items-center">
+        <span class="w-1/3 text-gray-400 text-sm">Type</span>
+        <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+    </div>
+    <div class="flex items-center">
+        <span class="w-1/3 text-gray-400 text-sm">Period</span>
+        <span id="summary_period" class="w-2/3 font-medium text-white">
+            {{ now()->format('F j, Y') }}
+        </span>
+    </div>
+    <div class="flex items-center">
+        <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+        <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">
+            ₱{{ number_format($sessionPrice->amount ?? 0, 2) }}
+        </span>
+    </div>
+</div>
                             <!-- Validation Errors -->
                             <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
                         </div>
