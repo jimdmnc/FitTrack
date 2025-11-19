@@ -376,12 +376,31 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                        @if(Auth::user()->role === 'userSession')
-                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-sync-alt mr-2"></i> Renew
-                            </button>
-                        @endif
+                    @php
+    // Check if user already has attendance record TODAY
+    $today = now()->format('Y-m-d');
+    $hasAttendanceToday = \App\Models\Attendance::where('rfid_uid', auth()->user()->rfid_uid)
+        ->whereDate('attendance_date', $today)
+        ->exists();
+
+    $isRenewDisabled = $hasAttendanceToday;
+@endphp
+
+@if(Auth::user()->role === 'userSession')
+    <button 
+        type="button" 
+        onclick="{{ $isRenewDisabled ? '' : 'checkRenewalEligibility(); closeMobileMenu();' }}"
+        class="font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]
+            {{ $isRenewDisabled 
+                ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
+                : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer' 
+            }}"
+        {{ $isRenewDisabled ? 'disabled' : '' }}
+    >
+        <i class="fas fa-sync-alt mr-2"></i> 
+        {{ $isRenewDisabled ? 'Already Renewed Today' : 'Renew' }}
+    </button>
+@endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
@@ -874,28 +893,28 @@
 
                         <!-- Summary -->
                         <div class="bg-[#2a2a2a] p-5 rounded-lg mb-6">
-                        <div class="space-y-3">
-    <div class="flex items-center">
-        <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
-        <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
-    </div>
-    <div class="flex items-center">
-        <span class="w-1/3 text-gray-400 text-sm">Type</span>
-        <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
-    </div>
-    <div class="flex items-center">
-        <span class="w-1/3 text-gray-400 text-sm">Period</span>
-        <span id="summary_period" class="w-2/3 font-medium text-white">
-            {{ now()->format('F j, Y') }}
-        </span>
-    </div>
-    <div class="flex items-center">
-        <span class="w-1/3 text-gray-400 text-sm">Amount</span>
-        <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">
-            ₱{{ number_format($sessionPrice->amount ?? 0, 2) }}
-        </span>
-    </div>
-</div>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <span class="w-1/3 text-gray-400 text-sm">RFID UID</span>
+                            <span class="w-2/3 font-medium text-white">{{ auth()->user()->rfid_uid }}</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-1/3 text-gray-400 text-sm">Type</span>
+                            <span id="summary_type" class="w-2/3 font-medium text-white">Session</span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-1/3 text-gray-400 text-sm">Period</span>
+                            <span id="summary_period" class="w-2/3 font-medium text-white">
+                                {{ now()->format('F j, Y') }}
+                            </span>
+                        </div>
+                        <div class="flex items-center">
+                            <span class="w-1/3 text-gray-400 text-sm">Amount</span>
+                            <span id="summary_amount" class="w-2/3 font-medium text-white text-lg">
+                                ₱{{ number_format($sessionPrice->amount ?? 0, 2) }}
+                            </span>
+                        </div>
+                    </div>
                             <!-- Validation Errors -->
                             <div id="form-errors" class="text-red-500 text-sm mt-2 hidden"></div>
                         </div>
