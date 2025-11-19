@@ -311,7 +311,6 @@
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
 
-                    {{-- RENEW BUTTON - ONLY ENABLED if NOT timed out today AND NOT in active session --}}
 @if(auth()->user()->role === 'userSession' && !$hasTimedOutToday)
     <button 
         type="button"
