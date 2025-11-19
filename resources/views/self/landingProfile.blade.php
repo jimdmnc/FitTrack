@@ -273,32 +273,25 @@
                             <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                         </div>
                     @endif
-                    {{-- TIME OUT BUTTON - SHOW ALWAYS IF USER HAS ANY SESSION TODAY (active OR already timed out) --}}
-@if(isset($attendance) && $attendance->time_in)
-    <!-- Desktop Timeout Button -->
-    <button
-        id="timeout-button"
-        onclick="document.getElementById('timeout-modal').showModal()"
-        class="hidden md:inline-flex font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]
-            {{ $attendance->time_out ? 'bg-orange-600 hover:bg-orange-700 text-yellow-100 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-gray-200' }}"
-    >
-        <i class="fas fa-sign-out-alt mr-2"></i>
-        {{ $attendance->time_out ? 'Time Out (Again)' : 'Time Out' }}
-    </button>
+                    <!-- Time Out Button (Desktop and Mobile) -->
+                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
+                        <!-- Desktop Timeout Button -->
+                        <button
+                            id="timeout-button"
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+                        </button>
 
-    <!-- Mobile Timeout Button -->
-    <button
-        onclick="document.getElementById('timeout-modal').showModal()"
-        class="inline-flex md:hidden items-center justify-center font-medium p-3 rounded-full shadow-lg transition duration-300 min-h-[44px] min-w-[44px]
-            {{ $attendance->time_out ? 'bg-orange-600 hover:bg-orange-700 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-white' }}"
-        title="{{ $attendance->time_out ? 'Start another session' : 'End current session' }}"
-    >
-        <i class="fas fa-sign-out-alt text-xl"></i>
-        @if($attendance->time_out)
-            <span class="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">!</span>
-        @endif
-    </button>
-@endif
+                        <!-- Mobile Timeout Button -->
+                        <button
+                            onclick="document.getElementById('timeout-modal').showModal()"
+                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+                        >
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    @endif
                 @endif
 
                 <!-- Desktop Navigation Links -->

@@ -270,9 +270,9 @@ class SelfRegistrationController extends Controller
     public function landingProfile()
     {
         $user = Auth::user();
-        $attendance = null;           // The LATEST attendance record today
-        $hasActiveSession = false;    // true → latest record has time_in but no time_out
-        $hasAnySessionToday = false;  // true → user has at least one record today
+        $attendance = null;           // Latest attendance record today
+        $hasActiveSession = false;    // true = has time_in but no time_out
+        $hasTimedOutToday = false;    // true = already has time_out today
         $sessionPrice = Price::where('type', 'session')->first();
         $announcements = Announcement::latest()->get();
     
@@ -288,26 +288,27 @@ class SelfRegistrationController extends Controller
                 ->first();
     
             if ($attendance) {
-                $hasAnySessionToday = true;
                 $hasActiveSession = !is_null($attendance->time_in) && is_null($attendance->time_out);
+                $hasTimedOutToday = !is_null($attendance->time_out);
             }
     
-            // Auto time-out at 9:00 PM if current session is still active
+            // Auto time-out at 9:00 PM (21:00)
             $autoCheckoutTime = today()->setHour(21)->setMinute(0);
-            if ($hasActiveSession && now()->greaterThan($autoCheckoutTime)) {
+            if (now()->greaterThan($autoCheckoutTime) && $hasActiveSession) {
                 $attendance->update([
                     'time_out' => $autoCheckoutTime,
                     'status'    => 'completed',
                 ]);
                 $hasActiveSession = false;
+                $hasTimedOutToday = true;
                 session(['timed_out' => true]);
             }
         }
     
         return view('self.landingProfile', compact(
             'attendance',
-            'hasActiveSession',     // ← Use this to disable Renew
-            'hasAnySessionToday',    // ← Use this to SHOW Time Out button
+            'hasActiveSession',
+            'hasTimedOutToday',
             'sessionPrice',
             'announcements'
         ));
