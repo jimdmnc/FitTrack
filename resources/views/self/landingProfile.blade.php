@@ -274,25 +274,32 @@
                         </div>
                     @endif
                     <!-- Time Out Button (Desktop and Mobile) -->
-                    @if(!session('timed_out') && isset($attendance))
-    <!-- Desktop Timeout Button -->
+                    {{-- TIME OUT BUTTON – Always visible if user has ANY session today --}}
+@if($hasAnySessionToday)
+    <!-- Desktop -->
     <button
         id="timeout-button"
         onclick="document.getElementById('timeout-modal').showModal()"
-        class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
+        class="hidden md:inline-flex font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]
+            {{ $hasActiveSession ? 'bg-red-600 hover:bg-red-700 text-gray-200' : 'bg-orange-600 hover:bg-orange-700 text-yellow-100 ring-2 ring-yellow-400' }}"
     >
-        <i class="fas fa-sign-out-alt mr-2"></i> Time Out
+        <i class="fas fa-sign-out-alt mr-2"></i>
+        {{ $hasActiveSession ? 'Time Out' : 'Time Out (Again)' }}
     </button>
 
-    <!-- Mobile Timeout Button -->
+    <!-- Mobile -->
     <button
         onclick="document.getElementById('timeout-modal').showModal()"
-        class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
+        class="inline-flex md:hidden items-center justify-center p-3 rounded-full shadow-lg transition duration-300 min-h-[44px] min-w-[44px]
+            {{ $hasActiveSession ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-orange-600 hover:bg-orange-700 ring-2 ring-yellow-400' }}"
+        title="{{ $hasActiveSession ? 'End session' : 'Start another session' }}"
     >
-        <i class="fas fa-sign-out-alt"></i>
+        <i class="fas fa-sign-out-alt text-xl"></i>
+        @if(!$hasActiveSession)
+            <span class="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">!</span>
+        @endif
     </button>
 @endif
-
                 @endif
 
                 <!-- Desktop Navigation Links -->
