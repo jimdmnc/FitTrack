@@ -237,6 +237,13 @@
                 </div>
             </form>
 
+   <!-- Forgot Password -->
+   <div class="text-center">
+                    @if (Route::has('password.request'))
+                        <a href="{{ route('password.request') }}" class="text-sm text-white hover:text-gray-200">Forgot Password?</a>
+                    @endif
+                </div>
+
             <!-- Register Link -->
             <p class="text-center mt-6 text-white text-opacity-80">
                 Don't have an account? 
