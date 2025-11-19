@@ -11,7 +11,7 @@
 </head>
 <body class="h-full bg-cover bg-center bg-no-repeat bg-fixed font-sans" 
       style="background-image: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.9)), 
-             url('{{ asset('images/welcomebgg.jpg') }}');">
+             url('{{ asset('images/welcomebggg.jpg') }}');">
 
     <div class="min-h-screen flex items-center justify-center px-4 py-12">
         <div class="form-container glass-form rounded-2xl shadow-2xl p-8 max-w-md w-full backdrop-blur-xl">
