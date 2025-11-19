@@ -265,43 +265,45 @@
                         <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div> -->
-                @if(Auth::user()->role === 'userSession')
-                    <!-- Workout Timer (Desktop) -->
-                    @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
-                        <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
-                            <i class="fas fa-stopwatch mr-2 text-red-400"></i>
-                            <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
-                        </div>
-                    @endif
-                    <!-- Time Out Button (Desktop and Mobile) -->
-                    {{-- TIME OUT BUTTON – Always visible if user has ANY session today --}}
-@if($hasAnySessionToday)
-    <!-- Desktop -->
+                {{-- RENEW BUTTON - ONLY ENABLED if NOT timed out today AND NOT in active session --}}
+@if(auth()->user()->role === 'userSession' && !$hasTimedOutToday)
+    <button 
+        type="button"
+        onclick="checkRenewalEligibility(); closeMobileMenu();"
+        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300 flex items-center min-h-[44px]"
+    >
+        <i class="fas fa-sync-alt mr-2"></i> 
+        {{ $hasActiveSession ? 'Session Active' : 'Renew Session' }}
+    </button>
+@else
+    {{-- Optional: Show disabled or hidden state --}}
+    <button 
+        disabled
+        class="bg-gray-600 text-gray-400 cursor-not-allowed font-bold py-2 px-5 rounded-lg opacity-60 flex items-center min-h-[44px]"
+        title="You have already timed out today. Renew tomorrow!"
+    >
+        <i class="fas fa-lock mr-2"></i> Renew Locked
+    </button>
+@endif
+{{-- TIME OUT BUTTON - Always show if user has time_in today --}}
+@if($attendance && $attendance->time_in)
     <button
-        id="timeout-button"
         onclick="document.getElementById('timeout-modal').showModal()"
         class="hidden md:inline-flex font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]
-            {{ $hasActiveSession ? 'bg-red-600 hover:bg-red-700 text-gray-200' : 'bg-orange-600 hover:bg-orange-700 text-yellow-100 ring-2 ring-yellow-400' }}"
+            {{ $hasTimedOutToday ? 'bg-orange-600 hover:bg-orange-700 text-yellow-100 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-gray-200' }}"
     >
         <i class="fas fa-sign-out-alt mr-2"></i>
-        {{ $hasActiveSession ? 'Time Out' : 'Time Out (Again)' }}
+        {{ $hasTimedOutToday ? 'Time Out (Again)' : 'Time Out' }}
     </button>
 
-    <!-- Mobile -->
     <button
         onclick="document.getElementById('timeout-modal').showModal()"
         class="inline-flex md:hidden items-center justify-center p-3 rounded-full shadow-lg transition duration-300 min-h-[44px] min-w-[44px]
-            {{ $hasActiveSession ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-orange-600 hover:bg-orange-700 ring-2 ring-yellow-400' }}"
-        title="{{ $hasActiveSession ? 'End session' : 'Start another session' }}"
+            {{ $hasTimedOutToday ? 'bg-orange-600 hover:bg-orange-700 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-white' }}"
     >
         <i class="fas fa-sign-out-alt text-xl"></i>
-        @if(!$hasActiveSession)
-            <span class="absolute -top-1 -right-1 bg-yellow-400 text-black text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">!</span>
-        @endif
     </button>
 @endif
-                @endif
-
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
                     <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>

@@ -268,50 +268,51 @@ class SelfRegistrationController extends Controller
     }
 
     public function landingProfile()
-    {
-        $user = Auth::user();
-        $attendance = null;           // ← The LATEST attendance record today
-        $hasActiveSession = false;    // ← true = latest record has time_in but no time_out
-        $hasAnySessionToday = false;  // ← true = user has at least one record today
-        $sessionPrice = Price::where('type', 'session')->first();
-        $announcements = Announcement::latest()->get();
-    
-        if (!$sessionPrice) {
-            throw new \Exception('Session price not configured.');
-        }
-    
-        if ($user && $user->rfid_uid) {
-            // Get the MOST RECENT attendance record for today (critical!)
-            $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
-                ->whereDate('attendance_date', today())  // safer than time_in
-                ->latest('time_in')                       // latest first
-                ->first();
-    
-            if ($attendance) {
-                $hasAnySessionToday = true;
-                $hasActiveSession = !is_null($attendance->time_in) && is_null($attendance->time_out);
-            }
-    
-            // Auto time-out at 9:00 PM if still active
-            $autoCheckoutTime = today()->setTime(21, 0, 0);
-            if ($hasActiveSession && now()->greaterThan($autoCheckoutTime)) {
-                $attendance->update([
-                    'time_out' => $autoCheckoutTime,
-                    'status'   => 'completed',
-                ]);
-                $hasActiveSession = false;
-                session(['timed_out' => true]);
-            }
-        }
-    
-        return view('self.landingProfile', compact(
-            'attendance',
-            'hasActiveSession',     // Use this to disable Renew button
-            'hasAnySessionToday',    // Use this to SHOW Time Out button always
-            'sessionPrice',
-            'announcements'
-        ));
+{
+    $user = Auth::user();
+    $attendance = null;
+    $hasActiveSession = false;     // true = currently in session
+    $hasTimedOutToday = false;     // true = already timed out today → DISABLE Renew
+    $sessionPrice = Price::where('type', 'session')->first();
+    $announcements = Announcement::latest()->get();
+
+    if (!$sessionPrice) {
+        throw new \Exception('Session price not configured.');
     }
+
+    if ($user && $user->rfid_uid) {
+        // Get latest attendance record today
+        $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
+            ->whereDate('attendance_date', today())
+            ->latest('time_in')
+            ->first();
+
+        if ($attendance) {
+            $hasActiveSession = !is_null($attendance->time_in) && is_null($attendance->time_out);
+            $hasTimedOutToday = !is_null($attendance->time_out);
+        }
+
+        // Auto timeout at 9 PM
+        $autoCheckoutTime = today()->setTime(21, 0, 0);
+        if ($hasActiveSession && now()->greaterThan($autoCheckoutTime)) {
+            $attendance->update([
+                'time_out' => $autoCheckoutTime,
+                'status'   => 'completed',
+            ]);
+            $hasActiveSession = false;
+            $hasTimedOutToday = true;
+            session(['timed_out' => true]);
+        }
+    }
+
+    return view('self.landingProfile', compact(
+        'attendance',
+        'hasActiveSession',
+        'hasTimedOutToday',   // ← This controls Renew button
+        'sessionPrice',
+        'announcements'
+    ));
+}
 
     public function logout(Request $request)
     {
