@@ -270,48 +270,56 @@ class SelfRegistrationController extends Controller
     public function landingProfile()
     {
         $user = Auth::user();
-        $attendance = null;           // Latest attendance record today
-        $hasActiveSession = false;    // true = has time_in but no time_out
-        $hasTimedOutToday = false;    // true = already has time_out today
-        $sessionPrice = Price::where('type', 'session')->first();
+        $attendance = null;
+        $timedOut = session('timed_out', false);
+        $sessionPrice = null;
         $announcements = Announcement::latest()->get();
-    
-        if (!$sessionPrice) {
-            throw new \Exception('Session price not configured.');
-        }
-    
+
         if ($user && $user->rfid_uid) {
-            // Get the LATEST attendance record for today
             $attendance = Attendance::where('rfid_uid', $user->rfid_uid)
-                ->whereDate('attendance_date', today())
-                ->latest('time_in')
+                ->whereDate('time_in', Carbon::today())
+                ->latest()
                 ->first();
     
-            if ($attendance) {
-                $hasActiveSession = !is_null($attendance->time_in) && is_null($attendance->time_out);
-                $hasTimedOutToday = !is_null($attendance->time_out);
+            // // Auto time-in only for userSession roles
+            // if ($user->session_status === 'approved' && !$attendance && !$timedOut && $user->role === 'userSession') {
+            //     $attendance = Attendance::create([
+            //         'rfid_uid' => $user->rfid_uid,
+            //         'attendance_date' => now(),
+            //         'time_in' => now(),
+            //         'status' => 'present',
+            //         'check_in_method' => 'auto',
+            //     ]);
+            // }
+            
+            // Fetch session price
+            $sessionPrice = Price::where('type', 'session')->first();
+            if (!$sessionPrice) {
+                throw new \Exception('Session price not configured.');
             }
     
-            // Auto time-out at 9:00 PM (21:00)
-            $autoCheckoutTime = today()->setHour(21)->setMinute(0);
-            if (now()->greaterThan($autoCheckoutTime) && $hasActiveSession) {
-                $attendance->update([
-                    'time_out' => $autoCheckoutTime,
-                    'status'    => 'completed',
-                ]);
-                $hasActiveSession = false;
-                $hasTimedOutToday = true;
+            $currentTime = Carbon::now();
+            $autoCheckoutTime = Carbon::today()->setTime(21, 0, 0);
+    
+            if ($currentTime->greaterThan($autoCheckoutTime)) {
+                if ($attendance && !$attendance->time_out) {
+                    // Auto time-out logic if needed
+                    $attendance->update([
+                        'time_out' => $autoCheckoutTime,
+                        'status' => 'present'
+                    ]);
+                }
+                $timedOut = true;
                 session(['timed_out' => true]);
             }
         }
     
-        return view('self.landingProfile', compact(
-            'attendance',
-            'hasActiveSession',
-            'hasTimedOutToday',
-            'sessionPrice',
-            'announcements'
-        ));
+        return view('self.landingProfile', [
+            'attendance' => $attendance,
+            'timedOut' => $timedOut,
+            'sessionPrice' => $sessionPrice ?? null,
+            'announcements' =>  $announcements,
+        ]);
     }
 
     public function logout(Request $request)
