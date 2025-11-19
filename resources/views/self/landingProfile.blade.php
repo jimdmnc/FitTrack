@@ -311,25 +311,10 @@
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
 
-@if(auth()->user()->role === 'userSession' && !$hasTimedOutToday)
-    <button 
-        type="button"
-        onclick="checkRenewalEligibility(); closeMobileMenu();"
-        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-5 rounded-lg shadow-md transition duration-300 flex items-center min-h-[44px]"
-    >
-        <i class="fas fa-sync-alt mr-2"></i> 
-        {{ $hasActiveSession ? 'Session Active' : 'Renew Session' }}
-    </button>
-@else
-    {{-- Optional: Show disabled or hidden state --}}
-    <button 
-        disabled
-        class="bg-gray-600 text-gray-400 cursor-not-allowed font-bold py-2 px-5 rounded-lg opacity-60 flex items-center min-h-[44px]"
-        title="You have already timed out today. Renew tomorrow!"
-    >
-        <i class="fas fa-lock mr-2"></i> Renew Locked
-    </button>
-@endif
+                        <button type="button" onclick="checkRenewalEligibility()"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
+                            <i class="fas fa-sync-alt mr-1"></i> Renew
+                        </button>
                         @endif
 
                         <form method="POST" action="{{ route('logout.custom') }}">
