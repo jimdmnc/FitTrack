@@ -402,12 +402,41 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                        @if(Auth::user()->role === 'userSession')
-                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
-                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
-                                <i class="fas fa-sync-alt mr-2"></i> Renew
-                            </button>
-                        @endif
+                    @if(Auth::user()->role === 'userSession')
+    @php
+        // Detect if user already timed out today using the existing $attendance
+        $hasTimedOutToday = $attendance && !is_null($attendance->time_out);
+        $hasActiveSession = $attendance && !is_null($attendance->time_in) && is_null($attendance->time_out);
+    @endphp
+
+    <button 
+        type="button"
+        onclick="{{ $hasTimedOutToday ? 'closeMobileMenu();' : 'checkRenewalEligibility(); closeMobileMenu();' }}"
+        class="relative w-full flex items-center justify-center font-medium py-3 px-4 rounded-lg transition duration-300 min-h-[44px]
+            {{ $hasTimedOutToday 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-70' 
+                : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg' }}"
+        {{ $hasTimedOutToday ? 'disabled' : '' }}
+        title="{{ $hasTimedOutToday ? 'You already timed out today. Renew tomorrow!' : 'Start a new session' }}"
+    >
+        <i class="fas {{ $hasTimedOutToday ? 'fa-lock' : 'fa-sync-alt' }} mr-2"></i>
+
+        @if($hasTimedOutToday)
+            Renew Locked
+        @elseif($hasActiveSession)
+            Session Active
+        @else
+            Renew Session
+        @endif
+
+        {{-- Optional: Little red X badge when locked --}}
+        @if($hasTimedOutToday)
+            <span class="absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center animate-pulse shadow-lg">
+                X
+            </span>
+        @endif
+    </button>
+@endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
