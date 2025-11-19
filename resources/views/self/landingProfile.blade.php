@@ -310,13 +310,39 @@
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
                     @if(Auth::user()->role === 'userSession')
+    @php
+        // Check if the latest attendance record today has time_out
+        $hasTimedOutToday = $attendance && !is_null($attendance->time_out);
+        $hasActiveSession = $attendance && !is_null($attendance->time_in) && is_null($attendance->time_out);
+    @endphp
 
-                        <button type="button" onclick="checkRenewalEligibility()"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-3 rounded-full text-sm flex items-center transition duration-300 min-h-[44px]">
-                            <i class="fas fa-sync-alt mr-1"></i> Renew
-                        </button>
-                        @endif
+    <button 
+        type="button"
+        onclick="{{ $hasTimedOutToday ? '' : 'checkRenewalEligibility()' }}"
+        class="relative flex items-center justify-center font-medium py-2 px-4 rounded-full text-sm transition duration-300 min-h-[44px]
+            {{ $hasTimedOutToday 
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-70' 
+                : 'bg-green-600 hover:bg-green-700 text-white shadow-md hover:shadow-lg' }}"
+        {{ $hasTimedOutToday ? 'disabled title="You already timed out today. Renew tomorrow!"' : '' }}
+    >
+        <i class="fas {{ $hasTimedOutToday ? 'fa-lock' : 'fa-sync-alt' }} mr-1"></i>
+        
+        @if($hasTimedOutToday)
+            Renew Locked
+        @elseif($hasActiveSession)
+            Session Active
+        @else
+            Renew
+        @endif
 
+        {{-- Optional: Little badge when locked --}}
+        @if($hasTimedOutToday)
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                X
+            </span>
+        @endif
+    </button>
+@endif
                         <form method="POST" action="{{ route('logout.custom') }}">
                             @csrf
                             <button type="submit"
