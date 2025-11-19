@@ -273,25 +273,72 @@
                             <span class="timer-text text-sm md:text-base" id="workout-duration">00:00:00</span>
                         </div>
                     @endif
-                    <!-- Time Out Button (Desktop and Mobile) -->
-                    @if(!session('timed_out') && isset($attendance) && !$attendance->time_out)
-                        <!-- Desktop Timeout Button -->
-                        <button
-                            id="timeout-button"
-                            onclick="document.getElementById('timeout-modal').showModal()"
-                            class="hidden md:inline-flex bg-red-600 text-gray-200 hover:bg-red-700 font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]"
-                        >
-                            <i class="fas fa-sign-out-alt mr-2"></i> Time Out
-                        </button>
+                    {{-- RENEW BUTTON - Show when: no active session OR already timed out today --}}
+@if(auth()->user()->role === 'userSession')
+    @php
+        $hasActiveSession = $attendance && !$attendance->time_out;
+        $hasTimedOutToday = $attendance && $attendance->time_out;
+        $noSessionToday   = !$attendance;
+    @endphp
 
-                        <!-- Mobile Timeout Button -->
-                        <button
-                            onclick="document.getElementById('timeout-modal').showModal()"
-                            class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-2 rounded-full text-sm transition duration-300 min-h-[44px] min-w-[44px]"
-                        >
-                            <i class="fas fa-sign-out-alt"></i>
-                        </button>
-                    @endif
+    <button
+        type="button"
+        onclick="{{ $hasActiveSession ? '' : 'checkRenewalEligibility(); closeMobileMenu();' }}"
+        class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 flex items-center justify-center min-h-[48px]
+            {{ $hasActiveSession ? 'opacity-60 cursor-not-allowed' : '' }}"
+        {{ $hasActiveSession ? 'disabled' : '' }}
+    >
+        <i class="fas fa-sync-alt mr-2"></i>
+        @if($hasTimedOutToday)
+            Renew Again Today
+        @elseif($noSessionToday)
+            Renew Session
+        @else
+            Session Active
+        @endif
+    </button>
+@endif
+
+{{-- TIME OUT BUTTON - Show whenever user has time_in today (active OR already timed out) --}}
+@if($attendance && $attendance->time_in)
+    <!-- Desktop Timeout Button -->
+    <button
+        id="timeout-button"
+        onclick="document.getElementById('timeout-modal').showModal()"
+        class="hidden md:inline-flex bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg shadow-md transition duration-300 min-h-[48px]
+            {{ $attendance->time_out ? 'opacity-80' : '' }}"
+    >
+        <i class="fas fa-sign-out-alt mr-2"></i>
+        {{ $attendance->time_out ? 'Time Out (Again)' : 'Time Out' }}
+    </button>
+
+    <!-- Mobile Timeout Button -->
+    <button
+        onclick="document.getElementById('timeout-modal').showModal()"
+        class="inline-flex md:hidden items-center justify-center bg-red-600 hover:bg-red-700 text-white font-medium p-4 rounded-full shadow-lg transition duration-300 min-h-[48px] min-w-[48px]
+            {{ $attendance->time_out ? 'opacity-80' : '' }}"
+    >
+        <i class="fas fa-sign-out-alt text-xl"></i>
+    </button>
+@endif
+
+{{-- Optional: Status Message --}}
+@if($attendance)
+    @if(!$attendance->time_out)
+        <div class="text-center text-green-400 font-bold text-lg animate-pulse mt-4">
+            SESSION ACTIVE SINCE {{ $attendance->time_in->format('g:i A') }}
+        </div>
+    @else
+        <div class="text-center text-yellow-400 mt-4 bg-yellow-900 bg-opacity-30 rounded-lg py-3 px-6">
+            Timed out at {{ $attendance->time_out->format('g:i A') }}<br>
+            <span class="text-sm">You can renew and start another session today!</span>
+        </div>
+    @endif
+@else
+    <div class="text-center text-gray-500 text-sm mt-4 italic">
+        No session recorded today
+    </div>
+@endif
                 @endif
 
                 <!-- Desktop Navigation Links -->
@@ -376,31 +423,12 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    @php
-    // Check if user already has attendance record TODAY
-    $today = now()->format('Y-m-d');
-    $hasAttendanceToday = \App\Models\Attendance::where('rfid_uid', auth()->user()->rfid_uid)
-        ->whereDate('attendance_date', $today)
-        ->exists();
-
-    $isRenewDisabled = $hasAttendanceToday;
-@endphp
-
-@if(Auth::user()->role === 'userSession')
-    <button 
-        type="button" 
-        onclick="{{ $isRenewDisabled ? '' : 'checkRenewalEligibility(); closeMobileMenu();' }}"
-        class="font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]
-            {{ $isRenewDisabled 
-                ? 'bg-gray-500 text-gray-300 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700 text-white cursor-pointer' 
-            }}"
-        {{ $isRenewDisabled ? 'disabled' : '' }}
-    >
-        <i class="fas fa-sync-alt mr-2"></i> 
-        {{ $isRenewDisabled ? 'Already Renewed Today' : 'Renew' }}
-    </button>
-@endif
+                        @if(Auth::user()->role === 'userSession')
+                            <button type="button" onclick="checkRenewalEligibility(); closeMobileMenu();"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg flex items-center justify-center transition duration-300 min-h-[44px]">
+                                <i class="fas fa-sync-alt mr-2"></i> Renew
+                            </button>
+                        @endif
                         <form method="POST" action="{{ route('logout.custom') }}" class="w-full">
                             @csrf
                             <button type="submit"
