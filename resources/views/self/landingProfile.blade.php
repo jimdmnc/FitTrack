@@ -285,25 +285,7 @@
         <i class="fas fa-lock mr-2"></i> Renew Locked
     </button>
 @endif
-{{-- TIME OUT BUTTON - Always show if user has time_in today --}}
-@if($attendance && $attendance->time_in)
-    <button
-        onclick="document.getElementById('timeout-modal').showModal()"
-        class="hidden md:inline-flex font-bold py-2 px-6 rounded-lg shadow-md transition duration-300 min-h-[44px]
-            {{ $hasTimedOutToday ? 'bg-orange-600 hover:bg-orange-700 text-yellow-100 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-gray-200' }}"
-    >
-        <i class="fas fa-sign-out-alt mr-2"></i>
-        {{ $hasTimedOutToday ? 'Time Out (Again)' : 'Time Out' }}
-    </button>
 
-    <button
-        onclick="document.getElementById('timeout-modal').showModal()"
-        class="inline-flex md:hidden items-center justify-center p-3 rounded-full shadow-lg transition duration-300 min-h-[44px] min-w-[44px]
-            {{ $hasTimedOutToday ? 'bg-orange-600 hover:bg-orange-700 ring-2 ring-yellow-400' : 'bg-red-600 hover:bg-red-700 text-white' }}"
-    >
-        <i class="fas fa-sign-out-alt text-xl"></i>
-    </button>
-@endif
                 <!-- Desktop Navigation Links -->
                 <div class="hidden md:flex items-center space-x-4 lg:space-x-6">
                     <a href="{{ route('self.landingProfile') }}#home" class="nav-link font-medium hover:text-red-400 transition duration-300 text-sm lg:text-base">Home</a>
