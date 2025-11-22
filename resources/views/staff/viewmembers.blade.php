@@ -1761,5 +1761,106 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
+// Reuse your existing updateRfidStatus function (just make it work for upgrade modal too)
+function updateRfidStatus(type, message, targetId = 'rfid_status') {
+    const statusEl = document.getElementById(targetId);
+    if (!statusEl) return;
+
+    const icons = {
+        success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+        waiting: `<svg class="h-5 w-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
+        error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`
+    };
+
+    const colors = { success: 'text-green-400', waiting: 'text-purple-400', error: 'text-red-500' };
+
+    statusEl.innerHTML = `${icons[type]} ${message}`;
+    statusEl.className = `mt-3 text-sm flex items-center font-medium ${colors[type]}`;
+}
+
+// Toggle clear button
+function toggleClearButton(inputId, btnId) {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (input && btn) {
+        btn.classList.toggle('hidden', input.value.trim() === '');
+    }
+}
+
+// Clear RFID in Upgrade Modal
+function clearUpgradeRfid() {
+    const input = document.getElementById('upgrade_rfid_uid');
+    input.value = '';
+    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
+    document.getElementById('upgrade_rfid_loading').style.display = 'flex';
+    updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
+    document.getElementById('submitUpgrade').disabled = true;
+}
+
+// Open Upgrade Modal
+function openUpgradeModal(userId, currentRfid, name) {
+    document.getElementById('upgradeUserId').value = userId;
+    document.getElementById('currentMemberID').value = currentRfid || 'None';
+    document.getElementById('upgradeMemberName').value = name;
+
+    // Reset RFID field
+    const uidInput = document.getElementById('upgrade_rfid_uid');
+    uidInput.value = '';
+    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
+    document.getElementById('upgrade_rfid_loading').style.display = 'flex';
+    updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
+    document.getElementById('submitUpgrade').disabled = true;
+
+    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+
+    // Start polling when modal opens
+    startUpgradeRfidPolling();
+}
+
+// Close modal
+function closeUpgradeModal() {
+    document.getElementById('upgradeMemberModal').classList.add('hidden');
+    stopUpgradeRfidPolling();
+}
+
+// Polling for Upgrade Modal
+let upgradePollingInterval = null;
+
+function startUpgradeRfidPolling() {
+    stopUpgradeRfidPolling(); // clear any old
+
+    upgradePollingInterval = setInterval(() => {
+        if (document.getElementById('upgradeMemberModal').classList.contains('hidden')) {
+            stopUpgradeRfidPolling();
+            return;
+        }
+
+        fetch('/api/rfid/latest')
+            .then(r => r.json())
+            .then(data => {
+                const input = document.getElementById('upgrade_rfid_uid');
+                if (data.uid && input && input.value !== data.uid) {
+                    input.value = data.uid;
+                    document.getElementById('upgrade_rfid_loading').style.display = 'none';
+                    updateRfidStatus('success', 'Card Detected Successfully!', 'upgrade_rfid_status');
+                    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
+                    document.getElementById('submitUpgrade').disabled = false;
+                }
+            })
+            .catch(() => {
+                updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
+            });
+    }, 1000);
+}
+
+function stopUpgradeRfidPolling() {
+    if (upgradePollingInterval) {
+        clearInterval(upgradePollingInterval);
+        upgradePollingInterval = null;
+    }
+}
 </script>
 @endsection
