@@ -355,7 +355,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                       @if(in_array($member->membership_type, ['7', '30', '365']))
                                                 <button 
-                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->end_date }}')" 
+                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
                                                     class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                                     title="Renew membership">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -498,7 +498,7 @@
 
     <!-- Upgrade Member Modal -->
     <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
+        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
             <!-- Modal Header -->
             <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
                 <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
@@ -1723,25 +1723,25 @@ if (ELEMENTS.clearRfidBtn) {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    function openRenewModal(memberID, name, endDate) {
+    function openRenewModal(memberID, name, email, phone, endDate) {
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
         
-        // if (document.getElementById("editEmail") && email) {
-        //     document.getElementById("editEmail").value = email;
-        // }
+        if (document.getElementById("editEmail") && email) {
+            document.getElementById("editEmail").value = email;
+        }
         
-        // if (document.getElementById("editPhone") && phone) {
-        //     document.getElementById("editPhone").value = phone;
-        // }
+        if (document.getElementById("editPhone") && phone) {
+            document.getElementById("editPhone").value = phone;
+        }
 
         if (document.getElementById("startDate")) {
             document.getElementById("startDate").value = todayFormatted;
         }
 
-        // if (ELEMENTS.customDaysInput) {
-        //     ELEMENTS.customDaysInput.value = '';
-        // }
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.value = '';
+        }
 
         toggleCustomDays();
         animateModalOpen('renewMemberModal', 'editModalContent');
@@ -1772,13 +1772,13 @@ if (ELEMENTS.clearRfidBtn) {
         }
 
         toggleCustomDays();
-        animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+        animateModalOpen('upgradeMemberModal', 'editModalContent');
         updateAllDetails();
     }
 
 
     function closeUpgradeModal() {
-        animateModalClose('upgradeMemberModal', 'upgradeModalContent');
+        animateModalClose('upgradeMemberModal', 'editModalContent');
     }
     
     function openRevokeModal(memberID, memberName) {
@@ -1860,10 +1860,8 @@ if (ELEMENTS.clearRfidBtn) {
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
     window.openUpgradeModal = openUpgradeModal;
-
     window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
-
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
     window.openRestoreModal = openRestoreModal;
