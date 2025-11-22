@@ -226,6 +226,22 @@ class ViewmembersController extends Controller
         }
     }
 
+    public function upgradeToRfid(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'uid' => 'required|unique:users,rfid_uid', // ensure RFID not used
+        ]);
+    
+        $user = User::findOrFail($request->user_id);
+        $user->rfid_uid = $request->uid;
+        $user->membership_type = 'lifetime'; // or 'rfid_premium'
+        $user->end_date = null; // lifetime
+        $user->save();
+    
+        return redirect()->back()->with('success', 'Member upgraded to RFID membership successfully!');
+    }
+
     /**
      * Revoke a member's access
      */
