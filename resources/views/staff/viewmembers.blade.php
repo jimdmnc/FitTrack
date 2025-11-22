@@ -1727,13 +1727,13 @@ if (ELEMENTS.clearRfidBtn) {
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
         
-        if (document.getElementById("editEmail") && email) {
-            document.getElementById("editEmail").value = email;
-        }
+        // if (document.getElementById("editEmail") && email) {
+        //     document.getElementById("editEmail").value = email;
+        // }
         
-        if (document.getElementById("editPhone") && phone) {
-            document.getElementById("editPhone").value = phone;
-        }
+        // if (document.getElementById("editPhone") && phone) {
+        //     document.getElementById("editPhone").value = phone;
+        // }
 
         if (document.getElementById("startDate")) {
             document.getElementById("startDate").value = todayFormatted;
