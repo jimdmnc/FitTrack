@@ -1140,12 +1140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         membershipTypeError: document.getElementById('membershipTypeError'),
         submitButton: document.getElementById('submitRenewal')
     };
-    // Configuration constants
-    const RFID_POLL_INTERVAL = 2000; // ms
-    const FETCH_TIMEOUT = 5000; // ms
-    const MAX_RETRIES = 3;
-    let isFetching = false;
-    let rfidPollInterval = null;
 
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -1170,100 +1164,6 @@ document.addEventListener('DOMContentLoaded', function() {
         attachPaginationListeners();
         fetchMembershipPrices();
     }
-
-
-  // RFID Handling
-    function updateRfidStatus(type, message) {
-        const rfidStatus = document.getElementById('rfid_status');
-        if (!rfidStatus) return;
-
-        const icons = {
-            success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>`,
-            waiting: `<svg class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>`,
-            error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>`
-        };
-
-        const colors = {
-            success: 'text-green-500',
-            waiting: 'text-blue-500',
-            error: 'text-red-500'
-        };
-
-        rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
-        rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
-    }
-
-
-    function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
-                    uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
-                }
-                toggleClearButton();
-            })
-    }
-    // Initialize
-    function initialize() {
-        try {
-            validateBirthdate();
-            setupMembershipHandlers();
-            setupFormHandlers();
-
-            // Handle session messages
-            @if (session('success'))
-                const uidInput = getElement('uid');
-                if (uidInput) uidInput.value = '';
-                updateRfidStatus('success', '{{ session('success') }}');
-            @endif
-
-            @if (session('error'))
-                updateRfidStatus('error', '{{ session('error') }}');
-            @endif
-            fetchLatestUid();
-            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
-            // Initial RFID status
-            updateRfidStatus('waiting', 'Please Tap Your Card...');
-            
-            // Start RFID polling with retry mechanism
-            let retryCount = 0;
-            
-            
-        } catch (error) {
-            console.error('Error initializing form:', error);
-        }
-
-        // Cleanup
-  // Clean up interval when leaving page
-  window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
-    }
-
-
-    initialize();
-
-
-
-
-
-
-
 
     // Fetch membership prices via AJAX
     function fetchMembershipPrices() {
@@ -1865,6 +1765,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
+   function fetchLatestUid() {
+        fetch('/api/rfid/latest')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const uidInput = document.getElementById('uid');
+                if (data.uid && uidInput) {
+                    uidInput.value = data.uid;
+                    updateRfidStatus('success', 'Card detected');
+                } else {
+                    if (uidInput) uidInput.value = '';
+                    updateRfidStatus('waiting', 'Please Tap Your Card...');
+                }
+                toggleClearButton();
+            })
+    }
 
 </script>
 @endsection
