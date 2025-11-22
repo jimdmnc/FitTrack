@@ -352,7 +352,7 @@
                                         @elseif($member->member_status == 'expired')
                                         <div class="flex flex-wrap gap-2 justify-center">
                                             <!-- RENEW BUTTON: Only show for Weekly (7), Monthly (30), Annual (365) -->
-                                            @if(in_array($member->membership_type, ['7', '30', '365']))
+                                            <!-- @if(in_array($member->membership_type, ['7', '30', '365'])) -->
                                                 <button 
                                                     onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
                                                     class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
@@ -362,7 +362,7 @@
                                                     </svg>
                                                     <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
                                                 </button>
-                                            @endif
+                                            <!-- @endif -->
                                             <button 
                                                     onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
                                                     class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
