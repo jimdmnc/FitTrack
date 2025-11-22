@@ -1165,6 +1165,74 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
+
+
+
+
+    function fetchLatestUid() {
+        fetch('/api/rfid/latest')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const uidInput = document.getElementById('uid');
+                if (data.uid && uidInput) {
+                    uidInput.value = data.uid;
+                    updateRfidStatus('success', 'Card detected');
+                } else {
+                    if (uidInput) uidInput.value = '';
+                    updateRfidStatus('waiting', 'Please Tap Your Card...');
+                }
+                toggleClearButton();
+            })
+    }
+    // Initialize
+    function initialize() {
+        try {
+            validateBirthdate();
+            setupMembershipHandlers();
+            setupFormHandlers();
+
+            // Handle session messages
+            @if (session('success'))
+                const uidInput = getElement('uid');
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', '{{ session('success') }}');
+            @endif
+
+            @if (session('error'))
+                updateRfidStatus('error', '{{ session('error') }}');
+            @endif
+            fetchLatestUid();
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+            // Initial RFID status
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            
+            // Start RFID polling with retry mechanism
+            let retryCount = 0;
+            
+            
+        } catch (error) {
+            console.error('Error initializing form:', error);
+        }
+
+        // Cleanup
+  // Clean up interval when leaving page
+  window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
+    }
+
+
+
+
+
+
+
+
+
+
     // Fetch membership prices via AJAX
     function fetchMembershipPrices() {
         fetch('{{ route('staff.membership.prices') }}', {
@@ -1765,59 +1833,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
-function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network response was not ok');
-                return response.json();
-            })
-            .then(data => {
-                const uidInput = document.getElementById('uid');
-                if (data.uid && uidInput) {
-                    uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected');
-                } else {
-                    if (uidInput) uidInput.value = '';
-                    updateRfidStatus('waiting', 'Please Tap Your Card...');
-                }
-                toggleClearButton();
-            })
-    }
-    // Initialize
-    function initialize() {
-        try {
-            validateBirthdate();
-            setupMembershipHandlers();
-            setupFormHandlers();
 
-            // Handle session messages
-            @if (session('success'))
-                const uidInput = getElement('uid');
-                if (uidInput) uidInput.value = '';
-                updateRfidStatus('success', '{{ session('success') }}');
-            @endif
-
-            @if (session('error'))
-                updateRfidStatus('error', '{{ session('error') }}');
-            @endif
-            fetchLatestUid();
-            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
-            // Initial RFID status
-            updateRfidStatus('waiting', 'Please Tap Your Card...');
-            
-            // Start RFID polling with retry mechanism
-            let retryCount = 0;
-            
-            
-        } catch (error) {
-            console.error('Error initializing form:', error);
-        }
-
-        // Cleanup
-  // Clean up interval when leaving page
-  window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
-    }
 </script>
 @endsection
