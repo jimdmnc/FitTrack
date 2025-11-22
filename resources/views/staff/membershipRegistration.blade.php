@@ -765,10 +765,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }
 
         // Cleanup
-  // Clean up interval when leaving page
-  window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
+        // Clean up interval when leaving page
+        window.addEventListener('beforeunload', function() {
+                clearInterval(rfidPollInterval);
+            });
     }
 
     // Start everything
