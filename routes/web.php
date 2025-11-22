@@ -114,6 +114,7 @@ Route::middleware('auth')->group(function () {
         // Reports
         Route::get('/report', [ReportController::class, 'index'])->name('staff.report');
         Route::get('/generate-report', [ReportController::class, 'generateReport'])->name('generate.report');
+        Route::post('/upgrade', [ViewmembersController::class, 'upgradeToRfid'])->name('staff.membership');
 
         // Staff Management
         Route::get('/manage-staffs', [StaffController::class, 'manageStaffs'])->name('staff.manageStaffs');
@@ -157,7 +158,6 @@ Route::middleware('auth')->group(function () {
 
     // Announcements
     Route::resource('announcements', AnnouncementController::class);
-    Route::post('/member/upgrade', [ViewmembersController::class, 'upgradeToRfid'])->name('upgrade.membership');
     //Manual Attendance
     Route::get('/self/forgot-rfid', [SelfController::class, 'showForgotRfid'])->name('self.forgotRfid');
     Route::post('/self/manual-attendance', [SelfController::class, 'manualAttendance'])->name('self.manualAttendance');

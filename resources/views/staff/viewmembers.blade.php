@@ -1624,7 +1624,7 @@ function openUpgradeModal(userId, currentRfid, name, currentType) {
     document.getElementById('submitUpgrade').disabled = true;
 
     animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-    }
+}
 
     // Close Modal
     function closeUpgradeModal() {
