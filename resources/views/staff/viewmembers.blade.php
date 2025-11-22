@@ -1125,7 +1125,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
     const ELEMENTS = {
-        uidInput: document.getElementById('rfid_uid'),
+        uidInput: document.getElementById('uid'),
         rfidStatus: document.getElementById('rfid_status'),
         clearRfidBtn: document.getElementById('clearRfidBtn'),
 
@@ -1175,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-    // initialize();
+    initialize();
   // ===== RFID: Update Status Message =====
     function updateRfidStatus(type, message) {
         if (!ELEMENTS.rfidStatus) return;
@@ -1859,9 +1859,9 @@ if (ELEMENTS.clearRfidBtn) {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
-    window.closeRenewModal = closeRenewModal;
     window.openUpgradeModal = openUpgradeModal;
     window.closeUpgradeModal = closeUpgradeModal;
+    window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
     window.openRestoreModal = openRestoreModal;
