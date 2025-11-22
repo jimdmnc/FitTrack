@@ -325,34 +325,31 @@
                             </td>
                         
                             <td class="px-4 py-4 text-center text-sm">
-    @if($member->member_status == 'active')
-        <div class="flex flex-wrap gap-2 justify-center">
-            <button 
-                onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
-                class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
-                title="View member details">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">View</span>
-            </button>
+    @php
+        $hasRenew = in_array($member->membership_type, ['7', '30', '365']);
+        $isActive = $member->member_status === 'active';
+        $isExpired = $member->member_status === 'expired';
+        $isRevoked = $member->member_status === 'revoked';
+    @endphp
 
-            <button 
-                onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
-                title="Revoke membership">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-                <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
-            </button>
-        </div>
+    <div class="flex flex-wrap gap-2 justify-center">
 
-    @elseif($member->member_status == 'expired')
-        <div class="flex flex-wrap gap-2 justify-center">
-            <!-- RENEW BUTTON: Only show for Weekly (7), Monthly (30), Annual (365) -->
-            @if(in_array($member->membership_type, ['7', '30', '365']))
+        <!-- ALWAYS SHOW: View Button -->
+        <button 
+            onclick="openViewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->getMembershipType() }}', '{{ \Carbon\Carbon::parse($member->start_date)->format('M d, Y') }}', '{{ $member->member_status }}')"
+            class="inline-flex items-center px-3 py-1.5 bg-[#ff5722] hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-[#ff5722] shadow-sm group"
+            title="View member details">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">View</span>
+        </button>
+
+        <!-- SECOND BUTTON: Smart logic -->
+        @if($isActive || $isExpired || $isRevoked)
+            @if($hasRenew && ($isExpired || $isRevoked))
+                <!-- Show Renew if eligible -->
                 <button 
                     onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
                     class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
@@ -362,47 +359,56 @@
                     </svg>
                     <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
                 </button>
-            @endif
 
-            <!-- Revoke button still available even if expired -->
-            <button 
-                onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
-                title="Revoke membership">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-                <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
-            </button>
-        </div>
-
-    @elseif($member->member_status == 'revoked')
-        <div class="flex flex-wrap gap-2 justify-center">
-            <button 
-                onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason ?? 'No reason provided' }}')"
-                class="inline-flex items-center px-3 py-1.5 bg-blue-900 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-blue-900 shadow-sm group"
-                title="View revocation reason">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Reason</span>
-            </button>
-
-            <!-- Renew button for revoked members (only if valid plan) -->
-            @if(in_array($member->membership_type, ['7', '30', '365']))
+            @elseif($isActive)
+                <!-- Active members: Show Revoke -->
                 <button 
-                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
-                    title="Renew membership">
+                    onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                    class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
+                    title="Revoke membership">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
-                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
+                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
+                </button>
+
+            @elseif($isRevoked)
+                <!-- Revoked members: Show Reason -->
+                <button 
+                    onclick="openRevokedReasonModal('{{ $member->id }}', '{{ $member->revoke_reason ?? 'No reason provided' }}')"
+                    class="inline-flex items-center px-3 py-1.5 bg-blue-900 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-blue-900 shadow-sm group"
+                    title="View revocation reason">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Reason</span>
+                </button>
+
+            @else
+                <!-- Fallback: Show disabled/info button if no action available -->
+                <button 
+                    class="inline-flex items-center px-3 py-1.5 bg-gray-700 text-gray-400 rounded-lg font-medium text-sm cursor-not-allowed opacity-60"
+                    title="No action available (Session/Custom membership)"
+                    disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Info</span>
                 </button>
             @endif
-        </div>
-    @endif
+        @else
+            <!-- If status is unknown or pending, just show View + Info -->
+            <button 
+                class="inline-flex items-center px-3 py-1.5 bg-gray-700 text-gray-400 rounded-lg font-medium text-sm cursor-not-allowed opacity-60"
+                disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>No Action</span>
+            </button>
+        @endif
+    </div>
 </td>
                             
                         </tr>
