@@ -514,18 +514,18 @@
                 </button>
             </div>
 
-            <!-- Upgraf Form -->
+            <!-- Renew Form -->
             <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
                 <input type="hidden" name="user_id" id="editUserId">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- Member ID -->
-                    <!-- <div class="w-full">
+                    <div class="w-full">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
                         <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
-                     -->
+                    
                     <!-- Member Name -->
                     <div class="w-full">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
@@ -1175,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-    initialize();
+
   // ===== RFID: Update Status Message =====
     function updateRfidStatus(type, message) {
         if (!ELEMENTS.rfidStatus) return;
@@ -1195,82 +1195,64 @@ document.addEventListener('DOMContentLoaded', function() {
         ELEMENTS.rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
     }
 
-  // ===== RFID: Poll for latest card =====
-  function fetchLatestUid() {
+    function fetchLatestUid() {
         fetch('/api/rfid/latest')
             .then(response => {
-                if (!response.ok) throw new Error('Network error');
+                if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(data => {
-                if (data.uid && ELEMENTS.uidInput) {
-                    ELEMENTS.uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected: ' + data.uid);
-                    toggleClearButton(true);
+                const uidInput = document.getElementById('uid');
+                if (data.uid && uidInput) {
+                    uidInput.value = data.uid;
+                    updateRfidStatus('success', 'Card detected');
+                } else {
+                    if (uidInput) uidInput.value = '';
+                    updateRfidStatus('waiting', 'Please Tap Your Card...');
                 }
+                toggleClearButton();
             })
-            .catch(err => {
-                console.warn('RFID poll failed (will retry):', err);
-                // Don't clear the field on temporary error
-            });
     }
-    // ===== Show/Hide Clear Button =====
-    function toggleClearButton(show = null) {
-        if (!ELEMENTS.clearRfidBtn) return;
-        const hasValue = ELEMENTS.uidInput?.value.trim();
-        const shouldShow = show !== null ? show : !!hasValue;
-        ELEMENTS.clearRfidBtn.classList.toggle('hidden', !shouldShow);
-    }
+    // Initialize
+    function initializerfid() {
+        try {
+            validateBirthdate();
+            setupMembershipHandlers();
+            setupFormHandlers();
 
-    // ===== Clear RFID (when × is clicked) =====
-    function clearRfid() {
-        if (!ELEMENTS.uidInput?.value) {
-            updateRfidStatus('error', 'No card to clear');
-            return;
+            // Handle session messages
+            @if (session('success'))
+                const uidInput = getElement('uid');
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', '{{ session('success') }}');
+            @endif
+
+            @if (session('error'))
+                updateRfidStatus('error', '{{ session('error') }}');
+            @endif
+            fetchLatestUid();
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+            // Initial RFID status
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            
+            // Start RFID polling with retry mechanism
+            let retryCount = 0;
+            
+            
+        } catch (error) {
+            console.error('Error initializing form:', error);
         }
-
-        fetch(`/api/rfid/clear/${ELEMENTS.uidInput.value}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.success) {
-                ELEMENTS.uidInput.value = '';
-                updateRfidStatus('success', 'Card cleared');
-            } else {
-                updateRfidStatus('error', res.message || 'Failed to clear');
-            }
-            toggleClearButton(false);
-        })
-        .catch(() => {
-            updateRfidStatus('error', 'Clear request failed');
-        });
-    }
-
-    // ===== Start RFID Polling =====
-    function startRfidPolling() {
-        updateRfidStatus('waiting', 'Please Tap Your Card...');
-        fetchLatestUid(); // Immediate check
-        rfidPollInterval = setInterval(fetchLatestUid, 2000);
-    }
 
         // Cleanup
   // Clean up interval when leaving page
   window.addEventListener('beforeunload', function() {
         clearInterval(rfidPollInterval);
     });
-    
-// Attach clear button
-if (ELEMENTS.clearRfidBtn) {
-        ELEMENTS.clearRfidBtn.addEventListener('click', clearRfid);
     }
 
-    // ===== Start RFID Auto-Detection =====
-    startRfidPolling();
+
+    initializerfid();
+
 
 
 
@@ -1752,7 +1734,7 @@ if (ELEMENTS.clearRfidBtn) {
     }
 
     function openUpgradeModal(memberID, name, email, phone, endDate) {
-        // document.getElementById("editMemberID").value = memberID;
+        document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
         
         if (document.getElementById("editEmail") && email) {
