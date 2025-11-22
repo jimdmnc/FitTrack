@@ -159,19 +159,64 @@
                 </div>
             </div>
 
-            <!-- Custom Range Inputs (placed under filters) -->
-            <div id="customRangeContainer" class="mt-3 hidden">
-                <div class="flex items-center gap-3">
-                    <div class="relative">
-                        <label for="startDate" class="sr-only">Start Date</label>
-                        <input type="date" id="startDate" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date" value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+            
+                <!-- Custom range + date picker container -->
+                    
+                    <!-- Custom Range Inputs (placed under filters) -->
+                    <div id="customRangeContainer" class="hidden">
+                        <div class="flex items-center gap-3">
+                            <div class="relative ">
+                                <label for="startDate" class="sr-only">Start Date</label>
+                                <input type="date" id="startDate" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date" value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                            </div>
+                            <div class="relative">
+                                <label for="endDate" class="sr-only">End Date</label>
+                                <input type="date" id="endDate" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                            </div>
+                        </div>
                     </div>
-                    <div class="relative">
-                        <label for="endDate" class="sr-only">End Date</label>
-                        <input type="date" id="endDate" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+
+                    <!-- Compact Date Picker (visible when Custom Range is selected) aligned right -->
+                    <div id="datePicker" class="hidden self-end">
+                        <div class="bg-[#1e1e1e] border border-gray-800 rounded-md p-3 max-w-sm">
+                            <div x-data="{
+                                currentMonth: new Date().getMonth(),
+                                currentYear: new Date().getFullYear(),
+                                monthName() { return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' }); },
+                                getDaysInMonth() { return new Date(this.currentYear, this.currentMonth + 1, 0).getDate(); },
+                                getFirstDayOfMonth() { return new Date(this.currentYear, this.currentMonth, 1).getDay(); },
+                                prevMonth() { if (this.currentMonth === 0) { this.currentMonth = 11; this.currentYear--; } else { this.currentMonth--; } },
+                                nextMonth() { if (this.currentMonth === 11) { this.currentMonth = 0; this.currentYear++; } else { this.currentMonth++; } }
+                            }">
+                                <div class="flex items-center justify-between mb-2">
+                                    <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                                    </button>
+                                    <div class="text-sm font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></div>
+                                    <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    </button>
+                                </div>
+
+                                <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
+                                    <template x-for="day in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="day">
+                                        <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+                                    </template>
+
+                                    <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+                                        <div class="p-1 text-sm text-gray-600"></div>
+                                    </template>
+
+                                    <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+                                        <div class="p-1">
+                                            <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center text-gray-300" x-text="day"></div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             <!-- Responsive Table -->
             <div class="overflow-x-auto table-responsive">
@@ -339,6 +384,55 @@
     });
     endDateInput.on('focus', function() {
         try { if (this.showPicker) this.showPicker(); } catch (e) {}
+    });
+
+    // Enforce date constraints:
+    // - startDate and endDate cannot be in the future
+    // - endDate cannot be earlier than startDate
+    const todayStr = new Date().toISOString().slice(0,10);
+    startDateInput.attr('max', todayStr);
+    endDateInput.attr('max', todayStr);
+
+    // When start changes, set end's min and ensure end >= start
+    startDateInput.on('change', function() {
+        const startVal = $(this).val();
+        if (startVal) {
+            endDateInput.attr('min', startVal);
+            // if end is empty or before start, set end = start
+            const endVal = endDateInput.val();
+            if (!endVal || endVal < startVal) {
+                endDateInput.val(startVal);
+            }
+        } else {
+            endDateInput.removeAttr('min');
+        }
+        // Prevent future dates on start
+        if (startDateInput.val() && startDateInput.val() > todayStr) {
+            startDateInput.val(todayStr);
+        }
+    });
+
+    // When end changes, ensure it's not before start and not in future
+    endDateInput.on('change', function() {
+        const endVal = $(this).val();
+        if (endVal) {
+            // prevent future
+            if (endVal > todayStr) {
+                endDateInput.val(todayStr);
+            }
+
+            // enforce start <= end
+            const startVal = startDateInput.val();
+            if (startVal && startVal > endVal) {
+                // move start to endVal to keep range valid
+                startDateInput.val(endVal);
+            }
+            // also set start's max to endVal so user can't pick start after end
+            startDateInput.attr('max', endVal);
+        } else {
+            // if end cleared, reset start max to today
+            startDateInput.attr('max', todayStr);
+        }
     });
 
     // Function to fetch payments based on search and filters
