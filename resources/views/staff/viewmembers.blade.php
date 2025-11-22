@@ -1739,9 +1739,9 @@ if (ELEMENTS.clearRfidBtn) {
             document.getElementById("startDate").value = todayFormatted;
         }
 
-        if (ELEMENTS.customDaysInput) {
-            ELEMENTS.customDaysInput.value = '';
-        }
+        // if (ELEMENTS.customDaysInput) {
+        //     ELEMENTS.customDaysInput.value = '';
+        // }
 
         toggleCustomDays();
         animateModalOpen('renewMemberModal', 'editModalContent');
