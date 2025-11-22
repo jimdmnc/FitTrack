@@ -525,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
+                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -1061,21 +1061,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
-        // if (prices.session) {
-        //     options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
-        //     options[1].setAttribute('data-price', prices.session);
-        // }
+        if (prices.session) {
+            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+            options[1].setAttribute('data-price', prices.session);
+        }
         if (prices.weekly) {
-            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[1].setAttribute('data-price', prices.weekly);
+            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.monthly);
+            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.annual);
+            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[4].setAttribute('data-price', prices.annual);
         }
     }
 
