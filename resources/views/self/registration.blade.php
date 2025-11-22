@@ -110,9 +110,23 @@
             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-3 mb-4 text-sm">
                 <i class="fas fa-check-circle mr-1"></i> {{ session('success') }}
             </div>
-        @elseif(session('error'))
+        @endif
+        
+        @if (session('error'))
             <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-4 text-sm">
                 <i class="fas fa-exclamation-circle mr-1"></i> {{ session('error') }}
+            </div>
+        @endif
+        
+        @if ($errors->any())
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-3 mb-4 text-sm">
+                <i class="fas fa-exclamation-circle mr-1"></i> 
+                <strong>Please fix the following errors:</strong>
+                <ul class="mt-2 list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         @endif
         
@@ -125,30 +139,40 @@
                             First Name <span class="text-red-500">*</span>
                         </label>
                         <input type="text" 
-                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200 @error('first_name') error-border @enderror" 
                                id="first_name" 
                                name="first_name" 
+                               value="{{ old('first_name') }}"
                                placeholder="Your first name"
                                autocomplete="given-name"
                                required
                                minlength="2"
                                maxlength="50">
-                        <div id="first_name_error" class="error-message hidden">First name must be between 2-50 characters and contain no numbers or special characters.</div>
+                        @error('first_name')
+                            <div id="first_name_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="first_name_error" class="error-message hidden">First name must be between 2-50 characters and contain no numbers or special characters.</div>
+                        @enderror
                     </div>
                     <div>
                         <label for="last_name" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Last Name <span class="text-red-500">*</span>
                         </label>
                         <input type="text" 
-                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200 @error('last_name') error-border @enderror" 
                                id="last_name" 
                                name="last_name" 
+                               value="{{ old('last_name') }}"
                                placeholder="Your last name"
                                autocomplete="family-name"
                                required
                                minlength="2"
                                maxlength="50">
-                        <div id="last_name_error" class="error-message hidden">Please enter a valid last name (2-50 characters)</div>
+                        @error('last_name')
+                            <div id="last_name_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="last_name_error" class="error-message hidden">Please enter a valid last name (2-50 characters)</div>
+                        @enderror
                     </div>
                 </div>
                 
@@ -157,43 +181,57 @@
                         Email Address <span class="text-red-500">*</span>
                     </label>
                     <input type="email" 
-                           class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200" 
+                           class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200 @error('email') error-border @enderror" 
                            id="email" 
                            name="email" 
+                           value="{{ old('email') }}"
                            placeholder="Your email address"
                            required
                            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
-                    <div id="email_error" class="error-message hidden">Please enter a valid email address</div>
+                    @error('email')
+                        <div id="email_error" class="error-message">{{ $message }}</div>
+                    @else
+                        <div id="email_error" class="error-message hidden">Please enter a valid email address</div>
+                    @enderror
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label for="gender" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">Gender <span class="text-red-500">*</span></label>
                         <select name="gender" id="gender" 
-                                class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200"
+                                class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200 @error('gender') error-border @enderror"
                                 required>
                             <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
+                            <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                            <option value="other" {{ old('gender') == 'other' ? 'selected' : '' }}>Other</option>
                         </select>
-                        <div id="gender_error" class="error-message hidden">Please select a gender</div>
+                        @error('gender')
+                            <div id="gender_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="gender_error" class="error-message hidden">Please select a gender</div>
+                        @enderror
                     </div>
                     <div>
                         <label for="phone_number" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Phone Number <span class="text-red-500">*</span>
                         </label>
                         <input type="tel" 
-                               class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200" 
+                               class="w-full p-2 md:p-3 rounded-lg text-base orange-focus text-gray-200 @error('phone_number') error-border @enderror" 
                                id="phone_number" 
                                name="phone_number" 
+                               value="{{ old('phone_number') }}"
                                placeholder="09*********"
                                autocomplete="tel"
                                maxlength="11"
                                minlength="11"
                                oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                required>
-                        <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
+                        @error('phone_number')
+                            <div id="phone_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="phone_error" class="error-message hidden">Please enter a valid phone number</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -203,26 +241,34 @@
                             Password <span class="text-red-500">*</span>
                         </label>
                         <input type="password" 
-                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200 @error('password') error-border @enderror" 
                                id="password" 
                                name="password" 
                                placeholder="Enter your password"
                                required
                                minlength="8">
-                        <div id="password_error" class="error-message hidden">Password must be at least 8 characters</div>
+                        @error('password')
+                            <div id="password_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="password_error" class="error-message hidden">Password must be at least 8 characters</div>
+                        @enderror
                     </div>
                     <div>
                         <label for="password_confirmation" class="block text-gray-200 font-medium text-sm lg:text-base mb-1 lg:mb-2">
                             Confirm Password <span class="text-red-500">*</span>
                         </label>
                         <input type="password" 
-                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200" 
+                               class="w-full p-2 md:p-3 lg:p-4 rounded-lg text-base lg:text-lg orange-focus text-gray-200 @error('password_confirmation') error-border @enderror" 
                                id="password_confirmation" 
                                name="password_confirmation" 
                                placeholder="Confirm your password"
                                required
                                minlength="8">
-                        <div id="password_confirmation_error" class="error-message hidden">Passwords do not match</div>
+                        @error('password_confirmation')
+                            <div id="password_confirmation_error" class="error-message">{{ $message }}</div>
+                        @else
+                            <div id="password_confirmation_error" class="error-message hidden">Passwords do not match</div>
+                        @enderror
                     </div>
                 </div>
 
@@ -272,16 +318,21 @@
         </p>
     </div>
     
-    <div class="mt-4 text-center">
-        <a href="tel:+18005551234" class="text-sm lg:text-base font-medium flex items-center justify-center text-gray-200">
-            <i class="orange-text fas fa-phone-alt mr-2"></i> Need help? Call us
-        </a>
-    </div>
+
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('registrationForm');
+    
+    // Show server-side errors on page load
+    const errorFields = form.querySelectorAll('.error-border');
+    errorFields.forEach(field => {
+        const errorElement = document.getElementById(`${field.id}_error`);
+        if (errorElement && !errorElement.classList.contains('hidden')) {
+            errorElement.classList.remove('hidden');
+        }
+    });
     
     form.addEventListener('submit', function(e) {
         if (!validateForm()) {
@@ -292,6 +343,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('input', function() {
+            // Clear server-side error styling when user starts typing
+            if (this.classList.contains('error-border')) {
+                const errorElement = document.getElementById(`${this.id}_error`);
+                if (errorElement && errorElement.textContent) {
+                    // Only clear if it's a server-side error (not the default hidden message)
+                    if (!errorElement.classList.contains('hidden')) {
+                        this.classList.remove('error-border');
+                        errorElement.classList.add('hidden');
+                    }
+                }
+            }
             validateField(this);
         });
         input.addEventListener('keyup', function() {

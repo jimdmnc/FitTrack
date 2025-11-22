@@ -358,6 +358,7 @@
                             <tr>
                                 <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">#</th>
                                 <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Member</th>
+                                <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Membership Type</th>
                                 <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Payment Date</th>
                                 <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Amount</th>
                                 <th scope="col" class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider">Method</th>
@@ -376,6 +377,23 @@
                                             <div class="flex items-center">
                                                 <div class="text-xs sm:text-sm font-medium text-gray-200">{{ $payment->user->first_name . ' ' . $payment->user->last_name }}</div>
                                             </div>
+                                        </td>
+                                        <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
+                                            <span class="px-2.5 py-1 text-xs font-medium rounded-full
+                                                @if(strtolower(optional($payment->user)->membership_type_name ?? '') == 'annual')
+                                                    bg-purple-900 text-purple-200
+                                                @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'weekly')
+                                                    bg-green-900 text-green-200
+                                                @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'monthly')
+                                                    bg-blue-900 text-blue-200
+                                                @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'session')
+                                                    bg-yellow-900 text-yellow-200
+                                                @else
+                                                    bg-gray-800 text-gray-300
+                                                @endif
+                                            ">
+                                                {{ optional($payment->user)->membership_type_name ?? 'N/A' }}
+                                            </span>
                                         </td>
                                         <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-gray-300">{{ \Carbon\Carbon::parse($payment->payment_date)->format('m/d/Y') }}</td>
                                         <td class="px-4 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
@@ -396,7 +414,7 @@
                                 @endforeach
                             @else
                             <tr>
-                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center bg-[#1e1e1e]">
+                                <td colspan="8" class="px-4 sm:px-6 py-8 sm:py-12 text-center bg-[#1e1e1e]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-8 sm:h-12 w-8 sm:w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
@@ -407,7 +425,7 @@
                             @endif
                             <!-- No results row for filtered results (hidden by default) -->
                             <tr id="paymentsNoResults" class="hidden">
-                                <td colspan="7" class="px-4 sm:px-6 py-8 sm:py-12 text-center">
+                                <td colspan="8" class="px-4 sm:px-6 py-8 sm:py-12 text-center">
                                     <p class="text-gray-200 text-base sm:text-lg">No records match your filter criteria</p>
                                     <button onclick="resetFilters('payments')" class="mt-2 text-[#ff5722] hover:text-gray-200">Reset filters</button>
                                 </td>

@@ -192,6 +192,7 @@
             <tr>
                 <th>#</th>
                 <th>Member</th>
+                <th>Membership Type</th>
                 <th>Payment Date</th>
                 <th>Amount</th>
                 <th>Method</th>
@@ -204,6 +205,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $payment->user->first_name }} {{ $payment->user->last_name }}</td>
+                    <td>{{ optional($payment->user)->membership_type_name ?? 'N/A' }}</td>
                     <td>{{ \Carbon\Carbon::parse($payment->payment_date)->format('M d, Y') }}</td>
                     <td class="amount-col">PHP {{ number_format($payment->amount, 2) }}</td>
                     <td>{{ $payment->payment_method }}</td>
