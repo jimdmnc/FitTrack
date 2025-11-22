@@ -1066,16 +1066,16 @@ document.addEventListener('DOMContentLoaded', function() {
         //     options[1].setAttribute('data-price', prices.session);
         // }
         if (prices.weekly) {
-            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.weekly);
+            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[1].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.monthly);
+            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[4].setAttribute('data-price', prices.annual);
+            options[2].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.annual);
         }
     }
 
