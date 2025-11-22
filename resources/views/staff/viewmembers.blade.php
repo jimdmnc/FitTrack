@@ -1639,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    function closeRenewModal() {
+    function closeUpgradeModal() {
         animateModalClose('upgradeMemberModal', 'editModalContent');
     }
     
