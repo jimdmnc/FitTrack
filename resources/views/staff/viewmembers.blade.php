@@ -354,7 +354,8 @@
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
-                                        onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}', '{{ $member->membership_type }}')"                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
@@ -1496,28 +1497,10 @@ document.addEventListener('DOMContentLoaded', function() {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    function openRenewModal(memberID, name, email, phone, endDate, membershipType = '') {
+    function openRenewModal(memberID, name, email, phone, endDate) {
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
-        document.getElementById("currentMembershipType").value = membershipType; // pass type
-
-        const rfidContainer = document.getElementById('rfidInputContainer');
-    const uidInput = document.getElementById('uid');
-    const uidError = document.getElementById('uid_error');
-
-    if (membershipType === '1' || membershipType === 'session') {
-        rfidContainer.classList.remove('hidden');
-        uidInput.removeAttribute('disabled');
-        uidInput.required = true;
-        document.getElementById('rfid_status').textContent = 'Tap card to assign RFID...';
-        uidError.classList.add('hidden');
-    } else {
-        rfidContainer.classList.add('hidden');
-        uidInput.value = '';
-        uidInput.removeAttribute('required');
-        clearRfid(); // reset
-    }
-
+        
         if (document.getElementById("editEmail") && email) {
             document.getElementById("editEmail").value = email;
         }
