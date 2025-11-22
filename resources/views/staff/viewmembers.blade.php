@@ -1161,18 +1161,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (ELEMENTS.membershipTypeSelect) {
             ELEMENTS.membershipTypeSelect.addEventListener('change', function() {
-                // toggleCustomDays();
+                toggleCustomDays();
                 updateAllDetails();
             });
         }
         
-        // if (ELEMENTS.customDaysInput) {
-        //     ELEMENTS.customDaysInput.addEventListener('input', function() {
-        //         if (this.value < 1) this.value = 1;
-        //         if (this.value > 365) this.value = 365;
-        //         updateAllDetails();
-        //     });
-        // }
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.addEventListener('input', function() {
+                if (this.value < 1) this.value = 1;
+                if (this.value > 365) this.value = 365;
+                updateAllDetails();
+            });
+        }
         
         if (ELEMENTS.startDateInput) {
             ELEMENTS.startDateInput.addEventListener('change', function() {
@@ -1190,18 +1190,18 @@ document.addEventListener('DOMContentLoaded', function() {
         attachPaginationListeners();
     }
 
-    // function toggleCustomDays() {
-    //     if (!ELEMENTS.customDaysContainer || !ELEMENTS.membershipTypeSelect) return;
+    function toggleCustomDays() {
+        if (!ELEMENTS.customDaysContainer || !ELEMENTS.membershipTypeSelect) return;
         
-    //     if (ELEMENTS.membershipTypeSelect.value === 'custom') {
-    //         ELEMENTS.customDaysContainer.classList.remove('hidden');
-    //         ELEMENTS.customDaysInput.setAttribute('required', 'required');
-    //     } else {
-    //         ELEMENTS.customDaysContainer.classList.add('hidden');
-    //         ELEMENTS.customDaysInput.removeAttribute('required');
-    //         ELEMENTS.customDaysInput.value = '';
-    //     }
-    // }
+        if (ELEMENTS.membershipTypeSelect.value === 'custom') {
+            ELEMENTS.customDaysContainer.classList.remove('hidden');
+            ELEMENTS.customDaysInput.setAttribute('required', 'required');
+        } else {
+            ELEMENTS.customDaysContainer.classList.add('hidden');
+            ELEMENTS.customDaysInput.removeAttribute('required');
+            ELEMENTS.customDaysInput.value = '';
+        }
+    }
 
     function attachPaginationListeners() {
         setTimeout(() => {
