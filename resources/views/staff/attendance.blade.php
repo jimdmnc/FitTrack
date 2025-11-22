@@ -167,12 +167,13 @@
                         </button>
 
                         <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All</li>
+                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All Time</li>
                             <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
                             <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
                             <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
                             <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="lastWeek">Last Week</li>
                             <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisMonth">This Month</li>
+                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="custom">Custom Range</li>
                         </ul>
                     </div>
                     <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
@@ -182,6 +183,20 @@
                         <span id="refreshText">Refresh</span>
                     </button>
 
+            </div>
+        </div>
+
+        <!-- Custom Range Inputs for Attendance (hidden until Custom Range selected) -->
+        <div id="attendanceCustomRange" class="mt-3 hidden">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <label for="startDateAttendance" class="sr-only">Start Date</label>
+                    <input type="date" id="startDateAttendance" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date">
+                </div>
+                <div class="relative">
+                    <label for="endDateAttendance" class="sr-only">End Date</label>
+                    <input type="date" id="endDateAttendance" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date">
+                </div>
             </div>
         </div>
 
@@ -591,6 +606,9 @@ function initializeAttendancePage() {
     const clearSearchButton = document.getElementById('clearSearch');
     const tableContainer = document.querySelector('.overflow-x-auto');
     const paginationContainer = document.querySelector('.mt-4');
+    const attendanceCustomRange = document.getElementById('attendanceCustomRange');
+    const startDateAttendance = document.getElementById('startDateAttendance');
+    const endDateAttendance = document.getElementById('endDateAttendance');
     let searchTimeout;
     
     // Only proceed if we're on the attendance page
@@ -606,6 +624,29 @@ function initializeAttendancePage() {
         selectedOption.textContent = initialOption.textContent;
     }
 
+    // Initialize custom range visibility from URL params
+    if (currentFilter === 'custom') {
+        if (attendanceCustomRange) attendanceCustomRange.classList.remove('hidden');
+        const urlParams = new URLSearchParams(window.location.search);
+        const todayStr = new Date().toISOString().slice(0,10);
+        if (urlParams.has('start_date') && startDateAttendance) {
+            startDateAttendance.value = urlParams.get('start_date');
+        }
+        if (urlParams.has('end_date') && endDateAttendance) {
+            endDateAttendance.value = urlParams.get('end_date');
+        }
+        // enforce date picker attributes: no future dates
+        if (startDateAttendance) startDateAttendance.setAttribute('max', todayStr);
+        if (endDateAttendance) endDateAttendance.setAttribute('max', todayStr);
+        // if both present, set end.min and start.max accordingly
+        if (startDateAttendance && startDateAttendance.value && endDateAttendance) {
+            endDateAttendance.setAttribute('min', startDateAttendance.value);
+        }
+        if (endDateAttendance && endDateAttendance.value && startDateAttendance) {
+            startDateAttendance.setAttribute('max', endDateAttendance.value);
+        }
+    }
+
     // Set up dropdown toggle
     selectBtn.addEventListener('click', () => {
         dropdown.classList.toggle('hidden');
@@ -617,17 +658,32 @@ function initializeAttendancePage() {
             const filterValue = option.getAttribute('data-value');
             selectedOption.textContent = option.textContent;
             dropdown.classList.add('hidden');
-            
+
             // Get current URL parameters
             const url = new URL(window.location.href);
             const searchParams = new URLSearchParams(url.search);
-            
+
             // Update filter parameter
             searchParams.set('filter', filterValue);
-            
+
             // Remove page parameter to go back to first page
             searchParams.delete('page');
-            
+
+            // If custom, show the custom range inputs and default to today if empty
+            if (filterValue === 'custom') {
+                if (attendanceCustomRange) attendanceCustomRange.classList.remove('hidden');
+                const today = new Date().toISOString().slice(0,10);
+                if (startDateAttendance && !startDateAttendance.value) startDateAttendance.value = today;
+                if (endDateAttendance && !endDateAttendance.value) endDateAttendance.value = today;
+                if (startDateAttendance && startDateAttendance.value) searchParams.set('start_date', startDateAttendance.value);
+                if (endDateAttendance && endDateAttendance.value) searchParams.set('end_date', endDateAttendance.value);
+            } else {
+                if (attendanceCustomRange) attendanceCustomRange.classList.add('hidden');
+                // remove any range params
+                searchParams.delete('start_date');
+                searchParams.delete('end_date');
+            }
+
             // Update URL and load new data
             window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
             fetchAttendances();
@@ -838,6 +894,70 @@ function initializeAttendancePage() {
             window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
 
             fetchAttendances(); // Fetch data without search term
+        });
+    }
+
+    // Attendance custom range inputs behavior
+    if (startDateAttendance && endDateAttendance) {
+        const todayStr = new Date().toISOString().slice(0,10);
+        startDateAttendance.setAttribute('max', todayStr);
+        endDateAttendance.setAttribute('max', todayStr);
+
+        startDateAttendance.addEventListener('change', function() {
+            const s = this.value;
+            // Prevent selecting a future date
+            if (s && s > todayStr) {
+                this.value = todayStr;
+            }
+            // Ensure endDate can't be earlier than startDate by setting min
+            if (s) {
+                endDateAttendance.setAttribute('min', s);
+                if (!endDateAttendance.value || endDateAttendance.value < s) {
+                    endDateAttendance.value = s;
+                }
+            } else {
+                endDateAttendance.removeAttribute('min');
+            }
+
+            // also keep start.max in sync with selected end (if any)
+            if (endDateAttendance.value) startDateAttendance.setAttribute('max', endDateAttendance.value);
+            else startDateAttendance.setAttribute('max', todayStr);
+
+            // Update URL params and fetch
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            searchParams.set('filter', 'custom');
+            if (this.value) searchParams.set('start_date', this.value); else searchParams.delete('start_date');
+            if (endDateAttendance.value) searchParams.set('end_date', endDateAttendance.value); else searchParams.delete('end_date');
+            searchParams.delete('page');
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            fetchAttendances();
+        });
+
+        endDateAttendance.addEventListener('change', function() {
+            const e = this.value;
+            // Prevent future dates
+            if (e && e > todayStr) { this.value = todayStr; }
+
+            // Ensure startDate is not after endDate
+            if (e) {
+                startDateAttendance.setAttribute('max', e);
+                if (startDateAttendance.value && startDateAttendance.value > e) {
+                    startDateAttendance.value = e;
+                }
+            } else {
+                startDateAttendance.setAttribute('max', todayStr);
+            }
+
+            // Update URL params and fetch
+            const url = new URL(window.location.href);
+            const searchParams = new URLSearchParams(url.search);
+            searchParams.set('filter', 'custom');
+            if (startDateAttendance.value) searchParams.set('start_date', startDateAttendance.value); else searchParams.delete('start_date');
+            if (this.value) searchParams.set('end_date', this.value); else searchParams.delete('end_date');
+            searchParams.delete('page');
+            window.history.pushState({}, '', `${url.pathname}?${searchParams.toString()}`);
+            fetchAttendances();
         });
     }
 

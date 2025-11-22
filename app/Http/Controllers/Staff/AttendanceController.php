@@ -58,6 +58,18 @@ class AttendanceController extends Controller
                     Carbon::now()->endOfMonth()
                 ]);
                 break;
+            case 'custom':
+                $start = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : null;
+                $end = $request->filled('end_date') ? Carbon::parse($request->end_date)->endOfDay() : null;
+
+                if ($start && $end) {
+                    $query->whereBetween('time_in', [$start, $end]);
+                } elseif ($start) {
+                    $query->where('time_in', '>=', $start);
+                } elseif ($end) {
+                    $query->where('time_in', '<=', $end);
+                }
+                break;
             case 'all':
                 // No date filtering needed
                 break;

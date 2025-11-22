@@ -130,6 +130,46 @@
                         </a>
                     </div>
                     <div class="flex items-center gap-3">
+                        <!-- Compact Date Picker placed to the left of the filters -->
+                        <div id="datePicker" class="hidden mr-2">
+                            <div class="bg-[#1e1e1e] border border-gray-800 rounded-md p-3 max-w-sm">
+                                <div x-data="{
+                                    currentMonth: new Date().getMonth(),
+                                    currentYear: new Date().getFullYear(),
+                                    monthName() { return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' }); },
+                                    getDaysInMonth() { return new Date(this.currentYear, this.currentMonth + 1, 0).getDate(); },
+                                    getFirstDayOfMonth() { return new Date(this.currentYear, this.currentMonth, 1).getDay(); },
+                                    prevMonth() { if (this.currentMonth === 0) { this.currentMonth = 11; this.currentYear--; } else { this.currentMonth--; } },
+                                    nextMonth() { if (this.currentMonth === 11) { this.currentMonth = 0; this.currentYear++; } else { this.currentMonth++; } }
+                                }">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                                        </button>
+                                        <div class="text-sm font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></div>
+                                        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+                                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                        </button>
+                                    </div>
+
+                                    <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
+                                        <template x-for="day in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="day">
+                                            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+                                        </template>
+
+                                        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+                                            <div class="p-1 text-sm text-gray-600"></div>
+                                        </template>
+
+                                        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+                                            <div class="p-1">
+                                                <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center text-gray-300" x-text="day"></div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Payment Method Filter -->
                         <select id="paymentMethodFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                             <option value="">All Methods</option>
@@ -176,46 +216,7 @@
                         </div>
                     </div>
 
-                    <!-- Compact Date Picker (visible when Custom Range is selected) aligned right -->
-                    <div id="datePicker" class="hidden self-end">
-                        <div class="bg-[#1e1e1e] border border-gray-800 rounded-md p-3 max-w-sm">
-                            <div x-data="{
-                                currentMonth: new Date().getMonth(),
-                                currentYear: new Date().getFullYear(),
-                                monthName() { return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' }); },
-                                getDaysInMonth() { return new Date(this.currentYear, this.currentMonth + 1, 0).getDate(); },
-                                getFirstDayOfMonth() { return new Date(this.currentYear, this.currentMonth, 1).getDay(); },
-                                prevMonth() { if (this.currentMonth === 0) { this.currentMonth = 11; this.currentYear--; } else { this.currentMonth--; } },
-                                nextMonth() { if (this.currentMonth === 11) { this.currentMonth = 0; this.currentYear++; } else { this.currentMonth++; } }
-                            }">
-                                <div class="flex items-center justify-between mb-2">
-                                    <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                                    </button>
-                                    <div class="text-sm font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></div>
-                                    <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
-                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                                    </button>
-                                </div>
-
-                                <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
-                                    <template x-for="day in ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']" :key="day">
-                                        <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
-                                    </template>
-
-                                    <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
-                                        <div class="p-1 text-sm text-gray-600"></div>
-                                    </template>
-
-                                    <template x-for="day in getDaysInMonth()" :key="'day-' + day">
-                                        <div class="p-1">
-                                            <div class="text-sm rounded-full w-6 h-6 flex items-center justify-center text-gray-300" x-text="day"></div>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
 
             <!-- Responsive Table -->
@@ -351,7 +352,7 @@
         fetchPayments();
     });
 
-    // Show/hide custom range inputs when time filter changes
+    // Show/hide custom range inputs and compact picker when time filter changes
     timeFilter.on('change', function() {
         const val = $(this).val();
         if (val === 'custom') {
@@ -360,8 +361,10 @@
             if (!startDateInput.val()) startDateInput.val(today);
             if (!endDateInput.val()) endDateInput.val(today);
             customRangeContainer.removeClass('hidden');
+            $('#datePicker').removeClass('hidden');
         } else {
             customRangeContainer.addClass('hidden');
+            $('#datePicker').addClass('hidden');
         }
         // trigger fetch (when custom, start/end will be appended)
         fetchPayments();
@@ -516,6 +519,7 @@
         if (tf === 'custom') {
             timeFilter.val('custom');
             customRangeContainer.removeClass('hidden');
+            $('#datePicker').removeClass('hidden');
             if (urlParams.has('start_date')) startDateInput.val(urlParams.get('start_date'));
             if (urlParams.has('end_date')) endDateInput.val(urlParams.get('end_date'));
         } else {
