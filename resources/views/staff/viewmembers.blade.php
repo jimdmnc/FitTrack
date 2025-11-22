@@ -514,8 +514,8 @@
                 </button>
             </div>
 
-            <!-- Renew Form -->
-            <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
+            <!-- Upgrade Form -->
+            <form id="renewalForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
                 <input type="hidden" name="user_id" id="editUserId">
 

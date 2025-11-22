@@ -70,7 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/membershipRegistration', [MembershipRegistrationController::class, 'store'])->name('staff.membershipRegistration.store');
 
         Route::post('/renew-membership', [ViewmembersController::class, 'renewMembership'])->name('renew.membership');
-        Route::post('/upgrade-membership', [ViewmembersController::class, 'upgradeMembership'])->name('renew.membership');
+        Route::post('/upgrade-membership', [ViewmembersController::class, 'upgradeMembership'])->name('upgrade.membership');
 
         // Attendance
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('staff.attendance');
