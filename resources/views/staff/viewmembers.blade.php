@@ -517,7 +517,7 @@
             <!-- Upgrade Form -->
             <form id="renewalForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
-                <input type="hidden" name="user_id" id="editUserId">
+                <!-- <input type="hidden" name="user_id" id="editUserId"> -->
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- Member ID -->
