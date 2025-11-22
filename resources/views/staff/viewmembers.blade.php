@@ -1334,12 +1334,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedType = ELEMENTS.membershipTypeSelect.value;
         let fee = 0;
         
-        // if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-        //     const days = parseInt(ELEMENTS.customDaysInput.value);
-        //     fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
-        // } else {
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
+            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
+        } else {
             fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
-        // }
+        }
         
         ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
     }
