@@ -67,7 +67,19 @@ class ViewmembersController extends Controller
                 });
             }
 
-            $query->orderBy('end_date', 'asc');
+            // Order by: active first (most recent registered), then expired (most recent), then revoked (most recent)
+            // Primary sort: status priority (active=1, expired=2, revoked=3)
+            // Secondary sort: most recently started/registered first (by start_date DESC)
+            $query->orderByRaw("CASE 
+                WHEN member_status = 'active' THEN 1 
+                WHEN member_status = 'expired' THEN 2 
+                WHEN member_status = 'revoked' THEN 3 
+                ELSE 4 
+            END")
+            ->orderBy('start_date', 'desc') // Sort by issued/start date (most recent first)
+            ->orderBy('created_at', 'desc') // Then by creation date as secondary sort
+            ->orderBy('id', 'desc'); // Additional sort by ID for consistency (newest first)
+            
             $members = $query->paginate(10)->appends($request->all());
 
             if ($request->ajax()) {
