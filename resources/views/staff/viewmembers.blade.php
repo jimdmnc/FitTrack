@@ -514,10 +514,10 @@
                 </button>
             </div>
 
-            <!-- Upgrade Form -->
-            <form id="renewalForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
+            <!-- Upgraf Form -->
+            <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
-                <!-- <input type="hidden" name="user_id" id="editUserId"> -->
+                <input type="hidden" name="user_id" id="editUserId">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- Member ID -->
@@ -880,112 +880,112 @@
     </div>
 
 
-    <!-- Revoke Member Modal -->
-    <div id="revokeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="revokeModalContent">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+<!-- Revoke Member Modal -->
+<div id="revokeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="revokeModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span class="truncate">Revoke Membership</span>
+            </h2>
+            <button onclick="closeRevokeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-red-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Form View -->
+        <div id="revokeFormView" class="block">
+            <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
+                @csrf
+                <input type="hidden" name="rfid_uid" id="revokeMemberID">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
+                    <input type="text" id="revokeConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
+                    <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
+                        <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
+                        <option value="Non-Payment of Fees">Non-Payment of Fees</option>
+                        <option value="Health or Medical Issues">Health or Medical Issues</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
+                    <input type="hidden" name="reason" id="finalReason">
+                </div>
+
+
+                <!-- Warning Box -->
+                <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    <span class="truncate">Revoke Membership</span>
-                </h2>
-                <button onclick="closeRevokeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-red-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <div class="ml-3 text-sm text-gray-300">
+                        <span class="font-medium text-red-400">Warning:</span> Revoking a membership will prevent the member from accessing the gym. This action can be reversed later if needed.
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                    <button type="button" onclick="closeRevokeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="showConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Revoke Member
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Confirmation View -->
+        <div id="confirmationView" class="hidden p-4 sm:p-6">
+            <!-- Warning Icon -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 bg-opacity-20 p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
+                </div>
+            </div>
+            
+            <!-- Confirmation Message -->
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold text-red-400 mb-2">Confirm Membership Revocation</h3>
+                <p class="text-gray-300 mb-2">You are about to revoke membership for:</p>
+                <p class="text-lg font-medium text-gray-200 mb-4" id="confirmMemberName">Member Name</p>
+                <p class="text-sm text-gray-400">This action will immediately block gym access for this member.</p>
+            </div>
+            
+            <!-- Confirmation Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-3 sm:space-y-0">
+                <button type="button" onclick="backToForm()" class="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Go Back
                 </button>
-            </div>
-
-            <!-- Main Form View -->
-            <div id="revokeFormView" class="block">
-                <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
-                    @csrf
-                    <input type="hidden" name="rfid_uid" id="revokeMemberID">
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
-                        <input type="text" id="revokeConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
-                        <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
-                            <option value="" disabled selected>Select a reason...</option>
-                            <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
-                            <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
-                            <option value="Non-Payment of Fees">Non-Payment of Fees</option>
-                            <option value="Health or Medical Issues">Health or Medical Issues</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
-                        <input type="hidden" name="reason" id="finalReason">
-                    </div>
-
-
-                    <!-- Warning Box -->
-                    <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <div class="ml-3 text-sm text-gray-300">
-                            <span class="font-medium text-red-400">Warning:</span> Revoking a membership will prevent the member from accessing the gym. This action can be reversed later if needed.
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
-                        <button type="button" onclick="closeRevokeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
-                            Cancel
-                        </button>
-                        <button type="button" onclick="showConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
-                            Revoke Member
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Confirmation View -->
-            <div id="confirmationView" class="hidden p-4 sm:p-6">
-                <!-- Warning Icon -->
-                <div class="flex justify-center mb-4">
-                    <div class="bg-red-600 bg-opacity-20 p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                </div>
-                
-                <!-- Confirmation Message -->
-                <div class="text-center mb-6">
-                    <h3 class="text-lg font-bold text-red-400 mb-2">Confirm Membership Revocation</h3>
-                    <p class="text-gray-300 mb-2">You are about to revoke membership for:</p>
-                    <p class="text-lg font-medium text-gray-200 mb-4" id="confirmMemberName">Member Name</p>
-                    <p class="text-sm text-gray-400">This action will immediately block gym access for this member.</p>
-                </div>
-                
-                <!-- Confirmation Buttons -->
-                <div class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-3 sm:space-y-0">
-                    <button type="button" onclick="backToForm()" class="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Go Back
-                    </button>
-                    <button type="button" onclick="confirmRevoke()" class="w-full sm:w-auto px-6 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Confirm Revocation
-                    </button>
-                </div>
+                <button type="button" onclick="confirmRevoke()" class="w-full sm:w-auto px-6 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirm Revocation
+                </button>
             </div>
         </div>
     </div>
+</div>
 <!-- End Revoke Member Modal -->
 <script>
 function toggleOtherReasonInput() {
@@ -1175,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-    // initialize();
+    initialize();
   // ===== RFID: Update Status Message =====
     function updateRfidStatus(type, message) {
         if (!ELEMENTS.rfidStatus) return;
@@ -1672,52 +1672,52 @@ if (ELEMENTS.clearRfidBtn) {
     }
 
     // ======== MODAL FUNCTIONS ========
-        function openViewModal(memberID, name, membershipType, startDate, status) {
-            document.getElementById('viewMemberName').textContent = name;
-            document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-            document.getElementById('viewMembershipType').textContent = membershipType;
-            document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+    function openViewModal(memberID, name, membershipType, startDate, status) {
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
 
-            const start = new Date(startDate);
-            let endDate = new Date(start);
+    const start = new Date(startDate);
+    let endDate = new Date(start);
 
-            // Set time to 23:59:59 of the previous day for all cases
-            switch(membershipType.toLowerCase()) {
-                case 'session':
-                case 'custom':
-                    // 1-day pass expires at 23:59:59 of the same day
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'weekly':
-                    // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
-                    endDate.setDate(start.getDate() + 6);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'monthly':
-                    // 1 month = start date + 1 month minus 1 day
-                    endDate.setMonth(start.getMonth() + 1);
-                    endDate.setDate(start.getDate() - 1);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'annual':
-                    // 1 year = start date + 1 year minus 1 day
-                    endDate.setFullYear(start.getFullYear() + 1);
-                    endDate.setDate(start.getDate() - 1);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                default:
-                    endDate = 'N/A';
-            }
+    // Set time to 23:59:59 of the previous day for all cases
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'weekly':
+            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
+            endDate.setDate(start.getDate() + 6);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'monthly':
+            // 1 month = start date + 1 month minus 1 day
+            endDate.setMonth(start.getMonth() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'annual':
+            // 1 year = start date + 1 year minus 1 day
+            endDate.setFullYear(start.getFullYear() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        default:
+            endDate = 'N/A';
+    }
 
-            document.getElementById('viewEndDate').textContent = 
-                typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+    document.getElementById('viewEndDate').textContent = 
+        typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
 
-            const statusBadge = document.getElementById('viewStatus');
-            statusBadge.textContent = status;
-            statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+    const statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
 
-            animateModalOpen('viewMemberModal', 'viewModalContent');
-        }
+    animateModalOpen('viewMemberModal', 'viewModalContent');
+}
 
     function closeViewModal() {
         animateModalClose('viewMemberModal', 'viewModalContent');
