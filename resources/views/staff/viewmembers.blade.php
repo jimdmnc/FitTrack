@@ -374,15 +374,7 @@
                                                     <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">View</span>
                                                 </button>
                                             <!-- Revoke button still available even if expired -->
-                                            <button 
-                                                onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
-                                                class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
-                                                title="Revoke membership">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                                                </svg>
-                                                <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
-                                            </button>
+                                          
                                         </div>
 
                                     @elseif($member->member_status == 'revoked')
