@@ -745,24 +745,31 @@ function initializeAttendancePage() {
             }
 
             if (paginationContainer && data.pagination) {
+                // Update pagination HTML first
                 paginationContainer.innerHTML = data.pagination;
 
-                // Update the visible total count element. Prefer server-formatted value when available.
-                const totalElem = paginationContainer.querySelector('.pagination-total-count') || document.querySelector('.pagination-total-count');
-                if (totalElem) {
-                    if (typeof data.total_formatted !== 'undefined') {
-                        totalElem.textContent = data.total_formatted;
-                    } else if (typeof data.total !== 'undefined') {
-                        try {
-                            totalElem.textContent = Number(data.total).toLocaleString();
-                        } catch (e) {
-                            totalElem.textContent = data.total;
-                        }
-                    } else {
-                        // Fallback: read whatever the rendered pagination contains
-                        const parsed = paginationContainer.querySelector('.pagination-total-count');
-                        if (parsed) totalElem.textContent = parsed.textContent;
+                // Update the total count element after DOM is updated
+                // Use multiple methods to ensure DOM is ready and total is updated
+                const updateTotal = () => {
+                    const totalElem = paginationContainer.querySelector('.pagination-total-count');
+                    if (totalElem && typeof data.total !== 'undefined') {
+                        // Format the number with commas (matching server-side number_format)
+                        const formattedTotal = Number(data.total).toLocaleString();
+                        totalElem.textContent = formattedTotal;
+                        return true;
                     }
+                    return false;
+                };
+
+                // Try immediately
+                if (!updateTotal()) {
+                    // If not found, try after DOM update
+                    requestAnimationFrame(() => {
+                        if (!updateTotal()) {
+                            // Final fallback after a short delay
+                            setTimeout(updateTotal, 50);
+                        }
+                    });
                 }
             }
 

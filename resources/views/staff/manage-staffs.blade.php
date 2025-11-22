@@ -296,16 +296,18 @@
 
 <!-- Edit Staff Modal -->
 <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-200">Edit Staff</h3>
-            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+    <div class="bg-[#121212] p-0 sm:p-0 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] modal-content flex flex-col">
+        <div class="px-4 sm:px-6 py-3 border-b border-gray-800 bg-[#121212] rounded-t-lg">
+            <div class="flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-200">Edit Staff</h3>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
-        <form id="editStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-lg">
+        <form id="editStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-b-lg flex-1 overflow-y-auto">
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
