@@ -206,8 +206,8 @@
                 <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required aria-describedby="membership_type_error">
                     <option value="" selected disabled>Select Membership Type</option>
                     <option value="custom" {{ old('membership_type') == 'custom' ? 'selected' : '' }}>Custom Days (₱{{ number_format($prices['session']->amount ?? 60, 2) }}/day)</option>
-                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
-                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
+                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Week (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
+                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
                     <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days, ₱{{ number_format($prices['annual']->amount ?? 10000, 2) }})</option>
                 </select>
                 @error('membership_type')
@@ -260,130 +260,31 @@
                 <span class="text-xs text-gray-500 mt-1 block">Auto-calculated based on membership type</span>
             </div>
 
-            <!-- Renew Member Modal -->
-<div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                </svg>
-                <span class="truncate">Renew Membership</span>
-            </h2>
-            <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200" aria-label="Close modal">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-
-        <!-- Renew Form -->
-        <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
-            @csrf
-            <input type="hidden" name="user_id" id="editUserId">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                <!-- Member ID (Current RFID) -->
-                <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Current Member ID</label>
-                    <input type="text" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                </div>
-
-                <!-- Member Name -->
-                <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Name</label>
-                    <input type="text" id="editMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                </div>
-
-                <!-- Membership Type -->
-                <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Membership Type <span class="text-red-500">*</span></label>
-                    <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                        <option value="" selected disabled>Select Membership Type</option>
-                        <option value="7" data-price="350">Weekly (7 days)</option>
-                        <option value="30" data-price="999">Monthly (30 days)</option>
-                        <option value="365" data-price="8999">Annual (365 days)</option>
-                        <option value="1" data-rfid-required="true">Lifetime Membership (RFID Card Required)</option>
-                    </select>
-                    @error('membership_type')
-                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                    @enderror
-                </div>
-
-                <!-- RFID Card Scanner - Shows ONLY when membership_type = 1 -->
-                <div class="w-full md:col-span-2 hidden" id="rfidRenewContainer">
-                    <label class="block text-gray-200 font-medium mb-2">Scan New RFID Card <span class="text-red-500">*</span></label>
-                    <div class="relative">
-                        <input id="renew_rfid_uid" name="uid" type="text" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Tap card to renew with new RFID..." readonly required>
-                        <div class="absolute inset-y-0 right-3 flex items-center">
-                            <div id="rfid-loading-renew" class="animate-pulse flex items-center">
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
-                            </div>
-                            <button type="button" onclick="clearRenewRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" id="clearRenewRfidBtn" aria-label="Clear RFID">
-                                ×
-                            </button>
+            <div class="rfid-container">
+                <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
+                    <div class="absolute inset-y-0 right-3 flex items-center">
+                        <div id="rfid-loading" class="animate-pulse flex items-center">
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
                         </div>
+                        <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                            ×
+                        </button>
                     </div>
-                    <div id="rfid_status_renew" class="mt-2 text-sm text-orange-400 flex items-center font-medium" aria-live="polite">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        <span id="rfid_message_renew">Please tap the new RFID card...</span>
-                    </div>
-                    @error('uid')
-                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
-                    @enderror
                 </div>
-
-                <!-- Renewal Date -->
-                <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Renewal Start Date <span class="text-red-500">*</span></label>
-                    <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                </div>
-
-                <!-- Expiration Date -->
-                <div class="w-full">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Expiration Date</label>
-                    <input type="text" id="endDate" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                </div>
-
-                <!-- Membership Fee -->
-                <div class="w-full md:col-span-2">
-                    <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1">Membership Fee (₱)</label>
-                    <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none font-bold text-lg text-[#ff5722]" readonly>
-                </div>
-            </div>
-
-            <!-- Summary Box -->
-            <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-4 rounded-lg border border-[#ff5722] border-opacity-30">
-                <div class="flex items-start">
-                    <svg class="h-5 w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <div class="ml-3 text-sm text-gray-300">
-                        <span class="font-medium">Summary:</span> <span id="membershipSummaryText">Select a membership type to continue.</span>
-                    </div>
+                    Please Tap Your Card...
                 </div>
+                @error('uid')
+                    <span id="uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
             </div>
-
-            <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6 pt-4 border-t border-gray-700">
-                <button type="button" onclick="closeRenewModal()" class="px-6 py-2.5 bg-[#444444] hover:bg-[#555] text-gray-200 rounded-lg transition">
-                    Cancel
-                </button>
-                <button type="submit" id="submitRenewal" class="px-6 py-2.5 bg-[#ff5722] hover:bg-[#f97316] text-white rounded-lg font-medium flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    Complete Renewal
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
         </div>
 
         <!-- Account Section -->
