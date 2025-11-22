@@ -77,7 +77,8 @@ class AttendanceController extends Controller
         if ($request->ajax()) {
             return response()->json([
                 'table' => view('partials.attendance_table', compact('attendances'))->render(),
-                'pagination' => $attendances->links('vendor.pagination.default')->render(),
+                'pagination' => view('vendor.pagination.default', ['paginator' => $attendances])->render(),
+                'total' => $attendances->total(),
             ]);
         }
 

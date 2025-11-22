@@ -6,6 +6,7 @@
     .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            padding-bottom: 0.75rem;
         }
         
         /* Custom scrollbar for tables */
@@ -91,6 +92,11 @@
                 white-space: nowrap;
             }
         }
+
+        /* Ensure the table expands to its content width so the scroll container works reliably */
+        .table-responsive table {
+            min-width: max-content;
+        }
 </style>
 <div class="bg-[#121212] p-2">
     <!-- Header Section with Gradient Card -->
@@ -131,13 +137,38 @@
                             <option value="gcash">Gcash</option>
                         </select>
 
+                        <!-- Membership Type Filter -->
+                        <select id="membershipFilter" name="membership_type" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
+                            <option value="">All Memberships</option>
+                            <option value="session" {{ request('membership_type') == 'session' ? 'selected' : '' }}>Session</option>
+                            <option value="week" {{ request('membership_type') == 'week' ? 'selected' : '' }}>Weekly</option>
+                            <option value="month" {{ request('membership_type') == 'month' ? 'selected' : '' }}>Monthly</option>
+                            <option value="annual" {{ request('membership_type') == 'annual' ? 'selected' : '' }}>Annual</option>
+                        </select>
                         <!-- Time Filter -->
                         <select name="time_filter" id="timeFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
                             <option value="">All Time</option>
                             <option value="today" {{ request('time_filter') == 'today' ? 'selected' : '' }}>Today</option>
                             <option value="week" {{ request('time_filter') == 'week' ? 'selected' : '' }}>This Week</option>
                             <option value="month" {{ request('time_filter') == 'month' ? 'selected' : '' }}>This Month</option>
+                            <option value="custom" {{ request('time_filter') == 'custom' ? 'selected' : '' }}>Custom Range</option>
                         </select>
+
+                        
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Range Inputs (placed under filters) -->
+            <div id="customRangeContainer" class="mt-3 hidden">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <label for="startDate" class="sr-only">Start Date</label>
+                        <input type="date" id="startDate" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date" value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
+                    </div>
+                    <div class="relative">
+                        <label for="endDate" class="sr-only">End Date</label>
+                        <input type="date" id="endDate" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
                     </div>
                 </div>
             </div>
@@ -149,7 +180,7 @@
                         <tr>
                             <th class="px-6 py-4 text-left">#</th>
                             <th class="px-6 py-4 text-left">Customer</th>
-                            <!-- <th class="px-6 py-4 text-left">Membership</th> -->
+                            <th class="px-6 py-4 text-left">Membership Type</th>
                             <th class="px-6 py-4 text-left">Amount</th>
                             <th class="px-6 py-4 text-left">Method</th>
                             <th class="px-6 py-4 text-left">Activation</th>
@@ -159,7 +190,7 @@
                     <tbody class="divide-y divide-black">
                         @if($payments->isEmpty())
                             <tr class="bg-[#1e1e1e]">
-                                <td colspan="7" class="px-6 py-12 text-center">
+                                <td colspan="6" class="px-6 py-12 text-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                     </svg>
@@ -180,21 +211,23 @@
                                         </div>
                                     </div>
                                 </td>
-                                <!-- <td class="px-6 py-4 whitespace-nowrap">
+                                <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2.5 py-1 text-xs font-medium rounded-full
                                         @if(strtolower(optional($payment->user)->membership_type_name ?? '') == 'annual')
                                             bg-purple-900 text-purple-200
-                                        @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'week')
+                                        @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'weekly')
                                             bg-green-900 text-green-200
-                                        @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'month')
+                                        @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'monthly')
                                             bg-blue-900 text-blue-200
                                         @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'session')
                                             bg-yellow-900 text-yellow-200
+                                        @else
+                                            bg-gray-800 text-gray-300
                                         @endif
                                     ">
                                         {{ optional($payment->user)->membership_type_name ?? 'N/A' }}
                                     </span>
-                                </td> -->
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-200">₱{{ number_format($payment->amount, 2) }}</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
@@ -236,7 +269,8 @@
                 {{ $payments->appends([
                     'search' => request('search'), 
                     'payment_method' => request('payment_method'), 
-                    'time_filter' => request('time_filter')
+                    'time_filter' => request('time_filter'),
+                    'membership_type' => request('membership_type')
                 ])->links('vendor.pagination.default') }}
             </div>
         </div>
@@ -247,8 +281,12 @@
     // Define the input and select elements
     const paymentMethodFilter = $('#paymentMethodFilter');
     const timeFilter = $('#timeFilter');
+    const membershipFilter = $('#membershipFilter');
     const searchInput = $('input[type="search"]');
     const clearSearchButton = $('#clearSearch');
+    const startDateInput = $('#startDate');
+    const endDateInput = $('#endDate');
+    const customRangeContainer = $('#customRangeContainer');
     
     // Debounce function to prevent too many AJAX requests while typing
     let debounceTimer;
@@ -264,8 +302,43 @@
     });
 
     // Listen for changes in the filters
-    paymentMethodFilter.add(timeFilter).on('change', function () {
+    paymentMethodFilter.add(membershipFilter).on('change', function () {
         fetchPayments();
+    });
+
+    // Show/hide custom range inputs when time filter changes
+    timeFilter.on('change', function() {
+        const val = $(this).val();
+        if (val === 'custom') {
+            // default dates to today if empty
+            const today = new Date().toISOString().slice(0,10);
+            if (!startDateInput.val()) startDateInput.val(today);
+            if (!endDateInput.val()) endDateInput.val(today);
+            customRangeContainer.removeClass('hidden');
+        } else {
+            customRangeContainer.addClass('hidden');
+        }
+        // trigger fetch (when custom, start/end will be appended)
+        fetchPayments();
+    });
+
+    // Auto-fetch when dates change (no Apply button)
+    startDateInput.on('change', function() {
+        // if time filter isn't custom, toggle it
+        if (timeFilter.val() !== 'custom') timeFilter.val('custom').trigger('change');
+        fetchPayments();
+    });
+    endDateInput.on('change', function() {
+        if (timeFilter.val() !== 'custom') timeFilter.val('custom').trigger('change');
+        fetchPayments();
+    });
+
+    // Improve datepicker UX: open native picker on focus when supported
+    startDateInput.on('focus', function() {
+        try { if (this.showPicker) this.showPicker(); } catch (e) {}
+    });
+    endDateInput.on('focus', function() {
+        try { if (this.showPicker) this.showPicker(); } catch (e) {}
     });
 
     // Function to fetch payments based on search and filters
@@ -273,18 +346,29 @@
         const search = searchInput.val();
         const paymentMethod = paymentMethodFilter.val();
         const time = timeFilter.val();
+        const membershipType = membershipFilter.val();
         
         // Use provided URL or default to the route
         const requestUrl = url || '{{ route("staff.paymentTracking") }}';
 
         // Show loading state in table
-        $('tbody').html('<tr><td colspan="7" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
+        $('tbody').html('<tr><td colspan="6" class="text-center py-8"><div class="flex justify-center items-center"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-orange-500"></div></div></td></tr>');
         
         // Prepare the parameters for the request
         const params = new URLSearchParams();
         if (search) params.append('search', search);
         if (paymentMethod) params.append('payment_method', paymentMethod);
-        if (time) params.append('time_filter', time);
+        if (time === 'custom') {
+            // include the time_filter so backend recognizes a custom range
+            params.append('time_filter', 'custom');
+            const start = startDateInput.val();
+            const end = endDateInput.val();
+            if (start) params.append('start_date', start);
+            if (end) params.append('end_date', end);
+        } else if (time) {
+            params.append('time_filter', time);
+        }
+        if (membershipType) params.append('membership_type', membershipType);
 
         // Construct the full URL with parameters
         const fullUrl = requestUrl + (requestUrl.includes('?') ? '&' : '?') + params.toString();
@@ -307,7 +391,7 @@
                 window.history.pushState({}, '', fullUrl);
             },
             error: function () {
-                $('tbody').html('<tr><td colspan="7" class="text-center py-8 text-red-500">Error loading payments</td></tr>');
+                $('tbody').html('<tr><td colspan="6" class="text-center py-8 text-red-500">Error loading payments</td></tr>');
             }
         });
     }
@@ -334,7 +418,18 @@
         paymentMethodFilter.val(urlParams.get("payment_method"));
     }
     if (urlParams.has("time_filter")) {
-        timeFilter.val(urlParams.get("time_filter"));
+        const tf = urlParams.get("time_filter");
+        if (tf === 'custom') {
+            timeFilter.val('custom');
+            customRangeContainer.removeClass('hidden');
+            if (urlParams.has('start_date')) startDateInput.val(urlParams.get('start_date'));
+            if (urlParams.has('end_date')) endDateInput.val(urlParams.get('end_date'));
+        } else {
+            timeFilter.val(tf);
+        }
+    }
+    if (urlParams.has("membership_type")) {
+        membershipFilter.val(urlParams.get("membership_type"));
     }
     if (urlParams.has("search")) {
         searchInput.val(urlParams.get("search"));

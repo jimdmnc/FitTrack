@@ -4,6 +4,8 @@
             <!-- Page X of Y info - Top on mobile, Left on desktop -->
             <div class="text-sm text-gray-200 font-semibold order-1 md:order-none">
                 Page <span class="font-medium text-[#ff5722]">{{ $paginator->currentPage() }}</span> of {{ $paginator->lastPage() > 0 ? $paginator->lastPage() : 1 }}
+                <span class="mx-2 text-gray-400">•</span>
+                Total <span class="font-medium text-[#ff5722]"><span class="pagination-total-count">{{ number_format($paginator->total()) }}</span></span>
             </div>
             
             <!-- Pagination Controls - Centered -->

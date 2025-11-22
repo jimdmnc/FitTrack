@@ -818,13 +818,8 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                        @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
-                        @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
-                        @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
-                        @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
-                        @endif">
-                        {{ $member->getMembershipType() }}
-                    </span>
+                        >
+                        @include('components.membership-badge', ['type' => $member->membership_type, 'label' => $member->getMembershipType()])
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                     <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 

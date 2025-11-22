@@ -28,18 +28,12 @@
 
             <td class="px-6 py-4 whitespace-nowrap">
                 @if($attendance->user)
-                <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    @if($attendance->user->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
-                    @elseif($attendance->user->getMembershipType() == 'Week') bg-green-900 text-green-200
-                    @elseif($attendance->user->getMembershipType() == 'Month') bg-blue-900 text-blue-200
-                    @elseif($attendance->user->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
-                    @endif">
-                    {{ $attendance->user->getMembershipType() }}
-                </span>
+                    {{-- centralized membership badge --}}
+                    @include('components.membership-badge', ['type' => $attendance->user->membership_type, 'label' => $attendance->user->getMembershipType()])
                 @else
-                <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-200">
-                    Unknown
-                </span>
+                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-200">
+                        Unknown
+                    </span>
                 @endif
             </td>
 
@@ -110,3 +104,4 @@
         @endforelse
     </tbody>
 </table>
+ 

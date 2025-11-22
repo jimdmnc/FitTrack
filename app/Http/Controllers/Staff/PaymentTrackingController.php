@@ -29,6 +29,24 @@ class PaymentTrackingController extends Controller
             $query->where('payment_method', $request->payment_method);
         }
 
+        // Filter by membership type (session, week, month, annual)
+        if ($request->filled('membership_type')) {
+            $membership = strtolower($request->membership_type);
+            $map = [
+                'session' => 1,
+                'week' => 7,
+                'month' => 30,
+                'annual' => 365,
+            ];
+
+            if (isset($map[$membership])) {
+                $code = $map[$membership];
+                $query->whereHas('user', function($q) use ($code) {
+                    $q->where('membership_type', $code);
+                });
+            }
+        }
+
         // Filter by time range
         if ($request->filled('time_filter')) {
             $today = Carbon::today();
