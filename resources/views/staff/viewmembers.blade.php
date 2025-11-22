@@ -1876,7 +1876,7 @@ if (ELEMENTS.clearRfidBtn) {
         fetchMembers();
     });
 
-    initialize();
+    // initialize();
 });
 
 </script>
