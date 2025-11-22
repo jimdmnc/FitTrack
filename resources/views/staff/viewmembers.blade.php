@@ -583,7 +583,7 @@
                     <div class="rfid-container">
                 <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
                 <div class="relative">
-                    <input id="rfid_uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
+                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
                     <div class="absolute inset-y-0 right-3 flex items-center">
                         <div id="rfid-loading" class="animate-pulse flex items-center">
                             <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
@@ -1125,7 +1125,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
     const ELEMENTS = {
-        uidInput: document.getElementById('uid'),
+        uidInput: document.getElementById('rfid_uid'),
         rfidStatus: document.getElementById('rfid_status'),
         clearRfidBtn: document.getElementById('clearRfidBtn'),
 
