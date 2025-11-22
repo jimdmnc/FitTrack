@@ -353,30 +353,17 @@
                                     </div>
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                      @if(in_array($member->membership_type, ['7', '30', '365']))
-                                                <button 
-                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
-                                                    title="Renew membership">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                    </svg>
-                                                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
-                                                </button>
-                                            @endif
-                                        @if(in_array($member->membership_type, [1]))
-                                             <!-- Upgrade to RFID Membership Button -->
-                                                <button 
-                                                onclick="openUpgradeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-
-                                                    class="inline-flex items-center px-3 py-1.5 bg-purple-900 hover:bg-purple-700 hover:translate-y-[-2px] text-purple-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
-                                                    title="Upgrade to RFID Card Membership">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                                                    </svg>
-                                                    Upgrade
-                                                </button>
-                                            @endif
+                                        <button 
+                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Renew expired membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
+                                        </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
                                             class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
@@ -496,119 +483,6 @@
 
 </section>
 
-    <!-- Upgrade Member Modal -->
-    <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="editModalContent">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    <span class="truncate">Upgrade Membership</span>
-                </h2>
-                <button onclick="closeUpgradeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Renew Form -->
-            <form id="renewalForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
-                @csrf
-                <input type="hidden" name="user_id" id="editUserId">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                    <!-- Member ID -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
-                        <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                    
-                    <!-- Member Name -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
-                        <input type="text" id="editMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                    
-                    <!-- Membership Type -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
-                        <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                            <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
-                            <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
-                            <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
-                            <option value="365" data-price="0">Annual (365 days, Loading...)</option>
-                        </select>
-                        <div id="membershipTypeError" class="text-red-500 text-xs mt-1 hidden">Failed to load membership prices. Please try again.</div>
-                        @error('membership_type')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    
-                    <!-- Custom Days -->
-                    <!-- <div class="w-full hidden" id="customDaysContainer">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
-                        <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
-                        @error('custom_days')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div> -->
-                    
-                    <!-- Renewal Date -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date <span class="text-red-500">*</span></label>
-                        <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                        @error('start_date')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    
-                    <!-- Expiration Date -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
-                        <input type="text" id="endDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                        @error('end_date')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Membership Fee -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
-                        <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                </div>
-                
-                <!-- Summary Box -->
-                <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-3 sm:p-4 rounded-lg flex items-start border border-[#ff5722] border-opacity-30">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
-                        <span class="font-medium">Membership Summary:</span> <span id="membershipSummaryText">Select membership type to see details.</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
-                    <button type="button" onclick="closeUpgradeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submitRenewal" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Complete Renewal
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- End Renew Member Modal -->
-
 
     <!-- Renew Member Modal -->
     <div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
@@ -651,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
+                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -663,13 +537,13 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <!-- <div class="w-full hidden" id="customDaysContainer">
+                    <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div> -->
+                    </div>
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
@@ -1106,8 +980,8 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
-        // customDaysInput: document.getElementById('customDays'),
-        // customDaysContainer: document.getElementById('customDaysContainer'),
+        customDaysInput: document.getElementById('customDays'),
+        customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
@@ -1154,11 +1028,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                // 'custom': { 
-                //     fee: data.session || 0, 
-                //     name: 'Custom Days', 
-                //     perDay: true 
-                // },
+                'custom': { 
+                    fee: data.session || 0, 
+                    name: 'Custom Days', 
+                    perDay: true 
+                },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1187,21 +1061,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
-        // if (prices.session) {
-        //     options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
-        //     options[1].setAttribute('data-price', prices.session);
-        // }
+        if (prices.session) {
+            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+            options[1].setAttribute('data-price', prices.session);
+        }
         if (prices.weekly) {
-            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[1].setAttribute('data-price', prices.weekly);
+            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.monthly);
+            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.annual);
+            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[4].setAttribute('data-price', prices.annual);
         }
     }
 
@@ -1550,12 +1424,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // 1-day pass expires at 23:59:59 of the same day
             endDate.setHours(23, 59, 59, 0);
             break;
-        case 'weekly':
+        case 'week':
             // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
             endDate.setDate(start.getDate() + 6);
             endDate.setHours(23, 59, 59, 0);
             break;
-        case 'monthly':
+        case 'month':
             // 1 month = start date + 1 month minus 1 day
             endDate.setMonth(start.getMonth() + 1);
             endDate.setDate(start.getDate() - 1);
@@ -1609,38 +1483,9 @@ document.addEventListener('DOMContentLoaded', function() {
         animateModalOpen('renewMemberModal', 'editModalContent');
         updateAllDetails();
     }
+
     function closeRenewModal() {
         animateModalClose('renewMemberModal', 'editModalContent');
-    }
-
-    function openUpgradeModal(memberID, name, email, phone, endDate) {
-        document.getElementById("editMemberID").value = memberID;
-        document.getElementById("editMemberName").value = name;
-        
-        if (document.getElementById("editEmail") && email) {
-            document.getElementById("editEmail").value = email;
-        }
-        
-        if (document.getElementById("editPhone") && phone) {
-            document.getElementById("editPhone").value = phone;
-        }
-
-        if (document.getElementById("startDate")) {
-            document.getElementById("startDate").value = todayFormatted;
-        }
-
-        if (ELEMENTS.customDaysInput) {
-            ELEMENTS.customDaysInput.value = '';
-        }
-
-        toggleCustomDays();
-        animateModalOpen('upgradeMemberModal', 'editModalContent');
-        updateAllDetails();
-    }
-
-
-    function closeRenewModal() {
-        animateModalClose('upgradeMemberModal', 'editModalContent');
     }
     
     function openRevokeModal(memberID, memberName) {
@@ -1721,8 +1566,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
-    window.openUpgradeModal = openUpgradeModal;
-    window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
