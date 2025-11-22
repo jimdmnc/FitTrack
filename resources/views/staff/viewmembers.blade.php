@@ -1074,8 +1074,8 @@ document.addEventListener('DOMContentLoaded', function() {
             options[2].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[2].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.annual);
+            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.annual);
         }
     }
 
