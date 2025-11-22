@@ -209,7 +209,7 @@
                                     id="reportType" 
                                     class="appearance-none bg-[#1e1e1e] border border-[#666666] hover:border-[#ff5722] rounded-md pl-3 pr-10 py-2 text-gray-200 w-full focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors">
                                     <option value="members">Members Report</option>
-                                    <option value="payments">Payments Report</option>
+                                    <option value="payments">Collection Report</option>
                                 </select>
                             </div>
                         </div>
@@ -220,7 +220,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9V2h12v7m-9 0H6a2 2 0 00-2 2v5h16v-5a2 2 0 00-2-2h-3m-9 0v5m0 0v4h12v-4m-3 4v1m-6-1v1" />
                                 </svg>
-                                Print
+                                Generate Report
                             </button>
                         </div>
                     </div>
@@ -681,7 +681,7 @@ function updateAllTimeOption() {
 
         // Prevent "All Time" filter for Payments
         if (selectedType === 'payments' && selectedFilter === '') {
-            showAlert('All Time filter is not available for Payments report', 'error');
+            showAlert('All Time filter is not available for Collection report', 'error');
             return;
         }
 

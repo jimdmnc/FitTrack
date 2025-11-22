@@ -17,8 +17,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     // Define the membership types
     const MEMBERSHIP_TYPES = [
-        7 => 'Week',
-        30 => 'Month',
+        7 => 'Weekly',
+        30 => 'Monthly',
         365 => 'Annual',
         1 => 'Session',
         // 'custom' => 'Custom Days', // New option

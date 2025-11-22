@@ -45,6 +45,7 @@ class ViewmembersController extends Controller
         try {
             $searchQuery = $request->input('search');
             $status = $request->input('status', 'all');
+            $membershipType = $request->input('membership_type', 'all');
 
             // Update status for all relevant members
             $allMembers = User::whereIn('role', ['user', 'userSession'])->get();
@@ -59,6 +60,11 @@ class ViewmembersController extends Controller
                 $query->where('member_status', $status);
             }
 
+            // Filter by membership type if provided (supports numeric codes and 'custom')
+            if ($membershipType !== 'all') {
+                $query->where('membership_type', $membershipType);
+            }
+
             if ($searchQuery) {
                 $query->where(function ($q) use ($searchQuery) {
                     $q->where('first_name', 'like', "%{$searchQuery}%")
@@ -67,7 +73,8 @@ class ViewmembersController extends Controller
                 });
             }
 
-            $query->orderBy('end_date', 'asc');
+            // Show recently registered members first
+            $query->orderBy('created_at', 'desc');
             $members = $query->paginate(10)->appends($request->all());
 
             if ($request->ajax()) {

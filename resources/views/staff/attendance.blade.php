@@ -219,18 +219,11 @@
                         <!-- Membership Column -->
                         <td class="px-6 py-4 whitespace-nowrap">
                             @if($attendance->user)
-                            <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                @if($attendance->user->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
-                                @elseif($attendance->user->getMembershipType() == 'Week') bg-green-900 text-green-200
-                                @elseif($attendance->user->getMembershipType() == 'Month') bg-blue-900 text-blue-200
-                                @elseif($attendance->user->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
-                                @endif">
-                                {{ $attendance->user->getMembershipType() }}
-                            </span>
+                                @include('components.membership-badge', ['type' => $attendance->user->membership_type, 'label' => $attendance->user->getMembershipType()])
                             @else
-                            <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-200">
-                                Unknown
-                            </span>
+                                <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-700 text-gray-200">
+                                    Unknown
+                                </span>
                             @endif
                         </td>
                         
@@ -317,17 +310,19 @@
         <!-- Calendar Modal -->
         <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
             <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
-                    <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                <div class="sticky top-0 z-20 bg-[#1e1e1e] -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-b border-gray-800">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
+                        <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Modal Details -->
-                <div class="mb-6">
+                <div class="mb-6 pt-3">
                     <div class="flex items-center space-x-4 mb-4">
                         <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
                             <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
@@ -706,12 +701,31 @@ function initializeAttendancePage() {
             return response.json();
         })
         .then(data => {
+            console.log('AJAX attendance response:', data);
             if (tableContainer) {
                 tableContainer.innerHTML = data.table;
             }
 
             if (paginationContainer && data.pagination) {
                 paginationContainer.innerHTML = data.pagination;
+
+                // Update the visible total count element. Prefer server-formatted value when available.
+                const totalElem = paginationContainer.querySelector('.pagination-total-count') || document.querySelector('.pagination-total-count');
+                if (totalElem) {
+                    if (typeof data.total_formatted !== 'undefined') {
+                        totalElem.textContent = data.total_formatted;
+                    } else if (typeof data.total !== 'undefined') {
+                        try {
+                            totalElem.textContent = Number(data.total).toLocaleString();
+                        } catch (e) {
+                            totalElem.textContent = data.total;
+                        }
+                    } else {
+                        // Fallback: read whatever the rendered pagination contains
+                        const parsed = paginationContainer.querySelector('.pagination-total-count');
+                        if (parsed) totalElem.textContent = parsed.textContent;
+                    }
+                }
             }
 
             // Reinitialize event listeners for the new content

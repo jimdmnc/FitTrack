@@ -197,18 +197,34 @@
             <!-- Filter Dropdown -->
             <div class="w-full sm:w-auto">
                 <form action="{{ route('staff.viewmembers') }}" method="GET" class="inline-block w-full sm:w-auto">
-                    <input type="hidden" name="page" value="1"> <!-- Add this line -->
-                    <select 
-                        name="status" 
-                        onchange="this.form.submit()" 
-                        class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
-                        aria-label="Filter members by status"
-                    >
-                        <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Members</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active Members</option>
-                        <option value="expired" {{ request('status') == 'expired' ? 'selected' : '' }}>Expired Members</option>
-                        <option value="revoked" {{ request('status') == 'revoked' ? 'selected' : '' }}>Revoked Members</option>
-                    </select>
+                    <input type="hidden" name="page" value="1">
+                    <div class="flex gap-2 items-center">
+                        <select 
+                            id="statusFilter"
+                            name="status"
+                            class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-4 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
+                            aria-label="Filter members by status"
+                        >
+                            <option value="all" {{ request('status', 'all') == 'all' ? 'selected' : '' }}>All Members</option>
+                            <option value="active" {{ request('status', 'all') == 'active' ? 'selected' : '' }}>Active Members</option>
+                            <option value="expired" {{ request('status', 'all') == 'expired' ? 'selected' : '' }}>Expired Members</option>
+                            <option value="revoked" {{ request('status', 'all') == 'revoked' ? 'selected' : '' }}>Revoked Members</option>
+                        </select>
+
+                        <select
+                            id="membershipFilter"
+                            name="membership_type"
+                            class="w-full sm:w-auto appearance-none bg-[#212121] border border-[#666666] hover:border-[#ff5722] px-3 py-2 pr-8 rounded-md text-sm text-gray-200 focus:outline-none focus:ring-1 focus:ring-[#ff5722] focus:border-[#ff5722]"
+                            aria-label="Filter by membership type"
+                        >
+                            <option value="all" {{ request('membership_type', 'all') == 'all' ? 'selected' : '' }}>All Memberships</option>
+                            <option value="1" {{ request('membership_type', 'all') == '1' ? 'selected' : '' }}>Session</option>
+                            <option value="7" {{ request('membership_type', 'all') == '7' ? 'selected' : '' }}>Weekly</option>
+                            <option value="30" {{ request('membership_type', 'all') == '30' ? 'selected' : '' }}>Monthly</option>
+                            <option value="365" {{ request('membership_type', 'all') == '365' ? 'selected' : '' }}>Annual</option>
+                            <!-- 'Custom' option removed per request -->
+                        </select>
+                    </div>
                 </form>
             </div>
 
@@ -305,14 +321,7 @@
                             <td class="px-4 py-4 text-sm text-gray-200">{{ $member->rfid_uid }}</td>
 
                             <td class="px-4 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
-                                    @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
-                                    @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
-                                    @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
-                                    @endif">
-                                    {{ $member->getMembershipType() }}
-                                </span>
+                                @include('components.membership-badge', ['type' => $member->membership_type, 'label' => $member->getMembershipType()])
                             </td>
                             <td class="px-4 py-4 text-sm text-gray-200">{{ \Carbon\Carbon::parse($member->end_date)->format('M d, Y') }}</td>
                             <td class="px-4 py-4 whitespace-nowrap">
@@ -418,7 +427,7 @@
                                         </button>
                                         <button 
                                             onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group border border-green-900 shadow"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
@@ -477,7 +486,8 @@
             <div class="mt-4">
             {{ $members->appends([
                 'search' => request('search'),
-                'status' => request('status'),
+                'status' => request('status', 'all'),
+                'membership_type' => request('membership_type', 'all'),
             ])->links('vendor.pagination.default') }}
             </div>
 
@@ -976,6 +986,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const ELEMENTS = {
         searchInput: document.querySelector('input[name="search"]'),
         statusSelect: document.querySelector('select[name="status"]'),
+        membershipFilter: document.querySelector('select[name="membership_type"]'),
         tableContainer: document.querySelector('.glass-card .overflow-x-auto'),
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
@@ -1158,6 +1169,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 fetchMembers();
             });
         }
+
+        if (ELEMENTS.membershipFilter) {
+            ELEMENTS.membershipFilter.addEventListener('change', function(e) {
+                e.preventDefault();
+                const currentUrl = new URL(window.location.href);
+                if (this.value && this.value !== 'all') {
+                    currentUrl.searchParams.set('membership_type', this.value);
+                } else {
+                    currentUrl.searchParams.delete('membership_type');
+                }
+                currentUrl.searchParams.set('page', '1');
+                window.history.pushState({}, '', currentUrl.toString());
+                fetchMembers();
+            });
+        }
         
         if (ELEMENTS.membershipTypeSelect) {
             ELEMENTS.membershipTypeSelect.addEventListener('change', function() {
@@ -1219,6 +1245,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
                         url.searchParams.set('status', ELEMENTS.statusSelect.value);
                     }
+                    if (ELEMENTS.membershipFilter && ELEMENTS.membershipFilter.value && ELEMENTS.membershipFilter.value !== 'all') {
+                        url.searchParams.set('membership_type', ELEMENTS.membershipFilter.value);
+                    } else if (ELEMENTS.membershipFilter) {
+                        url.searchParams.delete('membership_type');
+                    }
                     window.history.pushState({}, '', url.toString());
                     fetchMembers(url.toString());
                 });
@@ -1265,12 +1296,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (ELEMENTS.statusSelect && ELEMENTS.statusSelect.value !== 'all') {
                 params.append('status', ELEMENTS.statusSelect.value);
             }
+                if (ELEMENTS.membershipFilter && ELEMENTS.membershipFilter.value && ELEMENTS.membershipFilter.value !== 'all') {
+                    params.append('membership_type', ELEMENTS.membershipFilter.value);
+                }
             const urlObj = new URL(window.location.href);
             const currentPage = urlObj.searchParams.get('page') || 1;
             params.append('page', currentPage);
             url = `${window.location.pathname}?${params.toString()}`;
         }
         
+        console.debug('[fetchMembers] requesting URL ->', url);
         fetch(url, {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
@@ -1282,8 +1317,36 @@ document.addEventListener('DOMContentLoaded', function() {
             return response.json();
         })
         .then(data => {
+            console.debug('[fetchMembers] response data ->', data);
             if (ELEMENTS.tableContainer) {
-                ELEMENTS.tableContainer.innerHTML = data.table;
+                // Parse the returned HTML and avoid nesting wrapper elements.
+                // The server partial sometimes returns a wrapper <div class="overflow-x-auto">...<table>...</table></div>
+                // If we directly set that HTML into the existing overflow container, we'll end up with
+                // nested wrappers which can alter layout and styling (causing button/hover differences).
+                const tmp = document.createElement('div');
+                tmp.innerHTML = data.table || '';
+                const innerOverflow = tmp.querySelector('.overflow-x-auto');
+                const tableEl = innerOverflow ? innerOverflow.querySelector('table') : tmp.querySelector('table');
+                // Prefer replacing the whole glass-card content so structure, wrappers and classes
+                // exactly match server output. This prevents mismatches that affect CSS hover states.
+                const glassCard = ELEMENTS.tableContainer ? ELEMENTS.tableContainer.closest('.glass-card') : null;
+                if (glassCard && tmp.innerHTML.trim()) {
+                    glassCard.innerHTML = tmp.innerHTML;
+                    // Re-query important elements inside the new content
+                    ELEMENTS.tableContainer = document.querySelector('.glass-card .overflow-x-auto');
+                    ELEMENTS.paginationContainer = document.querySelector('.pagination');
+                } else if (innerOverflow && ELEMENTS.tableContainer && ELEMENTS.tableContainer.parentNode) {
+                    const newOverflow = innerOverflow.cloneNode(true);
+                    ELEMENTS.tableContainer.parentNode.replaceChild(newOverflow, ELEMENTS.tableContainer);
+                    ELEMENTS.tableContainer = document.querySelector('.glass-card .overflow-x-auto');
+                } else if (tableEl && ELEMENTS.tableContainer) {
+                    ELEMENTS.tableContainer.innerHTML = tableEl.outerHTML;
+                } else if (ELEMENTS.tableContainer) {
+                    ELEMENTS.tableContainer.innerHTML = data.table;
+                }
+            
+            // Rebind filter/search elements because they may have been replaced in the DOM
+            rebindFilterListeners();
             }
             if (ELEMENTS.paginationContainer && data.pagination) {
                 ELEMENTS.paginationContainer.innerHTML = data.pagination;
@@ -1318,7 +1381,87 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function attachTableEventListeners() {
-        // Placeholder for table interactions
+        // Ensure newly injected table rows/buttons behave like the initial render.
+        const table = ELEMENTS.tableContainer ? ELEMENTS.tableContainer.querySelector('table') : null;
+        if (!table) return;
+
+        // Make sure buttons look and act like buttons (pointer cursor, keyboard accessible)
+        const buttons = table.querySelectorAll('button');
+        buttons.forEach(btn => {
+            btn.style.cursor = 'pointer';
+            if (!btn.hasAttribute('role')) btn.setAttribute('role', 'button');
+
+            // Add keyboard support: Enter/Space should activate the button
+            if (!btn.__keyboardBound) {
+                btn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+                btn.__keyboardBound = true;
+            }
+        });
+
+        // If there are any custom elements that need re-initialization (tooltips, third-party libs),
+        // this is the place to do it. For now we ensure the DOM-level behaviors are consistent.
+    }
+
+    function rebindFilterListeners() {
+        // Re-query and rebind filter/search elements because replacing .glass-card can replace them.
+        ELEMENTS.searchInput = document.querySelector('input[name="search"]');
+        ELEMENTS.statusSelect = document.querySelector('select[name="status"]');
+        ELEMENTS.membershipFilter = document.querySelector('select[name="membership_type"]');
+
+        // Search input
+        if (ELEMENTS.searchInput && !ELEMENTS.searchInput.__bound) {
+            ELEMENTS.searchInput.addEventListener('input', () => {
+                toggleClearButtonVisibility();
+                debounce(fetchMembers, 500);
+            });
+            ELEMENTS.searchInput.__bound = true;
+        }
+
+        // Clear button (may have been replaced inside glass-card)
+        ELEMENTS.clearSearchButton = document.querySelector('[aria-label="Clear search"]');
+        if (ELEMENTS.clearSearchButton && !ELEMENTS.clearSearchButton.__bound) {
+            ELEMENTS.clearSearchButton.addEventListener('click', () => {
+                if (ELEMENTS.searchInput) ELEMENTS.searchInput.value = '';
+                fetchMembers();
+                toggleClearButtonVisibility();
+            });
+            ELEMENTS.clearSearchButton.__bound = true;
+        }
+
+        // Status select
+        if (ELEMENTS.statusSelect && !ELEMENTS.statusSelect.__bound) {
+            ELEMENTS.statusSelect.addEventListener('change', function(e) {
+                e.preventDefault();
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('status', this.value);
+                currentUrl.searchParams.set('page', '1');
+                window.history.pushState({}, '', currentUrl.toString());
+                fetchMembers();
+            });
+            ELEMENTS.statusSelect.__bound = true;
+        }
+
+        // Membership filter
+        if (ELEMENTS.membershipFilter && !ELEMENTS.membershipFilter.__bound) {
+            ELEMENTS.membershipFilter.addEventListener('change', function(e) {
+                e.preventDefault();
+                const currentUrl = new URL(window.location.href);
+                if (this.value && this.value !== 'all') {
+                    currentUrl.searchParams.set('membership_type', this.value);
+                } else {
+                    currentUrl.searchParams.delete('membership_type');
+                }
+                currentUrl.searchParams.set('page', '1');
+                window.history.pushState({}, '', currentUrl.toString());
+                fetchMembers();
+            });
+            ELEMENTS.membershipFilter.__bound = true;
+        }
     }
 
     // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========

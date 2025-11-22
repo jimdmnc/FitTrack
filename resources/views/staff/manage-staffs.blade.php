@@ -174,18 +174,20 @@
 
 <!-- Create Staff Modal -->
 <div id="createModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div class="bg-[#121212] p-4 sm:p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto modal-content">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-gray-200">Create New Staff</h3>
-            <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-        <form id="createStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-lg">
+    <div class="bg-[#121212] p-0 sm:p-0 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] modal-content flex flex-col">
+                <div class="px-4 sm:px-6 py-3 border-b border-gray-800 bg-[#121212] rounded-t-lg">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-gray-200">Create New Staff</h3>
+                        <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 btn-touch">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <form id="createStaffForm" method="POST" class="bg-[#212121] p-4 sm:p-6 rounded-b-lg flex-1 overflow-y-auto">
             @csrf
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="px-4grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label for="create_first_name" class="block text-sm font-medium text-gray-200">First Name</label>
                     <input type="text" name="first_name" id="create_first_name" class="mt-1 block w-full bg-[#2c2c2c] text-gray-200 border border-gray-700 rounded-md p-2 focus:ring-[#ff5722] focus:border-[#ff5722]" required>
@@ -673,19 +675,44 @@
                     <span class="text-gray-200">${staff.created_at ? new Date(staff.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''}</span>
                     <span class="text-gray-400 text-sm">${staff.created_at ? new Date(staff.created_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true }) : ''}</span>
                 </td>
-                <td class="p-3 text-center">
-                    <div class="flex justify-center gap-2 flex-wrap">
-                        <button onclick="openEditModal(${staff.id})" class="bg-blue-100 text-blue-700 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-blue-400 transition-colors flex items-center btn-touch">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                <td class="p-4 text-center">
+                    <div class="flex justify-center gap-3 flex-wrap">
+                        <button 
+                            onclick="openEditModal(${staff.id})" 
+                            class="inline-flex items-center px-3 py-1.5 bg-blue-900 text-gray-200 rounded-lg 
+                                transition-all duration-200 font-medium text-sm border border-blue-900 
+                                shadow-sm group hover:bg-blue-100 hover:text-blue-900 hover:-translate-y-0.5 
+                                focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50"
+                            aria-label="Edit staff"
+                            title="Edit staff"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
-                            Edit
+                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 
+                                        transition-all duration-300 ease-in-out">
+                                Edit
+                            </span>
                         </button>
-                        <button onclick="openDeleteModal(${staff.id})" class="bg-red-100 text-red-700 px-3 py-2 font-bold rounded-md text-sm hover:translate-y-[-2px] hover:bg-red-400 transition-colors flex items-center btn-touch">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        <button 
+                            onclick="openDeleteModal(${staff.id})" 
+                            class="inline-flex items-center px-3 py-1.5 bg-red-900 text-gray-200 rounded-lg 
+                                transition-all duration-200 font-medium text-sm 
+                                shadow-sm group hover:bg-red-100 hover:text-red-900 hover:-translate-y-0.5 
+                                focus:outline-none focus:ring-2 focus:ring-red-300 focus:ring-opacity-50"
+                            aria-label="Delete staff"
+                            title="Delete staff"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" 
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" 
+                                    clip-rule="evenodd" />
                             </svg>
-                            Delete
+                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 
+                                        transition-all duration-300 ease-in-out">
+                                Delete
+                            </span>
                         </button>
                     </div>
                 </td>

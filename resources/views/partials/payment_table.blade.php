@@ -39,9 +39,9 @@
                         <span class="px-2.5 py-1 text-xs font-medium rounded-full
                             @if(strtolower(optional($payment->user)->membership_type_name ?? '') == 'annual')
                                 bg-purple-900 text-purple-200
-                            @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'week')
+                            @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'weekly')
                                 bg-green-900 text-green-200
-                            @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'month')
+                            @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'monthly')
                                 bg-blue-900 text-blue-200
                             @elseif(strtolower(optional($payment->user)->membership_type_name ?? '') == 'session')
                                 bg-yellow-900 text-yellow-200
@@ -92,6 +92,7 @@
     {{ $payments->appends([
         'search' => request('search'), 
         'payment_method' => request('payment_method'), 
-        'time_filter' => request('time_filter')
+        'time_filter' => request('time_filter'),
+        'membership_type' => request('membership_type')
     ])->links('vendor.pagination.default') }}
 </div>

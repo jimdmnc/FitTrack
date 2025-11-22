@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payments Report</title>
+    <title>Collection Report</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,8 +124,8 @@
         @if(isset($gym->logo))
         <img class="logo" src="{{ $gym->logo }}" alt="Gym Logo">
         @endif
-        <h1>{{ isset($gym->name) ? $gym->name : 'Gym' }} - Payments Report</h1>
-        <p class="subtitle">Financial Summary</p>
+        <h1>{{ isset($gym->name) ? $gym->name : 'Gym' }} - Collection Report</h1>
+        <p class="subtitle">Summary</p>
     </div>
 
     <table class="report-info">
