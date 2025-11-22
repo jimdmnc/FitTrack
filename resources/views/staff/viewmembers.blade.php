@@ -1355,11 +1355,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const renewal = new Date(renewalDate);
                 if (isNaN(renewal.getTime())) throw new Error('Invalid date');
 
-                // let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
-                //     ? parseInt(ELEMENTS.customDaysInput.value) 
-                //     : parseInt(selectedType);
+                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
+                    ? parseInt(ELEMENTS.customDaysInput.value) 
+                    : parseInt(selectedType);
                 
-                // if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
 
                 renewal.setDate(renewal.getDate() + duration - 1);
                 ELEMENTS.endDateInput.value = formatDate(renewal);
@@ -1388,11 +1388,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let typeName = MEMBERSHIP_DATA[selectedType].name;
         let fee = MEMBERSHIP_DATA[selectedType].fee;
         
-        // if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-        //     const days = parseInt(ELEMENTS.customDaysInput.value);
-        //     typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
-        //     fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
-        // }
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
+            typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
+            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
+        }
     
         fee = fee.toFixed(2);
     
@@ -1419,11 +1419,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set time to 23:59:59 of the previous day for all cases
     switch(membershipType.toLowerCase()) {
-        // case 'session':
-        // case 'custom':
-        //     // 1-day pass expires at 23:59:59 of the same day
-        //     endDate.setHours(23, 59, 59, 0);
-        //     break;
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
         case 'weekly':
             // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
             endDate.setDate(start.getDate() + 6);
@@ -1475,11 +1475,11 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById("startDate").value = todayFormatted;
         }
 
-        // if (ELEMENTS.customDaysInput) {
-        //     ELEMENTS.customDaysInput.value = '';
-        // }
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.value = '';
+        }
 
-        // toggleCustomDays();
+        toggleCustomDays();
         animateModalOpen('renewMemberModal', 'editModalContent');
         updateAllDetails();
     }
