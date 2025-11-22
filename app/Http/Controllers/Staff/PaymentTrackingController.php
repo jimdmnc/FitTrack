@@ -67,6 +67,19 @@ class PaymentTrackingController extends Controller
                         $today->copy()->endOfMonth()
                     ]);
                     break;
+                case 'custom':
+                    // Custom range: filter by provided start_date / end_date on the activation/payment_date
+                    $start = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : null;
+                    $end = $request->filled('end_date') ? Carbon::parse($request->end_date)->endOfDay() : null;
+
+                    if ($start && $end) {
+                        $query->whereBetween('payment_date', [$start, $end]);
+                    } elseif ($start) {
+                        $query->where('payment_date', '>=', $start);
+                    } elseif ($end) {
+                        $query->where('payment_date', '<=', $end);
+                    }
+                    break;
             }
         }
 
