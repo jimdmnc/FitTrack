@@ -149,17 +149,18 @@ class ViewmembersController extends Controller
     {
         $request->validate([
             'rfid_uid' => 'required|exists:users,rfid_uid',
-            'membership_type' => 'required|in:custom,7,30,365',
-            'custom_days' => 'required_if:membership_type,custom|nullable|integer|min:1|max:365',
+            // 'membership_type' => 'required|in:custom,7,30,365',
+            'membership_type' => 'required|in:7,30,365',
+            // 'custom_days' => 'required_if:membership_type,custom|nullable|integer|min:1|max:365',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
         ], [
             'rfid_uid.exists' => 'The selected member ID is invalid.',
             'membership_type.in' => 'Please select a valid membership type.',
-            'custom_days.required_if' => 'Please specify the number of days for a custom membership.',
-            'custom_days.integer' => 'The number of days must be a valid integer.',
-            'custom_days.min' => 'The number of days must be at least 1.',
-            'custom_days.max' => 'The number of days cannot exceed 365.',
+            // 'custom_days.required_if' => 'Please specify the number of days for a custom membership.',
+            // 'custom_days.integer' => 'The number of days must be a valid integer.',
+            // 'custom_days.min' => 'The number of days must be at least 1.',
+            // 'custom_days.max' => 'The number of days cannot exceed 365.',
             'start_date.after_or_equal' => 'The renewal date cannot be in the past.',
             'end_date.after' => 'The expiration date must be after the renewal date.',
         ]);
@@ -172,7 +173,7 @@ class ViewmembersController extends Controller
                 ->keyBy('type');
 
             $requiredPriceType = match ($request->membership_type) {
-                'custom' => 'session',
+                // 'custom' => 'session',
                 '7' => 'weekly',
                 '30' => 'monthly',
                 '365' => 'annual',
@@ -186,18 +187,19 @@ class ViewmembersController extends Controller
             $price = $prices[$requiredPriceType];
 
             $membershipDays = match ($request->membership_type) {
-                'custom' => (int) $request->custom_days,
+                // 'custom' => (int) $request->custom_days,
                 '7' => 7,
                 '30' => 30,
                 '365' => 365,
                 default => throw new \Exception('Invalid membership type selected.'),
             };
 
-            $paymentAmount = match ($request->membership_type) {
-                'custom' => (int) $request->custom_days * $price->amount,
-                '7', '30', '365' => $price->amount,
-                default => throw new \Exception('Invalid membership type selected.'),
-            };
+            // $paymentAmount = match ($request->membership_type) {
+            //     'custom' => (int) $request->custom_days * $price->amount,
+            //     '7', '30', '365' => $price->amount,
+            //     default => throw new \Exception('Invalid membership type selected.'),
+            // };
+            $paymentAmount = $price->amount; // Fixed price na lang, walang per day
 
             DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays) {
                 $user->update([
