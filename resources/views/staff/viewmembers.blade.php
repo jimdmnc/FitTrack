@@ -1125,7 +1125,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
     const ELEMENTS = {
-        uidInput: document.getElementById('rfid_uid'),
+        uidInput: document.getElementById('uid'),
         rfidStatus: document.getElementById('rfid_status'),
         clearRfidBtn: document.getElementById('clearRfidBtn'),
 
