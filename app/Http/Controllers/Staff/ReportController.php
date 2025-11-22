@@ -164,7 +164,13 @@ class ReportController extends Controller
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
     
-            $filename = "{$type}_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
+            // Use a more descriptive filename for collection (payments) reports
+            if ($type === 'payments') {
+                $filename = "collection_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
+            } else {
+                $filename = "{$type}_report_" . now()->format('Y_m_d_H_i_s') . ".pdf";
+            }
+
             return $dompdf->stream($filename);
         } catch (\Exception $e) {
             // Handle PDF generation errors gracefully

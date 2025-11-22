@@ -491,7 +491,7 @@ function updateAllTimeOption() {
     // Update the visible report type
     function updateReportTypeDisplay() {
         const type = reportTypeSelect.value;
-        reportTitle.textContent = type === 'members' ? 'Members Report' : 'Payments Report';
+        reportTitle.textContent = type === 'members' ? 'Members Report' : 'Collection Report';
         
         if (type === 'members') {
             membersReport.classList.remove('hidden');
