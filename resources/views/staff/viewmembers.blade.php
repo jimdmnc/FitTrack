@@ -1609,9 +1609,6 @@ document.addEventListener('DOMContentLoaded', function() {
         animateModalOpen('renewMemberModal', 'editModalContent');
         updateAllDetails();
     }
-    function closeRenewModal() {
-        animateModalClose('renewMemberModal', 'editModalContent');
-    }
 
     function openUpgradeModal(memberID, name, email, phone, endDate) {
         document.getElementById("editMemberID").value = memberID;
@@ -1634,13 +1631,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         toggleCustomDays();
-        animateModalOpen('upgradeMemberModal', 'editModalContent');
+        animateModalOpen('renewMemberModal', 'editModalContent');
         updateAllDetails();
     }
 
 
     function closeRenewModal() {
-        animateModalClose('upgradeMemberModal', 'editModalContent');
+        animateModalClose('renewMemberModal', 'editModalContent');
     }
     
     function openRevokeModal(memberID, memberName) {
@@ -1721,8 +1718,6 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
-    window.openUpgradeModal = openUpgradeModal;
-    window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
