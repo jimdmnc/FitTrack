@@ -306,10 +306,10 @@
 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
-                                    @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
-                                    @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
-                                    @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
+                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-white
+                                    @elseif($member->getMembershipType() == 'Weekly') bg-green-900 text-white
+                                    @elseif($member->getMembershipType() == 'Monthly') bg-blue-900 text-white
+                                    @elseif($member->getMembershipType() == 'Session') bg-orange-900 text-white
                                     @endif">
                                     {{ $member->getMembershipType() }}
                                 </span>
@@ -356,7 +356,7 @@
                                       @if(in_array($member->membership_type, ['7', '30', '365']))
                                                 <button 
                                                     onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:border-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-900 shadow-sm group"
+                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:border-green-900 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-900 shadow-sm group"
                                                     aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                                     title="Renew membership">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
