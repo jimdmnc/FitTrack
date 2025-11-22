@@ -1424,12 +1424,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // 1-day pass expires at 23:59:59 of the same day
             endDate.setHours(23, 59, 59, 0);
             break;
-        case 'week':
+        case 'weekly':
             // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
             endDate.setDate(start.getDate() + 6);
             endDate.setHours(23, 59, 59, 0);
             break;
-        case 'month':
+        case 'monthly':
             // 1 month = start date + 1 month minus 1 day
             endDate.setMonth(start.getMonth() + 1);
             endDate.setDate(start.getDate() - 1);
