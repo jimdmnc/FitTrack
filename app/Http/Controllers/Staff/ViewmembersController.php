@@ -226,6 +226,111 @@ class ViewmembersController extends Controller
         }
     }
 
+
+
+
+
+
+    public function upgradeMembership(Request $request)
+    {
+        $request->validate([
+            'rfid_uid' => 'required|string', // This is the NEW RFID from auto-fetch
+            'old_rfid_uid' => 'required|exists:users,rfid_uid', // The current user in the system
+            'membership_type' => 'required|in:custom,7,30,365',
+            'custom_days' => 'required_if:membership_type,custom|nullable|integer|min:1|max:365',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after:start_date',
+        ], [
+            'old_rfid_uid.exists' => 'The selected member could not be found.',
+            'rfid_uid.required' => 'Please tap a new RFID card.',
+            'membership_type.in' => 'Please select a valid membership type.',
+            'custom_days.required_if' => 'Please specify the number of days for custom membership.',
+            'start_date.after_or_equal' => 'Start date cannot be in the past.',
+            'end_date.after' => 'End date must be after the start date.',
+        ]);
+    
+        try {
+            // Find the user using the OLD RFID (the one currently in the system)
+            $user = User::where('rfid_uid', $request->old_rfid_uid)->firstOrFail();
+    
+            // The new RFID from auto-fetch
+            $newRfidUid = strtoupper(trim($request->rfid_uid));
+    
+            // Optional: Prevent assigning the same RFID twice
+            if ($user->rfid_uid === $newRfidUid) {
+                return back()->with('info', 'Same RFID card detected. No changes made.');
+            }
+    
+            // Optional: Prevent duplicate RFID assignment
+            $existingUser = User::where('rfid_uid', $newRfidUid)->first();
+            if ($existingUser && $existingUser->id !== $user->id) {
+                return back()->with('error', "This RFID card ($newRfidUid) is already assigned to another member.");
+            }
+    
+            // Fetch prices
+            $prices = Price::whereIn('type', ['session', 'weekly', 'monthly', 'annual'])
+                ->pluck('amount', 'type');
+    
+            $priceType = match ($request->membership_type) {
+                'custom' => 'session',
+                '7'      => 'weekly',
+                '30'     => 'monthly',
+                '365'    => 'annual',
+            };
+    
+            $baseAmount = $prices[$priceType] ?? throw new \Exception("Price not found for $priceType");
+    
+            $membershipDays = $request->membership_type === 'custom'
+                ? (int) $request->custom_days
+                : (int) $request->membership_type;
+    
+            $paymentAmount = $request->membership_type === 'custom'
+                ? $membershipDays * $baseAmount
+                : $baseAmount;
+    
+            DB::transaction(function () use ($user, $request, $newRfidUid, $paymentAmount, $membershipDays) {
+                // 1. Update the user's RFID + membership details
+                $user->update([
+                    'rfid_uid'       => $newRfidUid,           // ← This is the key change!
+                    'membership_type'=> $request->membership_type,
+                    'start_date'     => $request->start_date,
+                    'end_date'       => $request->end_date,
+                    'member_status'  => 'active',
+                ]);
+    
+                // 2. Record the renewal (with NEW RFID)
+                Renewal::create([
+                    'rfid_uid'       => $newRfidUid,
+                    'membership_type'=> $request->membership_type,
+                    'start_date'     => $request->start_date,
+                    'end_date'       => $request->end_date,
+                    'days'           => $membershipDays,
+                    'amount'         => $paymentAmount,
+                    'status'         => 'approved', // since staff is doing it directly
+                ]);
+    
+                // 3. Record payment
+                MembersPayment::create([
+                    'rfid_uid'       => $newRfidUid,
+                    'amount'         => $paymentAmount,
+                    'payment_method' => 'cash',
+                    'payment_date'   => now(),
+                ]);
+    
+                // Optional: Clear the temporary RFID from your rfid_tags table
+                // (so it doesn't get reused accidentally)
+                \DB::table('rfid_tags')->where('uid', $newRfidUid)->delete();
+            });
+    
+            return redirect()->route('staff.viewmembers')
+                ->with('success', "Membership upgraded successfully! New RFID: {$newRfidUid}");
+                
+        } catch (\Exception $e) {
+            Log::error('Upgrade membership failed: ' . $e->getMessage(), $request->all());
+            return back()->with('error', 'Failed to upgrade membership: ' . $e->getMessage());
+        }
+    }
+
     /**
      * Revoke a member's access
      */
