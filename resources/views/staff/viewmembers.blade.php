@@ -525,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
+                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -1418,33 +1418,39 @@ document.addEventListener('DOMContentLoaded', function() {
     let endDate = new Date(start);
 
     // Set time to 23:59:59 of the previous day for all cases
-    switch(membershipType.toLowerCase()) {
-        case 'session':
-        case 'custom':
-            // 1-day pass expires at 23:59:59 of the same day
-            endDate.setHours(23, 59, 59, 0);
-            break;
-        case 'week':
-            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
-            endDate.setDate(start.getDate() + 6);
-            endDate.setHours(23, 59, 59, 0);
-            break;
-        case 'month':
-            // 1 month = start date + 1 month minus 1 day
-            endDate.setMonth(start.getMonth() + 1);
-            endDate.setDate(start.getDate() - 1);
-            endDate.setHours(23, 59, 59, 0);
-            break;
-        case 'annual':
-            // 1 year = start date + 1 year minus 1 day
-            endDate.setFullYear(start.getFullYear() + 1);
-            endDate.setDate(start.getDate() - 1);
-            endDate.setHours(23, 59, 59, 0);
-            break;
-        default:
-            endDate = 'N/A';
-    }
+    switch (membershipType.toLowerCase()) {
+    case 'session':
+        // Expires at 23:59:59 of the same day
+        endDate.setHours(23, 59, 59, 0);
+        break;
 
+    case 'custom':
+        // For custom: we expect a separate field like customDays (e.g. 3, 5, 10)
+        const customDays = parseInt(member.customDays) || 1; // fallback to 1 if not set
+        endDate.setDate(start.getDate() + customDays - 1); // inclusive: 3 days = start + 2
+        endDate.setHours(23, 59, 59, 0);
+        break;
+
+    case 'week':
+        endDate.setDate(start.getDate() + 6); // 7th day
+        endDate.setHours(23, 59, 59, 0);
+        break;
+
+    case 'month':
+        endDate.setMonth(start.getMonth() + 1);
+        endDate.setDate(start.getDate() - 1);
+        endDate.setHours(23, 59, 59, 0);
+        break;
+
+    case 'annual':
+        endDate.setFullYear(start.getFullYear() + 1);
+        endDate.setDate(start.getDate() - 1);
+        endDate.setHours(23, 59, 59, 0);
+        break;
+
+    default:
+        endDate = 'N/A';
+}
     document.getElementById('viewEndDate').textContent = 
         typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
 
