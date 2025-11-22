@@ -507,7 +507,7 @@
                     </svg>
                     <span class="truncate">Upgrade Membership</span>
                 </h2>
-                <button onclick="closeUpgradeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <button onclick="closeRenewModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -580,31 +580,6 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
                         <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
-                    <div class="rfid-container">
-                <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
-                    <div class="absolute inset-y-0 right-3 flex items-center">
-                        <div id="rfid-loading" class="animate-pulse flex items-center">
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
-                        </div>
-                        <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
-                            ×
-                        </button>
-                    </div>
-                </div>
-                <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Please Tap Your Card...
-                </div>
-                @error('uid')
-                    <span id="uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
-                @enderror
-            </div>
                 </div>
                 
                 <!-- Summary Box -->
@@ -619,7 +594,7 @@
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
-                    <button type="button" onclick="closeUpgradeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
+                    <button type="button" onclick="closeRenewModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
                         Cancel
                     </button>
                     <button type="submit" id="submitRenewal" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
@@ -632,7 +607,7 @@
             </form>
         </div>
     </div>
-    <!-- End Upgrade Member Modal -->
+    <!-- End Renew Member Modal -->
 
 
     <!-- Renew Member Modal -->
@@ -1165,12 +1140,6 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-
-
-
-
-
-    
     // Fetch membership prices via AJAX
     function fetchMembershipPrices() {
         fetch('{{ route('staff.membership.prices') }}', {
@@ -1670,7 +1639,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    function closeUpgradeModal() {
+    function closeRenewModal() {
         animateModalClose('upgradeMemberModal', 'editModalContent');
     }
     
@@ -1752,7 +1721,7 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
-    window.openUpgradeModal = openUpgradeModal;
+    window.openUPgradeModal = openUpgradeModal;
     window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
@@ -1771,6 +1740,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
-
 </script>
 @endsection
