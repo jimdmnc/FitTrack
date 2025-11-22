@@ -1723,7 +1723,7 @@ if (ELEMENTS.clearRfidBtn) {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    function openRenewModal(memberID, name, email, phone, endDate) {
+    function openRenewModal(memberID, name, endDate) {
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
         
