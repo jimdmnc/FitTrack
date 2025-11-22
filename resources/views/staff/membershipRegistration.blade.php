@@ -206,8 +206,8 @@
                 <select id="membershipType" name="membership_type" class="bg-[#2c2c2c] text-gray-200 border-[#2c2c2c] w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent" required aria-describedby="membership_type_error">
                     <option value="" selected disabled>Select Membership Type</option>
                     <option value="custom" {{ old('membership_type') == 'custom' ? 'selected' : '' }}>Custom Days (₱{{ number_format($prices['session']->amount ?? 60, 2) }}/day)</option>
-                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Week (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
-                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Month (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
+                    <option value="7" {{ old('membership_type') == '7' ? 'selected' : '' }}>Weekly (7 days, ₱{{ number_format($prices['weekly']->amount ?? 300, 2) }})</option>
+                    <option value="30" {{ old('membership_type') == '30' ? 'selected' : '' }}>Monthly (30 days, ₱{{ number_format($prices['monthly']->amount ?? 850, 2) }})</option>
                     <option value="365" {{ old('membership_type') == '365' ? 'selected' : '' }}>Annual (365 days, ₱{{ number_format($prices['annual']->amount ?? 10000, 2) }})</option>
                 </select>
                 @error('membership_type')

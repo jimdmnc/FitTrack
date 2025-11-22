@@ -122,83 +122,65 @@
     </div>
 
     <div class="p-4">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-3 sm:px-6 py-4 border-b border-gray-800 gap-4">
+        <!-- Filters Row: Search + Date Filter + Refresh (same line) -->
+<div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between px-3 sm:px-6 py-4 border-b border-gray-800">
 
-            <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full sm:w-64 md:w-80">
-                <div class="relative flex items-center -ml-4 mb-2">
-                    <!-- Search Input -->
-                    <input 
-                        type="text" 
-                        name="search" 
-                        value="{{ request('search') }}" 
-                        placeholder="Search member" 
-                        class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-9 pr-3 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-0 focus:border-[#ff5722]"
-                        aria-label="Search members"
-                    >
-                    
-                    <!-- Search Icon (Inside Input) -->
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-
-                    <!-- Clear Search Button -->
-                    <a 
-                    id="clearSearch" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors hidden cursor-pointer"
-                    aria-label="Clear search">
-                        <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </a>
-
-                </div>
-            </form>
-
-
-            <div class="flex flex-nowrap gap-2 w-full justify-end">
-
-                    <div class="relative w-full sm:w-auto">
-                        <button id="select-btn" class="w-full px-6 py-2 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center">
-                            <span id="selected-option">today</span>
-                            <svg class="ml-2 w-5 h-5 text-gray-200" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                            </svg>
-                        </button>
-
-                        <ul id="dropdown" class="hidden absolute left-0 w-full bg-[#212121] rounded-lg mt-2 overflow-hidden z-10">
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="all">All Time</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="today">Today</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="yesterday">Yesterday</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisWeek">This Week</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="lastWeek">Last Week</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="thisMonth">This Month</li>
-                            <li class="px-1 py-1 text-gray-200 cursor-pointer hover:bg-[#ff5722]" data-value="custom">Custom Range</li>
-                        </ul>
-                    </div>
-                    <button id="refreshBtn" class="bg-[#212121] text-gray-200 border border-[#ff5722] hover:translate-y-[-2px] hover:bg-[#ff5722] px-4 py-2 rounded-md text-sm transition-colors flex items-center btn-touch w-full sm:w-auto">
-                        <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                        </svg>
-                        <span id="refreshText">Refresh</span>
-                    </button>
-
+    <!-- Search Bar -->
+    <form method="GET" action="{{ route('staff.attendance.index') }}" class="w-full lg:w-80">
+        <div class="relative">
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Search member"
+                   class="w-full bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-full py-2 pl-10 pr-12 text-sm text-gray-200 placeholder-gray-400 focus:outline-none focus:border-[#ff5722]">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-4 w-4 text-[#ff5722]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                </svg>
             </div>
+            <a id="clearSearch" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-200 hover:text-[#ff5722] hidden cursor-pointer">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </a>
+        </div>
+    </form>
+
+    <!-- Right Side: Date Filter + Custom Range + Refresh Button -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+
+        <!-- Date Filter Dropdown -->
+        <div class="relative">
+            <button id="select-btn" class="w-full sm:w-auto px-5 py-2.5 text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg flex justify-between items-center min-w-[140px]">
+                <span id="selected-option">Today</span>
+                <svg class="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <ul id="dropdown" class="hidden absolute left-0 right-0 mt-2 bg-[#212121] border border-[#666666] rounded-lg shadow-xl z-50 overflow-hidden">
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="all">All Time</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="today">Today</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="yesterday">Yesterday</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="thisWeek">This Week</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="lastWeek">Last Week</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="thisMonth">This Month</li>
+                <li class="px-4 py-2.5 text-gray-200 hover:bg-[#ff5722] cursor-pointer" data-value="custom">Custom Range</li>
+            </ul>
         </div>
 
-        <!-- Custom Range Inputs for Attendance (hidden until Custom Range selected) -->
-        <div id="attendanceCustomRange" class="mt-3 hidden">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <label for="startDateAttendance" class="sr-only">Start Date</label>
-                    <input type="date" id="startDateAttendance" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date">
-                </div>
-                <div class="relative">
-                    <label for="endDateAttendance" class="sr-only">End Date</label>
-                    <input type="date" id="endDateAttendance" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date">
-                </div>
-            </div>
+        <!-- Custom Range Inputs — appears inline when "Custom" is selected -->
+        <div id="attendanceCustomRange" class="hidden items-center gap-3">
+            <input type="date" id="startDateAttendance" name="start_date"
+                   class="px-3 py-3 text-sm text-gray-200 bg-[#212121] border border-[#666666] rounded-lg focus:border-[#ff5722] focus:outline-none">
+            <input type="date" id="endDateAttendance" name="end_date"
+                   class="px-3 py-3 text-sm text-gray-200 bg-[#212121] border border-[#666666] rounded-lg focus:border-[#ff5722] focus:outline-none">
         </div>
+
+        <!-- Refresh Button -->
+        <button id="refreshBtn" class="bg-[#212121] hover:bg-[#ff5722] border border-[#ff5722] text-gray-200 hover:text-white px-5 py-2.5 rounded-lg text-sm font-medium transition flex items-center gap-2 whitespace-nowrap">
+            <svg id="refreshIcon" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span id="refreshText">Refresh</span>
+        </button>
+    </div>
+</div>
+
+        
 
         <div class="overflow-x-auto sm:rounded-lg table-responsive">
             <table class="w-full border-collapse divide-y divide-black">
