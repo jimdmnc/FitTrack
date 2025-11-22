@@ -580,6 +580,31 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
                         <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
+                    <div class="rfid-container">
+                <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+                <div class="relative">
+                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
+                    <div class="absolute inset-y-0 right-3 flex items-center">
+                        <div id="rfid-loading" class="animate-pulse flex items-center">
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                            <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                        </div>
+                        <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                            ×
+                        </button>
+                    </div>
+                </div>
+                <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Please Tap Your Card...
+                </div>
+                @error('uid')
+                    <span id="uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                @enderror
+            </div>
                 </div>
                 
                 <!-- Summary Box -->
