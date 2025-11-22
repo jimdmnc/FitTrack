@@ -1721,6 +1721,8 @@ document.addEventListener('DOMContentLoaded', function() {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
+    window.openUpgradeModal = openUpgradeModal;
+    window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
