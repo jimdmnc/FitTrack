@@ -110,72 +110,64 @@
         <!-- Payment Table Card -->
         <div class="p-4">
             <!-- Table Header with Search and Filter -->
-            <div class="p-5">
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full md:w-80">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg class="w-4 h-4 text-[#ff5722]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                            </svg>
-                        </div>
-                        <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-full bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search">
-                        <!-- Clear Search Button -->
-                        <a 
-                            id="clearSearch" 
-                            class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-200 hover:text-[#ff5722] transition-colors hidden cursor-pointer"
-                            aria-label="Clear search">
-                            <svg class="h-4 w-4 text-[#ff5722]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </a>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        
-                        <!-- Payment Method Filter -->
-                        <select id="paymentMethodFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
-                            <option value="">All Methods</option>
-                            <option value="cash">Cash</option>
-                            <option value="gcash">Gcash</option>
-                        </select>
+            <!-- Table Header with Search + Filters + Custom Range on the same line -->
+<div class="p-5">
+    <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
 
-                        <!-- Membership Type Filter -->
-                        <select id="membershipFilter" name="membership_type" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
-                            <option value="">All Memberships</option>
-                            <option value="session" {{ request('membership_type') == 'session' ? 'selected' : '' }}>Session</option>
-                            <option value="week" {{ request('membership_type') == 'week' ? 'selected' : '' }}>Weekly</option>
-                            <option value="month" {{ request('membership_type') == 'month' ? 'selected' : '' }}>Monthly</option>
-                            <option value="annual" {{ request('membership_type') == 'annual' ? 'selected' : '' }}>Annual</option>
-                        </select>
-                        <!-- Time Filter -->
-                        <select name="time_filter" id="timeFilter" class="pr-8 bg-[#212121] border border-[#666666] hover:border-[#ff5722] text-gray-200 text-sm rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722] block p-2.5">
-                            <option value="">All Time</option>
-                            <option value="today" {{ request('time_filter') == 'today' ? 'selected' : '' }}>Today</option>
-                            <option value="week" {{ request('time_filter') == 'week' ? 'selected' : '' }}>This Week</option>
-                            <option value="month" {{ request('time_filter') == 'month' ? 'selected' : '' }}>This Month</option>
-                            <option value="custom" {{ request('time_filter') == 'custom' ? 'selected' : '' }}>Custom Range</option>
-                        </select>
+        <!-- Search Bar (left side) -->
+        <div class="relative w-full lg:w-80">
+            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                <svg class="w-4 h-4 text-[#ff5722]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                </svg>
+            </div>
+            <input type="search" class="block w-full p-2.5 pl-10 text-sm text-gray-200 placeholder-gray-400 border border-[#666666] hover:border-[#ff5722] rounded-full bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Search payments">
+            <a id="clearSearch" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-200 hover:text-[#ff5722] hidden cursor-pointer">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </a>
+        </div>
 
-                        
-                    </div>
-                </div>
+        <!-- Right Side: Filters + Custom Range (aligned nicely) -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+
+            <!-- Payment Method -->
+            <select id="paymentMethodFilter" class="px-4 py-2.5 text-sm text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722]">
+                <option value="">All Methods</option>
+                <option value="cash">Cash</option>
+                <option value="gcash">Gcash</option>
+            </select>
+
+            <!-- Membership Type -->
+            <select id="membershipFilter" class="px-4 py-2.5 text-sm text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722]">
+                <option value="">All Memberships</option>
+                <option value="session">Session</option>
+                <option value="week">Weekly</option>
+                <option value="month">Monthly</option>
+                <option value="annual">Annual</option>
+            </select>
+
+            <!-- Time Filter -->
+            <select name="time_filter" id="timeFilter" class="px-4 py-2.5 text-sm text-gray-200 bg-[#212121] border border-[#666666] hover:border-[#ff5722] rounded-lg focus:ring-[#ff5722] focus:border-[#ff5722]">
+                <option value="">All Time</option>
+                <option value="today">Today</option>
+                <option value="week">This Week</option>
+                <option value="month">This Month</option>
+                <option value="custom">Custom Range</option>
+            </select>
+
+            <!-- Custom Range Inputs — appears inline when "Custom" selected -->
+            <div id="customRangeContainer" class="hidden items-center gap-3">
+                <input type="date" id="startDate" name="start_date"
+                       class="px-3 py-2.5 text-sm text-gray-200 bg-[#212121] border border-[#666666] rounded-lg focus:border-[#ff5722] focus:outline-none">
+                <input type="date" id="endDate" name="end_date"
+                       class="px-3 py-2.5 text-sm text-gray-200 bg-[#212121] border border-[#666666] rounded-lg focus:border-[#ff5722] focus:outline-none">
             </div>
 
-            
-                <!-- Custom range + date picker container -->
-                    
-                    <!-- Custom Range Inputs (placed under filters) -->
-                    <div id="customRangeContainer" class="hidden">
-                        <div class="flex items-center gap-3">
-                            <div class="relative ">
-                                <label for="startDate" class="sr-only">Start Date</label>
-                                <input type="date" id="startDate" name="start_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="Start Date" value="{{ request('start_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
-                            </div>
-                            <div class="relative">
-                                <label for="endDate" class="sr-only">End Date</label>
-                                <input type="date" id="endDate" name="end_date" class="block p-2.5 text-sm text-gray-200 border border-[#666666] rounded-lg bg-[#212121] focus:ring-[#ff5722] focus:border-[#ff5722]" placeholder="End Date" value="{{ request('end_date', \Carbon\Carbon::today()->format('Y-m-d')) }}">
-                            </div>
-                        </div>
-                    </div>
+        </div>
+    </div>
+</div>
 
                     
                 </div>
