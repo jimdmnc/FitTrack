@@ -525,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
+                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -537,13 +537,13 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <!-- <div class="w-full hidden" id="customDaysContainer">
+                    <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div> -->
+                    </div>
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
@@ -980,8 +980,8 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
-        // customDaysInput: document.getElementById('customDays'),
-        // customDaysContainer: document.getElementById('customDaysContainer'),
+        customDaysInput: document.getElementById('customDays'),
+        customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
@@ -1028,11 +1028,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                // 'custom': { 
-                //     fee: data.session || 0, 
-                //     name: 'Custom Days', 
-                //     perDay: true 
-                // },
+                'custom': { 
+                    fee: data.session || 0, 
+                    name: 'Custom Days', 
+                    perDay: true 
+                },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1062,7 +1062,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
         if (prices.session) {
-            options[1].text = `Session (₱${prices.session.toFixed(2)}/day)`;
+            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
             options[1].setAttribute('data-price', prices.session);
         }
         if (prices.weekly) {
@@ -1161,18 +1161,18 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (ELEMENTS.membershipTypeSelect) {
             ELEMENTS.membershipTypeSelect.addEventListener('change', function() {
-                // toggleCustomDays();
+                toggleCustomDays();
                 updateAllDetails();
             });
         }
         
-        // if (ELEMENTS.customDaysInput) {
-        //     ELEMENTS.customDaysInput.addEventListener('input', function() {
-        //         if (this.value < 1) this.value = 1;
-        //         if (this.value > 365) this.value = 365;
-        //         updateAllDetails();
-        //     });
-        // }
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.addEventListener('input', function() {
+                if (this.value < 1) this.value = 1;
+                if (this.value > 365) this.value = 365;
+                updateAllDetails();
+            });
+        }
         
         if (ELEMENTS.startDateInput) {
             ELEMENTS.startDateInput.addEventListener('change', function() {
@@ -1190,18 +1190,18 @@ document.addEventListener('DOMContentLoaded', function() {
         attachPaginationListeners();
     }
 
-    // function toggleCustomDays() {
-    //     if (!ELEMENTS.customDaysContainer || !ELEMENTS.membershipTypeSelect) return;
+    function toggleCustomDays() {
+        if (!ELEMENTS.customDaysContainer || !ELEMENTS.membershipTypeSelect) return;
         
-    //     if (ELEMENTS.membershipTypeSelect.value === 'custom') {
-    //         ELEMENTS.customDaysContainer.classList.remove('hidden');
-    //         ELEMENTS.customDaysInput.setAttribute('required', 'required');
-    //     } else {
-    //         ELEMENTS.customDaysContainer.classList.add('hidden');
-    //         ELEMENTS.customDaysInput.removeAttribute('required');
-    //         ELEMENTS.customDaysInput.value = '';
-    //     }
-    // }
+        if (ELEMENTS.membershipTypeSelect.value === 'custom') {
+            ELEMENTS.customDaysContainer.classList.remove('hidden');
+            ELEMENTS.customDaysInput.setAttribute('required', 'required');
+        } else {
+            ELEMENTS.customDaysContainer.classList.add('hidden');
+            ELEMENTS.customDaysInput.removeAttribute('required');
+            ELEMENTS.customDaysInput.value = '';
+        }
+    }
 
     function attachPaginationListeners() {
         setTimeout(() => {
@@ -1324,48 +1324,53 @@ document.addEventListener('DOMContentLoaded', function() {
     // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
     function updateAllDetails() {
         updateMembershipFee();
-        // updateExpirationDate();
+        updateExpirationDate();
         updateSummaryText();
     }
     
     function updateMembershipFee() {
-    if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
-
-    const selectedType = ELEMENTS.membershipTypeSelect.value;
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
+        
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        let fee = 0;
+        
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
+            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
+        } else {
+            fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
+        }
+        
+        ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
+    }
     
-    // Directly get the fixed price — walang computation, walang custom
-    const fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
+    function updateExpirationDate() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
 
-    ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
-}
-    
-    // function updateExpirationDate() {
-    //     if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        const renewalDate = ELEMENTS.startDateInput.value;
 
-    //     const selectedType = ELEMENTS.membershipTypeSelect.value;
-    //     const renewalDate = ELEMENTS.startDateInput.value;
+        if (renewalDate && selectedType) {
+            try {
+                const renewal = new Date(renewalDate);
+                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
 
-    //     if (renewalDate && selectedType) {
-    //         try {
-    //             const renewal = new Date(renewalDate);
-    //             if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-
-    //             let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
-    //                 ? parseInt(ELEMENTS.customDaysInput.value) 
-    //                 : parseInt(selectedType);
+                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
+                    ? parseInt(ELEMENTS.customDaysInput.value) 
+                    : parseInt(selectedType);
                 
-    //             if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
 
-    //             renewal.setDate(renewal.getDate() + duration - 1);
-    //             ELEMENTS.endDateInput.value = formatDate(renewal);
-    //         } catch (error) {
-    //             console.error('Error calculating expiration date:', error);
-    //             ELEMENTS.endDateInput.value = '';
-    //         }
-    //     } else {
-    //         ELEMENTS.endDateInput.value = '';
-    //     }
-    // }
+                renewal.setDate(renewal.getDate() + duration - 1);
+                ELEMENTS.endDateInput.value = formatDate(renewal);
+            } catch (error) {
+                console.error('Error calculating expiration date:', error);
+                ELEMENTS.endDateInput.value = '';
+            }
+        } else {
+            ELEMENTS.endDateInput.value = '';
+        }
+    }
     
     function updateSummaryText() {
         if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
