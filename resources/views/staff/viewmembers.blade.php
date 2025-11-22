@@ -1175,7 +1175,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-    initialize();
+    // initialize();
   // ===== RFID: Update Status Message =====
     function updateRfidStatus(type, message) {
         if (!ELEMENTS.rfidStatus) return;
@@ -1876,7 +1876,7 @@ if (ELEMENTS.clearRfidBtn) {
         fetchMembers();
     });
 
-    // initialize();
+    initialize();
 });
 
 </script>
