@@ -125,7 +125,7 @@
         <img class="logo" src="{{ $gym->logo }}" alt="Gym Logo">
         @endif
         <h1>{{ isset($gym->name) ? $gym->name : 'Gym' }} - Collection Report</h1>
-        <p class="subtitle">Summary</p>
+        <p class="subtitle">Collection Summary</p>
     </div>
 
     <table class="report-info">
@@ -169,19 +169,19 @@
             <tr>
                 <td class="summary-label">Total Payments:</td>
                 <td class="summary-value">{{ count($payments) }}</td>
-                <td class="summary-label">Total Revenue:</td>
+                <td class="summary-label">Total Collection:</td>
                 <td class="summary-value">PHP {{ number_format($payments->sum('amount'), 2) }}</td>
             </tr>
             <tr>
                 <td class="summary-label">Cash Payments:</td>
                 <td class="summary-value">{{ $payments->where('payment_method', 'cash')->count() }}</td>
-                <td class="summary-label">Cash Revenue:</td>
+                <td class="summary-label">Cash Collection:</td>
                 <td class="summary-value">PHP {{ number_format($payments->where('payment_method', 'cash')->sum('amount'), 2) }}</td>
             </tr>
             <tr>
                 <td class="summary-label">Gcash Payments:</td>
                 <td class="summary-value">{{ $payments->where('payment_method', 'gcash')->count() }}</td>
-                <td class="summary-label">Gcash Revenue:</td>
+                <td class="summary-label">Gcash Collection:</td>
                 <td class="summary-value">PHP {{ number_format($payments->where('payment_method', 'gcash')->sum('amount'), 2) }}</td>
             </tr>
         </table>
