@@ -525,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
+                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -537,13 +537,13 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <div class="w-full hidden" id="customDaysContainer">
+                    <!-- <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> -->
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
@@ -1028,11 +1028,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                'custom': { 
-                    fee: data.session || 0, 
-                    name: 'Custom Days', 
-                    perDay: true 
-                },
+                // 'custom': { 
+                //     fee: data.session || 0, 
+                //     name: 'Custom Days', 
+                //     perDay: true 
+                // },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1334,43 +1334,56 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedType = ELEMENTS.membershipTypeSelect.value;
         let fee = 0;
         
-        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-            const days = parseInt(ELEMENTS.customDaysInput.value);
-            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
-        } else {
+        // if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+        //     const days = parseInt(ELEMENTS.customDaysInput.value);
+        //     fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
+        // } else {
             fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
-        }
+        // }
         
         ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
     }
     
     function updateExpirationDate() {
-        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+    if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
 
-        const selectedType = ELEMENTS.membershipTypeSelect.value;
-        const renewalDate = ELEMENTS.startDateInput.value;
+    const selectedType = ELEMENTS.membershipTypeSelect.value;
+    const renewalDate = ELEMENTS.startDateInput.value;
 
-        if (renewalDate && selectedType) {
-            try {
-                const renewal = new Date(renewalDate);
-                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
-
-                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
-                    ? parseInt(ELEMENTS.customDaysInput.value) 
-                    : parseInt(selectedType);
-                
-                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
-
-                renewal.setDate(renewal.getDate() + duration - 1);
-                ELEMENTS.endDateInput.value = formatDate(renewal);
-            } catch (error) {
-                console.error('Error calculating expiration date:', error);
-                ELEMENTS.endDateInput.value = '';
-            }
-        } else {
-            ELEMENTS.endDateInput.value = '';
-        }
+    if (!renewalDate || !selectedType) {
+        ELEMENTS.endDateInput.value = '';
+        return;
     }
+
+    const start = new Date(renewalDate);
+    if (isNaN(start.getTime())) {
+        ELEMENTS.endDateInput.value = '';
+        return;
+    }
+
+    let endDate = new Date(start);
+
+    // Perfect calculation: inclusive days
+    switch (selectedType) {
+        case '7':
+            endDate.setDate(start.getDate() + 6);    // +6 days = total 7 days
+            break;
+        case '30':
+            endDate.setDate(start.getDate() + 29);   // +29 days = total 30 days
+            break;
+        case '365':
+            endDate.setDate(start.getDate() + 364);  // +364 days = total 365 days
+            break;
+        default:
+            ELEMENTS.endDateInput.value = '';
+            return;
+    }
+
+    // Always expire at 23:59:59
+    endDate.setHours(23, 59, 59, 0);
+
+    ELEMENTS.endDateInput.value = formatDate(endDate);
+}
     
     function updateSummaryText() {
         if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
@@ -1388,11 +1401,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let typeName = MEMBERSHIP_DATA[selectedType].name;
         let fee = MEMBERSHIP_DATA[selectedType].fee;
         
-        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-            const days = parseInt(ELEMENTS.customDaysInput.value);
-            typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
-            fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
-        }
+        // if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+        //     const days = parseInt(ELEMENTS.customDaysInput.value);
+        //     typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
+        //     fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
+        // }
     
         fee = fee.toFixed(2);
     
