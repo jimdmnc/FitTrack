@@ -525,7 +525,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
+                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -537,13 +537,13 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <div class="w-full hidden" id="customDaysContainer">
+                    <!-- <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> -->
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
@@ -980,8 +980,8 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
-        customDaysInput: document.getElementById('customDays'),
-        customDaysContainer: document.getElementById('customDaysContainer'),
+        // customDaysInput: document.getElementById('customDays'),
+        // customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
@@ -1028,11 +1028,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                'custom': { 
-                    fee: data.session || 0, 
-                    name: 'Custom Days', 
-                    perDay: true 
-                },
+                // 'custom': { 
+                //     fee: data.session || 0, 
+                //     name: 'Custom Days', 
+                //     perDay: true 
+                // },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1061,21 +1061,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
-        if (prices.session) {
-            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
-            options[1].setAttribute('data-price', prices.session);
-        }
+        // if (prices.session) {
+        //     options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+        //     options[1].setAttribute('data-price', prices.session);
+        // }
         if (prices.weekly) {
-            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.weekly);
+            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[1].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.monthly);
+            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[4].setAttribute('data-price', prices.annual);
+            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.annual);
         }
     }
 
