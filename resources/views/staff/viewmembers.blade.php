@@ -1604,66 +1604,6 @@ document.addEventListener('DOMContentLoaded', function() {
         updateAllDetails();
     }
 
-// Open Upgrade Modal
-function openUpgradeModal(userId, currentRfid, name, currentType) {
-    document.getElementById('upgradeUserId').value = userId;
-    document.getElementById('currentMemberID').value = currentRfid || 'None (Manual)';
-    document.getElementById('upgradeMemberName').value = name;
-
-    // Reset RFID field
-    const uidInput = document.getElementById('upgrade_rfid_uid');
-    uidInput.value = '';
-    document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
-    document.getElementById('upgrade_rfid_loading').style.display = 'flex';
-    document.getElementById('upgrade_rfid_status').innerHTML = `
-        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        <span>Please tap your new RFID card to complete upgrade...</span>
-    `;
-    document.getElementById('submitUpgrade').disabled = true;
-
-    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-}
-
-    // Close Modal
-    function closeUpgradeModal() {
-        document.getElementById('upgradeMemberModal').classList.add('hidden');
-        document.getElementById('upgradeModalContent').classList.remove('opacity-100', 'scale-100');
-        document.getElementById('upgradeModalContent').classList.add('scale-95', 'opacity-0');
-    }
-
-    // Clear RFID
-    function clearUpgradeRfid() {
-        document.getElementById('upgrade_rfid_uid').value = '';
-        document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
-        document.getElementById('upgrade_rfid_loading').style.display = 'flex';
-        document.getElementById('submitUpgrade').disabled = true;
-    }
-
-    // Listen for RFID tap (from your existing WebSocket or polling)
-    document.addEventListener('DOMContentLoaded', function () {
-        // Assuming you have a global variable `detectedUID` from your RFID reader
-        window.addEventListener('rfidDetected', function (e) {
-            const uid = e.detail.uid;
-
-            // Check if Upgrade Modal is open
-            if (!document.getElementById('upgradeMemberModal').classList.contains('hidden')) {
-                const input = document.getElementById('upgrade_rfid_uid');
-                input.value = uid;
-                document.getElementById('clearUpgradeRfidBtn').classList.remove('hidden');
-                document.getElementById('upgrade_rfid_loading').style.display = 'none';
-                document.getElementById('upgrade_rfid_status').innerHTML = `
-                    <svg class="h-5 w-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                    <span class="text-green-400 font-bold">Card detected! Ready to upgrade.</span>
-                `;
-                document.getElementById('submitUpgrade').disabled = false;
-            }
-        });
-    });
-
     function closeRenewModal() {
         animateModalClose('renewMemberModal', 'editModalContent');
     }
