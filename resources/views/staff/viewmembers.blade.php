@@ -354,8 +354,7 @@
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
                                         <button 
-                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                        onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}', '{{ $member->membership_type }}')"                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
@@ -568,6 +567,44 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
                         <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
+
+                    <!-- RFID Card Input - Only visible for Session Members (membership_type = 1) -->
+<div class="w-full md:col-span-2 hidden" id="rfidInputContainer">
+    <div class="rfid-container">
+        <label for="uid" class="block text-gray-200 font-medium mb-2">
+            Assign RFID Card <span class="text-red-500">*</span>
+        </label>
+        <div class="relative">
+            <input 
+                id="uid" 
+                name="uid" 
+                class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" 
+                placeholder="Waiting for card tap..." 
+                readonly 
+                aria-describedby="uid_error">
+            <div class="absolute inset-y-0 right-3 flex items-center">
+                <div id="rfid-loading" class="animate-pulse flex items-center">
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                    <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                </div>
+                <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                    ×
+                </button>
+            </div>
+        </div>
+        <div id="rfid_status" class="mt-2 text-sm text-green-400 flex items-center" aria-live="polite">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span>Tap card to assign RFID...</span>
+        </div>
+        <div id="uid_error" class="text-red-500 text-sm mt-1 hidden"></div>
+        @error('uid')
+            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span>
+        @enderror
+    </div>
+</div>
                 </div>
                 
                 <!-- Summary Box -->
@@ -1459,10 +1496,28 @@ document.addEventListener('DOMContentLoaded', function() {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    function openRenewModal(memberID, name, email, phone, endDate) {
+    function openRenewModal(memberID, name, email, phone, endDate, membershipType = '') {
         document.getElementById("editMemberID").value = memberID;
         document.getElementById("editMemberName").value = name;
-        
+        document.getElementById("currentMembershipType").value = membershipType; // pass type
+
+        const rfidContainer = document.getElementById('rfidInputContainer');
+    const uidInput = document.getElementById('uid');
+    const uidError = document.getElementById('uid_error');
+
+    if (membershipType === '1' || membershipType === 'session') {
+        rfidContainer.classList.remove('hidden');
+        uidInput.removeAttribute('disabled');
+        uidInput.required = true;
+        document.getElementById('rfid_status').textContent = 'Tap card to assign RFID...';
+        uidError.classList.add('hidden');
+    } else {
+        rfidContainer.classList.add('hidden');
+        uidInput.value = '';
+        uidInput.removeAttribute('required');
+        clearRfid(); // reset
+    }
+
         if (document.getElementById("editEmail") && email) {
             document.getElementById("editEmail").value = email;
         }
