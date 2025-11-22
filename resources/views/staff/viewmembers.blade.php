@@ -355,7 +355,7 @@
                                     <div class="flex flex-wrap gap-2 justify-center">
                                       @if(in_array($member->membership_type, ['7', '30', '365']))
                                                 <button 
-                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->end_date }}')" 
                                                     class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                                     title="Renew membership">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1860,8 +1860,10 @@ if (ELEMENTS.clearRfidBtn) {
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
     window.openUpgradeModal = openUpgradeModal;
+
     window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
+
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
     window.openRestoreModal = openRestoreModal;
