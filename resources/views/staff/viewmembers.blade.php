@@ -496,17 +496,17 @@
 
 </section>
 
-<!-- Upgrade Member Modal -->
+  <!-- Upgrade Member Modal -->
 <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
     <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
         
-        <!-- Header -->
+        <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
             <h2 class="text-lg font-bold text-gray-200 flex items-center">
                 <svg class="h-6 w-6 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                Upgrade to RFID Membership
+                Upgrade Membership
             </h2>
             <button onclick="closeUpgradeModal()" class="text-gray-400 hover:text-white hover:bg-red-600 rounded-full p-2 transition">
                 <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -515,67 +515,99 @@
             </button>
         </div>
 
+        <!-- Upgrade Form -->
         <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-6">
             @csrf
             <input type="hidden" name="user_id" id="upgradeUserId">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-400">Current Member ID</label>
-                    <input type="text" id="currentMemberID" class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-gray-300 pointer-events-none" readonly>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-400">Member Name</label>
-                    <input type="text" id="upgradeMemberName" class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-gray-300 pointer-events-none" readonly>
-                </div>
-            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-            <!-- RFID SCANNER FIELD - USING YOUR EXACT STYLE & LOGIC -->
-            <div class="rfid-container mb-8">
-                <label for="upgrade_rfid_uid" class="block text-gray-200 font-semibold text-lg mb-4">
-                    Scan New RFID Card <span class="text-red-500">*</span>
-                </label>
-                <div class="relative">
-                    <input 
-                        id="upgrade_rfid_uid" 
-                        name="uid" 
-                        type="text"
-                        required
-                        class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-16 py-6 border-2 rounded-xl cursor-default pointer-events-none select-none focus:ring-4 focus:ring-purple-500 transition-all text-xl font-mono text-center tracking-widest" 
-                        placeholder="Waiting for card tap..." 
-                        readonly
-                    >
-                    <div class="absolute inset-y-0 right-4 flex items-center space-x-3">
-                        <div id="upgrade_rfid_loading" class="animate-pulse flex items-center">
-                            <span class="h-3 w-3 bg-purple-500 rounded-full"></span>
-                            <span class="h-3 w-3 bg-purple-500 rounded-full animate-pulse delay-100"></span>
-                            <span class="h-3 w-3 bg-purple-500 rounded-full animate-pulse delay-200"></span>
+                <!-- Member ID (Current) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Current Member ID</label>
+                    <input type="text" id="currentMemberID" class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-gray-200 text-sm pointer-events-none" readonly>
+                </div>
+
+                <!-- Member Name -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Member Name</label>
+                    <input type="text" id="upgradeMemberName" class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-gray-200 text-sm pointer-events-none" readonly>
+                </div>
+
+                <!-- Membership Type (Upgrading To) -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Upgrade To <span class="text-red-500">*</span></label>
+                    <select id="upgradeMembershipType" name="membership_type" required class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-gray-200 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+                        <option value="" disabled selected>Select upgrade plan</option>
+                        <option value="lifetime_rfid">Lifetime RFID Membership</option>
+                        <option value="premium_rfid">Premium RFID (1 Year)</option>
+                    </select>
+                </div>
+
+                <!-- Membership Fee -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Upgrade Fee (₱)</label>
+                    <input type="text" id="upgradeFee" class="w-full px-3 py-2 bg-[#2c2c2c] border border-gray-600 rounded-lg text-purple-400 font-bold pointer-events-none" value="₱2,500" readonly>
+                </div>
+
+                <!-- RFID CARD SCANNER - REQUIRED -->
+                <div class="md:col-span-2 mt-4">
+                    <div class="rfid-container">
+                        <label for="upgrade_rfid_uid" class="block text-gray-200 font-semibold text-lg mb-3">
+                            <svg class="inline h-6 w-6 mr-2 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c1.104 0 2-.896 2-2s-.896-2-2-2-2 .896-2 2 .896 2 2 2zm0 2c-2.67 0-8 1.335-8 4v2h16v-2c0-2.665-5.33-4-8-4z" />
+                            </svg>
+                            Scan New RFID Card <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <input 
+                                id="upgrade_rfid_uid" 
+                                name="uid" 
+                                type="text"
+                                required
+                                class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-5 border-2 rounded-xl cursor-default pointer-events-none select-none focus:ring-4 focus:ring-purple-500 focus:border-purple-500 transition-all text-xl font-mono text-center tracking-widest" 
+                                placeholder="Tap card to assign..." 
+                                readonly
+                            >
+                            <div class="absolute inset-y-0 right-4 flex items-center space-x-3">
+                                <div id="upgrade_rfid_loading" class="animate-pulse flex items-center">
+                                    <span class="h-3 w-3 bg-purple-500 rounded-full"></span>
+                                    <span class="h-3 w-3 bg-purple-500 rounded-full animate-pulse delay-100"></span>
+                                    <span class="h-3 w-3 bg-purple-500 rounded-full animate-pulse delay-200"></span>
+                                </div>
+                                <button 
+                                    type="button" 
+                                    onclick="clearUpgradeRfid()" 
+                                    id="clearUpgradeRfidBtn" 
+                                    class="bg-red-600 text-white rounded-full w-9 h-9 flex items-center justify-center hover:bg-red-500 transition hidden shadow-lg"
+                                >
+                                    ×
+                                </button>
+                            </div>
                         </div>
-                        <button 
-                            type="button" 
-                            onclick="clearUpgradeRfid()" 
-                            id="clearUpgradeRfidBtn" 
-                            class="bg-red-600 text-white rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-500 transition hidden shadow-lg text-xl font-bold"
-                        >×</button>
+                        <div id="upgrade_rfid_status" class="mt-3 text-sm flex items-center text-purple-400 font-medium" aria-live="polite">
+                            <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span>Please tap your new RFID card to complete upgrade...</span>
+                        </div>
+                        @error('uid')
+                            <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
+                        @enderror
                     </div>
                 </div>
 
-                <!-- Status Message (Same as your system) -->
-                <div id="upgrade_rfid_status" class="mt-3 text-sm flex items-center text-purple-400 font-medium" aria-live="polite">
-                    <svg class="h-5 w-5 mr-2 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Please Tap Your Card...
-                </div>
-                @error('uid')
-                    <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span>
-                @enderror
             </div>
 
-            <!-- Summary Box -->
-            <div class="bg-purple-900 bg-opacity-20 border-2 border-purple-600 rounded-xl p-6 text-center">
-                <h3 class="text-xl font-bold text-purple-300 mb-3">Ready to Go Tap & Go?</h3>
-                <p class="text-gray-300">After upgrade, member can enter by tapping card only — no manual check-in!</p>
+            <!-- Summary -->
+            <div class="mt-6 bg-purple-900 bg-opacity-20 border-2 border-purple-600 rounded-xl p-5">
+                <h3 class="font-bold text-purple-300 text-lg mb-3">Upgrade Complete = Tap & Go Access</h3>
+                <ul class="text-gray-300 space-y-2 text-sm">
+                    <li> New RFID card will be linked instantly</li>
+                    <li> No more manual check-in</li>
+                    <li> Lifetime / Premium access activated</li>
+                    <li> Card can be used immediately after upgrade</li>
+                </ul>
             </div>
 
             <!-- Buttons -->
@@ -589,6 +621,9 @@
                     class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-lg transition shadow-xl flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                     disabled
                 >
+                    <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                     Complete Upgrade
                 </button>
             </div>
@@ -1726,108 +1761,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
     initialize();
 });
-</script>
-<script>
-// Reuse your existing updateRfidStatus function (just make it work for upgrade modal too)
-function updateRfidStatus(type, message, targetId = 'rfid_status') {
-    const statusEl = document.getElementById(targetId);
-    if (!statusEl) return;
-
-    const icons = {
-        success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-        waiting: `<svg class="h-5 w-5 mr-2 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
-        error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`
-    };
-
-    const colors = { success: 'text-green-400', waiting: 'text-purple-400', error: 'text-red-500' };
-
-    statusEl.innerHTML = `${icons[type]} ${message}`;
-    statusEl.className = `mt-3 text-sm flex items-center font-medium ${colors[type]}`;
-}
-
-// Toggle clear button
-function toggleClearButton(inputId, btnId) {
-    const input = document.getElementById(inputId);
-    const btn = document.getElementById(btnId);
-    if (input && btn) {
-        btn.classList.toggle('hidden', input.value.trim() === '');
-    }
-}
-
-// Clear RFID in Upgrade Modal
-function clearUpgradeRfid() {
-    const input = document.getElementById('upgrade_rfid_uid');
-    input.value = '';
-    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
-    document.getElementById('upgrade_rfid_loading').style.display = 'flex';
-    updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
-    document.getElementById('submitUpgrade').disabled = true;
-}
-
-// Open Upgrade Modal
-function openUpgradeModal(userId, currentRfid, name) {
-    document.getElementById('upgradeUserId').value = userId;
-    document.getElementById('currentMemberID').value = currentRfid || 'None';
-    document.getElementById('upgradeMemberName').value = name;
-
-    // Reset RFID field
-    const uidInput = document.getElementById('upgrade_rfid_uid');
-    uidInput.value = '';
-    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
-    document.getElementById('upgrade_rfid_loading').style.display = 'flex';
-    updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
-    document.getElementById('submitUpgrade').disabled = true;
-
-    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-
-    // Start polling when modal opens
-    startUpgradeRfidPolling();
-}
-
-// Close modal
-function closeUpgradeModal() {
-    document.getElementById('upgradeMemberModal').classList.add('hidden');
-    stopUpgradeRfidPolling();
-}
-
-// Polling for Upgrade Modal
-let upgradePollingInterval = null;
-
-function startUpgradeRfidPolling() {
-    stopUpgradeRfidPolling(); // clear any old
-
-    upgradePollingInterval = setInterval(() => {
-        if (document.getElementById('upgradeMemberModal').classList.contains('hidden')) {
-            stopUpgradeRfidPolling();
-            return;
-        }
-
-        fetch('/api/rfid/latest')
-            .then(r => r.json())
-            .then(data => {
-                const input = document.getElementById('upgrade_rfid_uid');
-                if (data.uid && input && input.value !== data.uid) {
-                    input.value = data.uid;
-                    document.getElementById('upgrade_rfid_loading').style.display = 'none';
-                    updateRfidStatus('success', 'Card Detected Successfully!', 'upgrade_rfid_status');
-                    toggleClearButton('upgrade_rfid_uid', 'clearUpgradeRfidBtn');
-                    document.getElementById('submitUpgrade').disabled = false;
-                }
-            })
-            .catch(() => {
-                updateRfidStatus('waiting', 'Please Tap Your Card...', 'upgrade_rfid_status');
-            });
-    }, 1000);
-}
-
-function stopUpgradeRfidPolling() {
-    if (upgradePollingInterval) {
-        clearInterval(upgradePollingInterval);
-        upgradePollingInterval = null;
-    }
-}
 </script>
 @endsection
