@@ -1783,6 +1783,41 @@ function fetchLatestUid() {
                 toggleClearButton();
             })
     }
+    // Initialize
+    function initialize() {
+        try {
+            validateBirthdate();
+            setupMembershipHandlers();
+            setupFormHandlers();
 
+            // Handle session messages
+            @if (session('success'))
+                const uidInput = getElement('uid');
+                if (uidInput) uidInput.value = '';
+                updateRfidStatus('success', '{{ session('success') }}');
+            @endif
+
+            @if (session('error'))
+                updateRfidStatus('error', '{{ session('error') }}');
+            @endif
+            fetchLatestUid();
+            const rfidPollInterval = setInterval(fetchLatestUid, 2000);
+            // Initial RFID status
+            updateRfidStatus('waiting', 'Please Tap Your Card...');
+            
+            // Start RFID polling with retry mechanism
+            let retryCount = 0;
+            
+            
+        } catch (error) {
+            console.error('Error initializing form:', error);
+        }
+
+        // Cleanup
+  // Clean up interval when leaving page
+  window.addEventListener('beforeunload', function() {
+        clearInterval(rfidPollInterval);
+    });
+    }
 </script>
 @endsection
