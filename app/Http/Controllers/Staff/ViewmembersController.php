@@ -151,6 +151,9 @@ class ViewmembersController extends Controller
 /**
  * Upgrade a session member to RFID card membership
  */
+/**
+ * Upgrade a session member to RFID card membership
+ */
 public function upgradeMembership(Request $request)
 {
     $request->validate([
@@ -199,10 +202,36 @@ public function upgradeMembership(Request $request)
         $membershipDays = (int) $request->membership_type;
         $paymentAmount = $price->amount;
 
-        DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays) {
-            // Update user with new RFID UID and membership details
+        $oldRfidUid = $user->rfid_uid;
+        $newRfidUid = $request->uid;
+
+        DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays, $oldRfidUid, $newRfidUid) {
+            // Step 1: Update all related tables that reference rfid_uid
+            
+            // Update attendances table
+            DB::table('attendances')
+                ->where('rfid_uid', $oldRfidUid)
+                ->update(['rfid_uid' => $newRfidUid]);
+            
+            // Update renewals table (if exists)
+            DB::table('renewals')
+                ->where('rfid_uid', $oldRfidUid)
+                ->update(['rfid_uid' => $newRfidUid]);
+            
+            // Update members_payments table (if exists)
+            DB::table('members_payments')
+                ->where('rfid_uid', $oldRfidUid)
+                ->update(['rfid_uid' => $newRfidUid]);
+            
+            // Add any other tables that reference rfid_uid here
+            // Example:
+            // DB::table('your_other_table')
+            //     ->where('rfid_uid', $oldRfidUid)
+            //     ->update(['rfid_uid' => $newRfidUid]);
+
+            // Step 2: Now update the user with new RFID UID and membership details
             $user->update([
-                'rfid_uid' => $request->uid,
+                'rfid_uid' => $newRfidUid,
                 'role' => 'user', // Change from userSession to user
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
@@ -210,9 +239,9 @@ public function upgradeMembership(Request $request)
                 'member_status' => 'active',
             ]);
 
-            // Create renewal record
+            // Step 3: Create renewal record with new RFID UID
             Renewal::create([
-                'rfid_uid' => $request->uid, // Use new RFID UID
+                'rfid_uid' => $newRfidUid,
                 'membership_type' => $request->membership_type,
                 'start_date' => $request->start_date,
                 'end_date' => $request->end_date,
@@ -220,9 +249,9 @@ public function upgradeMembership(Request $request)
                 'amount' => $paymentAmount,
             ]);
 
-            // Create payment record
+            // Step 4: Create payment record with new RFID UID
             MembersPayment::create([
-                'rfid_uid' => $request->uid, // Use new RFID UID
+                'rfid_uid' => $newRfidUid,
                 'amount' => $paymentAmount,
                 'payment_method' => 'cash',
                 'payment_date' => now(),
