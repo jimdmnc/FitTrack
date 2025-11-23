@@ -1347,37 +1347,7 @@ function checkUpgradeSubmitButton() {
     // Enable submit only if all required fields are filled
     submitButton.disabled = !(membershipType && startDate && rfidValue);
 }
-function clearRfid() {
-        const uidInput = document.getElementById('uid');
-        const uid = uidInput.value;
 
-        if (!uid) {
-            updateRfidStatus('error', 'No RFID to clear');
-            return;
-        }
-
-        fetch(`/api/rfid/clear/${uid}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                uidInput.value = '';
-                updateRfidStatus('success', 'RFID cleared');
-            } else {
-                updateRfidStatus('error', data.message || 'Failed to clear RFID');
-            }
-            toggleClearButton();
-        })
-        .catch(error => {
-            console.error(error);
-            updateRfidStatus('error', 'Request failed');
-        });
-    }
 
 let upgradeRfidPollingInterval = null;
 
@@ -2050,5 +2020,36 @@ window.clearUpgradeRfid = clearUpgradeRfid;
 
     initialize();
 });
+function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
+
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
+        }
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
 </script>
 @endsection
