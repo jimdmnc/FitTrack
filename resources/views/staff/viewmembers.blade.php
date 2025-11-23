@@ -989,8 +989,8 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 
 
 
-  <!-- Upgrade to RFID Modal -->
-  <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+   <!-- Upgrade to RFID Modal -->
+   <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
         <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
             <!-- Modal Header -->
             <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
@@ -1011,32 +1011,70 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
             <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
                 <input type="hidden" name="member_id" id="upgradeMemberId">
-                <input type="hidden" name="current_rfid_uid" id="upgradeCurrentRfidUid">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Member ID -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMemberID">Member ID</label>
+                        <input type="text" name="current_rfid_uid" id="upgradeMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                    </div>
+                    
                     <!-- Member Name -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMemberName">Member Name</label>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMemberName">Name</label>
                         <input type="text" id="upgradeMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
-
-                    <!-- Current Membership Type -->
+                    
+                    <!-- Membership Type -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeCurrentType">Current Membership</label>
-                        <input type="text" id="upgradeCurrentType" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMembershipType">Membership Type <span class="text-red-500">*</span></label>
+                        <select id="upgradeMembershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                            <option value="" selected disabled>Select Membership Type</option>
+                            <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
+                            <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
+                            <option value="365" data-price="0">Annual (365 days, Loading...)</option>
+                        </select>
+                        <div id="upgradeMembershipTypeError" class="text-red-500 text-xs mt-1 hidden">Failed to load membership prices. Please try again.</div>
+                        @error('membership_type')
+                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    
+                    <!-- Start Date -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeStartDate">Start Date <span class="text-red-500">*</span></label>
+                        <input type="date" id="upgradeStartDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                        @error('start_date')
+                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    
+                    <!-- Expiration Date -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeEndDate">Expiration Date</label>
+                        <input type="text" id="upgradeEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        @error('end_date')
+                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    <!-- Membership Fee -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMembershipFee">Membership Fee (₱)</label>
+                        <input type="text" id="upgradeMembershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                 </div>
 
                 <!-- RFID Card Input -->
                 <div class="mt-4 rfid-container">
-                    <label for="upgradeUid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+                    <label for="upgradeUid" class="block text-gray-200 font-medium mb-2">New RFID Card <span class="text-red-500">*</span></label>
                     <div class="relative">
-                        <input id="upgradeUid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="upgrade_uid_error" required>
+                        <input id="upgradeUid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="upgrade_uid_error" required>
                         <div class="absolute inset-y-0 right-3 flex items-center">
                             <div id="upgrade-rfid-loading" class="animate-pulse flex items-center">
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                                <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                                <span class="h-2 w-2 bg-purple-500 rounded-full mr-1"></span>
+                                <span class="h-2 w-2 bg-purple-500 rounded-full mr-1 animate-pulse delay-100"></span>
+                                <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse delay-200"></span>
                             </div>
                             <button id="clearUpgradeRfidBtn" type="button" onclick="clearUpgradeRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
                                 ×
@@ -1053,14 +1091,14 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                         <span id="upgrade_uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
                     @enderror
                 </div>
-
-                <!-- Info Box -->
-                <div class="mt-4 bg-purple-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-purple-600 border-opacity-30">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                
+                <!-- Summary Box -->
+                <div class="mt-4 bg-purple-500 bg-opacity-10 p-3 sm:p-4 rounded-lg flex items-start border border-purple-500 border-opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-purple-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <div class="ml-3 text-sm text-gray-300">
-                        <span class="font-medium text-purple-400">Upgrade Info:</span> This will convert the session-based membership to an RFID card membership. The member will be able to use their RFID card for gym access. Please tap a new RFID card to assign it to this member.
+                    <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
+                        <span class="font-medium">Upgrade Summary:</span> <span id="upgradeMembershipSummaryText">Select membership type and tap RFID card to continue.</span>
                     </div>
                 </div>
 
