@@ -1076,7 +1076,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                                 <span class="h-2 w-2 bg-purple-500 rounded-full mr-1 animate-pulse delay-100"></span>
                                 <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse delay-200"></span>
                             </div>
-                            <button id="clearUpgradeRfidBtn" type="button" onclick="clearUpgradeRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                            <button id="clearUpgradeRfidBtn" type="button" onclick=" clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
                                 ×
                             </button>
                         </div>
@@ -1347,14 +1347,37 @@ function checkUpgradeSubmitButton() {
     // Enable submit only if all required fields are filled
     submitButton.disabled = !(membershipType && startDate && rfidValue);
 }
-function clearUpgradeRfid() {
-    document.getElementById('upgradeUid').value = '';
-    document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
-    document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
-    updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
-    updateUpgradeSummaryText();
-    checkUpgradeSubmitButton();
-}
+function clearRfid() {
+        const uidInput = document.getElementById('uid');
+        const uid = uidInput.value;
+
+        if (!uid) {
+            updateRfidStatus('error', 'No RFID to clear');
+            return;
+        }
+
+        fetch(`/api/rfid/clear/${uid}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                uidInput.value = '';
+                updateRfidStatus('success', 'RFID cleared');
+            } else {
+                updateRfidStatus('error', data.message || 'Failed to clear RFID');
+            }
+            toggleClearButton();
+        })
+        .catch(error => {
+            console.error(error);
+            updateRfidStatus('error', 'Request failed');
+        });
+    }
 
 let upgradeRfidPollingInterval = null;
 
