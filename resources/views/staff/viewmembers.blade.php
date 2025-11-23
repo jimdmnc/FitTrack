@@ -1175,37 +1175,175 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function openUpgradeModal(memberId, currentRfidUid, memberName, membershipType) {
-    // Set hidden fields
+    // Set hidden field
     document.getElementById('upgradeMemberId').value = memberId;
-    document.getElementById('upgradeCurrentRfidUid').value = currentRfidUid || '';
     
     // Set display fields
+    document.getElementById('upgradeMemberID').value = currentRfidUid || 'N/A';
     document.getElementById('upgradeMemberName').value = memberName;
     
-    // Map membership type number to display name
-    let typeDisplay = 'Session';
-    if (membershipType === '1') {
-        typeDisplay = 'Session (1 Day)';
-    }
-    document.getElementById('upgradeCurrentType').value = typeDisplay;
+    // Reset form fields
+    document.getElementById('upgradeMembershipType').value = '';
+    document.getElementById('upgradeStartDate').value = todayFormatted;
+    document.getElementById('upgradeEndDate').value = '';
+    document.getElementById('upgradeMembershipFee').value = '';
     
     // Reset RFID input
     document.getElementById('upgradeUid').value = '';
-    document.getElementById('upgrade_rfid_status').innerHTML = `...`;
+    document.getElementById('upgrade_rfid_status').innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+        Please Tap Your Card...
+    `;
     document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
     document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
     
-    // Disable submit button until RFID is scanned
+    // Reset summary
+    document.getElementById('upgradeMembershipSummaryText').textContent = 'Select membership type and tap RFID card to continue.';
+    
+    // Disable submit button until both membership type and RFID are provided
     document.getElementById('submitUpgrade').disabled = true;
+    
+    // Update membership prices in dropdown
+    updateUpgradeMembershipPrices();
     
     // Open modal
     animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+    
+    // Attach event listeners for this modal
+    attachUpgradeModalListeners();
 }
 
+function attachUpgradeModalListeners() {
+    const membershipTypeSelect = document.getElementById('upgradeMembershipType');
+    const startDateInput = document.getElementById('upgradeStartDate');
+    
+    // Remove existing listeners by cloning
+    const newMembershipSelect = membershipTypeSelect.cloneNode(true);
+    const newStartDateInput = startDateInput.cloneNode(true);
+    membershipTypeSelect.parentNode.replaceChild(newMembershipSelect, membershipTypeSelect);
+    startDateInput.parentNode.replaceChild(newStartDateInput, startDateInput);
+    
+    // Add new listeners
+    document.getElementById('upgradeMembershipType').addEventListener('change', updateUpgradeDetails);
+    document.getElementById('upgradeStartDate').addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            this.value = todayFormatted;
+        }
+        updateUpgradeDetails();
+    });
+}
+
+
+function updateUpgradeDetails() {
+    updateUpgradeMembershipFee();
+    updateUpgradeExpirationDate();
+    updateUpgradeSummaryText();
+    checkUpgradeSubmitButton();
+}
+
+function updateUpgradeMembershipFee() {
+    const selectedType = document.getElementById('upgradeMembershipType').value;
+    const feeInput = document.getElementById('upgradeMembershipFee');
+    
+    if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
+        feeInput.value = '';
+        return;
+    }
+    
+    const fee = MEMBERSHIP_DATA[selectedType].fee || 0;
+    feeInput.value = fee.toFixed(2);
+}
+function updateUpgradeExpirationDate() {
+    const selectedType = document.getElementById('upgradeMembershipType').value;
+    const startDate = document.getElementById('upgradeStartDate').value;
+    const endDateInput = document.getElementById('upgradeEndDate');
+    
+    if (!startDate || !selectedType) {
+        endDateInput.value = '';
+        return;
+    }
+    
+    try {
+        const start = new Date(startDate);
+        if (isNaN(start.getTime())) throw new Error('Invalid date');
+        
+        const duration = parseInt(selectedType);
+        if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+        
+        start.setDate(start.getDate() + duration - 1);
+        endDateInput.value = formatDate(start);
+    } catch (error) {
+        console.error('Error calculating expiration date:', error);
+        endDateInput.value = '';
+    }
+}
+
+function updateUpgradeMembershipPrices() {
+    const select = document.getElementById('upgradeMembershipType');
+    if (!select || !MEMBERSHIP_DATA) return;
+    
+    const options = select.options;
+    if (MEMBERSHIP_DATA['7']) {
+        options[1].text = `Weekly (7 days, ₱${MEMBERSHIP_DATA['7'].fee.toFixed(2)})`;
+        options[1].setAttribute('data-price', MEMBERSHIP_DATA['7'].fee);
+    }
+    if (MEMBERSHIP_DATA['30']) {
+        options[2].text = `Monthly (30 days, ₱${MEMBERSHIP_DATA['30'].fee.toFixed(2)})`;
+        options[2].setAttribute('data-price', MEMBERSHIP_DATA['30'].fee);
+    }
+    if (MEMBERSHIP_DATA['365']) {
+        options[3].text = `Annual (365 days, ₱${MEMBERSHIP_DATA['365'].fee.toFixed(2)})`;
+        options[3].setAttribute('data-price', MEMBERSHIP_DATA['365'].fee);
+    }
+}
+function updateUpgradeSummaryText() {
+    const selectedType = document.getElementById('upgradeMembershipType').value;
+    const startDate = document.getElementById('upgradeStartDate').value;
+    const endDate = document.getElementById('upgradeEndDate').value;
+    const rfidValue = document.getElementById('upgradeUid').value;
+    const summaryText = document.getElementById('upgradeMembershipSummaryText');
+    
+    if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
+        summaryText.textContent = 'Select membership type and tap RFID card to continue.';
+        return;
+    }
+    
+    const typeName = MEMBERSHIP_DATA[selectedType].name;
+    const fee = MEMBERSHIP_DATA[selectedType].fee.toFixed(2);
+    
+    if (startDate && endDate && rfidValue) {
+        const formattedStart = formatDisplayDate(new Date(startDate));
+        const formattedEnd = formatDisplayDate(new Date(endDate));
+        summaryText.textContent = 
+            `Upgrading to ${typeName} membership from ${formattedStart} to ${formattedEnd}. RFID: ${rfidValue}. Total fee: ₱${fee}`;
+    } else if (startDate && endDate) {
+        const formattedStart = formatDisplayDate(new Date(startDate));
+        const formattedEnd = formatDisplayDate(new Date(endDate));
+        summaryText.textContent = 
+            `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}. Please tap RFID card.`;
+    } else {
+        summaryText.textContent = 
+            `${typeName} membership. Total fee: ₱${fee}. Please complete all fields and tap RFID card.`;
+    }
+}
 function closeUpgradeModal() {
     animateModalClose('upgradeMemberModal', 'upgradeModalContent');
 }
-
+function checkUpgradeSubmitButton() {
+    const membershipType = document.getElementById('upgradeMembershipType').value;
+    const startDate = document.getElementById('upgradeStartDate').value;
+    const rfidValue = document.getElementById('upgradeUid').value;
+    const submitButton = document.getElementById('submitUpgrade');
+    
+    // Enable submit only if all required fields are filled
+    submitButton.disabled = !(membershipType && startDate && rfidValue);
+}
 function clearUpgradeRfid() {
     document.getElementById('upgradeUid').value = '';
     document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
