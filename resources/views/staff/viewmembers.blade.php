@@ -1587,91 +1587,118 @@ if (ELEMENTS.clearRfidBtn) {
         // Placeholder for table interactions
     }
 
-    // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
-    function updateAllDetails() {
-        updateMembershipFee();
-        updateExpirationDate();
-        updateSummaryText();
+    // Update updateAllDetails to accept modal type
+    function updateAllDetails(modalType = 'renew') {
+        updateMembershipFee(modalType);
+        updateExpirationDate(modalType);
+        updateSummaryText(modalType);
     }
+
+// Update other functions similarly...
+function updateMembershipFee(modalType = 'renew') {
+    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
+    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
+    const membershipFeeInput = document.getElementById(`${prefix}MembershipFee`);
     
-    function updateMembershipFee() {
-        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
-        
-        const selectedType = ELEMENTS.membershipTypeSelect.value;
-        let fee = 0;
-        
-        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-            const days = parseInt(ELEMENTS.customDaysInput.value);
+    if (!membershipTypeSelect || !membershipFeeInput) return;
+    
+    const selectedType = membershipTypeSelect.value;
+    let fee = 0;
+    
+    if (selectedType === 'custom') {
+        const customDaysInput = document.getElementById(`${prefix}CustomDays`);
+        if (customDaysInput && customDaysInput.value) {
+            const days = parseInt(customDaysInput.value);
             fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
-        } else {
-            fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
         }
-        
-        ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
+    } else {
+        fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
     }
     
-    function updateExpirationDate() {
-        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
+    membershipFeeInput.value = fee.toFixed(2);
+}
+    
+function updateExpirationDate(modalType = 'renew') {
+    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
+    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
+    const startDateInput = document.getElementById(`${prefix}StartDate`);
+    const endDateInput = document.getElementById(`${prefix}EndDate`);
+    
+    if (!membershipTypeSelect || !startDateInput || !endDateInput) return;
 
-        const selectedType = ELEMENTS.membershipTypeSelect.value;
-        const renewalDate = ELEMENTS.startDateInput.value;
+    const selectedType = membershipTypeSelect.value;
+    const renewalDate = startDateInput.value;
 
-        if (renewalDate && selectedType) {
-            try {
-                const renewal = new Date(renewalDate);
-                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+    if (renewalDate && selectedType) {
+        try {
+            const renewal = new Date(renewalDate);
+            if (isNaN(renewal.getTime())) throw new Error('Invalid date');
 
-                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
-                    ? parseInt(ELEMENTS.customDaysInput.value) 
-                    : parseInt(selectedType);
-                
-                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
-
-                renewal.setDate(renewal.getDate() + duration - 1);
-                ELEMENTS.endDateInput.value = formatDate(renewal);
-            } catch (error) {
-                console.error('Error calculating expiration date:', error);
-                ELEMENTS.endDateInput.value = '';
+            let duration;
+            if (selectedType === 'custom') {
+                const customDaysInput = document.getElementById(`${prefix}CustomDays`);
+                duration = customDaysInput && customDaysInput.value 
+                    ? parseInt(customDaysInput.value) 
+                    : 0;
+            } else {
+                duration = parseInt(selectedType);
             }
-        } else {
-            ELEMENTS.endDateInput.value = '';
+            
+            if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+
+            renewal.setDate(renewal.getDate() + duration - 1);
+            endDateInput.value = formatDate(renewal);
+        } catch (error) {
+            console.error('Error calculating expiration date:', error);
+            endDateInput.value = '';
         }
+    } else {
+        endDateInput.value = '';
     }
+}
     
-    function updateSummaryText() {
-        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
-            !ELEMENTS.endDateInput || !ELEMENTS.summaryText) return;
-        
-        const selectedType = ELEMENTS.membershipTypeSelect.value;
-        const renewalDate = ELEMENTS.startDateInput.value;
-        const endDate = ELEMENTS.endDateInput.value;
+function updateSummaryText(modalType = 'renew') {
+    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
+    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
+    const startDateInput = document.getElementById(`${prefix}StartDate`);
+    const endDateInput = document.getElementById(`${prefix}EndDate`);
+    const summaryText = document.getElementById(`${prefix}MembershipSummaryText`);
     
-        if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
-            ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
-            return;
-        }
+    if (!membershipTypeSelect || !startDateInput || !endDateInput || !summaryText) return;
     
-        let typeName = MEMBERSHIP_DATA[selectedType].name;
-        let fee = MEMBERSHIP_DATA[selectedType].fee;
-        
-        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
-            const days = parseInt(ELEMENTS.customDaysInput.value);
+    const selectedType = membershipTypeSelect.value;
+    const renewalDate = startDateInput.value;
+    const endDate = endDateInput.value;
+
+    if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
+        summaryText.textContent = 'Select membership type to see details.';
+        return;
+    }
+
+    let typeName = MEMBERSHIP_DATA[selectedType].name;
+    let fee = MEMBERSHIP_DATA[selectedType].fee;
+    
+    if (selectedType === 'custom') {
+        const customDaysInput = document.getElementById(`${prefix}CustomDays`);
+        if (customDaysInput && customDaysInput.value) {
+            const days = parseInt(customDaysInput.value);
             typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
             fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
         }
-    
-        fee = fee.toFixed(2);
-    
-        if (renewalDate && endDate) {
-            const formattedStart = formatDisplayDate(new Date(renewalDate));
-            const formattedEnd = formatDisplayDate(new Date(endDate));
-            ELEMENTS.summaryText.textContent = 
-                `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
-        } else {
-            ELEMENTS.summaryText.textContent = 
-                `${typeName} membership. Total fee: ₱${fee}`;
-        }
     }
+
+    fee = fee.toFixed(2);
+
+    if (renewalDate && endDate) {
+        const formattedStart = formatDisplayDate(new Date(renewalDate));
+        const formattedEnd = formatDisplayDate(new Date(endDate));
+        summaryText.textContent = 
+            `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
+    } else {
+        summaryText.textContent = 
+            `${typeName} membership. Total fee: ₱${fee}`;
+    }
+}
 
     // ======== MODAL FUNCTIONS ========
         function openViewModal(memberID, name, membershipType, startDate, status) {
