@@ -1348,12 +1348,51 @@ function checkUpgradeSubmitButton() {
     submitButton.disabled = !(membershipType && startDate && rfidValue);
 }
 function clearUpgradeRfid() {
-    document.getElementById('upgradeUid').value = '';
-    document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
-    document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
-    updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
-    updateUpgradeSummaryText();
-    checkUpgradeSubmitButton();
+    const uidInput = document.getElementById('upgradeUid');
+    const uid = uidInput.value;
+
+    if (!uid) {
+        updateUpgradeRfidStatus('error', 'No RFID to clear');
+        return;
+    }
+
+    // Show loading state
+    document.getElementById('clearUpgradeRfidBtn').disabled = true;
+    updateUpgradeRfidStatus('waiting', 'Clearing RFID...');
+
+    fetch(`/api/rfid/clear/${uid}`, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Accept': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            uidInput.value = '';
+            document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
+            document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
+            updateUpgradeRfidStatus('success', 'RFID cleared successfully');
+            
+            // Reset to waiting state after 2 seconds
+            setTimeout(() => {
+                updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
+            }, 2000);
+            
+            // Update summary and check submit button
+            updateUpgradeSummaryText();
+            checkUpgradeSubmitButton();
+        } else {
+            updateUpgradeRfidStatus('error', data.message || 'Failed to clear RFID');
+            document.getElementById('clearUpgradeRfidBtn').disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error clearing RFID:', error);
+        updateUpgradeRfidStatus('error', 'Request failed. Please try again.');
+        document.getElementById('clearUpgradeRfidBtn').disabled = false;
+    });
 }
 
 let upgradeRfidPollingInterval = null;
