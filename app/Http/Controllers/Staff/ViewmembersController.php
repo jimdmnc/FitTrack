@@ -154,6 +154,9 @@ class ViewmembersController extends Controller
 /**
  * Upgrade a session member to RFID card membership
  */
+/**
+ * Upgrade a session member to RFID card membership
+ */
 public function upgradeMembership(Request $request)
 {
     $request->validate([
@@ -206,30 +209,10 @@ public function upgradeMembership(Request $request)
         $newRfidUid = $request->uid;
 
         DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays, $oldRfidUid, $newRfidUid) {
-            // Step 1: Update all related tables that reference rfid_uid
-            
-            // Update attendances table
-            DB::table('attendances')
-                ->where('rfid_uid', $oldRfidUid)
-                ->update(['rfid_uid' => $newRfidUid]);
-            
-            // Update renewals table (if exists)
-            DB::table('renewals')
-                ->where('rfid_uid', $oldRfidUid)
-                ->update(['rfid_uid' => $newRfidUid]);
-            
-            // Update members_payments table (if exists)
-            DB::table('members_payments')
-                ->where('rfid_uid', $oldRfidUid)
-                ->update(['rfid_uid' => $newRfidUid]);
-            
-            // Add any other tables that reference rfid_uid here
-            // Example:
-            // DB::table('your_other_table')
-            //     ->where('rfid_uid', $oldRfidUid)
-            //     ->update(['rfid_uid' => $newRfidUid]);
+            // Step 1: Temporarily disable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-            // Step 2: Now update the user with new RFID UID and membership details
+            // Step 2: Update the user's RFID UID first
             $user->update([
                 'rfid_uid' => $newRfidUid,
                 'role' => 'user', // Change from userSession to user
@@ -239,7 +222,34 @@ public function upgradeMembership(Request $request)
                 'member_status' => 'active',
             ]);
 
-            // Step 3: Create renewal record with new RFID UID
+            // Step 3: Update all related tables that reference the old rfid_uid
+            
+            // Update attendances table
+            DB::table('attendances')
+                ->where('rfid_uid', $oldRfidUid)
+                ->update(['rfid_uid' => $newRfidUid]);
+            
+            // Update renewals table (if exists and has records)
+            if (DB::table('renewals')->where('rfid_uid', $oldRfidUid)->exists()) {
+                DB::table('renewals')
+                    ->where('rfid_uid', $oldRfidUid)
+                    ->update(['rfid_uid' => $newRfidUid]);
+            }
+            
+            // Update members_payments table (if exists and has records)
+            if (DB::table('members_payments')->where('rfid_uid', $oldRfidUid)->exists()) {
+                DB::table('members_payments')
+                    ->where('rfid_uid', $oldRfidUid)
+                    ->update(['rfid_uid' => $newRfidUid]);
+            }
+            
+            // Add any other tables that reference rfid_uid here
+            // Check if table and records exist before updating
+            
+            // Step 4: Re-enable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+            // Step 5: Create new renewal record with new RFID UID
             Renewal::create([
                 'rfid_uid' => $newRfidUid,
                 'membership_type' => $request->membership_type,
@@ -249,7 +259,7 @@ public function upgradeMembership(Request $request)
                 'amount' => $paymentAmount,
             ]);
 
-            // Step 4: Create payment record with new RFID UID
+            // Step 6: Create payment record with new RFID UID
             MembersPayment::create([
                 'rfid_uid' => $newRfidUid,
                 'amount' => $paymentAmount,
@@ -259,7 +269,7 @@ public function upgradeMembership(Request $request)
         });
 
         return redirect()->route('staff.viewmembers')
-            ->with('success', 'Member upgraded to RFID card membership successfully!');
+            ->with('success', 'Member upgraded to RFID card membership successfully! New RFID: ' . $newRfidUid);
     } catch (\Exception $e) {
         Log::error('Membership upgrade error: ' . $e->getMessage());
         return redirect()->route('staff.viewmembers')
