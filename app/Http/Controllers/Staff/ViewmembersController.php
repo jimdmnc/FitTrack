@@ -9,6 +9,8 @@ use App\Models\MembersPayment;
 use App\Models\Price;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use App\Models\RfidTag;
+
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
@@ -267,6 +269,7 @@ public function upgradeMembership(Request $request)
                 'payment_date' => now(),
             ]);
         });
+        RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
 
         return redirect()->route('staff.viewmembers')
             ->with('success', 'Member upgraded to RFID card membership successfully! New RFID: ' . $newRfidUid);
