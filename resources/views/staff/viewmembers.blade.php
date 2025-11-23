@@ -1586,13 +1586,12 @@ if (ELEMENTS.clearRfidBtn) {
     function attachTableEventListeners() {
         // Placeholder for table interactions
     }
-
-    // Update updateAllDetails to accept modal type
-    function updateAllDetails(modalType = 'renew') {
-        updateMembershipFee(modalType);
-        updateExpirationDate(modalType);
-        updateSummaryText(modalType);
-    }
+// Update updateAllDetails to accept modal type
+function updateAllDetails(modalType = 'renew') {
+    updateMembershipFee(modalType);
+    updateExpirationDate(modalType);
+    updateSummaryText(modalType);
+}
 
 // Update other functions similarly...
 function updateMembershipFee(modalType = 'renew') {
@@ -1657,6 +1656,7 @@ function updateExpirationDate(modalType = 'renew') {
     }
 }
     
+
 function updateSummaryText(modalType = 'renew') {
     const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
     const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
@@ -1699,7 +1699,6 @@ function updateSummaryText(modalType = 'renew') {
             `${typeName} membership. Total fee: ₱${fee}`;
     }
 }
-
     // ======== MODAL FUNCTIONS ========
         function openViewModal(memberID, name, membershipType, startDate, status) {
             document.getElementById('viewMemberName').textContent = name;
@@ -1758,62 +1757,111 @@ function updateSummaryText(modalType = 'renew') {
     }
 
     // Update your openRenewModal function to use unique IDs for the renew modal
-function openRenewModal(memberID, name, email, phone, endDate) {
-    // Use renew-specific IDs
-    document.getElementById("renewMemberID").value = memberID;
-    document.getElementById("renewMemberName").value = name;
-    
-    if (document.getElementById("renewEmail") && email) {
-        document.getElementById("renewEmail").value = email;
-    }
-    
-    if (document.getElementById("renewPhone") && phone) {
-        document.getElementById("renewPhone").value = phone;
-    }
+    function openRenewModal(memberID, name, email, phone, endDate) {
+        // Use renew-specific IDs
+        document.getElementById("renewMemberID").value = memberID;
+        document.getElementById("renewMemberName").value = name;
+        
+        if (document.getElementById("renewEmail") && email) {
+            document.getElementById("renewEmail").value = email;
+        }
+        
+        if (document.getElementById("renewPhone") && phone) {
+            document.getElementById("renewPhone").value = phone;
+        }
 
-    if (document.getElementById("renewStartDate")) {
-        document.getElementById("renewStartDate").value = todayFormatted;
-    }
+        if (document.getElementById("renewStartDate")) {
+            document.getElementById("renewStartDate").value = todayFormatted;
+        }
 
-    const renewCustomDaysInput = document.getElementById("renewCustomDays");
-    if (renewCustomDaysInput) {
-        renewCustomDaysInput.value = '';
-    }
+        const renewCustomDaysInput = document.getElementById("renewCustomDays");
+        if (renewCustomDaysInput) {
+            renewCustomDaysInput.value = '';
+        }
 
-    // Pass the modal type to toggle function
-    toggleCustomDays('renew');
-    animateModalOpen('renewMemberModal', 'editModalContent');
-    updateAllDetails('renew');
-}
-
-// Update your openUpgradeModal to use upgrade-specific IDs
-function openUpgradeModal(memberID, name, email, phone, endDate) {
-    // Use upgrade-specific IDs
-    document.getElementById("upgradeMemberName").value = name;
-    
-    if (document.getElementById("upgradeEmail") && email) {
-        document.getElementById("upgradeEmail").value = email;
-    }
-    
-    if (document.getElementById("upgradePhone") && phone) {
-        document.getElementById("upgradePhone").value = phone;
+        // Pass the modal type to toggle function
+        toggleCustomDays('renew');
+        animateModalOpen('renewMemberModal', 'editModalContent');
+        updateAllDetails('renew');
     }
 
-    if (document.getElementById("upgradeStartDate")) {
-        document.getElementById("upgradeStartDate").value = todayFormatted;
+    // Update your openUpgradeModal to use upgrade-specific IDs
+    function openUpgradeModal(memberID, name, email, phone, endDate) {
+        // Use upgrade-specific IDs
+        document.getElementById("upgradeMemberName").value = name;
+        
+        if (document.getElementById("upgradeEmail") && email) {
+            document.getElementById("upgradeEmail").value = email;
+        }
+        
+        if (document.getElementById("upgradePhone") && phone) {
+            document.getElementById("upgradePhone").value = phone;
+        }
+
+        if (document.getElementById("upgradeStartDate")) {
+            document.getElementById("upgradeStartDate").value = todayFormatted;
+        }
+
+        const upgradeCustomDaysInput = document.getElementById("upgradeCustomDays");
+        if (upgradeCustomDaysInput) {
+            upgradeCustomDaysInput.value = '';
+        }
+
+        toggleCustomDays('upgrade');
+        animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+        updateAllDetails('upgrade');
     }
 
-    const upgradeCustomDaysInput = document.getElementById("upgradeCustomDays");
-    if (upgradeCustomDaysInput) {
-        upgradeCustomDaysInput.value = '';
+    // Update the initialization to set up both modals
+    function initializeModalEventListeners() {
+        // Setup for Renew Modal
+        const renewMembershipType = document.getElementById('renewMembershipType');
+        const renewStartDate = document.getElementById('renewStartDate');
+        
+        if (renewMembershipType) {
+            renewMembershipType.addEventListener('change', function() {
+                toggleCustomDays('renew');
+                updateAllDetails('renew');
+            });
+        }
+        
+        if (renewStartDate) {
+            renewStartDate.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    this.value = todayFormatted;
+                }
+                updateAllDetails('renew');
+            });
+        }
+        
+        // Setup for Upgrade Modal
+        const upgradeMembershipType = document.getElementById('upgradeMembershipType');
+        const upgradeStartDate = document.getElementById('upgradeStartDate');
+        
+        if (upgradeMembershipType) {
+            upgradeMembershipType.addEventListener('change', function() {
+                toggleCustomDays('upgrade');
+                updateAllDetails('upgrade');
+            });
+        }
+        
+        if (upgradeStartDate) {
+            upgradeStartDate.addEventListener('change', function() {
+                const selectedDate = new Date(this.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if (selectedDate < today) {
+                    this.value = todayFormatted;
+                }
+                updateAllDetails('upgrade');
+            });
+        }
     }
-
-    toggleCustomDays('upgrade');
-    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-    updateAllDetails('upgrade');
-}
-
-
     function closeUpgradeModal() {
         animateModalClose('upgradeMemberModal', 'upgradeModalContent');
     }
