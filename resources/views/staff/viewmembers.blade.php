@@ -373,7 +373,7 @@
                                                         '{{ $member->first_name }} {{ $member->last_name }}',
                                                         '{{ $member->membership_type ?? '' }}'
                                                     )" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                                    class="inline-flex items-center px-3 py-1.5 bg-purple-900 hover:bg-transparent hover:translate-y-[-2px] text-purple-100 rounded-lg transition-all duration-200 font-medium text-sm border border-purple-900 shadow-sm group"
                                                     title="Upgrade to RFID Card Membership">
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
