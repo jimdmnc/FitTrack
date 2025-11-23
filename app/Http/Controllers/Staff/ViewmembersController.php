@@ -147,6 +147,100 @@ class ViewmembersController extends Controller
         }
     }
 
+
+/**
+ * Upgrade a session member to RFID card membership
+ */
+public function upgradeMembership(Request $request)
+{
+    $request->validate([
+        'member_id' => 'required|exists:users,id',
+        'current_rfid_uid' => 'required|exists:users,rfid_uid',
+        'uid' => 'required|string|unique:users,rfid_uid',
+        'membership_type' => 'required|in:7,30,365',
+        'start_date' => 'required|date|after_or_equal:today',
+        'end_date' => 'required|date|after:start_date',
+    ], [
+        'member_id.exists' => 'The selected member is invalid.',
+        'current_rfid_uid.exists' => 'The current member ID is invalid.',
+        'uid.required' => 'Please tap an RFID card to continue.',
+        'uid.unique' => 'This RFID card is already registered to another member.',
+        'membership_type.in' => 'Please select a valid membership type.',
+        'start_date.after_or_equal' => 'The start date cannot be in the past.',
+        'end_date.after' => 'The expiration date must be after the start date.',
+    ]);
+
+    try {
+        // Get the member by ID
+        $user = User::findOrFail($request->member_id);
+
+        // Verify the current RFID UID matches
+        if ($user->rfid_uid !== $request->current_rfid_uid) {
+            throw new \Exception('Member ID mismatch. Please refresh and try again.');
+        }
+
+        // Get membership price
+        $prices = Price::whereIn('type', ['weekly', 'monthly', 'annual'])
+            ->get()
+            ->keyBy('type');
+
+        $requiredPriceType = match ($request->membership_type) {
+            '7' => 'weekly',
+            '30' => 'monthly',
+            '365' => 'annual',
+            default => throw new \Exception('Invalid membership type selected.'),
+        };
+
+        if (!$prices->has($requiredPriceType)) {
+            throw new \Exception("Price for {$requiredPriceType} membership is not configured.");
+        }
+
+        $price = $prices[$requiredPriceType];
+        $membershipDays = (int) $request->membership_type;
+        $paymentAmount = $price->amount;
+
+        DB::transaction(function () use ($user, $request, $paymentAmount, $membershipDays) {
+            // Update user with new RFID UID and membership details
+            $user->update([
+                'rfid_uid' => $request->uid,
+                'role' => 'user', // Change from userSession to user
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'member_status' => 'active',
+            ]);
+
+            // Create renewal record
+            Renewal::create([
+                'rfid_uid' => $request->uid, // Use new RFID UID
+                'membership_type' => $request->membership_type,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'days' => $membershipDays,
+                'amount' => $paymentAmount,
+            ]);
+
+            // Create payment record
+            MembersPayment::create([
+                'rfid_uid' => $request->uid, // Use new RFID UID
+                'amount' => $paymentAmount,
+                'payment_method' => 'cash',
+                'payment_date' => now(),
+            ]);
+        });
+
+        return redirect()->route('staff.viewmembers')
+            ->with('success', 'Member upgraded to RFID card membership successfully!');
+    } catch (\Exception $e) {
+        Log::error('Membership upgrade error: ' . $e->getMessage());
+        return redirect()->route('staff.viewmembers')
+            ->with('error', 'Failed to upgrade membership: ' . $e->getMessage());
+    }
+}
+
+
+
+
     /**
      * Handle membership renewal
      */
