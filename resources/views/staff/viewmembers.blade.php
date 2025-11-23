@@ -1746,11 +1746,11 @@ if (ELEMENTS.clearRfidBtn) {
         }
 
         toggleCustomDays();
-        animateModalOpen('upgradeMemberModal', 'editModalContent');
+        animateModalOpen('renewMemberModal', 'editModalContent');
         updateAllDetails();
     }
     function closeRenewModal() {
-        animateModalClose('upgradeMemberModal', 'editModalContent');
+        animateModalClose('renewMemberModal', 'editModalContent');
     }
 
     function openUpgradeModal(memberID, name, email, phone, endDate) {
