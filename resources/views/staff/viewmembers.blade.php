@@ -517,7 +517,7 @@
             </div>
 
             <!-- Upgrade Form -->
-            <form id="upgradeForm" action="{{ route('renew.membership') }}" method="POST" class="p-4 sm:p-6">
+            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
                 @csrf
                 <input type="hidden" name="user_id" id="editUserId">
 
@@ -663,20 +663,20 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- Member ID -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
-                        <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMemberID">Member ID</label>
+                        <input type="text" name="rfid_uid" id="renewMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                     
                     <!-- Member Name -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
-                        <input type="text" id="editMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMemberName">Name</label>
+                        <input type="text" id="renewMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                     
                     <!-- Membership Type -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
-                        <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMembershipType">Membership Type <span class="text-red-500">*</span></label>
+                        <select id="renewMembershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
                             <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
@@ -700,8 +700,8 @@
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date <span class="text-red-500">*</span></label>
-                        <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewStartDate">Renewal Date <span class="text-red-500">*</span></label>
+                        <input type="date" id="renewStartDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                         @error('start_date')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
@@ -709,8 +709,8 @@
                     
                     <!-- Expiration Date -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
-                        <input type="text" id="endDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewEndDate">Expiration Date</label>
+                        <input type="text" id="renewEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                         @error('end_date')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
@@ -718,8 +718,8 @@
 
                     <!-- Membership Fee -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
-                        <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMembershipFee">Membership Fee (₱)</label>
+                        <input type="text" id="renewMembershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                 </div>
                 
@@ -729,7 +729,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
-                        <span class="font-medium">Membership Summary:</span> <span id="membershipSummaryText">Select membership type to see details.</span>
+                        <span class="font-medium">Membership Summary:</span> <span id="renewMembershipSummaryText">Select membership type to see details.</span>
                     </div>
                 </div>
 
@@ -738,7 +738,7 @@
                     <button type="button" onclick="closeRenewModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
                         Cancel
                     </button>
-                    <button type="submit" id="submitRenewal" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
+                    <button type="submit" id="renewSubmitButton" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
@@ -990,48 +990,48 @@
     </div>
 <!-- End Revoke Member Modal -->
 <script>
-function toggleOtherReasonInput() {
-    const select = document.getElementById('revokeReason');
-    const otherInput = document.getElementById('otherReasonInput');
-    const finalReason = document.getElementById('finalReason');
-    
-    if (select.value === 'Others') {
-        otherInput.classList.remove('hidden');
-        otherInput.focus();
-        finalReason.value = otherInput.value || '';
-    } else {
-        otherInput.classList.add('hidden');
-        otherInput.value = '';
-        finalReason.value = select.value;
+    function toggleOtherReasonInput() {
+        const select = document.getElementById('revokeReason');
+        const otherInput = document.getElementById('otherReasonInput');
+        const finalReason = document.getElementById('finalReason');
+        
+        if (select.value === 'Others') {
+            otherInput.classList.remove('hidden');
+            otherInput.focus();
+            finalReason.value = otherInput.value || '';
+        } else {
+            otherInput.classList.add('hidden');
+            otherInput.value = '';
+            finalReason.value = select.value;
+        }
     }
-}
 
-function confirmRevoke() {
-    const select = document.getElementById('revokeReason');
-    const otherInput = document.getElementById('otherReasonInput');
-    const finalReason = document.getElementById('finalReason');
-    
-    if (select.value === 'Others' && otherInput.value.trim()) {
-        finalReason.value = otherInput.value.trim();
-    } else {
-        finalReason.value = select.value;
+    function confirmRevoke() {
+        const select = document.getElementById('revokeReason');
+        const otherInput = document.getElementById('otherReasonInput');
+        const finalReason = document.getElementById('finalReason');
+        
+        if (select.value === 'Others' && otherInput.value.trim()) {
+            finalReason.value = otherInput.value.trim();
+        } else {
+            finalReason.value = select.value;
+        }
+        
+        if (finalReason.value) {
+            document.getElementById('revokeForm').submit();
+        } else {
+            alert('Please select a reason or enter a custom reason.');
+        }
     }
-    
-    if (finalReason.value) {
-        document.getElementById('revokeForm').submit();
-    } else {
-        alert('Please select a reason or enter a custom reason.');
-    }
-}
 
-// Update final reason on input change
-document.getElementById('otherReasonInput').addEventListener('input', function() {
-    const finalReason = document.getElementById('finalReason');
-    const select = document.getElementById('revokeReason');
-    if (select.value === 'Others') {
-        finalReason.value = this.value.trim();
-    }
-});
+    // Update final reason on input change
+    document.getElementById('otherReasonInput').addEventListener('input', function() {
+        const finalReason = document.getElementById('finalReason');
+        const select = document.getElementById('revokeReason');
+        if (select.value === 'Others') {
+            finalReason.value = this.value.trim();
+        }
+    });
 </script>
 
     <!-- View Reason Modal -->
@@ -1725,58 +1725,66 @@ if (ELEMENTS.clearRfidBtn) {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
-    function openRenewModal(memberID, name, email, phone, endDate) {
-        document.getElementById("editMemberID").value = memberID;
-        document.getElementById("editMemberName").value = name;
-        
-        if (document.getElementById("editEmail") && email) {
-            document.getElementById("editEmail").value = email;
-        }
-        
-        if (document.getElementById("editPhone") && phone) {
-            document.getElementById("editPhone").value = phone;
-        }
 
-        if (document.getElementById("startDate")) {
-            document.getElementById("startDate").value = todayFormatted;
-        }
-
-        if (ELEMENTS.customDaysInput) {
-            ELEMENTS.customDaysInput.value = '';
-        }
-
-        toggleCustomDays();
-        animateModalOpen('renewMemberModal', 'editModalContent');
-        updateAllDetails();
-    }
     function closeRenewModal() {
         animateModalClose('renewMemberModal', 'editModalContent');
     }
 
-    function openUpgradeModal(memberID, name, email, phone, endDate) {
-        // document.getElementById("editMemberID").value = memberID;
-        document.getElementById("editMemberName").value = name;
-        
-        if (document.getElementById("editEmail") && email) {
-            document.getElementById("editEmail").value = email;
-        }
-        
-        if (document.getElementById("editPhone") && phone) {
-            document.getElementById("editPhone").value = phone;
-        }
-
-        if (document.getElementById("startDate")) {
-            document.getElementById("startDate").value = todayFormatted;
-        }
-
-        if (ELEMENTS.customDaysInput) {
-            ELEMENTS.customDaysInput.value = '';
-        }
-
-        toggleCustomDays();
-        animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-        updateAllDetails();
+    // Update your openRenewModal function to use unique IDs for the renew modal
+function openRenewModal(memberID, name, email, phone, endDate) {
+    // Use renew-specific IDs
+    document.getElementById("renewMemberID").value = memberID;
+    document.getElementById("renewMemberName").value = name;
+    
+    if (document.getElementById("renewEmail") && email) {
+        document.getElementById("renewEmail").value = email;
     }
+    
+    if (document.getElementById("renewPhone") && phone) {
+        document.getElementById("renewPhone").value = phone;
+    }
+
+    if (document.getElementById("renewStartDate")) {
+        document.getElementById("renewStartDate").value = todayFormatted;
+    }
+
+    const renewCustomDaysInput = document.getElementById("renewCustomDays");
+    if (renewCustomDaysInput) {
+        renewCustomDaysInput.value = '';
+    }
+
+    // Pass the modal type to toggle function
+    toggleCustomDays('renew');
+    animateModalOpen('renewMemberModal', 'editModalContent');
+    updateAllDetails('renew');
+}
+
+// Update your openUpgradeModal to use upgrade-specific IDs
+function openUpgradeModal(memberID, name, email, phone, endDate) {
+    // Use upgrade-specific IDs
+    document.getElementById("upgradeMemberName").value = name;
+    
+    if (document.getElementById("upgradeEmail") && email) {
+        document.getElementById("upgradeEmail").value = email;
+    }
+    
+    if (document.getElementById("upgradePhone") && phone) {
+        document.getElementById("upgradePhone").value = phone;
+    }
+
+    if (document.getElementById("upgradeStartDate")) {
+        document.getElementById("upgradeStartDate").value = todayFormatted;
+    }
+
+    const upgradeCustomDaysInput = document.getElementById("upgradeCustomDays");
+    if (upgradeCustomDaysInput) {
+        upgradeCustomDaysInput.value = '';
+    }
+
+    toggleCustomDays('upgrade');
+    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+    updateAllDetails('upgrade');
+}
 
 
     function closeUpgradeModal() {
