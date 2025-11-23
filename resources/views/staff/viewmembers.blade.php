@@ -353,17 +353,34 @@
                                     </div>
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                        <button 
-                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
-                                            aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                            title="Renew expired membership"
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                            </svg>
-                                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
-                                        </button>
+                                      @if(in_array($member->membership_type, ['7', '30', '365']))
+                                                <button 
+                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                                    title="Renew membership">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    </svg>
+                                                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
+                                                </button>
+                                            @endif
+                                        @if(in_array($member->membership_type, [1]))
+                                             <!-- Upgrade to RFID Membership Button -->
+                                                <button 
+                                                    onclick="openUpgradeModal(
+                                                        '{{ $member->id }}',
+                                                        '{{ $member->rfid_uid ?? '' }}',
+                                                        '{{ $member->first_name }} {{ $member->last_name }}',
+                                                        '{{ $member->membership_type ?? '' }}'
+                                                    )" 
+                                                    class="inline-flex items-center px-3 py-1.5 bg-purple-900 hover:bg-purple-700 hover:translate-y-[-2px] text-purple-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                                    title="Upgrade to RFID Card Membership">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                                                    </svg>
+                                                    Upgrade
+                                                </button>
+                                            @endif
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
                                             class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
@@ -525,7 +542,7 @@
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
                         <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
+                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -537,13 +554,13 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <div class="w-full hidden" id="customDaysContainer">
+                    <!-- <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div>
+                    </div> -->
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
@@ -970,6 +987,106 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
     </div>
 <!-- End Restore Member Modal -->
 
+
+
+  <!-- Upgrade to RFID Modal -->
+  <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                    </svg>
+                    <span class="truncate">Upgrade to RFID Card Membership</span>
+                </h2>
+                <button onclick="closeUpgradeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-purple-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Upgrade Form -->
+            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
+                @csrf
+                <input type="hidden" name="member_id" id="upgradeMemberId">
+                <input type="hidden" name="current_rfid_uid" id="upgradeCurrentRfidUid">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <!-- Member Name -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMemberName">Member Name</label>
+                        <input type="text" id="upgradeMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                    </div>
+
+                    <!-- Current Membership Type -->
+                    <div class="w-full">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeCurrentType">Current Membership</label>
+                        <input type="text" id="upgradeCurrentType" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                    </div>
+                </div>
+
+                <!-- RFID Card Input -->
+                <div class="mt-4 rfid-container">
+                    <label for="upgradeUid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <input id="upgradeUid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="upgrade_uid_error" required>
+                        <div class="absolute inset-y-0 right-3 flex items-center">
+                            <div id="upgrade-rfid-loading" class="animate-pulse flex items-center">
+                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
+                                <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
+                                <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
+                            </div>
+                            <button id="clearUpgradeRfidBtn" type="button" onclick="clearUpgradeRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
+                                ×
+                            </button>
+                        </div>
+                    </div>
+                    <div id="upgrade_rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Please Tap Your Card...
+                    </div>
+                    @error('uid')
+                        <span id="upgrade_uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <!-- Info Box -->
+                <div class="mt-4 bg-purple-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-purple-600 border-opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <div class="ml-3 text-sm text-gray-300">
+                        <span class="font-medium text-purple-400">Upgrade Info:</span> This will convert the session-based membership to an RFID card membership. The member will be able to use their RFID card for gym access. Please tap a new RFID card to assign it to this member.
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                    <button type="button" onclick="closeUpgradeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitUpgrade" class="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Complete Upgrade
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- End Upgrade to RFID Modal -->
+
+
+
+
+
+
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
@@ -980,8 +1097,8 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
-        customDaysInput: document.getElementById('customDays'),
-        customDaysContainer: document.getElementById('customDaysContainer'),
+        // customDaysInput: document.getElementById('customDays'),
+        // customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
@@ -1014,6 +1131,57 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
+
+
+
+
+
+    function openUpgradeModal(memberId, currentRfidUid, memberName, membershipType) {
+    // Set hidden fields
+    document.getElementById('upgradeMemberId').value = memberId;
+    document.getElementById('upgradeCurrentRfidUid').value = currentRfidUid || '';
+    
+    // Set display fields
+    document.getElementById('upgradeMemberName').value = memberName;
+    
+    // Map membership type number to display name
+    let typeDisplay = 'Session';
+    if (membershipType === '1') {
+        typeDisplay = 'Session (1 Day)';
+    }
+    document.getElementById('upgradeCurrentType').value = typeDisplay;
+    
+    // Reset RFID input
+    document.getElementById('upgradeUid').value = '';
+    document.getElementById('upgrade_rfid_status').innerHTML = `...`;
+    document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
+    document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
+    
+    // Disable submit button until RFID is scanned
+    document.getElementById('submitUpgrade').disabled = true;
+    
+    // Open modal
+    animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
+}
+
+function closeUpgradeModal() {
+    animateModalClose('upgradeMemberModal', 'upgradeModalContent');
+}
+
+function clearUpgradeRfid() {
+    document.getElementById('upgradeUid').value = '';
+    document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
+    document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
+    document.getElementById('upgrade_rfid_status').innerHTML = `...`;
+    document.getElementById('submitUpgrade').disabled = true;
+}
+
+
+
+
+
+
+
     // Fetch membership prices via AJAX
     function fetchMembershipPrices() {
         fetch('{{ route('staff.membership.prices') }}', {
@@ -1028,11 +1196,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                'custom': { 
-                    fee: data.session || 0, 
-                    name: 'Custom Days', 
-                    perDay: true 
-                },
+                // 'custom': { 
+                //     fee: data.session || 0, 
+                //     name: 'Custom Days', 
+                //     perDay: true 
+                // },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1061,21 +1229,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
-        if (prices.session) {
-            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
-            options[1].setAttribute('data-price', prices.session);
-        }
+        // if (prices.session) {
+        //     options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+        //     options[1].setAttribute('data-price', prices.session);
+        // }
         if (prices.weekly) {
-            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.weekly);
+            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[1].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.monthly);
+            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[4].setAttribute('data-price', prices.annual);
+            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.annual);
         }
     }
 
@@ -1565,6 +1733,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
+
+    window.openUpgradeModal = openUpgradeModal;
+window.closeUpgradeModal = closeUpgradeModal;
+window.clearUpgradeRfid = clearUpgradeRfid;
+
     window.openRenewModal = openRenewModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
