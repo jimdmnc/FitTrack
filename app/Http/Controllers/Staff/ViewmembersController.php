@@ -247,8 +247,8 @@ public function upgradeMembership(Request $request)
                 }
                 
                 // Update members_payments table (if exists and has records)
-                if (DB::table('members_payments')->where('rfid_uid', $oldRfidUid)->exists()) {
-                    DB::table('members_payments')
+                if (DB::table('members_payment')->where('rfid_uid', $oldRfidUid)->exists()) {
+                    DB::table('members_payment')
                         ->where('rfid_uid', $oldRfidUid)
                         ->update(['rfid_uid' => $newRfidUid]);
                 }
@@ -262,12 +262,12 @@ public function upgradeMembership(Request $request)
                     ]);
 
                 // Optional: Mark the old RFID tag as unregistered if needed
-                DB::table('rfid_tags')
-                    ->where('uid', $oldRfidUid)
-                    ->update([
-                        'registered' => 0, // or false
-                        'updated_at' => now(),
-                    ]);
+                // DB::table('rfid_tags')
+                //     ->where('uid', $oldRfidUid)
+                //     ->update([
+                //         'registered' => 0, // or false
+                //         'updated_at' => now(),
+                //     ]);
 
             } finally {
                 // Step 5: Always re-enable foreign key checks
