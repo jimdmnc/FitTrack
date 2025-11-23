@@ -1213,6 +1213,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Attach event listeners for this modal
     attachUpgradeModalListeners();
+    
+    // Start RFID polling for upgrade modal
+    startUpgradeRfidPolling();
 }
 
 function attachUpgradeModalListeners() {
@@ -1348,13 +1351,105 @@ function clearUpgradeRfid() {
     document.getElementById('upgradeUid').value = '';
     document.getElementById('clearUpgradeRfidBtn').classList.add('hidden');
     document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
-    document.getElementById('upgrade_rfid_status').innerHTML = `...`;
-    document.getElementById('submitUpgrade').disabled = true;
+    updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
+    updateUpgradeSummaryText();
+    checkUpgradeSubmitButton();
 }
 
+let upgradeRfidPollingInterval = null;
 
+function updateUpgradeRfidStatus(type, message) {
+    const rfidStatus = document.getElementById('upgrade_rfid_status');
+    if (!rfidStatus) return;
 
+    const icons = {
+        success: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>`,
+        waiting: `<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>`,
+        error: `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>`
+    };
 
+    const colors = {
+        success: 'text-green-500',
+        waiting: 'text-blue-500',
+        error: 'text-red-500'
+    };
+
+    rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
+    rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
+}
+
+function fetchUpgradeLatestUid() {
+    fetch('/api/rfid/latest')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const uidInput = document.getElementById('upgradeUid');
+            if (data.uid && uidInput) {
+                uidInput.value = data.uid;
+                updateUpgradeRfidStatus('success', 'Card detected');
+                document.getElementById('clearUpgradeRfidBtn').classList.remove('hidden');
+                document.getElementById('upgrade-rfid-loading').classList.add('hidden');
+                
+                // Update summary and check submit button
+                updateUpgradeSummaryText();
+                checkUpgradeSubmitButton();
+            } else {
+                if (uidInput && !uidInput.value) {
+                    updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching RFID:', error);
+            updateUpgradeRfidStatus('error', 'Error reading card. Please try again.');
+        });
+}
+
+function startUpgradeRfidPolling() {
+    // Clear any existing interval
+    stopUpgradeRfidPolling();
+    
+    // Start polling every 1 second
+    upgradeRfidPollingInterval = setInterval(() => {
+        const modal = document.getElementById('upgradeMemberModal');
+        const uidInput = document.getElementById('upgradeUid');
+        
+        // Only poll if modal is open and RFID field is empty
+        if (modal && !modal.classList.contains('hidden') && uidInput && !uidInput.value) {
+            fetchUpgradeLatestUid();
+        }
+    }, 1000);
+}
+
+function stopUpgradeRfidPolling() {
+    if (upgradeRfidPollingInterval) {
+        clearInterval(upgradeRfidPollingInterval);
+        upgradeRfidPollingInterval = null;
+    }
+}
+
+function toggleUpgradeClearButton() {
+    const uidInput = document.getElementById('upgradeUid');
+    const clearBtn = document.getElementById('clearUpgradeRfidBtn');
+
+    if (uidInput && clearBtn) {
+        if (uidInput.value.trim() !== '') {
+            clearBtn.classList.remove('hidden');
+            document.getElementById('upgrade-rfid-loading').classList.add('hidden');
+        } else {
+            clearBtn.classList.add('hidden');
+            document.getElementById('upgrade-rfid-loading').classList.remove('hidden');
+        }
+    }
+}
 
 
 
