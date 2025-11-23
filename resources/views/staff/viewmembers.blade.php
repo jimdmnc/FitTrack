@@ -366,22 +366,7 @@
                                             @endif
                                         @if(in_array($member->membership_type, [1]))
                                              <!-- Upgrade to RFID Membership Button -->
-                                                <button 
-                                                    onclick="openUpgradeModal(
-                                                        '{{ $member->id }}',
-                                                        '{{ $member->rfid_uid ?? '' }}',
-                                                        '{{ $member->first_name }} {{ $member->last_name }}',
-                                                        '{{ $member->membership_type ?? '' }}'
-                                                    )" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-purple-900 hover:bg-transparent hover:translate-y-[-2px] text-purple-100 rounded-lg transition-all duration-200 font-medium text-sm border border-purple-900 shadow-sm group"
-                                                    title="Upgrade to RFID Card Membership">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                                                    </svg>
-                                                    Upgrade
-                                                </button>
-                                            @endif
-                                            <button 
+                                             <button 
                                                 onclick="openUpgradeModal(
                                                     '{{ $member->id }}',
                                                     '{{ $member->rfid_uid ?? '' }}',
@@ -402,6 +387,18 @@
                                                 </span>
                                             </button>
 
+                                            @endif
+                                        <button 
+                                            onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
+                                            class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
+                                            aria-label="Revoke membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Revoke membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Revoke</span>
+                                        </button>
                                     </div>
                                 @elseif($member->member_status == 'active')
                                     <div class="flex flex-wrap gap-2 justify-center">
