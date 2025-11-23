@@ -237,7 +237,7 @@ public function upgradeMembership(Request $request)
             }
             
             // Update members_payments table (if exists and has records)
-            if (DB::table('members_payments')->where('rfid_uid', $oldRfidUid)->exists()) {
+            if (DB::table('members_payment')->where('rfid_uid', $oldRfidUid)->exists()) {
                 DB::table('members_payments')
                     ->where('rfid_uid', $oldRfidUid)
                     ->update(['rfid_uid' => $newRfidUid]);
