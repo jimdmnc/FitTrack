@@ -244,6 +244,13 @@ public function upgradeMembership(Request $request)
                     ->where('rfid_uid', $oldRfidUid)
                     ->update(['rfid_uid' => $newRfidUid]);
             }
+               // Step 4: Mark the new RFID tag as registered
+               DB::table('rfid_tags')
+               ->where('uid', $newRfidUid)
+               ->update([
+                   'registered' => 1, // or true, depending on your column type
+                   'updated_at' => now(),
+               ]);
             
             // Add any other tables that reference rfid_uid here
             // Check if table and records exist before updating
@@ -269,7 +276,6 @@ public function upgradeMembership(Request $request)
                 'payment_date' => now(),
             ]);
         });
-        RfidTag::where('uid', $validatedData['uid'])->update(['registered' => true]);
 
         return redirect()->route('staff.viewmembers')
             ->with('success', 'Member upgraded to RFID card membership successfully! New RFID: ' . $newRfidUid);
