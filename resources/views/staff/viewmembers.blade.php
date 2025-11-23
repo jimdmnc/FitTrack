@@ -306,10 +306,10 @@
 
                             <td class="px-4 py-4 whitespace-nowrap">
                                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-white
-                                    @elseif($member->getMembershipType() == 'Weekly') bg-green-900 text-white
-                                    @elseif($member->getMembershipType() == 'Monthly') bg-blue-900 text-white
-                                    @elseif($member->getMembershipType() == 'Session') bg-orange-900 text-white
+                                    @if($member->getMembershipType() == 'Annual') bg-purple-900 text-purple-200
+                                    @elseif($member->getMembershipType() == 'Week') bg-green-900 text-green-200
+                                    @elseif($member->getMembershipType() == 'Month') bg-blue-900 text-blue-200
+                                    @elseif($member->getMembershipType() == 'Session') bg-yellow-900 text-yellow-200
                                     @endif">
                                     {{ $member->getMembershipType() }}
                                 </span>
@@ -353,32 +353,17 @@
                                     </div>
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                      @if(in_array($member->membership_type, ['7', '30', '365']))
-                                                <button 
-                                                    onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                                    class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:border-green-900 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-900 shadow-sm group"
-                                                    aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                                    title="Renew membership">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                    </svg>
-                                                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
-                                                </button>
-                                            @endif
-                                        @if(in_array($member->membership_type, [1]))
-                                             <!-- Upgrade to RFID Membership Button -->
-                                                <button 
-                                                onclick="openUpgradeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-
-                                                    class="inline-flex items-center px-3 py-1.5 bg-purple-900 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-purple-900 shadow-sm group"
-                                                    aria-label="Upgrade to RFID Card Membership for {{ $member->first_name }} {{ $member->last_name }}"
-                                                    title="Upgrade to RFID Card Membership">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12" />
-                                                    </svg>
-                                                    <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Upgrade</span>
-                                                </button>
-                                            @endif
+                                        <button 
+                                            onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
+                                            aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
+                                            title="Renew expired membership"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
+                                        </button>
                                         <button 
                                             onclick="openRevokeModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}')"
                                             class="inline-flex items-center px-3 py-1.5 bg-red-600 hover:bg-transparent hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-red-600 shadow-sm group"
@@ -433,7 +418,7 @@
                                         </button>
                                         <button 
                                             onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
-                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:border-green-900 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-all duration-200 font-medium text-sm border border-green-900 shadow-sm group"
+                                            class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
                                             aria-label="Renew membership for {{ $member->first_name }} {{ $member->last_name }}"
                                             title="Renew expired membership"
                                         >
@@ -498,144 +483,6 @@
 
 </section>
 
-    <!-- Upgrade Member Modal -->
-    <div id="upgradeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-[#ff5722]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    <span class="truncate">Upgrade Membership</span>
-                </h2>
-                <button onclick="closeUpgradeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-[#ff5722] rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Upgrade Form -->
-            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="p-4 sm:p-6">
-                @csrf
-                <input type="hidden" name="user_id" id="editUserId">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-                    <!-- Member ID -->
-                    <!-- <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
-                        <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                     -->
-                    <!-- Member Name -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMemberName">Name</label>
-                        <input type="text" id="upgradeMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                    
-                    <!-- Membership Type -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMembershipType">Membership Type <span class="text-red-500">*</span></label>
-                        <select id="upgradeMembershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                            <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
-                            <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
-                            <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
-                            <option value="365" data-price="0">Annual (365 days, Loading...)</option>
-                        </select>
-                        <div id="membershipTypeError" class="text-red-500 text-xs mt-1 hidden">Failed to load membership prices. Please try again.</div>
-                        @error('membership_type')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    
-                    <!-- Custom Days -->
-                    <!-- <div class="w-full hidden" id="customDaysContainer">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
-                        <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
-                        @error('custom_days')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div> -->
-                    
-                    <!-- Renewal Date -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeStartDate">Renewal Date <span class="text-red-500">*</span></label>
-                        <input type="date" id="upgradeStartDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
-                        @error('start_date')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    
-                    <!-- Expiration Date -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeEndDate">Expiration Date</label>
-                        <input type="text" id="upgradeEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                        @error('end_date')
-                            <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-
-                    <!-- Membership Fee -->
-                    <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="upgradeMembershipFee">Membership Fee (₱)</label>
-                        <input type="text" id="upgradeMembershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
-                    </div>
-                    <div class="rfid-container">
-                <label for="uid" class="block text-gray-200 font-medium mb-2">RFID Card <span class="text-red-500">*</span></label>
-                <div class="relative">
-                    <input id="uid" name="uid" class="bg-[#3A3A3A] text-gray-200 border-[#2c2c2c] w-full pr-12 py-4 border rounded-lg cursor-default pointer-events-none select-none focus:ring-2 focus:ring-[#ff5722] focus:border-transparent transition-all" placeholder="Waiting for card tap..." readonly aria-describedby="uid_error">
-                    <div class="absolute inset-y-0 right-3 flex items-center">
-                        <div id="rfid-loading" class="animate-pulse flex items-center">
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1"></span>
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full mr-1 animate-pulse delay-100"></span>
-                            <span class="h-2 w-2 bg-[#ff5722] rounded-full animate-pulse delay-200"></span>
-                        </div>
-                        <button id="clearRfidBtn" type="button" onclick="clearRfid()" class="ml-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors hidden" aria-label="Clear RFID input">
-                            ×
-                        </button>
-                    </div>
-                </div>
-                <div id="rfid_status" class="mt-2 text-sm text-gray-500 flex items-center" aria-live="polite">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    Please Tap Your Card...
-                </div>
-                @error('uid')
-                    <span id="uid_error" class="text-red-500 text-sm mt-1 block" aria-live="polite">{{ $message }}</span>
-                @enderror
-            </div>
-                </div>
-                
-                <!-- Summary Box -->
-                <div class="mt-4 bg-[#ff5722] bg-opacity-10 p-3 sm:p-4 rounded-lg flex items-start border border-[#ff5722] border-opacity-30">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 text-[#ff5722] mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
-                        <span class="font-medium">Membership Summary:</span> <span id="upgradeMembershipSummaryText">Select membership type to see details.</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
-                    <button type="button" onclick="closeUpgradeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
-                        Cancel
-                    </button>
-                    <button type="submit" id="upgradeSubmitButton" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Complete Renewal
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- End Upgrade Member Modal -->
-
 
     <!-- Renew Member Modal -->
     <div id="renewMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
@@ -663,22 +510,22 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
                     <!-- Member ID -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMemberID">Member ID</label>
-                        <input type="text" name="rfid_uid" id="renewMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberID">Member ID</label>
+                        <input type="text" name="rfid_uid" id="editMemberID" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                     
                     <!-- Member Name -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMemberName">Name</label>
-                        <input type="text" id="renewMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="editMemberName">Name</label>
+                        <input type="text" id="editMemberName" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                     
                     <!-- Membership Type -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMembershipType">Membership Type <span class="text-red-500">*</span></label>
-                        <select id="renewMembershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipType">Membership Type <span class="text-red-500">*</span></label>
+                        <select id="membershipType" name="membership_type" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors appearance-none bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                             <option value="" selected disabled>Select Membership Type</option>
-                            <!-- <option value="custom" data-price="0">Custom Days (Loading price...)</option> -->
+                            <option value="custom" data-price="0">Custom Days (Loading price...)</option>
                             <option value="7" data-price="0">Weekly (7 days, Loading...)</option>
                             <option value="30" data-price="0">Monthly (30 days, Loading...)</option>
                             <option value="365" data-price="0">Annual (365 days, Loading...)</option>
@@ -690,18 +537,18 @@
                     </div>
                     
                     <!-- Custom Days -->
-                    <!-- <div class="w-full hidden" id="customDaysContainer">
+                    <div class="w-full hidden" id="customDaysContainer">
                         <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="customDays">Number of Days <span class="text-red-500">*</span></label>
                         <input type="number" id="customDays" name="custom_days" min="1" max="365" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm" value="{{ old('custom_days') }}">
                         @error('custom_days')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
-                    </div> -->
+                    </div>
                     
                     <!-- Renewal Date -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewStartDate">Renewal Date <span class="text-red-500">*</span></label>
-                        <input type="date" id="renewStartDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="startDate">Renewal Date <span class="text-red-500">*</span></label>
+                        <input type="date" id="startDate" name="start_date" required class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#ff5722] focus:border-[#ff5722] transition-colors bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm">
                         @error('start_date')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
@@ -709,8 +556,8 @@
                     
                     <!-- Expiration Date -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewEndDate">Expiration Date</label>
-                        <input type="text" id="renewEndDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="endDate">Expiration Date</label>
+                        <input type="text" id="endDate" name="end_date" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                         @error('end_date')
                             <span class="text-red-500 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
                         @enderror
@@ -718,8 +565,8 @@
 
                     <!-- Membership Fee -->
                     <div class="w-full">
-                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="renewMembershipFee">Membership Fee (₱)</label>
-                        <input type="text" id="renewMembershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
+                        <label class="block text-xs sm:text-sm font-medium text-gray-300 mb-1" for="membershipFee">Membership Fee (₱)</label>
+                        <input type="text" id="membershipFee" class="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-xs sm:text-sm pointer-events-none" readonly>
                     </div>
                 </div>
                 
@@ -729,7 +576,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div class="ml-2 sm:ml-3 text-xs sm:text-sm text-gray-300">
-                        <span class="font-medium">Membership Summary:</span> <span id="renewMembershipSummaryText">Select membership type to see details.</span>
+                        <span class="font-medium">Membership Summary:</span> <span id="membershipSummaryText">Select membership type to see details.</span>
                     </div>
                 </div>
 
@@ -738,7 +585,7 @@
                     <button type="button" onclick="closeRenewModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-xs sm:text-sm">
                         Cancel
                     </button>
-                    <button type="submit" id="renewSubmitButton" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
+                    <button type="submit" id="submitRenewal" class="w-full sm:w-auto px-4 py-2 bg-[#ff5722] hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-xs sm:text-sm" disabled>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                         </svg>
@@ -882,156 +729,156 @@
     </div>
 
 
-    <!-- Revoke Member Modal -->
-    <div id="revokeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-        <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="revokeModalContent">
-            <!-- Modal Header -->
-            <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
-                <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+<!-- Revoke Member Modal -->
+<div id="revokeMemberModal" class="fixed inset-0 bg-[#1e1e1e] bg-opacity-70 flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
+    <div class="bg-[#1e1e1e] rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 opacity-0" id="revokeModalContent">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-3 sm:p-4 border-b border-gray-700 sticky top-0 bg-gradient-to-br from-[#2c2c2c] to-[#1e1e1e] z-10">
+            <h2 class="text-base sm:text-lg font-bold text-gray-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6 mr-2 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+                <span class="truncate">Revoke Membership</span>
+            </h2>
+            <button onclick="closeRevokeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-red-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Form View -->
+        <div id="revokeFormView" class="block">
+            <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
+                @csrf
+                <input type="hidden" name="rfid_uid" id="revokeMemberID">
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
+                    <input type="text" id="revokeConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
+                    <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
+                        <option value="" disabled selected>Select a reason...</option>
+                        <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
+                        <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
+                        <option value="Non-Payment of Fees">Non-Payment of Fees</option>
+                        <option value="Health or Medical Issues">Health or Medical Issues</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
+                    <input type="hidden" name="reason" id="finalReason">
+                </div>
+
+
+                <!-- Warning Box -->
+                <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
-                    <span class="truncate">Revoke Membership</span>
-                </h2>
-                <button onclick="closeRevokeModal()" class="text-gray-300 hover:text-gray-200 hover:bg-red-600 rounded-full p-1 transition-colors duration-200 flex-shrink-0" aria-label="Close modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 sm:h-6 sm:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <div class="ml-3 text-sm text-gray-300">
+                        <span class="font-medium text-red-400">Warning:</span> Revoking a membership will prevent the member from accessing the gym. This action can be reversed later if needed.
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
+                    <button type="button" onclick="closeRevokeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="showConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        Revoke Member
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Confirmation View -->
+        <div id="confirmationView" class="hidden p-4 sm:p-6">
+            <!-- Warning Icon -->
+            <div class="flex justify-center mb-4">
+                <div class="bg-red-600 bg-opacity-20 p-3 rounded-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                     </svg>
+                </div>
+            </div>
+            
+            <!-- Confirmation Message -->
+            <div class="text-center mb-6">
+                <h3 class="text-lg font-bold text-red-400 mb-2">Confirm Membership Revocation</h3>
+                <p class="text-gray-300 mb-2">You are about to revoke membership for:</p>
+                <p class="text-lg font-medium text-gray-200 mb-4" id="confirmMemberName">Member Name</p>
+                <p class="text-sm text-gray-400">This action will immediately block gym access for this member.</p>
+            </div>
+            
+            <!-- Confirmation Buttons -->
+            <div class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-3 sm:space-y-0">
+                <button type="button" onclick="backToForm()" class="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Go Back
                 </button>
-            </div>
-
-            <!-- Main Form View -->
-            <div id="revokeFormView" class="block">
-                <form id="revokeForm" action="{{ route('revoke.membership') }}" method="POST" class="p-4 sm:p-6">
-                    @csrf
-                    <input type="hidden" name="rfid_uid" id="revokeMemberID">
-
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeConfirmName">Member Name</label>
-                        <input type="text" id="revokeConfirmName" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm pointer-events-none" readonly>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-300 mb-2" for="revokeReason">Reason for Revocation</label>
-                        <select id="revokeReason" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors" onchange="toggleOtherReasonInput()">
-                            <option value="" disabled selected>Select a reason...</option>
-                            <option value="Expired Membership Not Renewed">Expired Membership Not Renewed</option>
-                            <option value="Personal Choice / Cancel Membership">Personal Choice / Cancel Membership</option>
-                            <option value="Non-Payment of Fees">Non-Payment of Fees</option>
-                            <option value="Health or Medical Issues">Health or Medical Issues</option>
-                            <option value="Others">Others</option>
-                        </select>
-                        <input type="text" id="otherReasonInput" class="w-full px-3 py-2 border border-gray-600 rounded-lg bg-[#2c2c2c] text-gray-200 text-sm mt-2 hidden" placeholder="Enter reason for revoking membership...">
-                        <input type="hidden" name="reason" id="finalReason">
-                    </div>
-
-
-                    <!-- Warning Box -->
-                    <div class="mb-4 bg-red-900 bg-opacity-20 p-4 rounded-lg flex items-start border border-red-600 border-opacity-30">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                        <div class="ml-3 text-sm text-gray-300">
-                            <span class="font-medium text-red-400">Warning:</span> Revoking a membership will prevent the member from accessing the gym. This action can be reversed later if needed.
-                        </div>
-                    </div>
-
-                    <!-- Action Buttons -->
-                    <div class="flex flex-col sm:flex-row justify-end sm:space-x-3 space-y-2 sm:space-y-0 mt-5 pt-4 border-t border-gray-700">
-                        <button type="button" onclick="closeRevokeModal()" class="w-full sm:w-auto px-4 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 text-sm">
-                            Cancel
-                        </button>
-                        <button type="button" onclick="showConfirmation()" class="w-full sm:w-auto px-4 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                            </svg>
-                            Revoke Member
-                        </button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Confirmation View -->
-            <div id="confirmationView" class="hidden p-4 sm:p-6">
-                <!-- Warning Icon -->
-                <div class="flex justify-center mb-4">
-                    <div class="bg-red-600 bg-opacity-20 p-3 rounded-full">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                        </svg>
-                    </div>
-                </div>
-                
-                <!-- Confirmation Message -->
-                <div class="text-center mb-6">
-                    <h3 class="text-lg font-bold text-red-400 mb-2">Confirm Membership Revocation</h3>
-                    <p class="text-gray-300 mb-2">You are about to revoke membership for:</p>
-                    <p class="text-lg font-medium text-gray-200 mb-4" id="confirmMemberName">Member Name</p>
-                    <p class="text-sm text-gray-400">This action will immediately block gym access for this member.</p>
-                </div>
-                
-                <!-- Confirmation Buttons -->
-                <div class="flex flex-col sm:flex-row justify-center sm:space-x-4 space-y-3 sm:space-y-0">
-                    <button type="button" onclick="backToForm()" class="w-full sm:w-auto px-6 py-2 bg-[#444444] hover:bg-opacity-80 hover:translate-y-[-2px] text-gray-200 rounded-lg transition-colors duration-200 flex items-center justify-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Go Back
-                    </button>
-                    <button type="button" onclick="confirmRevoke()" class="w-full sm:w-auto px-6 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                        </svg>
-                        Confirm Revocation
-                    </button>
-                </div>
+                <button type="button" onclick="confirmRevoke()" class="w-full sm:w-auto px-6 py-2 bg-red-600 hover:bg-opacity-80 hover:translate-y-[-2px] text-white rounded-lg transition-colors duration-200 font-medium flex items-center justify-center text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Confirm Revocation
+                </button>
             </div>
         </div>
     </div>
+</div>
 <!-- End Revoke Member Modal -->
 <script>
-    function toggleOtherReasonInput() {
-        const select = document.getElementById('revokeReason');
-        const otherInput = document.getElementById('otherReasonInput');
-        const finalReason = document.getElementById('finalReason');
-        
-        if (select.value === 'Others') {
-            otherInput.classList.remove('hidden');
-            otherInput.focus();
-            finalReason.value = otherInput.value || '';
-        } else {
-            otherInput.classList.add('hidden');
-            otherInput.value = '';
-            finalReason.value = select.value;
-        }
+function toggleOtherReasonInput() {
+    const select = document.getElementById('revokeReason');
+    const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
+    if (select.value === 'Others') {
+        otherInput.classList.remove('hidden');
+        otherInput.focus();
+        finalReason.value = otherInput.value || '';
+    } else {
+        otherInput.classList.add('hidden');
+        otherInput.value = '';
+        finalReason.value = select.value;
     }
+}
 
-    function confirmRevoke() {
-        const select = document.getElementById('revokeReason');
-        const otherInput = document.getElementById('otherReasonInput');
-        const finalReason = document.getElementById('finalReason');
-        
-        if (select.value === 'Others' && otherInput.value.trim()) {
-            finalReason.value = otherInput.value.trim();
-        } else {
-            finalReason.value = select.value;
-        }
-        
-        if (finalReason.value) {
-            document.getElementById('revokeForm').submit();
-        } else {
-            alert('Please select a reason or enter a custom reason.');
-        }
+function confirmRevoke() {
+    const select = document.getElementById('revokeReason');
+    const otherInput = document.getElementById('otherReasonInput');
+    const finalReason = document.getElementById('finalReason');
+    
+    if (select.value === 'Others' && otherInput.value.trim()) {
+        finalReason.value = otherInput.value.trim();
+    } else {
+        finalReason.value = select.value;
     }
+    
+    if (finalReason.value) {
+        document.getElementById('revokeForm').submit();
+    } else {
+        alert('Please select a reason or enter a custom reason.');
+    }
+}
 
-    // Update final reason on input change
-    document.getElementById('otherReasonInput').addEventListener('input', function() {
-        const finalReason = document.getElementById('finalReason');
-        const select = document.getElementById('revokeReason');
-        if (select.value === 'Others') {
-            finalReason.value = this.value.trim();
-        }
-    });
+// Update final reason on input change
+document.getElementById('otherReasonInput').addEventListener('input', function() {
+    const finalReason = document.getElementById('finalReason');
+    const select = document.getElementById('revokeReason');
+    if (select.value === 'Others') {
+        finalReason.value = this.value.trim();
+    }
+});
 </script>
 
     <!-- View Reason Modal -->
@@ -1127,18 +974,14 @@
 document.addEventListener('DOMContentLoaded', function() {
     // ======== CONSTANTS & DOM ELEMENTS ========
     const ELEMENTS = {
-        uidInput: document.getElementById('uid'),
-        rfidStatus: document.getElementById('rfid_status'),
-        clearRfidBtn: document.getElementById('clearRfidBtn'),
-
         searchInput: document.querySelector('input[name="search"]'),
         statusSelect: document.querySelector('select[name="status"]'),
         tableContainer: document.querySelector('.glass-card .overflow-x-auto'),
         paginationContainer: document.querySelector('.pagination'),
         clearSearchButton: document.querySelector('[aria-label="Clear search"]'),
         membershipTypeSelect: document.getElementById('membershipType'),
-        // customDaysInput: document.getElementById('customDays'),
-        // customDaysContainer: document.getElementById('customDaysContainer'),
+        customDaysInput: document.getElementById('customDays'),
+        customDaysContainer: document.getElementById('customDaysContainer'),
         startDateInput: document.getElementById('startDate'),
         endDateInput: document.getElementById('endDate'),
         membershipFeeInput: document.getElementById('membershipFee'),
@@ -1146,12 +989,6 @@ document.addEventListener('DOMContentLoaded', function() {
         membershipTypeError: document.getElementById('membershipTypeError'),
         submitButton: document.getElementById('submitRenewal')
     };
-    // Configuration constants
-    const RFID_POLL_INTERVAL = 2000; // ms
-    const FETCH_TIMEOUT = 5000; // ms
-    const MAX_RETRIES = 3;
-    let isFetching = false;
-    let rfidPollInterval = null;
 
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search);
@@ -1177,109 +1014,6 @@ document.addEventListener('DOMContentLoaded', function() {
         fetchMembershipPrices();
     }
 
-    // initialize();
-  // ===== RFID: Update Status Message =====
-    function updateRfidStatus(type, message) {
-        if (!ELEMENTS.rfidStatus) return;
-
-        const icons = {
-            success: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
-            waiting: `<svg class="h-4 w-4 mr-1 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>`,
-            error: `<svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>`
-        };
-
-        const colors = { success: 'text-green-500', waiting: 'text-blue-500', error: 'text-red-500' };
-
-        ELEMENTS.rfidStatus.innerHTML = `${icons[type] || ''} ${message}`;
-        ELEMENTS.rfidStatus.className = `mt-2 text-sm ${colors[type] || 'text-gray-500'} flex items-center`;
-    }
-
-  // ===== RFID: Poll for latest card =====
-  function fetchLatestUid() {
-        fetch('/api/rfid/latest')
-            .then(response => {
-                if (!response.ok) throw new Error('Network error');
-                return response.json();
-            })
-            .then(data => {
-                if (data.uid && ELEMENTS.uidInput) {
-                    ELEMENTS.uidInput.value = data.uid;
-                    updateRfidStatus('success', 'Card detected: ' + data.uid);
-                    toggleClearButton(true);
-                }
-            })
-            .catch(err => {
-                console.warn('RFID poll failed (will retry):', err);
-                // Don't clear the field on temporary error
-            });
-    }
-    // ===== Show/Hide Clear Button =====
-    function toggleClearButton(show = null) {
-        if (!ELEMENTS.clearRfidBtn) return;
-        const hasValue = ELEMENTS.uidInput?.value.trim();
-        const shouldShow = show !== null ? show : !!hasValue;
-        ELEMENTS.clearRfidBtn.classList.toggle('hidden', !shouldShow);
-    }
-
-    // ===== Clear RFID (when × is clicked) =====
-    function clearRfid() {
-        if (!ELEMENTS.uidInput?.value) {
-            updateRfidStatus('error', 'No card to clear');
-            return;
-        }
-
-        fetch(`/api/rfid/clear/${ELEMENTS.uidInput.value}`, {
-            method: 'DELETE',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'Accept': 'application/json'
-            }
-        })
-        .then(r => r.json())
-        .then(res => {
-            if (res.success) {
-                ELEMENTS.uidInput.value = '';
-                updateRfidStatus('success', 'Card cleared');
-            } else {
-                updateRfidStatus('error', res.message || 'Failed to clear');
-            }
-            toggleClearButton(false);
-        })
-        .catch(() => {
-            updateRfidStatus('error', 'Clear request failed');
-        });
-    }
-
-    // ===== Start RFID Polling =====
-    function startRfidPolling() {
-        updateRfidStatus('waiting', 'Please Tap Your Card...');
-        fetchLatestUid(); // Immediate check
-        rfidPollInterval = setInterval(fetchLatestUid, 2000);
-    }
-
-        // Cleanup
-  // Clean up interval when leaving page
-  window.addEventListener('beforeunload', function() {
-        clearInterval(rfidPollInterval);
-    });
-    
-// Attach clear button
-if (ELEMENTS.clearRfidBtn) {
-        ELEMENTS.clearRfidBtn.addEventListener('click', clearRfid);
-    }
-
-    // ===== Start RFID Auto-Detection =====
-    startRfidPolling();
-
-
-
-
-
-
-
     // Fetch membership prices via AJAX
     function fetchMembershipPrices() {
         fetch('{{ route('staff.membership.prices') }}', {
@@ -1294,11 +1028,11 @@ if (ELEMENTS.clearRfidBtn) {
         })
         .then(data => {
             MEMBERSHIP_DATA = {
-                // 'custom': { 
-                //     fee: data.session || 0, 
-                //     name: 'Custom Days', 
-                //     perDay: true 
-                // },
+                'custom': { 
+                    fee: data.session || 0, 
+                    name: 'Custom Days', 
+                    perDay: true 
+                },
                 '7': { 
                     fee: data.weekly || 0, 
                     name: 'Weekly (7 days)' 
@@ -1327,21 +1061,21 @@ if (ELEMENTS.clearRfidBtn) {
 
     function updateMembershipTypeOptions(prices) {
         const options = ELEMENTS.membershipTypeSelect.options;
-        // if (prices.session) {
-        //     options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
-        //     options[1].setAttribute('data-price', prices.session);
-        // }
+        if (prices.session) {
+            options[1].text = `Custom Days (₱${prices.session.toFixed(2)}/day)`;
+            options[1].setAttribute('data-price', prices.session);
+        }
         if (prices.weekly) {
-            options[1].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
-            options[1].setAttribute('data-price', prices.weekly);
+            options[2].text = `Weekly (7 days, ₱${prices.weekly.toFixed(2)})`;
+            options[2].setAttribute('data-price', prices.weekly);
         }
         if (prices.monthly) {
-            options[2].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
-            options[2].setAttribute('data-price', prices.monthly);
+            options[3].text = `Monthly (30 days, ₱${prices.monthly.toFixed(2)})`;
+            options[3].setAttribute('data-price', prices.monthly);
         }
         if (prices.annual) {
-            options[3].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
-            options[3].setAttribute('data-price', prices.annual);
+            options[4].text = `Annual (365 days, ₱${prices.annual.toFixed(2)})`;
+            options[4].setAttribute('data-price', prices.annual);
         }
     }
 
@@ -1586,284 +1320,172 @@ if (ELEMENTS.clearRfidBtn) {
     function attachTableEventListeners() {
         // Placeholder for table interactions
     }
-// Update updateAllDetails to accept modal type
-function updateAllDetails(modalType = 'renew') {
-    updateMembershipFee(modalType);
-    updateExpirationDate(modalType);
-    updateSummaryText(modalType);
-}
 
-// Update other functions similarly...
-function updateMembershipFee(modalType = 'renew') {
-    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
-    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
-    const membershipFeeInput = document.getElementById(`${prefix}MembershipFee`);
+    // ======== MEMBERSHIP MANAGEMENT FUNCTIONS ========
+    function updateAllDetails() {
+        updateMembershipFee();
+        updateExpirationDate();
+        updateSummaryText();
+    }
     
-    if (!membershipTypeSelect || !membershipFeeInput) return;
-    
-    const selectedType = membershipTypeSelect.value;
-    let fee = 0;
-    
-    if (selectedType === 'custom') {
-        const customDaysInput = document.getElementById(`${prefix}CustomDays`);
-        if (customDaysInput && customDaysInput.value) {
-            const days = parseInt(customDaysInput.value);
+    function updateMembershipFee() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.membershipFeeInput) return;
+        
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        let fee = 0;
+        
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
             fee = days > 0 ? days * (MEMBERSHIP_DATA['custom']?.fee || 0) : 0;
+        } else {
+            fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
         }
-    } else {
-        fee = MEMBERSHIP_DATA[selectedType]?.fee || 0;
+        
+        ELEMENTS.membershipFeeInput.value = fee.toFixed(2);
     }
     
-    membershipFeeInput.value = fee.toFixed(2);
-}
-    
-function updateExpirationDate(modalType = 'renew') {
-    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
-    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
-    const startDateInput = document.getElementById(`${prefix}StartDate`);
-    const endDateInput = document.getElementById(`${prefix}EndDate`);
-    
-    if (!membershipTypeSelect || !startDateInput || !endDateInput) return;
+    function updateExpirationDate() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || !ELEMENTS.endDateInput) return;
 
-    const selectedType = membershipTypeSelect.value;
-    const renewalDate = startDateInput.value;
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        const renewalDate = ELEMENTS.startDateInput.value;
 
-    if (renewalDate && selectedType) {
-        try {
-            const renewal = new Date(renewalDate);
-            if (isNaN(renewal.getTime())) throw new Error('Invalid date');
+        if (renewalDate && selectedType) {
+            try {
+                const renewal = new Date(renewalDate);
+                if (isNaN(renewal.getTime())) throw new Error('Invalid date');
 
-            let duration;
-            if (selectedType === 'custom') {
-                const customDaysInput = document.getElementById(`${prefix}CustomDays`);
-                duration = customDaysInput && customDaysInput.value 
-                    ? parseInt(customDaysInput.value) 
-                    : 0;
-            } else {
-                duration = parseInt(selectedType);
+                let duration = selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value 
+                    ? parseInt(ELEMENTS.customDaysInput.value) 
+                    : parseInt(selectedType);
+                
+                if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
+
+                renewal.setDate(renewal.getDate() + duration - 1);
+                ELEMENTS.endDateInput.value = formatDate(renewal);
+            } catch (error) {
+                console.error('Error calculating expiration date:', error);
+                ELEMENTS.endDateInput.value = '';
             }
-            
-            if (isNaN(duration) || duration <= 0) throw new Error('Invalid duration');
-
-            renewal.setDate(renewal.getDate() + duration - 1);
-            endDateInput.value = formatDate(renewal);
-        } catch (error) {
-            console.error('Error calculating expiration date:', error);
-            endDateInput.value = '';
+        } else {
+            ELEMENTS.endDateInput.value = '';
         }
-    } else {
-        endDateInput.value = '';
     }
-}
     
-
-function updateSummaryText(modalType = 'renew') {
-    const prefix = modalType === 'upgrade' ? 'upgrade' : 'renew';
-    const membershipTypeSelect = document.getElementById(`${prefix}MembershipType`);
-    const startDateInput = document.getElementById(`${prefix}StartDate`);
-    const endDateInput = document.getElementById(`${prefix}EndDate`);
-    const summaryText = document.getElementById(`${prefix}MembershipSummaryText`);
+    function updateSummaryText() {
+        if (!ELEMENTS.membershipTypeSelect || !ELEMENTS.startDateInput || 
+            !ELEMENTS.endDateInput || !ELEMENTS.summaryText) return;
+        
+        const selectedType = ELEMENTS.membershipTypeSelect.value;
+        const renewalDate = ELEMENTS.startDateInput.value;
+        const endDate = ELEMENTS.endDateInput.value;
     
-    if (!membershipTypeSelect || !startDateInput || !endDateInput || !summaryText) return;
+        if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
+            ELEMENTS.summaryText.textContent = 'Select membership type to see details.';
+            return;
+        }
     
-    const selectedType = membershipTypeSelect.value;
-    const renewalDate = startDateInput.value;
-    const endDate = endDateInput.value;
-
-    if (!selectedType || !MEMBERSHIP_DATA[selectedType]) {
-        summaryText.textContent = 'Select membership type to see details.';
-        return;
-    }
-
-    let typeName = MEMBERSHIP_DATA[selectedType].name;
-    let fee = MEMBERSHIP_DATA[selectedType].fee;
-    
-    if (selectedType === 'custom') {
-        const customDaysInput = document.getElementById(`${prefix}CustomDays`);
-        if (customDaysInput && customDaysInput.value) {
-            const days = parseInt(customDaysInput.value);
+        let typeName = MEMBERSHIP_DATA[selectedType].name;
+        let fee = MEMBERSHIP_DATA[selectedType].fee;
+        
+        if (selectedType === 'custom' && ELEMENTS.customDaysInput && ELEMENTS.customDaysInput.value) {
+            const days = parseInt(ELEMENTS.customDaysInput.value);
             typeName = `Custom (${days} day${days !== 1 ? 's' : ''})`;
             fee = days > 0 ? days * (MEMBERSHIP_DATA['custom'].fee || 0) : 0;
         }
-    }
-
-    fee = fee.toFixed(2);
-
-    if (renewalDate && endDate) {
-        const formattedStart = formatDisplayDate(new Date(renewalDate));
-        const formattedEnd = formatDisplayDate(new Date(endDate));
-        summaryText.textContent = 
-            `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
-    } else {
-        summaryText.textContent = 
-            `${typeName} membership. Total fee: ₱${fee}`;
-    }
-}
-    // ======== MODAL FUNCTIONS ========
-        function openViewModal(memberID, name, membershipType, startDate, status) {
-            document.getElementById('viewMemberName').textContent = name;
-            document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
-            document.getElementById('viewMembershipType').textContent = membershipType;
-            document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
-
-            const start = new Date(startDate);
-            let endDate = new Date(start);
-
-            // Set time to 23:59:59 of the previous day for all cases
-            switch(membershipType.toLowerCase()) {
-                case 'session':
-                case 'custom':
-                    // 1-day pass expires at 23:59:59 of the same day
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'weekly':
-                    // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
-                    endDate.setDate(start.getDate() + 6);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'monthly':
-                    // 1 month = start date + 1 month minus 1 day
-                    endDate.setMonth(start.getMonth() + 1);
-                    endDate.setDate(start.getDate() - 1);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                case 'annual':
-                    // 1 year = start date + 1 year minus 1 day
-                    endDate.setFullYear(start.getFullYear() + 1);
-                    endDate.setDate(start.getDate() - 1);
-                    endDate.setHours(23, 59, 59, 0);
-                    break;
-                default:
-                    endDate = 'N/A';
-            }
-
-            document.getElementById('viewEndDate').textContent = 
-                typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
-
-            const statusBadge = document.getElementById('viewStatus');
-            statusBadge.textContent = status;
-            statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
-
-            animateModalOpen('viewMemberModal', 'viewModalContent');
+    
+        fee = fee.toFixed(2);
+    
+        if (renewalDate && endDate) {
+            const formattedStart = formatDisplayDate(new Date(renewalDate));
+            const formattedEnd = formatDisplayDate(new Date(endDate));
+            ELEMENTS.summaryText.textContent = 
+                `${typeName} membership from ${formattedStart} to ${formattedEnd}. Total fee: ₱${fee}`;
+        } else {
+            ELEMENTS.summaryText.textContent = 
+                `${typeName} membership. Total fee: ₱${fee}`;
         }
+    }
+
+    // ======== MODAL FUNCTIONS ========
+    function openViewModal(memberID, name, membershipType, startDate, status) {
+    document.getElementById('viewMemberName').textContent = name;
+    document.getElementById('viewRfid').textContent = 'ID: ' + memberID;
+    document.getElementById('viewMembershipType').textContent = membershipType;
+    document.getElementById('viewStartDate').textContent = formatDisplayDate(new Date(startDate));
+
+    const start = new Date(startDate);
+    let endDate = new Date(start);
+
+    // Set time to 23:59:59 of the previous day for all cases
+    switch(membershipType.toLowerCase()) {
+        case 'session':
+        case 'custom':
+            // 1-day pass expires at 23:59:59 of the same day
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'week':
+            // 7 days = start date + 6 days (expires at 23:59:59 of the 7th day)
+            endDate.setDate(start.getDate() + 6);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'month':
+            // 1 month = start date + 1 month minus 1 day
+            endDate.setMonth(start.getMonth() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        case 'annual':
+            // 1 year = start date + 1 year minus 1 day
+            endDate.setFullYear(start.getFullYear() + 1);
+            endDate.setDate(start.getDate() - 1);
+            endDate.setHours(23, 59, 59, 0);
+            break;
+        default:
+            endDate = 'N/A';
+    }
+
+    document.getElementById('viewEndDate').textContent = 
+        typeof endDate === 'object' ? formatDisplayDate(endDate) : endDate;
+
+    const statusBadge = document.getElementById('viewStatus');
+    statusBadge.textContent = status;
+    statusBadge.className = STATUS_STYLES[status.toLowerCase()] || STATUS_STYLES.revoked;
+
+    animateModalOpen('viewMemberModal', 'viewModalContent');
+}
 
     function closeViewModal() {
         animateModalClose('viewMemberModal', 'viewModalContent');
     }
 
+    function openRenewModal(memberID, name, email, phone, endDate) {
+        document.getElementById("editMemberID").value = memberID;
+        document.getElementById("editMemberName").value = name;
+        
+        if (document.getElementById("editEmail") && email) {
+            document.getElementById("editEmail").value = email;
+        }
+        
+        if (document.getElementById("editPhone") && phone) {
+            document.getElementById("editPhone").value = phone;
+        }
+
+        if (document.getElementById("startDate")) {
+            document.getElementById("startDate").value = todayFormatted;
+        }
+
+        if (ELEMENTS.customDaysInput) {
+            ELEMENTS.customDaysInput.value = '';
+        }
+
+        toggleCustomDays();
+        animateModalOpen('renewMemberModal', 'editModalContent');
+        updateAllDetails();
+    }
 
     function closeRenewModal() {
         animateModalClose('renewMemberModal', 'editModalContent');
-    }
-
-    // Update your openRenewModal function to use unique IDs for the renew modal
-    function openRenewModal(memberID, name, email, phone, endDate) {
-        // Use renew-specific IDs
-        document.getElementById("renewMemberID").value = memberID;
-        document.getElementById("renewMemberName").value = name;
-        
-        if (document.getElementById("renewEmail") && email) {
-            document.getElementById("renewEmail").value = email;
-        }
-        
-        if (document.getElementById("renewPhone") && phone) {
-            document.getElementById("renewPhone").value = phone;
-        }
-
-        if (document.getElementById("renewStartDate")) {
-            document.getElementById("renewStartDate").value = todayFormatted;
-        }
-
-        const renewCustomDaysInput = document.getElementById("renewCustomDays");
-        if (renewCustomDaysInput) {
-            renewCustomDaysInput.value = '';
-        }
-
-        // Pass the modal type to toggle function
-        toggleCustomDays('renew');
-        animateModalOpen('renewMemberModal', 'editModalContent');
-        updateAllDetails('renew');
-    }
-
-    // Update your openUpgradeModal to use upgrade-specific IDs
-    function openUpgradeModal(memberID, name, email, phone, endDate) {
-        // Use upgrade-specific IDs
-        document.getElementById("upgradeMemberName").value = name;
-        
-        if (document.getElementById("upgradeEmail") && email) {
-            document.getElementById("upgradeEmail").value = email;
-        }
-        
-        if (document.getElementById("upgradePhone") && phone) {
-            document.getElementById("upgradePhone").value = phone;
-        }
-
-        if (document.getElementById("upgradeStartDate")) {
-            document.getElementById("upgradeStartDate").value = todayFormatted;
-        }
-
-        const upgradeCustomDaysInput = document.getElementById("upgradeCustomDays");
-        if (upgradeCustomDaysInput) {
-            upgradeCustomDaysInput.value = '';
-        }
-
-        toggleCustomDays('upgrade');
-        animateModalOpen('upgradeMemberModal', 'upgradeModalContent');
-        updateAllDetails('upgrade');
-    }
-
-    // Update the initialization to set up both modals
-    function initializeModalEventListeners() {
-        // Setup for Renew Modal
-        const renewMembershipType = document.getElementById('renewMembershipType');
-        const renewStartDate = document.getElementById('renewStartDate');
-        
-        if (renewMembershipType) {
-            renewMembershipType.addEventListener('change', function() {
-                toggleCustomDays('renew');
-                updateAllDetails('renew');
-            });
-        }
-        
-        if (renewStartDate) {
-            renewStartDate.addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                if (selectedDate < today) {
-                    this.value = todayFormatted;
-                }
-                updateAllDetails('renew');
-            });
-        }
-        
-        // Setup for Upgrade Modal
-        const upgradeMembershipType = document.getElementById('upgradeMembershipType');
-        const upgradeStartDate = document.getElementById('upgradeStartDate');
-        
-        if (upgradeMembershipType) {
-            upgradeMembershipType.addEventListener('change', function() {
-                toggleCustomDays('upgrade');
-                updateAllDetails('upgrade');
-            });
-        }
-        
-        if (upgradeStartDate) {
-            upgradeStartDate.addEventListener('change', function() {
-                const selectedDate = new Date(this.value);
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-                
-                if (selectedDate < today) {
-                    this.value = todayFormatted;
-                }
-                updateAllDetails('upgrade');
-            });
-        }
-    }
-    function closeUpgradeModal() {
-        animateModalClose('upgradeMemberModal', 'upgradeModalContent');
     }
     
     function openRevokeModal(memberID, memberName) {
@@ -1944,8 +1566,6 @@ function updateSummaryText(modalType = 'renew') {
     window.openViewModal = openViewModal;
     window.closeViewModal = closeViewModal;
     window.openRenewModal = openRenewModal;
-    window.openUpgradeModal = openUpgradeModal;
-    window.closeUpgradeModal = closeUpgradeModal;
     window.closeRenewModal = closeRenewModal;
     window.openRevokeModal = openRevokeModal;
     window.closeRevokeModal = closeRevokeModal;
@@ -1963,6 +1583,5 @@ function updateSummaryText(modalType = 'renew') {
 
     initialize();
 });
-
 </script>
 @endsection
