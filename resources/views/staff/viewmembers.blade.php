@@ -1448,7 +1448,7 @@ function fetchUpgradeLatestUid() {
         })
         .catch(error => {
             console.error('Error fetching RFID:', error);
-            updateUpgradeRfidStatus('error', 'Error reading card. Please try again.');
+            updateUpgradeRfidStatus('waiting', 'Please Tap Your Card...');
         });
 }
 
