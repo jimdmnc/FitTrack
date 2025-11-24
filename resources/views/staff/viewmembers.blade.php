@@ -998,7 +998,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 
    <!-- Upgrade to RFID Modal -->
 <div id="upgradeMemberModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-    <div class="w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
+    <div class="w-full max-w-4xl transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
         
         <!-- Decorative Glow Effect -->
         <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-2xl blur-xl opacity-75 animate-pulse pointer-events-none"></div>
@@ -1006,200 +1006,205 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
         <!-- Modal Container -->
         <div class="relative bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden">
             
-            <!-- Premium Header Section -->
-            <div class="relative px-6 pt-6 pb-4 bg-gradient-to-br from-purple-600/10 to-transparent">
-                <!-- Close Button -->
-                <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white hover:bg-purple-600 rounded-full p-2 transition-all duration-200 z-10" aria-label="Close modal">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-                <!-- Premium Crown Icon -->
-                <div class="flex justify-center mb-4">
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-purple-500 rounded-full blur-xl opacity-50"></div>
-                        <div class="relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-full p-4 shadow-lg shadow-purple-500/50">
-                            <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Title & Subtitle -->
-                <div class="text-center">
-                    <h2 class="text-2xl font-bold text-white mb-2">Upgrade to Premium</h2>
-                    <p class="text-purple-300 text-sm">Unlock exclusive RFID card membership benefits</p>
-                </div>
-            </div>
-
             <!-- Upgrade Form -->
-            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="px-6 pb-6 space-y-4">
+            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 @csrf
                 <input type="hidden" name="member_id" id="upgradeMemberId">
 
-                <!-- Member Info Card with Gradient Border -->
-                <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-[2px] rounded-xl">
-                    <div class="bg-gray-800/90 backdrop-blur-sm rounded-xl p-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Member ID
-                                </label>
-                                <input type="text" name="current_rfid_uid" id="upgradeMemberID" class="bg-transparent text-white font-semibold text-sm border-none p-0 w-full focus:outline-none" readonly>
-                            </div>
-                            <div>
-                                <label class="text-gray-400 text-xs mb-1 flex items-center gap-1">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
-                                    </svg>
-                                    Name
-                                </label>
-                                <input type="text" id="upgradeMemberName" class="bg-transparent text-white font-semibold text-sm border-none p-0 w-full focus:outline-none" readonly>
+                <!-- Left Column - Premium Header & Member Info -->
+                <div class="px-6 pt-6 pb-6 space-y-4">
+                    
+                    <!-- Close Button -->
+                    <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white hover:bg-purple-600 rounded-full p-2 transition-all duration-200 z-10" aria-label="Close modal">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <!-- Premium Crown Icon -->
+                    <div class="flex justify-center mb-2">
+                        <div class="relative">
+                            <div class="absolute inset-0 bg-purple-500 rounded-full blur-xl opacity-50"></div>
+                            <div class="relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-full p-3 shadow-lg shadow-purple-500/50">
+                                <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                </svg>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Plan Selection with Premium Styling -->
-                <div class="space-y-2">
-                    <label class="text-white text-sm font-medium flex items-center gap-2">
-                        <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
-                            <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
-                            <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
-                        </svg>
-                        Choose Your Plan
-                        <span class="text-red-400">*</span>
-                    </label>
+                    <!-- Title & Subtitle -->
+                    <div class="text-center mb-4">
+                        <h2 class="text-2xl font-bold text-white mb-1">Upgrade to Premium</h2>
+                        <p class="text-purple-300 text-sm">Unlock exclusive RFID card membership</p>
+                    </div>
+
+                    <!-- Member Info Card -->
                     <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-[2px] rounded-xl">
-                        <select id="upgradeMembershipType" name="membership_type" required class="w-full px-4 py-3 bg-gray-800 text-white rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-sm">
-                            <option value="" selected disabled>Select membership type</option>
-                            <option value="7" data-price="0">⚡ Weekly (7 days, Loading...)</option>
-                            <option value="30" data-price="0">🔥 Monthly (30 days, Loading...)</option>
-                            <option value="365" data-price="0">👑 Annual (365 days, Loading...)</option>
-                        </select>
+                        <div class="bg-gray-800/90 backdrop-blur-sm rounded-xl p-4">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Member ID
+                                    </label>
+                                    <input type="text" name="current_rfid_uid" id="upgradeMemberID" class="bg-transparent text-white font-semibold text-sm border-none p-0 w-full focus:outline-none" readonly>
+                                </div>
+                                <div>
+                                    <label class="text-gray-400 text-xs mb-1 flex items-center gap-1">
+                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd"/>
+                                        </svg>
+                                        Name
+                                    </label>
+                                    <input type="text" id="upgradeMemberName" class="bg-transparent text-white font-semibold text-sm border-none p-0 w-full focus:outline-none" readonly>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div id="upgradeMembershipTypeError" class="text-red-400 text-xs mt-1 hidden flex items-center gap-1">
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                        Failed to load membership prices
-                    </div>
-                    @error('membership_type')
-                        <span class="text-red-400 text-xs flex items-center gap-1" aria-live="polite">
-                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                            </svg>
-                            {{ $message }}
-                        </span>
-                    @enderror
-                </div>
 
-                <!-- Date Selection Grid -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="text-white text-sm font-medium block mb-2 flex items-center gap-1">
+                    <!-- Plan Selection -->
+                    <div class="space-y-2">
+                        <label class="text-white text-sm font-medium flex items-center gap-2">
                             <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                <path d="M3 12v3c0 1.657 3.134 3 7 3s7-1.343 7-3v-3c0 1.657-3.134 3-7 3s-7-1.343-7-3z"/>
+                                <path d="M3 7v3c0 1.657 3.134 3 7 3s7-1.343 7-3V7c0 1.657-3.134 3-7 3S3 8.657 3 7z"/>
+                                <path d="M17 5c0 1.657-3.134 3-7 3S3 6.657 3 5s3.134-3 7-3 7 1.343 7 3z"/>
                             </svg>
-                            Start Date
+                            Choose Your Plan
                             <span class="text-red-400">*</span>
                         </label>
-                        <input type="date" id="upgradeStartDate" name="start_date" required class="w-full px-3 py-2.5 bg-gray-800 text-white rounded-xl border border-purple-500/20 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-sm">
-                        @error('start_date')
-                            <span class="text-red-400 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                    <div>
-                        <label class="text-white text-sm font-medium block mb-2 flex items-center gap-1">
-                            <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                            </svg>
-                            End Date
-                        </label>
-                        <input type="text" id="upgradeEndDate" name="end_date" class="w-full px-3 py-2.5 bg-gray-800/50 text-gray-400 rounded-xl border border-purple-500/20 text-sm cursor-not-allowed" readonly>
-                        @error('end_date')
-                            <span class="text-red-400 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
-                        @enderror
-                    </div>
-                </div>
-
-                <!-- RFID Card Section with Premium Styling -->
-                <div class="space-y-2 rfid-container">
-                    <label for="upgradeUid" class="text-white text-sm font-medium flex items-center gap-2">
-                        <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
-                        </svg>
-                        Tap Your RFID Card
-                        <span class="text-red-400">*</span>
-                    </label>
-                    <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-[2px] rounded-xl">
-                        <div class="relative bg-gray-800 rounded-xl">
-                            <input id="upgradeUid" name="uid" class="w-full px-4 py-3 bg-transparent text-white rounded-xl focus:outline-none placeholder-gray-500 text-center font-mono tracking-wider cursor-default pointer-events-none select-none" placeholder="Waiting for card tap..." readonly aria-describedby="upgrade_uid_error" required>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center" id="upgrade-rfid-loading">
-                                <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse mr-1"></span>
-                                <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse mr-1" style="animation-delay: 0.2s;"></span>
-                                <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></span>
-                            </div>
-                            <button id="clearUpgradeRfidBtn" type="button" onclick="clearUpgradeRfid()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all hidden" aria-label="Clear RFID input">
-                                ×
-                            </button>
+                        <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-[2px] rounded-xl">
+                            <select id="upgradeMembershipType" name="membership_type" required class="w-full px-4 py-3 bg-gray-800 text-white rounded-xl appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-sm">
+                                <option value="" selected disabled>Select membership type</option>
+                                <option value="7" data-price="0">⚡ Weekly (7 days, Loading...)</option>
+                                <option value="30" data-price="0">🔥 Monthly (30 days, Loading...)</option>
+                                <option value="365" data-price="0">👑 Annual (365 days, Loading...)</option>
+                            </select>
                         </div>
-                    </div>
-                    <div id="upgrade_rfid_status" class="flex items-center justify-center gap-2 text-purple-400 text-xs" aria-live="polite">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                        </svg>
-                        Please Tap Your Card...
-                    </div>
-                    @error('uid')
-                        <span id="upgrade_uid_error" class="text-red-400 text-xs flex items-center gap-1" aria-live="polite">
+                        <div id="upgradeMembershipTypeError" class="text-red-400 text-xs mt-1 hidden flex items-center gap-1">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
                             </svg>
-                            {{ $message }}
-                        </span>
-                    @enderror
-                </div>
+                            Failed to load membership prices
+                        </div>
+                        @error('membership_type')
+                            <span class="text-red-400 text-xs flex items-center gap-1" aria-live="polite">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ $message }}
+                            </span>
+                        @enderror
+                    </div>
 
-                <!-- Premium Price Display -->
-                <div class="relative overflow-hidden bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
-                    <div class="flex items-center justify-between relative z-10">
-                        <span class="text-purple-300 text-sm font-medium">Total Amount</span>
-                        <div class="text-right">
-                            <input type="text" id="upgradeMembershipFee" class="text-3xl font-bold text-white bg-transparent border-none p-0 text-right w-full focus:outline-none pointer-events-none" value="₱0" readonly>
-                            <p class="text-purple-300 text-xs mt-1">One-time payment</p>
+                    <!-- Premium Price Display -->
+                    <div class="relative overflow-hidden bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
+                        <div class="flex items-center justify-between relative z-10">
+                            <span class="text-purple-300 text-sm font-medium">Total Amount</span>
+                            <div class="text-right">
+                                <input type="text" id="upgradeMembershipFee" class="text-3xl font-bold text-white bg-transparent border-none p-0 text-right w-full focus:outline-none pointer-events-none" value="₱0" readonly>
+                                <p class="text-purple-300 text-xs mt-1">One-time payment</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Summary Box -->
-                <div class="bg-purple-500/10 p-4 rounded-xl flex items-start gap-3 border border-purple-500/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <div class="text-sm text-gray-300">
-                        <span class="font-medium text-white">Upgrade Summary:</span> 
-                        <span id="upgradeMembershipSummaryText">Select membership type and tap RFID card to continue.</span>
+                <!-- Right Column - Dates, RFID & Actions -->
+                <div class="px-6 pt-6 pb-6 space-y-4 bg-gradient-to-br from-purple-600/5 to-transparent">
+                    
+                    <!-- Date Selection Grid -->
+                    <div class="grid grid-cols-2 gap-3 mt-14">
+                        <div>
+                            <label class="text-white text-sm font-medium block mb-2 flex items-center gap-1">
+                                <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                                </svg>
+                                Start Date
+                                <span class="text-red-400">*</span>
+                            </label>
+                            <input type="date" id="upgradeStartDate" name="start_date" required class="w-full px-3 py-2.5 bg-gray-800 text-white rounded-xl border border-purple-500/20 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all text-sm">
+                            @error('start_date')
+                                <span class="text-red-400 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div>
+                            <label class="text-white text-sm font-medium block mb-2 flex items-center gap-1">
+                                <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
+                                </svg>
+                                End Date
+                            </label>
+                            <input type="text" id="upgradeEndDate" name="end_date" class="w-full px-3 py-2.5 bg-gray-800/50 text-gray-400 rounded-xl border border-purple-500/20 text-sm cursor-not-allowed" readonly>
+                            @error('end_date')
+                                <span class="text-red-400 text-xs mt-1 block" aria-live="polite">{{ $message }}</span>
+                            @enderror
+                        </div>
                     </div>
-                </div>
 
-                <!-- Action Buttons with Premium Styling -->
-                <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="closeUpgradeModal()" class="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submitUpgrade" class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/50 flex items-center justify-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    <!-- RFID Card Section -->
+                    <div class="space-y-2 rfid-container">
+                        <label for="upgradeUid" class="text-white text-sm font-medium flex items-center gap-2">
+                            <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                            </svg>
+                            Tap Your RFID Card
+                            <span class="text-red-400">*</span>
+                        </label>
+                        <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 p-[2px] rounded-xl">
+                            <div class="relative bg-gray-800 rounded-xl">
+                                <input id="upgradeUid" name="uid" class="w-full px-4 py-3 bg-transparent text-white rounded-xl focus:outline-none placeholder-gray-500 text-center font-mono tracking-wider cursor-default pointer-events-none select-none" placeholder="Waiting for card tap..." readonly aria-describedby="upgrade_uid_error" required>
+                                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center" id="upgrade-rfid-loading">
+                                    <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse mr-1"></span>
+                                    <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse mr-1" style="animation-delay: 0.2s;"></span>
+                                    <span class="h-2 w-2 bg-purple-500 rounded-full animate-pulse" style="animation-delay: 0.4s;"></span>
+                                </div>
+                                <button id="clearUpgradeRfidBtn" type="button" onclick="clearUpgradeRfid()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center transition-all hidden" aria-label="Clear RFID input">
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+                        <div id="upgrade_rfid_status" class="flex items-center justify-center gap-2 text-purple-400 text-xs" aria-live="polite">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            Please Tap Your Card...
+                        </div>
+                        @error('uid')
+                            <span id="upgrade_uid_error" class="text-red-400 text-xs flex items-center gap-1" aria-live="polite">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ $message }}
+                            </span>
+                        @enderror
+                    </div>
+
+                    <!-- Summary Box -->
+                    <div class="bg-purple-500/10 p-4 rounded-xl flex items-start gap-3 border border-purple-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Complete Upgrade
-                    </button>
+                        <div class="text-sm text-gray-300">
+                            <span class="font-medium text-white">Upgrade Summary:</span> 
+                            <span id="upgradeMembershipSummaryText">Select membership type and tap RFID card to continue.</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeUpgradeModal()" class="flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg">
+                            Cancel
+                        </button>
+                        <button type="submit" id="submitUpgrade" class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-xl font-medium transition-all duration-200 hover:shadow-lg hover:shadow-purple-500/50 flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                            Complete Upgrade
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
