@@ -997,12 +997,12 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 
 
 <div id="upgradeMemberModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex justify-center items-center hidden z-50 transition-opacity duration-300 p-4">
-    <div class="w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
+    <div class="w-full max-w-3xl transform transition-all duration-300 scale-95 opacity-0" id="upgradeModalContent">
         
         <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-2xl blur-xl opacity-75 animate-pulse pointer-events-none"></div>
         
         <div class="relative bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 rounded-2xl shadow-2xl border border-purple-500/30">
-            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="grid grid-cols-1 gap-0">
+            <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="grid grid-cols-2 gap-6 p-8">
                 @csrf
                 <input type="hidden" name="member_id" id="upgradeMemberId">
 
@@ -1012,7 +1012,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                     </svg>
                 </button>
 
-                <div class="p-6 space-y-5">
+                <div class="space-y-5 col-span-1">
                     
                     <div class="text-center">
                         <div class="flex justify-center mb-2">
@@ -1115,6 +1115,9 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                             @enderror
                         </div>
                     </div>
+                </div>
+
+                <div class="space-y-5 col-span-1">
 
                     <div class="space-y-2 rfid-container">
                         <label for="upgradeUid" class="text-white text-sm font-medium flex items-center gap-2">
