@@ -364,8 +364,8 @@
                                                     <span class="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-1.5 transition-all duration-300 ease-in-out">Renew</span>
                                                 </button>
                                             @endif
-                                        @if(in_array($member->membership_type, [1]))
-                                             <!-- Upgrade to RFID Membership Button -->
+                                            @if($member->membership_type == 1 || Str::startsWith($member->rfid_uid, 'DAILY'))
+                                            <!-- Upgrade to RFID Membership Button -->
                                              <button 
                                                 onclick="openUpgradeModal(
                                                     '{{ $member->id }}',
