@@ -1015,7 +1015,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                 <div class="space-y-5 col-span-1">
                     
                     <div class="text-center">
-                        <div class="flex justify-center mb-2">
+                        <!-- <div class="flex justify-center mb-2">
                             <div class="relative">
                                 <div class="absolute inset-0 bg-purple-500 rounded-full blur-xl opacity-50"></div>
                                 <div class="relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-full p-3 shadow-lg shadow-purple-500/50">
@@ -1024,8 +1024,8 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                                     </svg>
                                 </div>
                             </div>
-                        </div>
-                        <h2 class="text-2xl font-bold text-white mb-1">Upgrade to Premium</h2>
+                        </div> -->
+                        <h2 class="text-2xl font-bold text-white mb-1">Upgrade Membership</h2>
                         <p class="text-purple-300 text-sm">Unlock exclusive RFID card membership</p>
                     </div>
 
