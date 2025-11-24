@@ -156,7 +156,7 @@ class AuthController extends Controller
             'rfid_uid' => $user->rfid_uid,
             'gender' => $user->gender,
             'phone_number' => $user->phone_number,
-            'birthdate' => optional($user->birthdate)->format('Y-m-d'), // Changed this line
+            'birthdate' => $user->birthdate, // Just return the raw value
             'session_status' => $user->session_status,
             'profile_image' => $user->profile_image ? Storage::url($user->profile_image) : null
         ]);
