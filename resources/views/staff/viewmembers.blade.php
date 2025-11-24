@@ -996,28 +996,20 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
 
 
 
-   <!-- Upgrade to RFID Modal - Smaller & Fully Responsive -->
-<div id="upgradeMemberModal" 
-     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden p-4 overflow-y-auto">
-     
-    <div class="w-full max-w-md transform transition-all duration-300 scale-95 opacity-0" 
+<div id="upgradeMemberModal"
+     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+     <div class="w-full max-w-sm transform transition-all duration-300 scale-95 opacity-0 p-4"
          id="upgradeModalContent">
-        
-        <!-- Glow Background Effect -->
         <div class="absolute -inset-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-2xl opacity-50 animate-pulse pointer-events-none"></div>
         
-        <!-- Modal Card -->
-        <div class="relative bg-gray-900 rounded-2xl shadow-2xl border border-purple-500/30 overflow-hidden">
-            
-            <!-- Close Button -->
-            <button onclick="closeUpgradeModal()" 
+        <div class="relative bg-gray-900 rounded-2xl shadow-2xl border border-purple-500/30">
+             <button onclick="closeUpgradeModal()"
                     class="absolute top-4 right-4 text-gray-400 hover:text-white hover:bg-purple-600/50 rounded-full p-2 transition z-10">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
 
-            <!-- Header with Crown -->
             <div class="text-center pt-8 pb-4 px-6">
                 <div class="flex justify-center mb-3">
                     <div class="relative">
@@ -1033,12 +1025,10 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                 <p class="text-purple-300 text-sm mt-1">Get your personal RFID card</p>
             </div>
 
-            <!-- Form -->
             <form id="upgradeForm" action="{{ route('upgrade.membership') }}" method="POST" class="px-6 pb-6 space-y-5">
                 @csrf
                 <input type="hidden" name="member_id" id="upgradeMemberId">
 
-                <!-- Member Info -->
                 <div class="bg-gray-800/70 backdrop-blur-sm rounded-xl p-4 border border-purple-500/20">
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
@@ -1052,7 +1042,6 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                     </div>
                 </div>
 
-                <!-- Plan Selection -->
                 <div>
                     <label class="text-white text-sm font-medium flex items-center gap-2 mb-2">
                         <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1062,7 +1051,7 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                         </svg>
                         Choose Plan <span class="text-red-400">*</span>
                     </label>
-                    <select id="upgradeMembershipType" name="membership_type" required 
+                    <select id="upgradeMembershipType" name="membership_type" required
                             class="w-full px-4 py-3 bg-gray-800 text-white rounded-xl border border-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500 transition text-sm">
                         <option value="" disabled selected>Select membership</option>
                         <option value="7">Weekly (7 days)</option>
@@ -1071,7 +1060,6 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                     </select>
                 </div>
 
-                <!-- Start Date -->
                 <div>
                     <label class="text-white text-sm font-medium flex items-center gap-2 mb-2">
                         <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1079,20 +1067,18 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                         </svg>
                         Start Date <span class="text-red-400">*</span>
                     </label>
-                    <input type="date" id="upgradeStartDate" name="start_date" required 
+                    <input type="date" id="upgradeStartDate" name="start_date" required
                            class="w-full px-4 py-3 bg-gray-800 text-white rounded-xl border border-purple-500/30 focus:outline-none focus:ring-2 focus:ring-purple-500">
                 </div>
 
-                <!-- End Date (Auto-filled) -->
                 <div>
                     <label class="text-white text-sm font-medium flex items-center gap-2 mb-2">
                         End Date
                     </label>
-                    <input type="text" id="upgradeEndDate" name="end_date" readonly 
+                    <input type="text" id="upgradeEndDate" name="end_date" readonly
                            class="w-full px-4 py-3 bg-gray-800/50 text-gray-400 rounded-xl border border-purple-500/20 text-sm cursor-not-allowed">
                 </div>
 
-                <!-- RFID Tap Field -->
                 <div>
                     <label class="text-white text-sm font-medium flex items-center gap-2 mb-2">
                         <svg class="w-4 h-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -1117,7 +1103,6 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                     </p>
                 </div>
 
-                <!-- Total Amount -->
                 <div class="bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-xl p-4 border border-purple-500/30">
                     <div class="flex justify-between items-center">
                         <span class="text-purple-300 font-medium">Total Amount</span>
@@ -1125,9 +1110,8 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                     </div>
                 </div>
 
-                <!-- Buttons -->
                 <div class="flex gap-3 pt-4">
-                    <button type="button" onclick="closeUpgradeModal()" 
+                    <button type="button" onclick="closeUpgradeModal()"
                             class="flex-1 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-xl font-medium transition">
                         Cancel
                     </button>
