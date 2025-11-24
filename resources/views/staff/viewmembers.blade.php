@@ -1006,11 +1006,11 @@ document.getElementById('otherReasonInput').addEventListener('input', function()
                 @csrf
                 <input type="hidden" name="member_id" id="upgradeMemberId">
 
-                <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white hover:bg-purple-600 rounded-full p-2 transition-all duration-200 z-10" aria-label="Close modal">
+                <!-- <button onclick="closeUpgradeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white hover:bg-purple-600 rounded-full p-2 transition-all duration-200 z-10" aria-label="Close modal">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                </button>
+                </button> -->
 
                 <div class="space-y-5 col-span-1">
                     
