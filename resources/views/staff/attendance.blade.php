@@ -304,224 +304,212 @@
             </table>
         </div>
 
-        <!-- Calendar Modal -->
-        <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
-            <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
-                <div class="sticky top-0 z-20 bg-[#1e1e1e] -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-b border-gray-800">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
-                        <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
-                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+<!-- Calendar Modal -->
+<div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
+    <div class="bg-[#1e1e1e] rounded-lg shadow-lg w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col" @click.stop>
+        <!-- Fixed Header -->
+        <div class="flex-shrink-0 bg-[#1e1e1e] px-4 sm:px-6 py-3 border-b border-gray-800">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
+                <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Content -->
+        <div class="flex-1 overflow-y-auto px-4 sm:px-6">
+            <!-- Modal Details -->
+            <div class="mb-6 pt-3">
+                <div class="flex items-center space-x-4 mb-4">
+                    <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
+                        <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-gray-200" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
+                        <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-400">Date</p>
+                        <p class="text-gray-200" x-text="selectedDayDate"></p>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-400">Duration</p>
+                        <p class="text-gray-200" x-text="selectedDayDuration"></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <p class="text-sm text-gray-400">Check-in</p>
+                        <p class="text-gray-200" x-text="selectedDayCheckIn"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400">Check-out</p>
+                        <p class="text-gray-200" x-text="selectedDayCheckOut"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Calendar -->
+            <div x-data="{
+                currentMonth: new Date().getMonth(),
+                currentYear: new Date().getFullYear(),
+                today: new Date().getDate(),
+                selectedDay: null,
+
+                getDaysInMonth() {
+                    return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
+                },
+
+                getFirstDayOfMonth() {
+                    return new Date(this.currentYear, this.currentMonth, 1).getDay();
+                },
+
+                prevMonth() {
+                    if (this.currentMonth === 0) {
+                        this.currentMonth = 11;
+                        this.currentYear--;
+                    } else {
+                        this.currentMonth--;
+                    }
+                    this.selectedDay = null;
+                },
+
+                nextMonth() {
+                    if (this.currentMonth === 11) {
+                        this.currentMonth = 0;
+                        this.currentYear++;
+                    } else {
+                        this.currentMonth++;
+                    }
+                    this.selectedDay = null;
+                },
+
+                monthName() {
+                    return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
+                },
+
+                isAttendanceDay(day) {
+                    const mainData = Alpine.$data(this.$root);
+                    if (!mainData.selectedAttendance || !mainData.selectedAttendance.user || !mainData.selectedAttendance.user.attendances) {
+                        return false;
+                    }
+                    
+                    const currentDate = new Date(this.currentYear, this.currentMonth, day);
+                    return mainData.selectedAttendance.user.attendances.some(attendance => {
+                        const attendanceDate = new Date(attendance.time_in);
+                        return attendanceDate.getFullYear() === currentDate.getFullYear() &&
+                            attendanceDate.getMonth() === currentDate.getMonth() &&
+                            attendanceDate.getDate() === currentDate.getDate();
+                    });
+                },
+
+                isToday(day) {
+                    const today = new Date();
+                    return day === today.getDate() &&
+                        this.currentMonth === today.getMonth() &&
+                        this.currentYear === today.getFullYear();
+                },
+
+                selectDay(day) {
+                    this.selectedDay = day;
+                    this.loadDayAttendance(day);
+                },
+
+                loadDayAttendance(day) {
+                    const selectedDate = new Date(this.currentYear, this.currentMonth, day);
+                    const formattedDate = selectedDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+                    
+                    const mainData = Alpine.$data(this.$root);
+                    
+                    let checkIn = 'N/A';
+                    let checkOut = 'N/A';
+                    let duration = 'N/A';
+                    
+                    if (mainData.selectedAttendance && mainData.selectedAttendance.user && mainData.selectedAttendance.user.attendances) {
+                        const attendanceForDay = mainData.selectedAttendance.user.attendances.find(attendance => {
+                            const attendanceDate = new Date(attendance.time_in);
+                            return attendanceDate.getFullYear() === selectedDate.getFullYear() &&
+                                attendanceDate.getMonth() === selectedDate.getMonth() &&
+                                attendanceDate.getDate() === selectedDate.getDate();
+                        });
+
+                        if (attendanceForDay) {
+                            checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            checkOut = attendanceForDay.time_out ?
+                                new Date(attendanceForDay.time_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
+                            duration = attendanceForDay.formatted_duration || 'N/A';
+                        }
+                    }
+                    
+                    mainData.selectedDayDate = formattedDate;
+                    mainData.selectedDayCheckIn = checkIn;
+                    mainData.selectedDayCheckOut = checkOut;
+                    mainData.selectedDayDuration = duration;
+                },
+
+                isSelectedDay(day) {
+                    return this.selectedDay === day;
+                }
+                }" 
+                x-init="$nextTick(() => { 
+                    selectDay(today);
+                })">
+                    <!-- Calendar Navigation -->
+                    <div class="flex justify-between items-center mb-2">
+                        <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
+                        <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
                     </div>
+
+                <!-- Calendar Grid -->
+                <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm mb-4">
+                    <!-- Day headers -->
+                    <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
+                        <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
+                    </template>
+
+                    <!-- Empty days from previous month -->
+                    <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
+                        <div class="p-1 text-sm text-gray-600"></div>
+                    </template>
+
+                    <!-- Days of current month -->
+                    <template x-for="day in getDaysInMonth()" :key="'day-' + day">
+                        <div class="relative flex flex-col items-center p-1">
+                            <button 
+                                @click="selectDay(day)" 
+                                class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors focus:outline-none"
+                                :class="{
+                                    'text-gray-300 hover:bg-gray-700': !isSelectedDay(day),
+                                    'text-white bg-[#ff5722]': isSelectedDay(day),
+                                    'font-extrabold': isToday(day)
+                                }"
+                                x-text="day"
+                            ></button>
+                            <!-- Attendance indicator dot -->
+                            <div x-show="isAttendanceDay(day) && !isSelectedDay(day)" class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
+                        </div>
+                    </template>
                 </div>
-
-                <!-- Modal Details -->
-                <div class="mb-6 pt-3">
-                    <div class="flex items-center space-x-4 mb-4">
-                        <div class="flex-shrink-0 h-12 w-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium text-lg">
-                            <span x-text="selectedAttendance ? selectedAttendance.user.first_name.charAt(0) + selectedAttendance.user.last_name.charAt(0) : ''"></span>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-medium text-gray-200" x-text="selectedAttendance ? selectedAttendance.user.first_name + ' ' + selectedAttendance.user.last_name : ''"></h3>
-                            <p class="text-sm text-gray-400" x-text="selectedAttendance ? selectedAttendance.user.membership_type : ''"></p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-400">Date</p>
-                            <p class="text-gray-200" x-text="selectedDayDate"></p>
-                        </div>
-                        <div class="mt-2">
-                            <p class="text-sm text-gray-400">Duration</p>
-                            <p class="text-gray-200" x-text="selectedDayDuration"></p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <p class="text-sm text-gray-400">Check-in</p>
-                            <p class="text-gray-200" x-text="selectedDayCheckIn"></p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-400">Check-out</p>
-                            <p class="text-gray-200" x-text="selectedDayCheckOut"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Calendar -->
-                <div x-data="{
-                    currentMonth: new Date().getMonth(),
-                    currentYear: new Date().getFullYear(),
-                    today: new Date().getDate(),
-                    selectedDay: null,
-
-                    // Get the number of days in the current month
-                    getDaysInMonth() {
-                        return new Date(this.currentYear, this.currentMonth + 1, 0).getDate();
-                    },
-
-                    // Get the first day of the current month (used for layout)
-                    getFirstDayOfMonth() {
-                        return new Date(this.currentYear, this.currentMonth, 1).getDay();
-                    },
-
-                    // Navigate to the previous month
-                    prevMonth() {
-                        if (this.currentMonth === 0) {
-                            this.currentMonth = 11;
-                            this.currentYear--;
-                        } else {
-                            this.currentMonth--;
-                        }
-                        this.selectedDay = null;
-                    },
-
-                    // Navigate to the next month
-                    nextMonth() {
-                        if (this.currentMonth === 11) {
-                            this.currentMonth = 0;
-                            this.currentYear++;
-                        } else {
-                            this.currentMonth++;
-                        }
-                        this.selectedDay = null;
-                    },
-
-                    // Get the name of the current month
-                    monthName() {
-                        return new Date(this.currentYear, this.currentMonth).toLocaleString('default', { month: 'long' });
-                    },
-
-                    // Check if the given day has attendance records
-                    isAttendanceDay(day) {
-                        // Make sure we have the right context
-                        const mainData = Alpine.$data(this.$root);
-                        if (!mainData.selectedAttendance || !mainData.selectedAttendance.user || !mainData.selectedAttendance.user.attendances) {
-                            return false;
-                        }
-                        
-                        const currentDate = new Date(this.currentYear, this.currentMonth, day);
-                        return mainData.selectedAttendance.user.attendances.some(attendance => {
-                            const attendanceDate = new Date(attendance.time_in);
-                            return attendanceDate.getFullYear() === currentDate.getFullYear() &&
-                                attendanceDate.getMonth() === currentDate.getMonth() &&
-                                attendanceDate.getDate() === currentDate.getDate();
-                        });
-                    },
-
-                    // Check if the given day is today
-                    isToday(day) {
-                        const today = new Date();
-                        return day === today.getDate() &&
-                            this.currentMonth === today.getMonth() &&
-                            this.currentYear === today.getFullYear();
-                    },
-
-                    // Select a day and load its attendance data
-                    selectDay(day) {
-                        this.selectedDay = day;
-                        this.loadDayAttendance(day);
-                    },
-
-                    // Load attendance data for the selected day
-                    loadDayAttendance(day) {
-                        const selectedDate = new Date(this.currentYear, this.currentMonth, day);
-                        const formattedDate = selectedDate.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-                        
-                        // Access the parent component's data
-                        const mainData = Alpine.$data(this.$root);
-                        
-                        // Default values
-                        let checkIn = 'N/A';
-                        let checkOut = 'N/A';
-                        let duration = 'N/A';
-                        
-                        // Only proceed if we have valid data
-                        if (mainData.selectedAttendance && mainData.selectedAttendance.user && mainData.selectedAttendance.user.attendances) {
-                            const attendanceForDay = mainData.selectedAttendance.user.attendances.find(attendance => {
-                                const attendanceDate = new Date(attendance.time_in);
-                                return attendanceDate.getFullYear() === selectedDate.getFullYear() &&
-                                    attendanceDate.getMonth() === selectedDate.getMonth() &&
-                                    attendanceDate.getDate() === selectedDate.getDate();
-                            });
-
-                            if (attendanceForDay) {
-                                checkIn = new Date(attendanceForDay.time_in).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                                checkOut = attendanceForDay.time_out ?
-                                    new Date(attendanceForDay.time_out).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'N/A';
-                                duration = attendanceForDay.formatted_duration || 'N/A';
-                            }
-                        }
-                        
-                        // Update parent component state
-                        mainData.selectedDayDate = formattedDate;
-                        mainData.selectedDayCheckIn = checkIn;
-                        mainData.selectedDayCheckOut = checkOut;
-                        mainData.selectedDayDuration = duration;
-                    },
-
-                    // Check if the given day is selected
-                    isSelectedDay(day) {
-                        return this.selectedDay === day;
-                    }
-                    }" 
-                    x-init="$nextTick(() => { 
-                        // Initialize with today's day selected by default
-                        selectDay(today);
-                    })">
-                        <!-- Calendar Navigation -->
-                        <div class="flex justify-between items-center mb-2">
-                            <button @click="prevMonth" class="text-gray-400 hover:text-[#ff5722]">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                            <h3 class="text-md font-medium text-gray-200" x-text="monthName() + ' ' + currentYear"></h3>
-                            <button @click="nextMonth" class="text-gray-400 hover:text-[#ff5722]">
-                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </button>
-                        </div>
-
-                    <!-- Calendar Grid -->
-                    <div class="grid grid-cols-7 gap-1 text-center text-xs sm:text-sm">
-                        <!-- Day headers -->
-                        <template x-for="day in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']" :key="day">
-                            <div class="text-xs text-gray-400 font-medium" x-text="day"></div>
-                        </template>
-
-                        <!-- Empty days from previous month -->
-                        <template x-for="i in getFirstDayOfMonth()" :key="'empty-' + i">
-                            <div class="p-1 text-sm text-gray-600"></div>
-                        </template>
-
-                        <!-- Days of current month -->
-                        <template x-for="day in getDaysInMonth()" :key="'day-' + day">
-                            <div class="relative flex flex-col items-center p-1">
-                                <button 
-                                    @click="selectDay(day)" 
-                                    class="text-sm rounded-full w-6 h-6 flex items-center justify-center transition-colors focus:outline-none"
-                                    :class="{
-                                        'text-gray-300 hover:bg-gray-700': !isSelectedDay(day),
-                                        'text-white bg-[#ff5722]': isSelectedDay(day),
-                                        'font-extrabold': isToday(day)
-                                    }"
-                                    x-text="day"
-                                ></button>
-                                <!-- Attendance indicator dot -->
-                                <div x-show="isAttendanceDay(day) && !isSelectedDay(day)" class="mt-1 w-1.5 h-1.5 bg-[#ff5722] rounded-full"></div>
-                            </div>
-                        </template>
-                    </div>
-                </div>                
-            </div>
+            </div>                
         </div>
+    </div>
+</div>
         
         <div class="mt-4">
             {{ $attendances->appends(['search' => request('search'), 'filter' => request('filter')])->links('vendor.pagination.default') }}
