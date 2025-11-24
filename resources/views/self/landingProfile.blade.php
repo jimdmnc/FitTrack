@@ -265,8 +265,8 @@
                         <img src="{{ asset('images/rockiesLogo.jpg') }}" alt="FitTrack Logo" class="h-10 w-10 sm:h-12 sm:w-12 md:h-16 md:w-16 rounded-full object-cover" loading="lazy">
                     </a>
                 </div> -->
-                @if(Auth::user()->role === 'userSession')
-                    <!-- Workout Timer (Desktop) -->
+                @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+                <!-- Workout Timer (Desktop) -->
                     @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                         <div class="workout-timer flex items-center bg-gray-800 px-3 py-1 rounded-full">
                             <i class="fas fa-stopwatch mr-2 text-red-400"></i>
@@ -309,8 +309,8 @@
 
                     <!-- Action Buttons -->
                     <div class="flex items-center space-x-2">
-                    @if(Auth::user()->role === 'userSession')
-    @php
+                    @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+                    @php
         // Check if the latest attendance record today has time_out
         $hasTimedOutToday = $attendance && !is_null($attendance->time_out);
         $hasActiveSession = $attendance && !is_null($attendance->time_in) && is_null($attendance->time_out);
@@ -383,8 +383,8 @@
                         @endif
 
 
-                        @if(Auth::user()->role === 'userSession')
-                            @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
+                        @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+                        @if(auth()->check() && auth()->user()->rfid_uid && isset($attendance) && !$attendance->time_out && !session('timed_out'))
                                 <div class="flex justify-center items-center py-4">
                                     <div class="flex items-center bg-gray-800 px-4 py-2 rounded-lg">
                                         <i class="fas fa-stopwatch mr-3 text-red-400 text-lg"></i>
@@ -402,8 +402,8 @@
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 mt-6">
-                    @if(Auth::user()->role === 'userSession')
-    @php
+                    @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+                    @php
         // Detect if user already timed out today using the existing $attendance
         $hasTimedOutToday = $attendance && !is_null($attendance->time_out);
         $hasActiveSession = $attendance && !is_null($attendance->time_in) && is_null($attendance->time_out);
@@ -531,8 +531,8 @@
             </script>
         @endif   
 
-        @if(Auth::user()->role === 'userSession')
-            <!-- Time Out Confirmation Modal -->
+        @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+        <!-- Time Out Confirmation Modal -->
             <dialog id="timeout-modal" class="backdrop:bg-black backdrop:bg-opacity-50 bg-white rounded-lg p-6 max-w-md w-full">
                 <div class="text-center">
                     <h3 class="text-xl font-bold mb-4">Confirm Time Out</h3>
@@ -911,8 +911,8 @@
     }
 </style>
         <!-- Session Renewal Modal -->
-        @if(Auth::user()->role === 'userSession')
-            <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
+        @if(Auth::user()->role === 'userSession' || Auth::user()->role === 'user')
+        <div id="renewModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 hidden">
                 <div class="bg-[#1e1e1e] p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-md transform transition-all border border-gray-700">
                     <div class="mb-6 text-center">
                         <h2 class="text-2xl font-bold text-white" style="font-family: 'Bebas Neue', sans-serif;">Session Renewal</h2>
