@@ -307,7 +307,7 @@
         <!-- Calendar Modal -->
         <div x-show="showModal" x-transition @click.away="showModal = false" class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50 p-4">
             <div class="bg-[#1e1e1e] rounded-lg shadow-lg p-4 sm:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto" @click.stop>
-                <div class="fixed top-0 z-20 bg-[#1e1e1e] -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-b border-gray-800">
+                <div class="sticky top-0 z-20 bg-[#1e1e1e] -mx-4 sm:-mx-6 px-4 sm:px-6 py-3 border-b border-gray-800">
                     <div class="flex justify-between items-center">
                         <h2 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-600">Attendance Details</h2>
                         <button @click="showModal = false" class="p-2 text-gray-200 rounded-full hover:bg-[#ff5722] hover:scale-95 transition-transform">
