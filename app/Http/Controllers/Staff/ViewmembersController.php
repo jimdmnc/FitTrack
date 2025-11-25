@@ -390,6 +390,8 @@ public function upgradeMembership(Request $request)
                     'amount' => $paymentAmount,
                     'payment_method' => 'cash',
                     'payment_date' => now(),
+                    'status' => 'completed',
+
                 ]);
             });
 
