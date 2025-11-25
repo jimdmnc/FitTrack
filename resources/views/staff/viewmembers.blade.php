@@ -353,7 +353,10 @@
                                     </div>
                                 @elseif($member->member_status == 'expired')
                                     <div class="flex flex-wrap gap-2 justify-center">
-                                      @if(in_array($member->membership_type, ['1', '7', '30', '365']))
+                                    @if(
+    in_array($member->membership_type, ['1','7','30','365']) &&
+    !Str::startsWith($member->rfid_uid, 'DAILY')
+)
                                                 <button 
                                                     onclick="openRenewModal('{{ $member->rfid_uid }}', '{{ $member->first_name }} {{ $member->last_name }}', '{{ $member->email }}', '{{ $member->phone_number }}', '{{ $member->end_date }}')" 
                                                     class="inline-flex items-center px-3 py-1.5 bg-green-900 hover:bg-transparent hover:translate-y-[-2px] text-green-100 rounded-lg transition-all duration-200 font-medium text-sm shadow-sm group"
