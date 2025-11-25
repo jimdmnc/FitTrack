@@ -388,7 +388,7 @@ public function upgradeMembership(Request $request)
                 MembersPayment::create([
                     'rfid_uid' => $user->rfid_uid,
                     'amount' => $paymentAmount,
-                    'payment_method' => 'gcash',
+                    'payment_method' => 'cash',
                     'payment_date' => now(),
                     'status' => 'completed',
 
