@@ -124,6 +124,10 @@ class StaffApprovalController extends Controller
             'updated_at' => now(),
         ];
 
+                    $attendanceData['time_in'] = now();
+        DB::table('attendances')->insert($attendanceData);
+
+
     return redirect()->route('staff.manageApproval')
         ->with('success', 'User approved! Payment now in reports.');
 }
