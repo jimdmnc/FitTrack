@@ -9,11 +9,18 @@ use Illuminate\Http\Request;
 
 class PaymentTrackingController extends Controller
 {
-   // Display all members' payments from renewals history
+   // Display all members' payments
 public function index(Request $request)
 {
-    $query = Renewal::with('user')
-        ->orderBy('created_at', 'desc');
+    $query = MembersPayment::with('user')
+        ->leftJoin('renewals', function($join) {
+            $join->on('members_payment.rfid_uid', '=', 'renewals.rfid_uid')
+                 ->whereRaw('members_payment.payment_date >= renewals.start_date')
+                 ->whereRaw('members_payment.payment_date <= renewals.end_date');
+        })
+        ->select('members_payment.*', 'renewals.membership_type as renewal_membership_type')
+        ->where('members_payment.status', 'completed')
+        ->orderBy('members_payment.payment_date', 'desc');
     
     // Search functionality
     if ($request->filled('search')) {
@@ -26,7 +33,7 @@ public function index(Request $request)
 
     // Filter by payment method
     if ($request->filled('payment_method')) {
-        $query->where('payment_method', $request->payment_method);
+        $query->where('members_payment.payment_method', $request->payment_method);
     }
 
     // Filter by membership type (session, week, month, annual)
@@ -41,7 +48,8 @@ public function index(Request $request)
 
         if (isset($map[$membership])) {
             $type = $map[$membership];
-            $query->where('membership_type', $type);
+            // Filter by renewal's membership_type instead of user's current membership_type
+            $query->where('renewals.membership_type', $type);
         }
     }
 
@@ -51,31 +59,31 @@ public function index(Request $request)
 
         switch ($request->time_filter) {
             case 'today':
-                $query->whereDate('created_at', $today);
+                $query->whereDate('members_payment.payment_date', $today);
                 break;
             case 'week':
-                $query->whereBetween('created_at', [
+                $query->whereBetween('members_payment.payment_date', [
                     $today->copy()->startOfWeek(),
                     $today->copy()->endOfWeek()
                 ]);
                 break;
             case 'month':
-                $query->whereBetween('created_at', [
+                $query->whereBetween('members_payment.payment_date', [
                     $today->copy()->startOfMonth(),
                     $today->copy()->endOfMonth()
                 ]);
                 break;
             case 'custom':
-                // Custom range: filter by created_at (when renewal was made)
+                // Custom range: filter by provided start_date / end_date on the payment_date
                 $start = $request->filled('start_date') ? Carbon::parse($request->start_date)->startOfDay() : null;
                 $end = $request->filled('end_date') ? Carbon::parse($request->end_date)->endOfDay() : null;
 
                 if ($start && $end) {
-                    $query->whereBetween('created_at', [$start, $end]);
+                    $query->whereBetween('members_payment.payment_date', [$start, $end]);
                 } elseif ($start) {
-                    $query->where('created_at', '>=', $start);
+                    $query->where('members_payment.payment_date', '>=', $start);
                 } elseif ($end) {
-                    $query->where('created_at', '<=', $end);
+                    $query->where('members_payment.payment_date', '<=', $end);
                 }
                 break;
         }
