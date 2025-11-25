@@ -114,6 +114,16 @@ class StaffApprovalController extends Controller
             'verified_at' => now(),
         ]);
 
+                $attendanceData = [
+            'rfid_uid' => $user->rfid_uid,
+            'status' => 'present',
+            'attendance_date' => now()->toDateString(),
+            'check_in_method' => 'manual',
+            'session_id' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ];
+
     return redirect()->route('staff.manageApproval')
         ->with('success', 'User approved! Payment now in reports.');
 }
