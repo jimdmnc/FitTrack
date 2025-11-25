@@ -104,32 +104,17 @@ class StaffApprovalController extends Controller
     $user->save();
 
     // PREVENT DUPLICATE: Update ONLY if pending exists
-    $payment = \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
-    ->orderBy('id', 'desc') // ✅ always get newest payment
-    ->first();
-
-    if ($payment && $payment->status == 'pending') {
-        $payment->update([
+    \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
+        ->where('status', 'pending')
+        ->latest()
+        ->limit(1)  // ← THIS LINE STOPS DUPLICATE
+        ->update([
             'status' => 'completed',
             'verified_by' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
             'verified_at' => now(),
         ]);
-    }
 
-
-        //         $attendanceData = [
-        //     'rfid_uid' => $user->rfid_uid,
-        //     'status' => 'present',
-        //     'attendance_date' => now()->toDateString(),
-        //     'check_in_method' => 'manual',
-        //     'session_id' => null,
-        //     'created_at' => now(),
-        //     'updated_at' => now(),
-        // ];
-
-        //             $attendanceData['time_in'] = now();
-        // DB::table('attendances')->insert($attendanceData);
-
+        
 
     return redirect()->route('staff.manageApproval')
         ->with('success', 'User approved! Payment now in reports.');
