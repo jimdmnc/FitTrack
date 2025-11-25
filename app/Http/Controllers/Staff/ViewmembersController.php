@@ -289,7 +289,7 @@ public function upgradeMembership(Request $request)
                 'rfid_uid' => $newRfidUid,
                 'amount' => $paymentAmount,
                 'payment_method' => 'cash',
-                'status' => 'completed',
+                'status' => 'pending',
                 'payment_date' => now(),
             ]);
             
@@ -390,8 +390,6 @@ public function upgradeMembership(Request $request)
                     'amount' => $paymentAmount,
                     'payment_method' => 'cash',
                     'payment_date' => now(),
-                    'status' => 'completed',
-
                 ]);
             });
 
