@@ -107,7 +107,7 @@ class StaffApprovalController extends Controller
     \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
         ->where('status', 'pending')
         ->latest()
-        // ->limit(1)  // ← THIS LINE STOPS DUPLICATE
+        ->limit(1)  // ← THIS LINE STOPS DUPLICATE
         ->update([
             'status' => 'completed',
             'verified_by' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
