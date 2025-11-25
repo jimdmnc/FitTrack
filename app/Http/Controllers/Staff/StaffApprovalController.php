@@ -104,15 +104,18 @@ class StaffApprovalController extends Controller
     $user->save();
 
     // PREVENT DUPLICATE: Update ONLY if pending exists
-    \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
-        ->where('status', 'pending')
-        ->latest()
-        ->limit(1)  // ← THIS LINE STOPS DUPLICATE
-        ->update([
+    $payment = \App\Models\MembersPayment::where('rfid_uid', $user->rfid_uid)
+    ->orderBy('id', 'desc') // ✅ always get newest payment
+    ->first();
+
+    if ($payment && $payment->status == 'pending') {
+        $payment->update([
             'status' => 'completed',
             'verified_by' => auth()->user()->first_name . ' ' . auth()->user()->last_name,
             'verified_at' => now(),
         ]);
+    }
+
 
                 $attendanceData = [
             'rfid_uid' => $user->rfid_uid,

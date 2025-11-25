@@ -289,8 +289,10 @@ public function upgradeMembership(Request $request)
                 'rfid_uid' => $newRfidUid,
                 'amount' => $paymentAmount,
                 'payment_method' => 'cash',
+                'status' => 'pending',
                 'payment_date' => now(),
             ]);
+            
         });
 
         return redirect()->route('staff.viewmembers')
