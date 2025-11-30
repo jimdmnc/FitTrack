@@ -123,8 +123,8 @@ Route::post('/attendance', [RFIDController::class, 'processRFID']);
 // Route::post('/save_rfid', [RFIDController::class, 'saveRFID']);
 Route::get('/rfid/latest', [RFIDController::class, 'getLatestRFID']);
 Route::delete('/rfid/clear/{uid}', [RFIDController::class, 'clear']);
-Route::middleware('auth:sanctum')->get('/user/birthdate', function (Request $request) {
-    return response()->json([
-        'birthdate' => $request->user()->birthdate, // e.g., "1998-05-20"
-    ]);
+Route::middleware('auth:sanctum')->post('/user/update-profile', function (Request $request) {
+    $request->validate(['birthdate' => 'required|date']);
+    $request->user()->update(['birthdate' => $request->birthdate]);
+    return response()->json(['message' => 'Profile updated']);
 });
